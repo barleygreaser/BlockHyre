@@ -8,8 +8,11 @@ import { FeaturedInventory } from "./components/featured-inventory";
 import { SafetyModal } from "./components/safety-modal";
 import { Footer } from "./components/footer";
 
+import { useMarketplace } from "./hooks/use-marketplace";
+
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { listings } = useMarketplace();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -19,7 +22,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <ValueProps />
-      <FeaturedInventory onRentClick={openModal} />
+      <FeaturedInventory onRentClick={openModal} listings={listings} />
       <Footer />
 
       <SafetyModal isOpen={isModalOpen} onClose={closeModal} />

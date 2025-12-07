@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
@@ -17,76 +17,82 @@ import {
     Weight,
     CheckCircle,
     Star,
-    Info
+    Info,
+    Loader2
 } from "lucide-react";
-import { addDays, format, differenceInDays } from "date-fns";
+import { addDays, differenceInDays } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/app/context/cart-context";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
+import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 
-// Mock Data for "Commercial Wood Chipper"
-const TOOL_DATA = {
-    id: "chipper-001",
-    title: "Commercial Wood Chipper",
-    owner: {
-        name: "Robert F.",
-        verified: true,
-        rating: 4.9,
-        reviews: 24,
-        image: "https://placehold.co/100x100/e2e8f0/1e293b?text=RF"
-    },
-    distance: 0.8,
-    images: [
-        "https://placehold.co/800x600/e2e8f0/1e293b?text=Wood+Chipper+Main",
-        "https://placehold.co/800x600/e2e8f0/1e293b?text=Side+View",
-        "https://placehold.co/800x600/e2e8f0/1e293b?text=Control+Panel",
-        "https://placehold.co/800x600/e2e8f0/1e293b?text=Hopper"
-    ],
-    price: {
-        daily: 120,
-        deposit: 500,
-        riskTier: 3 as 1 | 2 | 3 // Tier 3: Heavy/Precision
-    },
-    specs: {
-        power: "Gas (Honda GX390)",
-        weight: "450 lbs",
-        dimensions: "60\"L x 32\"W x 50\"H",
-        capacity: "4-inch diameter"
-    },
-    isHeavyMachinery: true,
-    manualUrl: "#",
-    bookingType: "instant" as "instant" | "request",
-    acceptsBarter: true
-};
+export default function ListingDetailsPage() {
+    const { id } = useParams();
+    const { fetchListing } = useMarketplace();
+    const { addToCart } = useCart();
+    const router = useRouter();
 
-export default function ToolDetailsPage() {
+    const [listing, setListing] = useState<Listing | null>(null);
+    const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: new Date(),
         to: addDays(new Date(), 2),
     });
 
-    const { addToCart } = useCart();
-    const router = useRouter();
+    useEffect(() => {
+        if (id) {
+            fetchListing(id as string).then(data => {
+                setListing(data);
+                setLoading(false);
+            });
+        }
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-safety-orange" />
+            </div>
+        );
+    }
+
+    if (!listing) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+                <h1 className="text-2xl font-bold text-slate-900">Listing Not Found</h1>
+                <Button onClick={() => router.push('/inventory')}>Back to Inventory</Button>
+            </div>
+        );
+    }
 
     // Calculate Costs
     const days = dateRange?.from && dateRange?.to
         ? differenceInDays(dateRange.to, dateRange.from) + 1
         : 0;
 
-    const { subtotal, peaceFundTotal, finalTotal } = calculateRentalPrice(TOOL_DATA.price.daily, days, TOOL_DATA.price.riskTier);
-    const totalDue = finalTotal + TOOL_DATA.price.deposit;
+    // Map risk_daily_fee to Tier (1, 2, 3)
+    const riskFee = listing.category.risk_daily_fee;
+    const riskTier = riskFee === 1 ? 1 : riskFee === 3 ? 2 : 3;
+
+    const { subtotal, peaceFundTotal, finalTotal } = calculateRentalPrice(listing.daily_price, days, riskTier as 1 | 2 | 3);
+    const deposit = 100; // Hardcoded for now, or add to DB
+    const totalDue = finalTotal + deposit;
 
     const handleAddToCart = () => {
         if (!dateRange?.from || !dateRange?.to) return;
 
         addToCart({
-            id: TOOL_DATA.id,
-            title: TOOL_DATA.title,
-            image: TOOL_DATA.images[0],
-            price: TOOL_DATA.price,
+            id: listing.id,
+            title: listing.title,
+            image: listing.images?.[0] || "",
+            price: {
+                daily: listing.daily_price,
+                deposit: deposit,
+                riskTier: riskTier as 1 | 2 | 3
+            },
             dates: {
                 from: dateRange.from,
                 to: dateRange.to
@@ -99,19 +105,7 @@ export default function ToolDetailsPage() {
 
     const handleRentNow = () => {
         if (!dateRange?.from || !dateRange?.to) return;
-
-        addToCart({
-            id: TOOL_DATA.id,
-            title: TOOL_DATA.title,
-            image: TOOL_DATA.images[0],
-            price: TOOL_DATA.price,
-            dates: {
-                from: dateRange.from,
-                to: dateRange.to
-            },
-            days
-        });
-
+        handleAddToCart(); // Add to cart first
         router.push("/checkout");
     };
 
@@ -121,8 +115,13 @@ export default function ToolDetailsPage() {
             from: dateRange.from.toISOString(),
             to: dateRange.to.toISOString()
         });
-        router.push(`/request-booking/${TOOL_DATA.id}?${searchParams.toString()}`);
+        router.push(`/request-booking/${listing.id}?${searchParams.toString()}`);
     };
+
+    // Parse specs if string or object
+    const specs = typeof listing.specifications === 'string'
+        ? JSON.parse(listing.specifications)
+        : listing.specifications || {};
 
     return (
         <main className="min-h-screen bg-slate-50">
@@ -132,7 +131,7 @@ export default function ToolDetailsPage() {
 
                 {/* Breadcrumbs / Back */}
                 <div className="mb-6">
-                    <Button variant="link" className="pl-0 text-slate-500 hover:text-slate-900">
+                    <Button variant="link" className="pl-0 text-slate-500 hover:text-slate-900" onClick={() => router.push('/inventory')}>
                         &larr; Back to Inventory
                     </Button>
                 </div>
@@ -147,11 +146,11 @@ export default function ToolDetailsPage() {
                             <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden relative">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
-                                    src={TOOL_DATA.images[selectedImage]}
-                                    alt={TOOL_DATA.title}
+                                    src={listing.images?.[selectedImage] || `https://placehold.co/800x600?text=${encodeURIComponent(listing.title)}`}
+                                    alt={listing.title}
                                     className="w-full h-full object-cover"
                                 />
-                                {TOOL_DATA.isHeavyMachinery && (
+                                {listing.is_high_powered && (
                                     <div className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-md font-bold flex items-center gap-2 shadow-md">
                                         <AlertTriangle className="h-4 w-4" />
                                         Heavy Machinery
@@ -159,21 +158,23 @@ export default function ToolDetailsPage() {
                                 )}
                             </div>
 
-                            <div className="grid grid-cols-4 gap-4">
-                                {TOOL_DATA.images.map((img, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setSelectedImage(idx)}
-                                        className={cn(
-                                            "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 transition-all",
-                                            selectedImage === idx ? "border-safety-orange ring-2 ring-safety-orange/20" : "border-transparent hover:border-slate-300"
-                                        )}
-                                    >
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
-                                    </button>
-                                ))}
-                            </div>
+                            {listing.images && listing.images.length > 1 && (
+                                <div className="grid grid-cols-4 gap-4">
+                                    {listing.images.map((img, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedImage(idx)}
+                                            className={cn(
+                                                "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 transition-all",
+                                                selectedImage === idx ? "border-safety-orange ring-2 ring-safety-orange/20" : "border-transparent hover:border-slate-300"
+                                            )}
+                                        >
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Title & Owner */}
@@ -181,9 +182,9 @@ export default function ToolDetailsPage() {
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
                                     <h1 className="text-3xl md:text-4xl font-bold font-serif text-slate-900">
-                                        {TOOL_DATA.title}
+                                        {listing.title}
                                     </h1>
-                                    {TOOL_DATA.acceptsBarter && (
+                                    {listing.accepts_barter && (
                                         <div className="group relative">
                                             <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200 cursor-help">
                                                 🍓 Accepts Barter
@@ -197,32 +198,39 @@ export default function ToolDetailsPage() {
                                 <div className="flex items-center gap-4 text-sm text-slate-600">
                                     <div className="flex items-center gap-1">
                                         <MapPin className="h-4 w-4 text-safety-orange" />
-                                        <span>{TOOL_DATA.distance} miles away</span>
+                                        <span>{listing.distance ? listing.distance.toFixed(1) : '0.5'} miles away</span>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                                        <span>{TOOL_DATA.owner.rating} ({TOOL_DATA.owner.reviews} reviews)</span>
+                                        <span>5.0 (Verified Neighbor)</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                                <div className="h-10 w-10 rounded-full bg-slate-100 overflow-hidden">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={TOOL_DATA.owner.image} alt={TOOL_DATA.owner.name} className="w-full h-full object-cover" />
+                                <div className="h-10 w-10 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center font-bold text-slate-500">
+                                    N
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-slate-900 flex items-center gap-1">
-                                        {TOOL_DATA.owner.name}
-                                        {TOOL_DATA.owner.verified && <CheckCircle className="h-3 w-3 text-blue-500" />}
+                                        Neighbor
+                                        <CheckCircle className="h-3 w-3 text-blue-500" />
                                     </p>
-                                    <p className="text-xs text-slate-500">Verified Neighbor</p>
+                                    <p className="text-xs text-slate-500">Verified</p>
                                 </div>
                             </div>
                         </div>
 
+                        {/* Description */}
+                        <div>
+                            <h3 className="text-xl font-bold font-serif text-slate-900 mb-2">Description</h3>
+                            <p className="text-slate-600 leading-relaxed">
+                                {listing.description || "No description provided."}
+                            </p>
+                        </div>
+
                         {/* Safety Warning */}
-                        {TOOL_DATA.isHeavyMachinery && (
+                        {listing.is_high_powered && (
                             <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-4">
                                 <Shield className="h-6 w-6 text-red-600 shrink-0 mt-1" />
                                 <div>
@@ -230,40 +238,38 @@ export default function ToolDetailsPage() {
                                     <p className="text-sm text-red-700 mt-1">
                                         This is a high-power tool. You must review the manufacturer manual and pass a quick competence check during checkout.
                                     </p>
-                                    <a href={TOOL_DATA.manualUrl} className="inline-flex items-center gap-2 text-sm font-bold text-red-800 mt-2 hover:underline">
-                                        <BookOpen className="h-4 w-4" />
-                                        View Manufacturer Manual
-                                    </a>
                                 </div>
                             </div>
                         )}
 
-                        {/* Tabs: Specs & Condition */}
-                        <div className="space-y-6">
-                            <h3 className="text-xl font-bold font-serif text-slate-900">Technical Specifications</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="bg-white p-4 rounded-lg border border-slate-200">
-                                    <Zap className="h-5 w-5 text-slate-400 mb-2" />
-                                    <p className="text-xs text-slate-500 uppercase">Power</p>
-                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.power}</p>
-                                </div>
-                                <div className="bg-white p-4 rounded-lg border border-slate-200">
-                                    <Weight className="h-5 w-5 text-slate-400 mb-2" />
-                                    <p className="text-xs text-slate-500 uppercase">Weight</p>
-                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.weight}</p>
-                                </div>
-                                <div className="bg-white p-4 rounded-lg border border-slate-200">
-                                    <Ruler className="h-5 w-5 text-slate-400 mb-2" />
-                                    <p className="text-xs text-slate-500 uppercase">Dimensions</p>
-                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.dimensions}</p>
-                                </div>
-                                <div className="bg-white p-4 rounded-lg border border-slate-200">
-                                    <Info className="h-5 w-5 text-slate-400 mb-2" />
-                                    <p className="text-xs text-slate-500 uppercase">Capacity</p>
-                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.capacity}</p>
+                        {/* Specs */}
+                        {Object.keys(specs).length > 0 && (
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-bold font-serif text-slate-900">Technical Specifications</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {Object.entries(specs).map(([key, value]) => (
+                                        <div key={key} className="bg-white p-4 rounded-lg border border-slate-200">
+                                            <p className="text-xs text-slate-500 uppercase mb-1">{key.replace(/_/g, ' ')}</p>
+                                            <p className="font-bold text-slate-900 truncate" title={String(value)}>{String(value)}</p>
+                                        </div>
+                                    ))}
+                                    {listing.weight_kg && (
+                                        <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                            <Weight className="h-5 w-5 text-slate-400 mb-2" />
+                                            <p className="text-xs text-slate-500 uppercase">Weight</p>
+                                            <p className="font-bold text-slate-900">{listing.weight_kg} kg</p>
+                                        </div>
+                                    )}
+                                    {listing.dimensions_cm && (
+                                        <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                            <Ruler className="h-5 w-5 text-slate-400 mb-2" />
+                                            <p className="text-xs text-slate-500 uppercase">Dimensions</p>
+                                            <p className="font-bold text-slate-900">{listing.dimensions_cm}</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                     </div>
 
@@ -273,16 +279,16 @@ export default function ToolDetailsPage() {
                             <div className="bg-slate-900 p-4 text-white text-center">
                                 <p className="text-sm opacity-80">Daily Rate</p>
                                 <div className="flex items-baseline justify-center gap-1">
-                                    {TOOL_DATA.price.daily === 0 ? (
+                                    {listing.daily_price === 0 ? (
                                         <div className="flex flex-col items-center">
                                             <span className="text-3xl font-bold text-green-400">Free to Borrow</span>
                                             <span className="text-xs text-slate-400 mt-1">
-                                                ${TOOL_DATA.price.riskTier === 1 ? '1' : TOOL_DATA.price.riskTier === 2 ? '3' : '10'}.00/day Peace Fund contribution required
+                                                ${riskFee}.00/day Peace Fund contribution required
                                             </span>
                                         </div>
                                     ) : (
                                         <>
-                                            <span className="text-3xl font-bold text-safety-orange">${TOOL_DATA.price.daily}</span>
+                                            <span className="text-3xl font-bold text-safety-orange">${listing.daily_price}</span>
                                             <span className="text-sm">/day</span>
                                         </>
                                     )}
@@ -313,14 +319,14 @@ export default function ToolDetailsPage() {
                                     </div>
                                     <div className="flex justify-between text-sm text-slate-600">
                                         <span className="flex items-center gap-1">
-                                            Peace Fund (Tier {TOOL_DATA.price.riskTier})
+                                            Peace Fund (Tier {riskTier})
                                             <Info className="h-3 w-3 text-slate-400 cursor-help" />
                                         </span>
                                         <span>${peaceFundTotal}</span>
                                     </div>
                                     <div className="flex justify-between text-sm font-bold text-safety-orange">
                                         <span>Refundable Deposit</span>
-                                        <span>${TOOL_DATA.price.deposit}</span>
+                                        <span>${deposit}</span>
                                     </div>
 
                                     <div className="flex justify-between items-end pt-3 border-t border-slate-200">
@@ -331,7 +337,14 @@ export default function ToolDetailsPage() {
 
                                 {/* Action Buttons */}
                                 <div className="space-y-3">
-                                    {TOOL_DATA.bookingType === 'instant' ? (
+                                    {listing.booking_type === 'request' ? (
+                                        <Button
+                                            onClick={handleRequestToRent}
+                                            className="w-full h-12 text-lg font-bold bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                        >
+                                            Request to Rent
+                                        </Button>
+                                    ) : (
                                         <div className="grid grid-cols-2 gap-3">
                                             <Button
                                                 onClick={handleRentNow}
@@ -347,13 +360,6 @@ export default function ToolDetailsPage() {
                                                 Add to Cart
                                             </Button>
                                         </div>
-                                    ) : (
-                                        <Button
-                                            onClick={handleRequestToRent}
-                                            className="w-full h-12 text-lg font-bold bg-safety-orange hover:bg-safety-orange/90 text-white"
-                                        >
-                                            Request to Rent
-                                        </Button>
                                     )}
                                 </div>
 

@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/c
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { MapPin, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, generateSlug } from "@/lib/utils";
 
 export interface Tool {
     id: string;
@@ -18,6 +18,7 @@ export interface Tool {
         longitude: number;
     };
     distance?: number; // Calculated at runtime
+    acceptsBarter?: boolean;
 }
 
 interface ToolCardProps {
@@ -34,15 +35,23 @@ export function ToolCard({ tool }: ToolCardProps) {
                     alt={tool.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                {tool.isHeavyMachinery && (
-                    <Badge className="absolute top-3 right-3 bg-yellow-500 text-white border-none flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        Heavy Machinery
-                    </Badge>
-                )}
+                <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
+                    {tool.isHeavyMachinery && (
+                        <Badge variant="destructive" className="flex items-center gap-1 shadow-sm">
+                            <AlertTriangle className="h-3 w-3" />
+                            Heavy Machinery
+                        </Badge>
+                    )}
+                    {tool.acceptsBarter && (
+                        <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 shadow-sm border-none">
+                            🍓 Accepts Barter
+                        </Badge>
+                    )}
+                </div>
+
                 <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-slate-900 flex items-center gap-1">
                     <MapPin className="h-3 w-3 text-safety-orange" />
-                    {tool.distance} miles away
+                    {tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}
                 </div>
             </div>
 
@@ -66,7 +75,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             </CardContent>
 
             <CardFooter className="p-4 pt-0">
-                <Link href={`/tools/${tool.id}`} className="w-full">
+                <Link href={`/listings/${tool.id}/${generateSlug(tool.title)}`} className="w-full">
                     <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white">
                         View Details
                     </Button>

@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ToolCard, Tool } from "@/app/components/tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { calculateDistance, Coordinates } from "@/lib/location";
-import { Search, Filter, MapPin, X } from "lucide-react";
+import { Search, Filter, MapPin, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMarketplace } from "@/app/hooks/use-marketplace";
 
 // Mock User Location (e.g., Downtown)
 const USER_LOCATION: Coordinates = {
@@ -16,130 +17,95 @@ const USER_LOCATION: Coordinates = {
     longitude: -118.2437,
 };
 
-// Mock Inventory Data
-const MOCK_INVENTORY: Tool[] = [
-    {
-        id: "1",
-        title: "Harvest Right Freeze Dryer",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Freeze+Dryer",
-        price: 45,
-        deposit: 250,
-        category: "Harvest",
-        isHeavyMachinery: false,
-        coordinates: { latitude: 34.0530, longitude: -118.2420 }, // 0.1 miles
-    },
-    {
-        id: "2",
-        title: "DeWalt 10-Inch Table Saw",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Table+Saw",
-        price: 25,
-        deposit: 50,
-        category: "Woodworking",
-        isHeavyMachinery: false,
-        coordinates: { latitude: 34.0450, longitude: -118.2380 }, // 0.6 miles
-    },
-    {
-        id: "3",
-        title: "Honda Mid-Tine Rototiller",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Rototiller",
-        price: 35,
-        deposit: 150,
-        category: "Gardening",
-        isHeavyMachinery: true,
-        coordinates: { latitude: 34.0600, longitude: -118.2500 }, // 0.7 miles
-    },
-    {
-        id: "4",
-        title: "Kubota Mini Excavator",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Excavator",
-        price: 250,
-        deposit: 500,
-        category: "Heavy Machinery",
-        isHeavyMachinery: true,
-        coordinates: { latitude: 34.0700, longitude: -118.2600 }, // 1.6 miles
-    },
-    {
-        id: "5",
-        title: "Makita Orbital Sander",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Sander",
-        price: 15,
-        deposit: 50,
-        category: "Woodworking",
-        isHeavyMachinery: false,
-        coordinates: { latitude: 34.0525, longitude: -118.2440 }, // 0.02 miles
-    },
-    {
-        id: "6",
-        title: "Post Hole Digger (Gas)",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Post+Hole",
-        price: 40,
-        deposit: 100,
-        category: "Gardening",
-        isHeavyMachinery: false,
-        coordinates: { latitude: 34.0400, longitude: -118.2300 }, // 1.1 miles
-    },
-    {
-        id: "7",
-        title: "Lincoln Electric Welder",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Welder",
-        price: 55,
-        deposit: 150,
-        category: "Metalworking",
-        isHeavyMachinery: false,
-        coordinates: { latitude: 34.0800, longitude: -118.2700 }, // 2.4 miles
-    },
-    {
-        id: "8",
-        title: "Pressure Washer 3000 PSI",
-        image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Pressure+Washer",
-        price: 30,
-        deposit: 50,
-        category: "Maintain",
-        isHeavyMachinery: false,
-        coordinates: { latitude: 34.0300, longitude: -118.2200 }, // 2.0 miles
-    },
-];
 
-const CATEGORIES = ["Woodworking", "Metalworking", "Heavy Machinery", "Gardening", "Harvest", "Maintain"];
 
 export default function InventoryPage() {
     // Filters State
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
-    const [maxDistance, setMaxDistance] = useState(2.0);
+    const [maxDistance, setMaxDistance] = useState(5.0);
     const [showHeavyMachineryOnly, setShowHeavyMachineryOnly] = useState(false);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
-    // Filter Logic
+    const [userZip, setUserZip] = useState("90012");
+    const [userLocation, setUserLocation] = useState<Coordinates>({ latitude: 34.0522, longitude: -118.2437 });
+    const [isEditingZip, setIsEditingZip] = useState(false);
+
+    // Simple Zip to Coords map (Mocking a geocoding service)
+    const getCoordsFromZip = (zip: string): Coordinates | null => {
+        const zipMap: Record<string, Coordinates> = {
+            "90012": { latitude: 34.0522, longitude: -118.2437 }, // Downtown LA
+            "90028": { latitude: 34.1000, longitude: -118.3281 }, // Hollywood
+            "90401": { latitude: 34.0195, longitude: -118.4912 }, // Santa Monica
+            "91101": { latitude: 34.1478, longitude: -118.1445 }, // Pasadena
+        };
+        return zipMap[zip] || null;
+    };
+
+    const handleZipUpdate = (newZip: string) => {
+        setUserZip(newZip);
+        const coords = getCoordsFromZip(newZip);
+        if (coords) {
+            setUserLocation(coords);
+            setIsEditingZip(false);
+        }
+    };
+
+    const { listings, loading, error, searchListings, categories } = useMarketplace();
+
+    // Trigger search when filters change
+    useEffect(() => {
+        // Debounce could be added here
+        const timer = setTimeout(() => {
+            searchListings(
+                userLocation.latitude,
+                userLocation.longitude,
+                maxDistance,
+                priceRange[0],
+                priceRange[1],
+                selectedCategories.length === 1 ? selectedCategories[0] : undefined // RPC only supports one category for now
+            );
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [maxDistance, priceRange, selectedCategories, userLocation]); // Re-run when these change
+
+    // Map Supabase listings to Tool format
+    const inventoryTools: Tool[] = useMemo(() => {
+        return listings.map((listing: any) => ({
+            id: listing.id,
+            title: listing.title,
+            // Use image from DB or fallback
+            image: listing.images?.[0] || `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(listing.title)}`,
+            price: listing.daily_price,
+            deposit: 100,
+            category: listing.category.name,
+            isHeavyMachinery: listing.is_high_powered || listing.category.name === "Heavy Machinery", // Use DB field or fallback
+            acceptsBarter: listing.accepts_barter,
+            coordinates: listing.coordinates || userLocation,
+            distance: listing.distance // Use distance from RPC
+        }));
+    }, [listings, userLocation]);
+
+    // Client-side sorting/filtering for things RPC doesn't handle yet (like multiple categories or text search)
     const filteredTools = useMemo(() => {
-        return MOCK_INVENTORY.map(tool => ({
-            ...tool,
-            distance: calculateDistance(USER_LOCATION, tool.coordinates)
-        })).filter(tool => {
-            // 1. Search
+        return inventoryTools.filter(tool => {
+            // 1. Search (Client-side for now)
             if (searchQuery && !tool.title.toLowerCase().includes(searchQuery.toLowerCase())) {
                 return false;
             }
-            // 2. Categories
-            if (selectedCategories.length > 0 && !selectedCategories.includes(tool.category)) {
-                return false;
-            }
-            // 3. Price
-            if (tool.price < priceRange[0] || tool.price > priceRange[1]) {
-                return false;
-            }
-            // 4. Distance
-            if (tool.distance && tool.distance > maxDistance) {
-                return false;
-            }
-            // 5. Safety Level
+            // 2. Safety Level
             if (showHeavyMachineryOnly && !tool.isHeavyMachinery) {
                 return false;
             }
+            // 3. Categories (Client-side enforcement for multi-select support)
+            if (selectedCategories.length > 0 && !selectedCategories.includes(tool.category)) {
+                return false;
+            }
             return true;
-        }).sort((a, b) => (a.distance || 0) - (b.distance || 0)); // Sort by distance
-    }, [searchQuery, selectedCategories, priceRange, maxDistance, showHeavyMachineryOnly]);
+        });
+    }, [inventoryTools, searchQuery, showHeavyMachineryOnly, selectedCategories]);
 
     const toggleCategory = (category: string) => {
         setSelectedCategories(prev =>
@@ -170,7 +136,25 @@ export default function InventoryPage() {
 
                         <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
                             <MapPin className="h-4 w-4 text-safety-orange" />
-                            <span>Current Location: <strong>90012</strong></span>
+                            <span>Current Location: </span>
+                            {isEditingZip ? (
+                                <input
+                                    type="text"
+                                    className="w-16 border-b border-safety-orange focus:outline-none bg-transparent font-bold text-slate-900"
+                                    value={userZip}
+                                    onChange={(e) => setUserZip(e.target.value)}
+                                    onBlur={() => handleZipUpdate(userZip)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleZipUpdate(userZip)}
+                                    autoFocus
+                                />
+                            ) : (
+                                <strong
+                                    className="cursor-pointer border-b border-dashed border-slate-400 hover:text-safety-orange hover:border-safety-orange transition-colors"
+                                    onClick={() => setIsEditingZip(true)}
+                                >
+                                    {userZip}
+                                </strong>
+                            )}
                         </div>
 
                         <Button
@@ -197,23 +181,23 @@ export default function InventoryPage() {
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
                             <div className="space-y-2">
-                                {CATEGORIES.map(category => (
-                                    <label key={category} className="flex items-center gap-2 cursor-pointer group">
+                                {categories.map(category => (
+                                    <label key={category.id} className="flex items-center gap-2 cursor-pointer group">
                                         <div className={cn(
                                             "w-4 h-4 rounded border flex items-center justify-center transition-colors",
-                                            selectedCategories.includes(category)
+                                            selectedCategories.includes(category.name)
                                                 ? "bg-safety-orange border-safety-orange text-white"
                                                 : "border-slate-300 bg-white group-hover:border-safety-orange"
                                         )}>
-                                            {selectedCategories.includes(category) && <span className="text-[10px]">✓</span>}
+                                            {selectedCategories.includes(category.name) && <span className="text-[10px]">✓</span>}
                                         </div>
                                         <input
                                             type="checkbox"
                                             className="hidden"
-                                            checked={selectedCategories.includes(category)}
-                                            onChange={() => toggleCategory(category)}
+                                            checked={selectedCategories.includes(category.name)}
+                                            onChange={() => toggleCategory(category.name)}
                                         />
-                                        <span className="text-sm text-slate-600 group-hover:text-slate-900">{category}</span>
+                                        <span className="text-sm text-slate-600 group-hover:text-slate-900">{category.name}</span>
                                     </label>
                                 ))}
                             </div>

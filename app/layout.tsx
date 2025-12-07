@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   description: "Turn Your Neighborhood into a Factory. Rent high-value tools from neighbors.",
 };
 
+import { AuthProvider } from "./context/auth-context";
+import { CartProvider } from "./context/cart-context";
+
+// ... imports
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +32,11 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${robotoSlab.variable} antialiased bg-white text-slate-900 font-sans`}
       >
-        {children}
+        <AuthProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

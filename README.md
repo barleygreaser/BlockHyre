@@ -24,11 +24,19 @@ BlockShare is a "High-Fidelity" MVP for a hyperlocal tool-sharing platform desig
 
 *   **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
 *   **Language**: [TypeScript](https://www.typescriptlang.org/)
+*   **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
 *   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 *   **Icons**: [Lucide React](https://lucide.dev/)
 *   **UI Components**: Custom components inspired by Shadcn UI (Button, Card, Badge, Modal).
 *   **Datepicker**: Custom implementation based on `react-tailwindcss-datepicker` for Airbnb-style range selection.
 *   **Animations**: `canvas-confetti` for success states.
+
+## 🔄 Recent Updates (Real Data Integration)
+*   **Live Inventory**: Connected to Supabase PostgreSQL database for fetching real categories and listings.
+*   **Dynamic Routing**: Implemented `/listings/[id]/[slug]` for SEO-friendly product pages.
+*   **Smart Filtering**: Client-side filtering for multi-category selection and search.
+*   **Badges**: Added "Heavy Machinery" (High Powered) and "Accepts Barter" badges driven by DB flags.
+*   **Geospatial Search**: Implemented PostGIS-based "Search Nearby" RPC function.
 
 ## 📦 Installation & Usage
 

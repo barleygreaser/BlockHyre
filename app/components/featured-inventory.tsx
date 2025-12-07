@@ -3,43 +3,16 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Badge } from "./ui/badge";
 import { MapPin, Star } from "lucide-react";
 
+import { Listing } from "@/app/hooks/use-marketplace";
+
 interface FeaturedInventoryProps {
     onRentClick: () => void;
+    listings: Listing[];
 }
 
-export function FeaturedInventory({ onRentClick }: FeaturedInventoryProps) {
-    const tools = [
-        {
-            id: 1,
-            name: "Harvest Right Freeze Dryer",
-            image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Freeze+Dryer",
-            price: "$45/day",
-            deposit: "$250",
-            distance: "0.3 miles",
-            owner: "Dave M.",
-            rating: 4.9,
-        },
-        {
-            id: 2,
-            name: "DeWalt 10-Inch Table Saw",
-            image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Table+Saw",
-            price: "$25/day",
-            deposit: "$100",
-            distance: "0.8 miles",
-            owner: "Sarah J.",
-            rating: 5.0,
-        },
-        {
-            id: 3,
-            name: "Honda Mid-Tine Rototiller",
-            image: "https://placehold.co/600x400/e2e8f0/1e293b?text=Rototiller",
-            price: "$35/day",
-            deposit: "$150",
-            distance: "1.2 miles",
-            owner: "Mike T.",
-            rating: 4.8,
-        },
-    ];
+export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryProps) {
+    // Use the first 3 listings or whatever is passed
+    const displayTools = listings.slice(0, 3);
 
     return (
         <section className="py-20 bg-slate-50" id="inventory">
@@ -53,26 +26,26 @@ export function FeaturedInventory({ onRentClick }: FeaturedInventoryProps) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {tools.map((tool) => (
+                    {displayTools.map((tool) => (
                         <Card key={tool.id} className="overflow-hidden hover:shadow-md transition-shadow duration-200">
                             <div className="aspect-video w-full bg-slate-200 relative">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
-                                    src={tool.image}
-                                    alt={tool.name}
+                                    src={tool.images?.[0] || `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(tool.title)}`}
+                                    alt={tool.title}
                                     className="w-full h-full object-cover"
                                 />
                                 <Badge className="absolute top-3 right-3 bg-white/90 text-slate-900 hover:bg-white">
-                                    {tool.price}
+                                    ${tool.daily_price}/day
                                 </Badge>
                             </div>
                             <CardHeader className="pb-3">
                                 <div className="flex justify-between items-start gap-2">
-                                    <CardTitle className="text-xl">{tool.name}</CardTitle>
+                                    <CardTitle className="text-xl">{tool.title}</CardTitle>
                                 </div>
                                 <CardDescription className="flex items-center gap-1 text-xs font-medium text-slate-500">
                                     <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
-                                        Refundable Deposit: {tool.deposit}
+                                        Refundable Deposit: $100
                                     </Badge>
                                 </CardDescription>
                             </CardHeader>
@@ -80,13 +53,13 @@ export function FeaturedInventory({ onRentClick }: FeaturedInventoryProps) {
                                 <div className="flex items-center justify-between text-sm text-slate-600">
                                     <div className="flex items-center gap-2">
                                         <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
-                                            {tool.owner.charAt(0)}
+                                            N
                                         </div>
-                                        <span>{tool.owner}</span>
+                                        <span>Neighbor</span>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <MapPin className="h-3 w-3" />
-                                        {tool.distance}
+                                        {tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}
                                     </div>
                                 </div>
                             </CardContent>
