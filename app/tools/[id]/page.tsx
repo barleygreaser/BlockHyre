@@ -1,150 +1,270 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+import { Navbar } from "@/app/components/navbar";
+import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { AlertTriangle, CheckCircle, Star, Shield, MapPin, ArrowLeft } from "lucide-react";
-import { Navbar } from "@/app/components/navbar";
-import { Footer } from "@/app/components/footer";
+import { Calendar } from "@/app/components/ui/calendar";
+import {
+    MapPin,
+    Shield,
+    AlertTriangle,
+    BookOpen,
+    Zap,
+    Ruler,
+    Weight,
+    CheckCircle,
+    Star,
+    Info
+} from "lucide-react";
+import { addDays, format, differenceInDays } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { cn } from "@/lib/utils";
+
+// Mock Data for "Commercial Wood Chipper"
+const TOOL_DATA = {
+    id: "chipper-001",
+    title: "Commercial Wood Chipper",
+    owner: {
+        name: "Robert F.",
+        verified: true,
+        rating: 4.9,
+        reviews: 24,
+        image: "https://placehold.co/100x100/e2e8f0/1e293b?text=RF"
+    },
+    distance: 0.8,
+    images: [
+        "https://placehold.co/800x600/e2e8f0/1e293b?text=Wood+Chipper+Main",
+        "https://placehold.co/800x600/e2e8f0/1e293b?text=Side+View",
+        "https://placehold.co/800x600/e2e8f0/1e293b?text=Control+Panel",
+        "https://placehold.co/800x600/e2e8f0/1e293b?text=Hopper"
+    ],
+    price: {
+        daily: 120,
+        deposit: 500,
+        peaceFundRate: 0.04 // 4%
+    },
+    specs: {
+        power: "Gas (Honda GX390)",
+        weight: "450 lbs",
+        dimensions: "60\"L x 32\"W x 50\"H",
+        capacity: "4-inch diameter"
+    },
+    isHeavyMachinery: true,
+    manualUrl: "#"
+};
 
 export default function ToolDetailsPage() {
+    const [selectedImage, setSelectedImage] = useState(0);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(),
+        to: addDays(new Date(), 2),
+    });
+
+    // Calculate Costs
+    const days = dateRange?.from && dateRange?.to
+        ? differenceInDays(dateRange.to, dateRange.from) + 1
+        : 0;
+
+    const rentalFee = days * TOOL_DATA.price.daily;
+    const peaceFundFee = Math.round(rentalFee * TOOL_DATA.price.peaceFundRate);
+    const total = rentalFee + peaceFundFee + TOOL_DATA.price.deposit;
+
     return (
         <main className="min-h-screen bg-slate-50">
             <Navbar />
 
             <div className="container mx-auto px-4 py-8">
-                <Link href="/" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Inventory
-                </Link>
+
+                {/* Breadcrumbs / Back */}
+                <div className="mb-6">
+                    <Button variant="link" className="pl-0 text-slate-500 hover:text-slate-900">
+                        &larr; Back to Inventory
+                    </Button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    {/* Left Column: Images */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="aspect-video w-full bg-slate-200 rounded-xl overflow-hidden relative">
-                            {/* Main Image Placeholder */}
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src="https://placehold.co/1200x800/e2e8f0/1e293b?text=Harvest+Right+Freeze+Dryer"
-                                alt="Freeze Dryer Main"
-                                className="w-full h-full object-cover"
-                            />
-                            <Badge className="absolute top-4 left-4 bg-safety-orange text-white border-none">
-                                Available Now
-                            </Badge>
-                        </div>
+                    {/* Left Column: Images & Details */}
+                    <div className="lg:col-span-2 space-y-8">
 
-                        {/* Thumbnail Carousel */}
-                        <div className="grid grid-cols-4 gap-4">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className="aspect-video bg-slate-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border-2 border-transparent hover:border-slate-900">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={`https://placehold.co/400x300/e2e8f0/1e293b?text=Photo+${i}`}
-                                        alt={`View ${i}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Description */}
-                        <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
-                            <h2 className="text-2xl font-bold font-serif text-slate-900 mb-4">Description</h2>
-                            <p className="text-slate-600 leading-relaxed mb-6">
-                                Medium Harvest Right Freeze Dryer. Perfect for preserving garden harvests.
-                                Includes vacuum pump and oil filter. I can provide a quick tutorial on setup if needed.
-                                Recently serviced and in excellent working condition.
-                            </p>
-
-                            <h3 className="text-lg font-bold font-serif text-slate-900 mb-3">Specifications</h3>
-                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-600">
-                                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-green-500" /> 110V Standard Outlet</li>
-                                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-green-500" /> 4 Stainless Steel Trays</li>
-                                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-green-500" /> Oil Pump Included</li>
-                                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-green-500" /> 7-10 lbs Capacity per Batch</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Right Column: Details & Checkout */}
-                    <div className="space-y-6">
-
-                        {/* Title & Price Card */}
-                        <Card className="border-slate-200 shadow-sm">
-                            <CardContent className="p-6">
-                                <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">Harvest Right Freeze Dryer</h1>
-                                <div className="flex items-center gap-2 text-slate-500 text-sm mb-6">
-                                    <MapPin className="h-4 w-4" />
-                                    <span>0.3 miles away • North Hills</span>
-                                </div>
-
-                                <div className="flex items-baseline justify-between mb-6 pb-6 border-b border-slate-100">
-                                    <div>
-                                        <span className="text-3xl font-bold text-slate-900">$45</span>
-                                        <span className="text-slate-500">/day</span>
+                        {/* Hero Section */}
+                        <div className="space-y-4">
+                            <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden relative">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={TOOL_DATA.images[selectedImage]}
+                                    alt={TOOL_DATA.title}
+                                    className="w-full h-full object-cover"
+                                />
+                                {TOOL_DATA.isHeavyMachinery && (
+                                    <div className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-md font-bold flex items-center gap-2 shadow-md">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        Heavy Machinery
                                     </div>
-                                    <Badge variant="secondary" className="text-xs">
-                                        Deposit: $250
-                                    </Badge>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-4 gap-4">
+                                {TOOL_DATA.images.map((img, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setSelectedImage(idx)}
+                                        className={cn(
+                                            "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 transition-all",
+                                            selectedImage === idx ? "border-safety-orange ring-2 ring-safety-orange/20" : "border-transparent hover:border-slate-300"
+                                        )}
+                                    >
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Title & Owner */}
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-200">
+                            <div>
+                                <h1 className="text-3xl md:text-4xl font-bold font-serif text-slate-900 mb-2">
+                                    {TOOL_DATA.title}
+                                </h1>
+                                <div className="flex items-center gap-4 text-sm text-slate-600">
+                                    <div className="flex items-center gap-1">
+                                        <MapPin className="h-4 w-4 text-safety-orange" />
+                                        <span>{TOOL_DATA.distance} miles away</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                        <span>{TOOL_DATA.owner.rating} ({TOOL_DATA.owner.reviews} reviews)</span>
+                                    </div>
                                 </div>
+                            </div>
 
-                                <Link href="/checkout" className="w-full">
-                                    <Button size="lg" className="w-full text-base bg-safety-orange hover:bg-safety-orange/90">
-                                        Book Now
-                                    </Button>
-                                </Link>
-                                <p className="text-xs text-center text-slate-400 mt-3">
-                                    You won't be charged until the owner accepts.
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        {/* Safety Alert Box */}
-                        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
-                            <div className="flex items-start gap-3">
-                                <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                            <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <div className="h-10 w-10 rounded-full bg-slate-100 overflow-hidden">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={TOOL_DATA.owner.image} alt={TOOL_DATA.owner.name} className="w-full h-full object-cover" />
+                                </div>
                                 <div>
-                                    <h3 className="font-bold text-yellow-800 text-sm uppercase tracking-wide">Safety Rating: HIGH RISK</h3>
-                                    <p className="text-sm text-yellow-700 mt-1">
-                                        This equipment requires specific knowledge to operate safely. Improper use can result in injury or equipment damage.
+                                    <p className="text-sm font-bold text-slate-900 flex items-center gap-1">
+                                        {TOOL_DATA.owner.name}
+                                        {TOOL_DATA.owner.verified && <CheckCircle className="h-3 w-3 text-blue-500" />}
                                     </p>
-                                    <a href="#" className="text-sm font-semibold text-yellow-800 underline mt-2 inline-block hover:text-yellow-900">
-                                        View Manufacturer Manual
-                                    </a>
+                                    <p className="text-xs text-slate-500">Verified Neighbor</p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Owner Profile Card */}
-                        <Card className="border-slate-200 shadow-sm">
-                            <CardContent className="p-6">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center text-lg font-bold text-slate-600">
-                                        D
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-900">Dave M.</h3>
-                                        <div className="flex items-center gap-1 text-sm text-slate-500">
-                                            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                                            <span className="font-medium text-slate-900">4.9</span>
-                                            <span>(12 Rents)</span>
-                                        </div>
-                                    </div>
+                        {/* Safety Warning */}
+                        {TOOL_DATA.isHeavyMachinery && (
+                            <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-4">
+                                <Shield className="h-6 w-6 text-red-600 shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-bold text-red-900">Requires Safety Gate Clearance</h3>
+                                    <p className="text-sm text-red-700 mt-1">
+                                        This is a high-power tool. You must review the manufacturer manual and pass a quick competence check during checkout.
+                                    </p>
+                                    <a href={TOOL_DATA.manualUrl} className="inline-flex items-center gap-2 text-sm font-bold text-red-800 mt-2 hover:underline">
+                                        <BookOpen className="h-4 w-4" />
+                                        View Manufacturer Manual
+                                    </a>
                                 </div>
+                            </div>
+                        )}
 
-                                <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-md text-sm font-medium">
-                                    <Shield className="h-4 w-4" />
-                                    Verified Neighbor
+                        {/* Tabs: Specs & Condition */}
+                        <div className="space-y-6">
+                            <h3 className="text-xl font-bold font-serif text-slate-900">Technical Specifications</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                    <Zap className="h-5 w-5 text-slate-400 mb-2" />
+                                    <p className="text-xs text-slate-500 uppercase">Power</p>
+                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.power}</p>
                                 </div>
-
-                                <div className="mt-4 text-sm text-slate-600">
-                                    "I love sharing my tools to help neighbors build their dream projects. Ask me anything!"
+                                <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                    <Weight className="h-5 w-5 text-slate-400 mb-2" />
+                                    <p className="text-xs text-slate-500 uppercase">Weight</p>
+                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.weight}</p>
                                 </div>
-                            </CardContent>
-                        </Card>
+                                <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                    <Ruler className="h-5 w-5 text-slate-400 mb-2" />
+                                    <p className="text-xs text-slate-500 uppercase">Dimensions</p>
+                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.dimensions}</p>
+                                </div>
+                                <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                    <Info className="h-5 w-5 text-slate-400 mb-2" />
+                                    <p className="text-xs text-slate-500 uppercase">Capacity</p>
+                                    <p className="font-bold text-slate-900">{TOOL_DATA.specs.capacity}</p>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
+
+                    {/* Right Column: Booking Card */}
+                    <div className="lg:col-span-1">
+                        <Card className="sticky top-24 border-slate-200 shadow-lg overflow-hidden">
+                            <div className="bg-slate-900 p-4 text-white text-center">
+                                <p className="text-sm opacity-80">Daily Rate</p>
+                                <div className="flex items-baseline justify-center gap-1">
+                                    <span className="text-3xl font-bold text-safety-orange">${TOOL_DATA.price.daily}</span>
+                                    <span className="text-sm">/day</span>
+                                </div>
+                            </div>
+
+                            <CardContent className="p-6 space-y-6">
+
+                                {/* Date Picker */}
+                                <div className="space-y-6">
+                                    <label className="text-sm font-bold text-slate-900">Select Dates</label>
+                                    <div className="flex justify-center">
+                                        <Calendar
+                                            mode="range"
+                                            selected={dateRange}
+                                            onSelect={setDateRange}
+                                            disabled={(date) => date < new Date()}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Cost Breakdown */}
+                                <div className="space-y-3 pt-4 border-t border-slate-100">
+                                    <div className="flex justify-between text-sm text-slate-600">
+                                        <span>${TOOL_DATA.price.daily} x {days} days</span>
+                                        <span>${rentalFee}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm text-slate-600">
+                                        <span className="flex items-center gap-1">
+                                            Peace Fund (10%)
+                                            <Info className="h-3 w-3 text-slate-400" />
+                                        </span>
+                                        <span>${peaceFundFee}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm font-bold text-safety-orange">
+                                        <span>Refundable Deposit</span>
+                                        <span>${TOOL_DATA.price.deposit}</span>
+                                    </div>
+
+                                    <div className="flex justify-between items-end pt-3 border-t border-slate-200">
+                                        <span className="font-bold text-slate-900">Total Due Now</span>
+                                        <span className="text-2xl font-bold text-slate-900">${total}</span>
+                                    </div>
+                                </div>
+
+                                <Button className="w-full h-12 text-lg font-bold bg-safety-orange hover:bg-safety-orange/90">
+                                    Request to Rent
+                                </Button>
+
+                                <p className="text-xs text-center text-slate-400">
+                                    You won't be charged until the owner approves.
+                                </p>
+
+                            </CardContent>
+                        </Card>
+                    </div>
+
                 </div>
             </div>
             <Footer />

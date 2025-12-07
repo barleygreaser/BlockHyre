@@ -27,6 +27,7 @@ BlockShare is a "High-Fidelity" MVP for a hyperlocal tool-sharing platform desig
 *   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 *   **Icons**: [Lucide React](https://lucide.dev/)
 *   **UI Components**: Custom components inspired by Shadcn UI (Button, Card, Badge, Modal).
+*   **Datepicker**: Custom implementation based on `react-tailwindcss-datepicker` for Airbnb-style range selection.
 *   **Animations**: `canvas-confetti` for success states.
 
 ## 📦 Installation & Usage
