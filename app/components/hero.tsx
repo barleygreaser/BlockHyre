@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "./ui/button";
 import { MapPin } from "lucide-react";
 
@@ -14,13 +15,17 @@ export function Hero() {
                         Build more, buy less.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                        <Button size="lg" className="w-full sm:w-auto text-base">
-                            <MapPin className="mr-2 h-5 w-5" />
-                            Find Tools Near Me
-                        </Button>
-                        <Button variant="outline" size="lg" className="w-full sm:w-auto text-base">
-                            List My Tools
-                        </Button>
+                        <Link href="/inventory">
+                            <Button size="lg" className="w-full sm:w-auto text-base">
+                                <MapPin className="mr-2 h-5 w-5" />
+                                Find Tools Near Me
+                            </Button>
+                        </Link>
+                        <Link href="/add-tool">
+                            <Button variant="outline" size="lg" className="w-full sm:w-auto text-base">
+                                List My Tools
+                            </Button>
+                        </Link>
                     </div>
                     <p className="text-sm text-slate-500 pt-4">
                         Trusted by 2,000+ homes in [Neighborhood Name]

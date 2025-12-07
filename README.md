@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BlockShare - Hyperlocal Tool Sharing Platform
 
-## Getting Started
+BlockShare is a "High-Fidelity" MVP for a hyperlocal tool-sharing platform designed to turn neighborhoods into distributed factories. It emphasizes **Trust**, **Safety**, and **Community Production** by allowing neighbors to rent high-value tools (like freeze dryers, table saws, and heavy machinery) from each other within a 2-mile radius.
 
-First, run the development server:
+## 🚀 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### For Renters
+*   **Hyperlocal Inventory**: Find tools within 2 miles of your home.
+*   **Safety First**: Every rental includes a mandatory "Safety Gate" with liability waivers and safety manual checks.
+*   **Transparent Pricing**: Clear breakdown of Rental Fees, Platform Fees (including the "Peace Fund"), and Refundable Deposits.
+*   **Active Dashboard**: Track your rental status, upload pre-use inspection photos, and manage returns.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### For Owners
+*   **Asset Protection**: "Risk Toggle" automatically adjusts deposits based on tool type (Standard vs. Heavy Machinery).
+*   **Owner Dashboard**: Manage listings, approve/deny requests, and track earnings.
+*   **Return Inspection**: Side-by-side photo comparison tool for verifying tool condition upon return.
+*   **Dispute Resolution**: Integrated dispute reporting for damaged items.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Community
+*   **The Peace Fund**: A community-led safety net (funded by 10% of fees) that covers minor accidents and repairs, keeping neighbors friendly.
+*   **Verification**: All users are ID-verified and limited to a specific neighborhood radius.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+*   **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+*   **Language**: [TypeScript](https://www.typescriptlang.org/)
+*   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+*   **Icons**: [Lucide React](https://lucide.dev/)
+*   **UI Components**: Custom components inspired by Shadcn UI (Button, Card, Badge, Modal).
+*   **Animations**: `canvas-confetti` for success states.
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Installation & Usage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/yourusername/blockshare.git
+    cd blockshare
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-## Deploy on Vercel
+3.  **Run the development server**:
+    ```bash
+    npm run dev
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4.  **Open the app**:
+    Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🗺️ Project Structure
+
+*   `app/page.tsx`: Main landing page with Hero, Value Props, and Featured Inventory.
+*   `app/how-it-works/page.tsx`: Explainer page with process timeline and deposit formula.
+*   `app/tools/[id]/page.tsx`: Detailed tool view with safety alerts and booking flow.
+*   `app/checkout/page.tsx`: Checkout page with mandatory safety gate checkboxes.
+*   `app/my-rentals/[id]/page.tsx`: Active rental dashboard for renters.
+*   `app/add-tool/page.tsx`: Listing creation form for owners.
+*   `app/owner/dashboard/page.tsx`: Owner management dashboard.
+*   `app/components/`: Reusable UI components (Navbar, Footer, Cards, Modals).
+
+## 🎨 Design Aesthetic
+
+*   **Style**: Industrial Modern.
+*   **Colors**: White backgrounds, Slate-900 text, and **Safety Orange (#FF6700)** accents.
+*   **Typography**: `Roboto Slab` for headings, `Inter` for body text.
+
+## 📄 License
+
+This project is an MVP prototype and is not currently licensed for commercial distribution.
