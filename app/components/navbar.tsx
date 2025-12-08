@@ -17,7 +17,7 @@ export function Navbar() {
                     <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-900 text-white group-hover:bg-safety-orange transition-colors duration-300">
                         <span className="font-serif font-bold">B</span>
                     </div>
-                    <span className="text-xl font-bold font-serif tracking-tight text-slate-900 group-hover:text-safety-orange transition-colors duration-300">BlockShare</span>
+                    <span className="text-xl font-bold font-serif tracking-tight text-slate-900 group-hover:text-safety-orange transition-colors duration-300">BlockHyre</span>
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8 font-bold text-slate-600">

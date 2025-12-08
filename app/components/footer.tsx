@@ -9,7 +9,7 @@ export function Footer() {
                         <div className="flex h-8 w-8 items-center justify-center rounded bg-white text-slate-900">
                             <span className="font-serif font-bold">B</span>
                         </div>
-                        <span className="text-xl font-bold font-serif tracking-tight text-white">BlockShare</span>
+                        <span className="text-xl font-bold font-serif tracking-tight text-white">BlockHyre</span>
                     </div>
 
                     <div className="flex flex-wrap justify-center gap-6 text-sm">
@@ -22,7 +22,7 @@ export function Footer() {
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-slate-800 text-center text-xs text-slate-500">
-                    <p>&copy; {new Date().getFullYear()} BlockShare. Built for the 2,000 homes in [Neighborhood Name].</p>
+                    <p>&copy; {new Date().getFullYear()} BlockHyre. Built for the 2,000 homes in [Neighborhood Name].</p>
                 </div>
             </div>
         </footer>

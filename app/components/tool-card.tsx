@@ -82,7 +82,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             </CardContent>
 
             <CardFooter className="p-4 pt-0">
-                <Link href={`/listings/${tool.id}/${generateSlug(tool.title)}`} className="w-full">
+                <Link href={`/inventory/${tool.id}/${generateSlug(tool.title)}`} className="w-full cursor-pointer">
                     <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white">
                         View Details
                     </Button>

@@ -13,7 +13,7 @@ const robotoSlab = Roboto_Slab({
 });
 
 export const metadata: Metadata = {
-  title: "BlockShare - Hyperlocal Tool Sharing",
+  title: "BlockHyre - Hyperlocal Tool Sharing",
   description: "Turn Your Neighborhood into a Factory. Rent high-value tools from neighbors.",
 };
 

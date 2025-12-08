@@ -32,10 +32,10 @@ export default function LiabilityPage() {
                             <h2 className="text-2xl font-bold text-slate-900 mb-3">1. Bodily Injury Waiver</h2>
                             <div className="prose prose-slate">
                                 <p className="font-bold text-slate-700">
-                                    By renting a tool on BlockShare, you expressly acknowledge that tool usage involves inherent risks of physical injury.
+                                    By renting a tool on BlockHyre, you expressly acknowledge that tool usage involves inherent risks of physical injury.
                                 </p>
                                 <p>
-                                    BlockShare and the Tool Owner are <strong>NOT LIABLE</strong> for any bodily injury, incapacity, or death resulting from the use of rented equipment.
+                                    BlockHyre and the Tool Owner are <strong>NOT LIABLE</strong> for any bodily injury, incapacity, or death resulting from the use of rented equipment.
                                     The Renter assumes 100% of the safety risk. It is the Renter's responsibility to:
                                 </p>
                                 <ul className="list-disc pl-5 space-y-2 mt-2">
@@ -84,7 +84,7 @@ export default function LiabilityPage() {
                             <div className="prose prose-slate">
                                 <p>
                                     If a rented tool causes damage to a third party's property (e.g., a pipe bursts, a car is scratched),
-                                    BlockShare explicitly disclaims all liability. The Renter is solely responsible for ensuring the work area is safe.
+                                    BlockHyre explicitly disclaims all liability. The Renter is solely responsible for ensuring the work area is safe.
                                 </p>
                             </div>
                         </div>

@@ -37,7 +37,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     // Load cart from local storage on mount
     useEffect(() => {
-        const savedCart = localStorage.getItem('blockshare_cart');
+        const savedCart = localStorage.getItem('blockhyre_cart');
         if (savedCart) {
             try {
                 // Parse dates back to Date objects
@@ -54,7 +54,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     // Save cart to local storage whenever it changes
     useEffect(() => {
-        localStorage.setItem('blockshare_cart', JSON.stringify(cart));
+        localStorage.setItem('blockhyre_cart', JSON.stringify(cart));
     }, [cart]);
 
     const addToCart = (item: CartItem) => {

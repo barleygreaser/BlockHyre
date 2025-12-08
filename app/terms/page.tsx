@@ -14,13 +14,13 @@ export default function TermsPage() {
 
                 <div className="prose prose-slate prose-lg max-w-none">
                     <p className="lead text-xl text-slate-700">
-                        Welcome to BlockShare. Please read these Terms of Service ("Terms") carefully. By accessing or using our platform,
+                        Welcome to BlockHyre. Please read these Terms of Service ("Terms") carefully. By accessing or using our platform,
                         you agree to be bound by these Terms and all terms incorporated by reference.
                     </p>
 
                     <h3>1. Definitions</h3>
                     <p>
-                        <strong>"BlockShare"</strong> refers to the online marketplace platform.
+                        <strong>"BlockHyre"</strong> refers to the online marketplace platform.
                         <strong>"Owner"</strong> refers to a user listing items for rent.
                         <strong>"Renter"</strong> refers to a user requesting to rent items.
                         <strong>"Item"</strong> or <strong>"Tool"</strong> refers to the equipment listed on the platform.
@@ -28,7 +28,7 @@ export default function TermsPage() {
 
                     <h3>2. Eligibility</h3>
                     <p>
-                        You must be at least 18 years old to use BlockShare. By creating an account, you verify that you have the
+                        You must be at least 18 years old to use BlockHyre. By creating an account, you verify that you have the
                         legal capacity to enter into binding contracts.
                     </p>
 
@@ -40,7 +40,7 @@ export default function TermsPage() {
 
                     <h3>4. Fees and Payments</h3>
                     <p>
-                        BlockShare charges a service fee on each transaction.
+                        BlockHyre charges a service fee on each transaction.
                         Rentals may also include a "Peace Fund" contribution (insurance pool) and a refundable security deposit.
                         Payment is processed immediately upon booking confirmation.
                     </p>
@@ -54,14 +54,14 @@ export default function TermsPage() {
 
                     <h3>6. Liability and Indemnification</h3>
                     <p>
-                        BlockShare provides the platform but is not a party to the rental contract.
+                        BlockHyre provides the platform but is not a party to the rental contract.
                         Please refer to our <a href="/liability" className="text-safety-orange underline">Liability Policy</a> for specific details regarding damages, theft, and bodily injury.
                     </p>
 
                     <h3>7. Dispute Resolution</h3>
                     <p>
                         All disputes arising from rental usage must be filed through the <a href="/disputes" className="text-safety-orange underline">Dispute Tribunal</a> within 24 hours of the rental end date.
-                        You agree to be bound by the decision of the BlockShare arbitration team.
+                        You agree to be bound by the decision of the BlockHyre arbitration team.
                     </p>
 
                     <h3>8. Termination</h3>

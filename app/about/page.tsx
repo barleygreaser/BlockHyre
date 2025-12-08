@@ -24,7 +24,7 @@ export default function AboutPage() {
                     </h1>
                     <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
                         We believe that the tools to build the future shouldn't gather dust in a garage.
-                        BlockShare turns every street into a workshop and every neighbor into a partner.
+                        BlockHyre turns every street into a workshop and every neighbor into a partner.
                     </p>
                     <Link href="/inventory">
                         <Button className="bg-safety-orange hover:bg-orange-600 text-white font-bold text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all">
@@ -42,7 +42,7 @@ export default function AboutPage() {
                             <h2 className="text-3xl font-serif font-bold text-slate-900">Our Mission</h2>
                             <div className="w-20 h-1 bg-safety-orange"></div>
                             <p className="text-lg text-slate-600 leading-relaxed">
-                                BlockShare was founded on a simple premise: **Access over Ownership**.
+                                BlockHyre was founded on a simple premise: **Access over Ownership**.
                                 In a world of finite resources and infinite creativity, it makes no sense for every household
                                 to own a drill that is used for only 12 minutes in its entire lifetime.
                             </p>

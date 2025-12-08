@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
@@ -9,9 +9,31 @@ import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
 import { Plus, DollarSign, Wrench, Users, Check, X, Eye } from "lucide-react";
+import { useAuth } from "@/app/context/auth-context";
+import { supabase } from "@/lib/supabase";
+import { StripeConnectButton } from "@/app/components/stripe-connect-button";
 
 export default function OwnerDashboardPage() {
+    const { user } = useAuth();
     const [isInspectionOpen, setIsInspectionOpen] = useState(false);
+    const [stripeConnected, setStripeConnected] = useState(false);
+
+    useEffect(() => {
+        async function checkStripeStatus() {
+            if (user) {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('stripe_account_id')
+                    .eq('id', user.id)
+                    .single();
+
+                if (data?.stripe_account_id) {
+                    setStripeConnected(true);
+                }
+            }
+        }
+        checkStripeStatus();
+    }, [user]);
 
     return (
         <main className="min-h-screen bg-slate-50">
@@ -139,6 +161,28 @@ export default function OwnerDashboardPage() {
 
                     {/* Right Column: Quick Stats / Tips */}
                     <div className="space-y-6">
+                        {/* Payout Status */}
+                        <Card className="border-slate-200">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-serif">Payout Settings</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {stripeConnected ? (
+                                    <div className="flex items-center gap-2 text-green-600 font-bold">
+                                        <Check className="h-5 w-5" />
+                                        Bank Account Connected
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <p className="text-sm text-slate-500">
+                                            Connect your bank account to receive payouts for your rentals.
+                                        </p>
+                                        <StripeConnectButton />
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
                         <Card className="bg-slate-900 text-white border-none">
                             <CardHeader>
                                 <CardTitle className="text-lg font-serif">Pro Tip</CardTitle>

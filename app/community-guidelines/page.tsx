@@ -13,7 +13,7 @@ export default function CommunityGuidelinesPage() {
                 <div className="container mx-auto px-4 text-center max-w-3xl">
                     <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">Community Guidelines</h1>
                     <p className="text-lg text-slate-600">
-                        BlockShare is built on trust. These standards ensure that every extensive renovation project and weekend quick-fix happens safely and respectfully.
+                        BlockHyre is built on trust. These standards ensure that every extensive renovation project and weekend quick-fix happens safely and respectfully.
                     </p>
                 </div>
             </section>
@@ -27,7 +27,7 @@ export default function CommunityGuidelinesPage() {
                             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-700">
                                 <Check className="w-5 h-5" />
                             </span>
-                            The BlockShare Standard
+                            The BlockHyre Standard
                         </h2>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
@@ -82,7 +82,7 @@ export default function CommunityGuidelinesPage() {
                                 <div>
                                     <h3 className="font-bold text-slate-900">Off-Platform Transactions</h3>
                                     <p className="text-slate-600 text-sm mt-1">
-                                        Taking rentals off BlockShare voids all insurance and Peace Fund protections.
+                                        Taking rentals off BlockHyre voids all insurance and Peace Fund protections.
                                     </p>
                                 </div>
                             </li>

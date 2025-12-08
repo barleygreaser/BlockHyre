@@ -13,7 +13,7 @@ export default function HowItWorksPage() {
             <section className="py-20 md:py-32 bg-white text-center">
                 <div className="container mx-auto px-4">
                     <h1 className="text-4xl md:text-6xl font-bold font-serif text-slate-900 mb-6 tracking-tight">
-                        How BlockShare Works.
+                        How BlockHyre Works.
                     </h1>
                     <p className="text-xl md:text-2xl text-slate-600 font-medium max-w-2xl mx-auto">
                         Simple. Safe. Neighborly.

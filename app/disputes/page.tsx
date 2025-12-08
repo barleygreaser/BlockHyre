@@ -21,7 +21,7 @@ export default function DisputesPage() {
                     </div>
                     <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">The Dispute Tribunal</h1>
                     <p className="text-lg text-slate-300 leading-relaxed">
-                        Conflicts happen. When they do, BlockShare ensures a fair, transparent, and binding resolution process
+                        Conflicts happen. When they do, BlockHyre ensures a fair, transparent, and binding resolution process
                         backed by our impartial Tribunal and the Peace Fund.
                     </p>
                 </div>
@@ -79,7 +79,7 @@ export default function DisputesPage() {
                             </div>
                             <h2 className="text-3xl font-serif font-bold text-slate-900 mb-6">The Peace Fund</h2>
                             <p className="text-slate-600 mb-4 leading-relaxed">
-                                Every rental on BlockShare contributes a small percentage to the Peace Fund. This is a community insurance pool designed
+                                Every rental on BlockHyre contributes a small percentage to the Peace Fund. This is a community insurance pool designed
                                 to cover damages in cases where the deposit is insufficient or liability is complex (`force majeure`).
                             </p>
 

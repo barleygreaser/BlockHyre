@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, generateSlug } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { supabase } from "@/lib/supabase";
 import { Switch } from "@/app/components/ui/switch";
@@ -136,7 +136,7 @@ export default function AddToolPage() {
             if (error) throw error;
 
             alert("Listing created successfully!");
-            router.push('/inventory');
+            router.push(`/inventory/${newId}/${generateSlug(formData.displayName)}`);
 
         } catch (e: any) {
             console.error("Error creating listing:", e);

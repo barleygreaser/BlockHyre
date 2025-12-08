@@ -1,6 +1,6 @@
-BlockShare - Hyperlocal Tool Sharing Platform
+BlockHyre - Hyperlocal Tool Sharing Platform
 
-BlockShare is a "High-Fidelity" MVP for a hyperlocal tool-sharing platform designed to turn neighborhoods into distributed factories. It emphasizes Trust, Safety, and Community Production by allowing neighbors to rent high-value tools (like freeze dryers, table saws, and heavy machinery) from each other within a 2-mile radius.
+BlockHyre is a "High-Fidelity" MVP for a hyperlocal tool-sharing platform designed to turn neighborhoods into distributed factories. It emphasizes Trust, Safety, and Community Production by allowing neighbors to rent high-value tools (like freeze dryers, table saws, and heavy machinery) from each other within a 2-mile radius.
 
 🚀 Key Features
 
@@ -51,6 +51,7 @@ Datepicker: Custom implementation based on react-tailwindcss-datepicker for Airb
 Animations: canvas-confetti for success states.
 
 **ID Verification: Stripe Identity**
+**Payments & Payouts: Stripe Connect Express**
 
 💾 Data Storage & Realtime Enhancements
 
@@ -74,7 +75,7 @@ Geospatial: Implemented PostGIS-based "Search Nearby" RPC function for Hyperloca
 
 Live Inventory: Connected to Supabase PostgreSQL database for fetching real categories and listings.
 
-Dynamic Routing: Implemented /listings/[id]/[slug] for SEO-friendly product pages.
+Dynamic Routing: Implemented /inventory/[id]/[slug] for SEO-friendly product pages.
 
 Smart Filtering: Client-side filtering for multi-category selection and search.
 
@@ -86,7 +87,7 @@ Geospatial Search: Implemented PostGIS-based "Search Nearby" RPC function.
 
 ## 📄 Legal & Protection Features
 
-To ensure trust and transparency for all community members, BlockShare requires users to adhere to core policy documents and provides robust protection through the Peace Fund.
+To ensure trust and transparency for all community members, BlockHyre requires users to adhere to core policy documents and provides robust protection through the Peace Fund.
 
 ### Core Policy Documents
 | Terms of Service | Liability Policy | Dispute Tribunal | Community Guidelines |
@@ -97,9 +98,9 @@ Our Community Safety Net: Replaces large security deposits, enables free borrowi
 
 | Tier | Peace Fund Fee (Daily) | Max Payout (Coverage) | **Temporary Refundable Deposit** |
 | :--- | :--- | :--- | :--- |
-| **Tier 1** | **\$1.00** | Up to \$100 | **\$25.00** |
-| **Tier 2** | **\$3.00** | Up to \$500 | **\$50.00** |
-| **Tier 3** | **\$10.00** | Up to \$3,000 | **\$100.00** |
+| **Tier 1** | **\$1.00** | Up to \$100 | **\$50.00** |
+| **Tier 2** | **\$3.00** | Up to \$500 | **\$100.00** |
+| **Tier 3** | **\$10.00** | Up to \$3,000 | **\$250.00** |
 
 #### What Your Fee Covers
 * **Zero Liability:** If accidental damage occurs, the fund covers the cost—you pay no deductible.
@@ -137,7 +138,7 @@ app/page.tsx: Main landing page with Hero, Value Props, and Featured Inventory.
 
 app/how-it-works/page.tsx: Explainer page with process timeline and deposit formula.
 
-app/tools/[id]/page.tsx: Detailed tool view with safety alerts and booking flow.
+app/inventory/[id]/page.tsx: Detailed tool view with safety alerts and booking flow.
 
 app/checkout/page.tsx: Checkout page with mandatory safety gate checkboxes.
 
