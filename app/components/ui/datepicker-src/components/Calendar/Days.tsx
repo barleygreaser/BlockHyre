@@ -87,7 +87,7 @@ const Days = (props: Props) => {
                 ) {
                     return ` ${BG_COLOR["100"][primaryColor]} ${currentDateClass(
                         day
-                    )} dark:bg-white/10`;
+                    )}`;
                 }
             }
 
@@ -101,7 +101,7 @@ const Days = (props: Props) => {
             ) {
                 className = ` ${BG_COLOR["100"][primaryColor]} ${currentDateClass(
                     day
-                )} dark:bg-white/10`;
+                )}`;
             }
 
             if (
@@ -110,7 +110,7 @@ const Days = (props: Props) => {
             ) {
                 className = ` ${BG_COLOR["100"][primaryColor]} ${currentDateClass(
                     day
-                )} dark:bg-white/10`;
+                )}`;
             }
 
             if (dateIsSame(dayHover, day, "date")) {

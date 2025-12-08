@@ -11,6 +11,8 @@ import { Badge } from "@/app/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { Separator } from "@/app/components/ui/separator";
+import { Calendar } from "@/app/components/ui/calendar";
+import { DateRange } from "react-day-picker";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 import { MapPin, ShieldCheck, AlertTriangle, Zap, User, Star, Calendar as CalendarIcon, ArrowLeft } from "lucide-react";
 import { generateSlug } from "@/lib/utils";
@@ -18,9 +20,11 @@ import { generateSlug } from "@/lib/utils";
 export default function ListingDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const { fetchListing, loading: marketplaceLoading } = useMarketplace();
+    const { fetchListing, fetchUnavailableDates, loading: marketplaceLoading } = useMarketplace();
     const [listing, setListing] = useState<Listing | null>(null);
     const [loading, setLoading] = useState(true);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+    const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
 
     const listingId = params?.id as string;
     const listingSlug = params?.slug as string;
@@ -36,6 +40,11 @@ export default function ListingDetailPage() {
                 if (data && generateSlug(data.title) !== listingSlug) {
                     router.replace(`/inventory/${data.id}/${generateSlug(data.title)}`);
                 }
+            });
+
+            // Fetch unavailable dates
+            fetchUnavailableDates(listingId).then(dates => {
+                setUnavailableDates(dates);
             });
         }
     }, [listingId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -203,21 +212,55 @@ export default function ListingDetailPage() {
                                         <p className="text-xs text-slate-400">Includes $0 deductible damage protection.</p>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <div className="text-sm font-medium text-slate-700">Availability</div>
-                                        <div className="flex items-center gap-2 text-green-600 text-sm font-medium bg-green-50 p-2 rounded-md">
-                                            <CalendarIcon className="h-4 w-4" />
-                                            Available Today
+                                    <div className="space-y-4">
+                                        <div className="text-sm font-medium text-slate-700">Select Dates</div>
+                                        <div className="border border-slate-200 rounded-lg p-2 bg-white flex justify-center">
+                                            <Calendar
+                                                mode="range"
+                                                selected={dateRange}
+                                                onSelect={setDateRange}
+                                                blockedDates={unavailableDates}
+                                                className="rounded-md border-0"
+                                            />
                                         </div>
                                     </div>
 
+                                    {dateRange?.from && dateRange?.to && (
+                                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                                            <div className="flex justify-between text-sm">
+                                                <span>${listing.daily_price} x {Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1} days</span>
+                                                <span className="font-medium">${listing.daily_price * (Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm text-slate-500">
+                                                <span>Peace Fund Fee</span>
+                                                <span>${(listing.category?.risk_daily_fee || 0) * (Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1)}</span>
+                                            </div>
+                                            <Separator className="my-2" />
+                                            <div className="flex justify-between font-bold text-slate-900">
+                                                <span>Total</span>
+                                                <span>${(listing.daily_price + (listing.category?.risk_daily_fee || 0)) * (Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1)}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Action Buttons */}
                                     <div className="space-y-3 pt-2">
-                                        <Link href={`/request-booking/${listing.id}`} className="w-full block">
-                                            <Button size="lg" className="w-full bg-safety-orange hover:bg-orange-600 text-white font-bold text-lg shadow-md hover:shadow-lg transition-all">
-                                                Request to Rent
-                                            </Button>
-                                        </Link>
+                                        <Button
+                                            size="lg"
+                                            className="w-full bg-safety-orange hover:bg-orange-600 text-white font-bold text-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                            disabled={!dateRange?.from || !dateRange?.to}
+                                            onClick={() => {
+                                                if (dateRange?.from && dateRange?.to) {
+                                                    const params = new URLSearchParams({
+                                                        from: dateRange.from.toISOString(),
+                                                        to: dateRange.to.toISOString()
+                                                    });
+                                                    router.push(`/request-booking/${listing.id}?${params.toString()}`);
+                                                }
+                                            }}
+                                        >
+                                            Request to Rent
+                                        </Button>
                                         <p className="text-xs text-center text-slate-400">
                                             You won't be charged yet.
                                         </p>

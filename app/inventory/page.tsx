@@ -7,7 +7,7 @@ import { ToolCard, Tool } from "@/app/components/tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { calculateDistance, Coordinates } from "@/lib/location";
-import { Search, Filter, MapPin, X, Loader2, Zap } from "lucide-react";
+import { Search, Filter, MapPin, X, Loader2, Zap, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 
@@ -23,9 +23,10 @@ export default function InventoryPage() {
     // Filters State
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [selectedTier, setSelectedTier] = useState<string | null>(null);
+    const [verifiedOwnersOnly, setVerifiedOwnersOnly] = useState(false);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
     const [maxDistance, setMaxDistance] = useState(5.0);
-    const [showHeavyMachineryOnly, setShowHeavyMachineryOnly] = useState(false);
     const [acceptsBarterOnly, setAcceptsBarterOnly] = useState(false);
     const [instantBookOnly, setInstantBookOnly] = useState(false);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
@@ -74,49 +75,63 @@ export default function InventoryPage() {
     }, [maxDistance, priceRange, selectedCategories, userLocation]); // Re-run when these change
 
     // Map Supabase listings to Tool format
-    const inventoryTools: Tool[] = useMemo(() => {
-        return listings.map((listing: any) => ({
-            id: listing.id,
-            title: listing.title,
-            // Use image from DB or fallback
-            image: listing.images?.[0] || `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(listing.title)}`,
-            price: listing.daily_price,
-            deposit: 100,
-            category: listing.category.name,
-            isHeavyMachinery: listing.is_high_powered || listing.category.name === "Heavy Machinery", // Use DB field or fallback
-            acceptsBarter: listing.accepts_barter,
-            instantBook: listing.booking_type === 'instant',
-            coordinates: listing.coordinates || userLocation,
-            distance: listing.distance // Use distance from RPC
-        }));
+    const inventoryTools: (Tool & { tier: number, ownerVerified: boolean })[] = useMemo(() => {
+        return listings.map((listing: any) => {
+            // Calculate Tier
+            let tier = 1;
+            const isHighPower = listing.is_high_powered || listing.category.name === "Heavy Machinery";
+            if (isHighPower || listing.daily_price > 200) tier = 3;
+            else if (listing.daily_price > 50) tier = 2;
+
+            return {
+                id: listing.id,
+                title: listing.title,
+                // Use image from DB or fallback
+                image: listing.images?.[0] || `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(listing.title)}`,
+                price: listing.daily_price,
+                deposit: 100,
+                category: listing.category.name,
+                isHeavyMachinery: isHighPower,
+                acceptsBarter: listing.accepts_barter,
+                instantBook: listing.booking_type === 'instant',
+                coordinates: listing.coordinates || userLocation,
+                distance: listing.distance, // Use distance from RPC
+                tier: tier,
+                ownerVerified: true // Mock for now
+            };
+        });
     }, [listings, userLocation]);
 
-    // Client-side sorting/filtering for things RPC doesn't handle yet (like multiple categories or text search)
+    // Client-side sorting/filtering
     const filteredTools = useMemo(() => {
         return inventoryTools.filter(tool => {
-            // 1. Search (Client-side for now)
+            // 1. Search
             if (searchQuery && !tool.title.toLowerCase().includes(searchQuery.toLowerCase())) {
                 return false;
             }
-            // 2. Safety Level
-            if (showHeavyMachineryOnly && !tool.isHeavyMachinery) {
+            // 2. Protection Tier
+            if (selectedTier && tool.tier !== parseInt(selectedTier)) {
                 return false;
             }
-            // 3. Barter
+            // 3. Verified Owners
+            if (verifiedOwnersOnly && !tool.ownerVerified) {
+                return false;
+            }
+            // 4. Barter
             if (acceptsBarterOnly && !tool.acceptsBarter) {
                 return false;
             }
-            // 4. Instant Book
+            // 5. Instant Book
             if (instantBookOnly && !tool.instantBook) {
                 return false;
             }
-            // 5. Categories (Client-side enforcement for multi-select support)
+            // 6. Categories
             if (selectedCategories.length > 0 && !selectedCategories.includes(tool.category)) {
                 return false;
             }
             return true;
         });
-    }, [inventoryTools, searchQuery, showHeavyMachineryOnly, acceptsBarterOnly, instantBookOnly, selectedCategories]);
+    }, [inventoryTools, searchQuery, selectedTier, verifiedOwnersOnly, acceptsBarterOnly, instantBookOnly, selectedCategories]);
 
     const toggleCategory = (category: string) => {
         setSelectedCategories(prev =>
@@ -134,7 +149,7 @@ export default function InventoryPage() {
             <Navbar />
 
             {/* Header Section */}
-            {/* ... */}
+            {/* ... component placeholder if any ... */}
 
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col md:flex-row gap-8">
@@ -144,6 +159,8 @@ export default function InventoryPage() {
                         "w-full md:w-64 space-y-8 flex-shrink-0",
                         isMobileFiltersOpen ? "block" : "hidden md:block"
                     )}>
+                        {/* PHASE 1: CORE DISCOVERY */}
+
                         {/* Search */}
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Search</h3>
@@ -160,22 +177,13 @@ export default function InventoryPage() {
                         </div>
 
                         {/* Categories */}
-                        {/* ... */}
-
-                        {/* Price Range */}
-                        {/* ... */}
-
-                        {/* Distance Radius */}
-                        {/* ... */}
-
-                        {/* Categories */}
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
-                            <div className="space-y-2">
+                            <div className="space-y-2 max-h-60 overflow-y-auto scrollbar-hide">
                                 {sortedCategories.map(category => (
                                     <label key={category.id} className="flex items-center gap-2 cursor-pointer group">
                                         <div className={cn(
-                                            "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                                            "w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
                                             selectedCategories.includes(category.name)
                                                 ? "bg-safety-orange border-safety-orange text-white"
                                                 : "border-slate-300 bg-white group-hover:border-safety-orange"
@@ -188,18 +196,94 @@ export default function InventoryPage() {
                                             checked={selectedCategories.includes(category.name)}
                                             onChange={() => toggleCategory(category.name)}
                                         />
-                                        <span className="text-sm text-slate-600 group-hover:text-slate-900">{category.name}</span>
+                                        <span className="text-sm text-slate-600 group-hover:text-slate-900 truncate">{category.name}</span>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Price Range */}
-                        <div>
-                            <h3 className="font-bold font-serif text-slate-900 mb-4">Daily Rate</h3>
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between text-sm text-slate-600">
-                                    <span>${priceRange[0]}</span>
+                        {/* PHASE 2: BLOCKHYRE TRUST & ACCESS */}
+                        <div className="pt-4 border-t border-slate-200">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Shield className="h-4 w-4 text-safety-orange" />
+                                <h3 className="font-bold font-serif text-slate-900">Trust & Access</h3>
+                            </div>
+
+                            {/* Protection Tier */}
+                            <div className="mb-6">
+                                <label className="text-sm font-semibold text-slate-700 mb-2 block">Protection Tier</label>
+                                <div className="space-y-2">
+                                    {[
+                                        { id: "1", label: "Tier 1 (Basic)", sub: "<$50/day" },
+                                        { id: "2", label: "Tier 2 (Standard)", sub: "$50-$200" },
+                                        { id: "3", label: "Tier 3 (Max)", sub: "$200+ or Heavy" },
+                                    ].map(tier => (
+                                        <label key={tier.id} className="flex items-start gap-2 cursor-pointer group">
+                                            <input
+                                                type="radio"
+                                                name="tier"
+                                                className="mt-1 accent-safety-orange"
+                                                checked={selectedTier === tier.id}
+                                                onChange={() => setSelectedTier(selectedTier === tier.id ? null : tier.id)}
+                                                onClick={() => { if (selectedTier === tier.id) setSelectedTier(null); }} // Allow unchecking
+                                            />
+                                            <div className="text-sm">
+                                                <span className="text-slate-700 font-medium block">{tier.label}</span>
+                                                <span className="text-xs text-slate-500">{tier.sub}</span>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Verified Owners Toggle */}
+                            <div className="mb-6">
+                                <label className="flex items-center justify-between cursor-pointer">
+                                    <span className="text-sm font-semibold text-slate-700">Verified Owners Only</span>
+                                    <div className={cn(
+                                        "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out relative",
+                                        verifiedOwnersOnly ? "bg-emerald-500" : "bg-slate-200"
+                                    )} onClick={() => setVerifiedOwnersOnly(!verifiedOwnersOnly)}>
+                                        <div className={cn(
+                                            "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out absolute top-1",
+                                            verifiedOwnersOnly ? "translate-x-4 left-1" : "translate-x-0 left-1"
+                                        )} />
+                                    </div>
+                                </label>
+                            </div>
+
+                            {/* Distance */}
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-semibold text-slate-700">Distance from Home</span>
+                                    <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
+                                        {maxDistance} mi
+                                    </span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="0.5"
+                                    max="5"
+                                    step="0.5"
+                                    value={maxDistance}
+                                    onChange={(e) => setMaxDistance(parseFloat(e.target.value))}
+                                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-safety-orange"
+                                />
+                                <div className="flex justify-between text-xs text-slate-400 mt-1">
+                                    <span>0.5 mi</span>
+                                    <span>5 mi</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* PHASE 3: FINANCIAL & OPTIONS */}
+                        <div className="pt-4 border-t border-slate-200">
+                            <h3 className="font-bold font-serif text-slate-900 mb-4">Financial & Options</h3>
+
+                            {/* Daily Rate */}
+                            <div className="mb-6">
+                                <div className="flex items-center justify-between text-sm text-slate-600 mb-2">
+                                    <span className="font-semibold text-slate-700">Daily Rate</span>
                                     <span>${priceRange[1]}+</span>
                                 </div>
                                 <input
@@ -212,101 +296,41 @@ export default function InventoryPage() {
                                     className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-safety-orange"
                                 />
                             </div>
-                        </div>
 
-                        {/* Distance Radius */}
-                        <div>
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="font-bold font-serif text-slate-900">Distance</h3>
-                                <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
-                                    {maxDistance} mi
-                                </span>
+                            {/* Barter Toggle */}
+                            <div className="mb-6">
+                                <label className="flex items-center justify-between cursor-pointer">
+                                    <span className="text-sm font-semibold text-slate-700">Accepts Barter Only</span>
+                                    <div className={cn(
+                                        "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out relative",
+                                        acceptsBarterOnly ? "bg-emerald-500" : "bg-slate-200"
+                                    )} onClick={() => setAcceptsBarterOnly(!acceptsBarterOnly)}>
+                                        <div className={cn(
+                                            "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out absolute top-1",
+                                            acceptsBarterOnly ? "translate-x-4 left-1" : "translate-x-0 left-1"
+                                        )} />
+                                    </div>
+                                </label>
                             </div>
-                            <input
-                                type="range"
-                                min="0.5"
-                                max="5"
-                                step="0.1"
-                                value={maxDistance}
-                                onChange={(e) => setMaxDistance(parseFloat(e.target.value))}
-                                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-safety-orange"
-                            />
-                            <div className="flex justify-between text-xs text-slate-400 mt-2">
-                                <span>0.5 mi</span>
-                                <span>5 mi</span>
+
+                            {/* Instant Book Toggle */}
+                            <div>
+                                <label className="flex items-center justify-between cursor-pointer">
+                                    <span className="text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                        <Zap className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                                        Instant Book Only
+                                    </span>
+                                    <div className={cn(
+                                        "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out relative",
+                                        instantBookOnly ? "bg-yellow-400" : "bg-slate-200"
+                                    )} onClick={() => setInstantBookOnly(!instantBookOnly)}>
+                                        <div className={cn(
+                                            "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out absolute top-1",
+                                            instantBookOnly ? "translate-x-4 left-1" : "translate-x-0 left-1"
+                                        )} />
+                                    </div>
+                                </label>
                             </div>
-                        </div>
-
-                        {/* Instant Book */}
-                        <div className="bg-yellow-50/80 p-4 rounded-xl border border-yellow-200 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
-                            <h3 className="font-bold font-serif text-slate-900 mb-3 flex items-center gap-2">
-                                <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500 animate-pulse" />
-                                Instant Book
-                            </h3>
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <div className={cn(
-                                    "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out shadow-inner",
-                                    instantBookOnly ? "bg-yellow-400" : "bg-slate-200"
-                                )}>
-                                    <div className={cn(
-                                        "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out",
-                                        instantBookOnly ? "translate-x-4" : "translate-x-0"
-                                    )} />
-                                </div>
-                                <input
-                                    type="checkbox"
-                                    className="hidden"
-                                    checked={instantBookOnly}
-                                    onChange={() => setInstantBookOnly(!instantBookOnly)}
-                                />
-                                <span className="text-sm text-slate-600 font-medium">Instant Book Only</span>
-                            </label>
-                        </div>
-
-                        {/* Barter */}
-                        <div>
-                            <h3 className="font-bold font-serif text-slate-900 mb-4">Barter</h3>
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <div className={cn(
-                                    "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out",
-                                    acceptsBarterOnly ? "bg-emerald-500" : "bg-slate-200"
-                                )}>
-                                    <div className={cn(
-                                        "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out",
-                                        acceptsBarterOnly ? "translate-x-4" : "translate-x-0"
-                                    )} />
-                                </div>
-                                <input
-                                    type="checkbox"
-                                    className="hidden"
-                                    checked={acceptsBarterOnly}
-                                    onChange={() => setAcceptsBarterOnly(!acceptsBarterOnly)}
-                                />
-                                <span className="text-sm text-slate-600">Accepts Barter Only</span>
-                            </label>
-                        </div>
-
-                        {/* Safety Level */}
-                        <div>
-                            <h3 className="font-bold font-serif text-slate-900 mb-4">Safety Level</h3>
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <div className={cn(
-                                    "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out",
-                                    showHeavyMachineryOnly ? "bg-safety-orange" : "bg-slate-200"
-                                )}>
-                                    <div className={cn(
-                                        "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out",
-                                        showHeavyMachineryOnly ? "translate-x-4" : "translate-x-0"
-                                    )} />
-                                </div>
-                                <input
-                                    type="checkbox"
-                                    className="hidden"
-                                    checked={showHeavyMachineryOnly}
-                                    onChange={() => setShowHeavyMachineryOnly(!showHeavyMachineryOnly)}
-                                />
-                                <span className="text-sm text-slate-600">Heavy Machinery Only</span>
-                            </label>
                         </div>
                     </aside>
 
@@ -353,7 +377,10 @@ export default function InventoryPage() {
                                         setSelectedCategories([]);
                                         setSearchQuery("");
                                         setPriceRange([0, 300]);
-                                        setShowHeavyMachineryOnly(false);
+                                        setSelectedTier(null);
+                                        setVerifiedOwnersOnly(false);
+                                        setAcceptsBarterOnly(false);
+                                        setInstantBookOnly(false);
                                     }}
                                 >
                                     Expand Search Radius
