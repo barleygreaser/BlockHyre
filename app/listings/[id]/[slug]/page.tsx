@@ -30,13 +30,14 @@ import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 
 export default function ListingDetailsPage() {
     const { id } = useParams();
-    const { fetchListing } = useMarketplace();
+    const { fetchListing, fetchUnavailableDates } = useMarketplace();
     const { addToCart } = useCart();
     const router = useRouter();
 
     const [listing, setListing] = useState<Listing | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0);
+    const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: new Date(),
         to: addDays(new Date(), 2),
@@ -44,8 +45,12 @@ export default function ListingDetailsPage() {
 
     useEffect(() => {
         if (id) {
-            fetchListing(id as string).then(data => {
+            Promise.all([
+                fetchListing(id as string),
+                fetchUnavailableDates(id as string)
+            ]).then(([data, dates]) => {
                 setListing(data);
+                setUnavailableDates(dates);
                 setLoading(false);
             });
         }
@@ -306,7 +311,7 @@ export default function ListingDetailsPage() {
                                             selected={dateRange}
                                             onSelect={setDateRange}
                                             numberOfMonths={1}
-                                            disabled={(date) => date < new Date()}
+                                            disabled={(date) => date < new Date() || unavailableDates.some(d => d.toDateString() === date.toDateString())}
                                         />
                                     </div>
                                 </div>

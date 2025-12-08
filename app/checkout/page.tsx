@@ -1,225 +1,128 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { AlertTriangle, CheckCircle, Lock, ArrowLeft, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useCart } from "@/app/context/cart-context";
-import { calculateRentalPrice, RISK_TIERS } from "@/lib/pricing";
-import { useAuth } from "@/app/context/auth-context";
-import { useMarketplace } from "@/app/hooks/use-marketplace";
+import { Button } from "@/app/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { calculateRentalPrice } from "@/lib/pricing";
 
 export default function CheckoutPage() {
-    const { cart, cartTotal, clearCart } = useCart();
-    const { user } = useAuth();
-    const { createRental } = useMarketplace();
+    const { cart, clearCart } = useCart();
     const router = useRouter();
-
     const [isProcessing, setIsProcessing] = useState(false);
-    const [checks, setChecks] = useState({
-        risk: false,
-        competence: false,
-        peaceFund: false,
-    });
 
-    const allChecked = Object.values(checks).every(Boolean);
+    const subtotal = cart.reduce((acc, item) => {
+        const { subtotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
+        return acc + subtotal;
+    }, 0);
 
-    const toggleCheck = (key: keyof typeof checks) => {
-        setChecks((prev) => ({ ...prev, [key]: !prev[key] }));
-    };
+    const peaceFundTotal = cart.reduce((acc, item) => {
+        const { peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
+        return acc + peaceFundTotal;
+    }, 0);
 
-    // Calculate breakdown from cart
-    const breakdown = cart.reduce((acc, item) => {
-        const { subtotal, peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
-        return {
-            subtotal: acc.subtotal + subtotal,
-            peaceFundTotal: acc.peaceFundTotal + peaceFundTotal,
-            depositTotal: acc.depositTotal + item.price.deposit
-        };
-    }, { subtotal: 0, peaceFundTotal: 0, depositTotal: 0 });
+    const depositTotal = cart.reduce((acc, item) => acc + item.price.deposit, 0);
+    const finalTotal = subtotal + peaceFundTotal + depositTotal;
 
-    const handleCheckout = async () => {
-        if (!user) {
-            router.push('/auth');
-            return;
-        }
-
+    const handlePayment = async () => {
         setIsProcessing(true);
+        // Simulate payment processing
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-        try {
-            // Process all items
-            for (const item of cart) {
-                const riskFee = RISK_TIERS[item.price.riskTier];
-
-                const result = await createRental(
-                    item.id,
-                    user.id,
-                    item.dates.from,
-                    item.dates.to,
-                    item.price.daily,
-                    riskFee,
-                    false // Assuming no barter for now in this flow, or check item property?
-                    // CartItem doesn't have isBarter property yet. 
-                    // Let's assume false for standard checkout or add it to CartItem later.
-                );
-
-                if (!result.success) {
-                    throw new Error("Failed to book item: " + item.title);
-                }
-            }
-
-            // Success
-            clearCart();
-            router.push("/owner/dashboard"); // Redirect to dashboard or success page
-            alert("Booking successful! Check your dashboard.");
-
-        } catch (error) {
-            console.error("Checkout error:", error);
-            alert("Checkout failed. Please try again.");
-        } finally {
-            setIsProcessing(false);
-        }
+        // Here we would create the rentals in Supabase
+        // For now, just clear cart and redirect
+        clearCart();
+        alert("Payment successful! Your rentals are confirmed.");
+        router.push('/inventory');
     };
+
+    if (cart.length === 0) {
+        return (
+            <main className="min-h-screen bg-slate-50">
+                <Navbar />
+                <div className="container mx-auto px-4 py-20 text-center">
+                    <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
+                    <Button onClick={() => router.push('/inventory')}>Go to Inventory</Button>
+                </div>
+                <Footer />
+            </main>
+        );
+    }
 
     return (
         <main className="min-h-screen bg-slate-50">
             <Navbar />
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-3xl font-bold font-serif text-slate-900 mb-8">Checkout</h1>
 
-            <div className="container mx-auto px-4 py-8 max-w-4xl">
-                <Link href="/cart" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Cart
-                </Link>
-
-                <h1 className="text-3xl font-bold font-serif text-slate-900 mb-8">Checkout & Safety Gate</h1>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                    {/* Left Column: Safety Gate */}
-                    <div className="space-y-6">
-                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-                                <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-safety-orange">
-                                    <AlertTriangle className="h-5 w-5" />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Billing Details */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-white p-6 rounded-lg border border-slate-200">
+                            <h2 className="text-xl font-bold mb-4">Billing Information</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">First Name</label>
+                                    <input type="text" className="w-full p-2 border rounded" placeholder="John" />
                                 </div>
-                                <div>
-                                    <h2 className="text-lg font-bold text-slate-900">Mandatory Safety Acceptance</h2>
-                                    <p className="text-xs text-slate-500">You must agree to all terms to proceed.</p>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Last Name</label>
+                                    <input type="text" className="w-full p-2 border rounded" placeholder="Doe" />
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-sm font-medium">Email</label>
+                                    <input type="email" className="w-full p-2 border rounded" placeholder="john@example.com" />
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-sm font-medium">Address</label>
+                                    <input type="text" className="w-full p-2 border rounded" placeholder="123 Main St" />
                                 </div>
                             </div>
+                        </div>
 
+                        <div className="bg-white p-6 rounded-lg border border-slate-200">
+                            <h2 className="text-xl font-bold mb-4">Payment Details</h2>
                             <div className="space-y-4">
-                                <label className={cn(
-                                    "flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all",
-                                    checks.risk ? "border-green-500 bg-green-50" : "border-slate-200 hover:border-slate-300"
-                                )}>
-                                    <input
-                                        type="checkbox"
-                                        className="mt-1"
-                                        checked={checks.risk}
-                                        onChange={() => toggleCheck('risk')}
-                                    />
-                                    <div className="text-sm">
-                                        <span className="font-semibold text-slate-900 block">Assumption of Risk</span>
-                                        <span className="text-slate-600">I agree to the Assumption of Risk and indemnify BlockShare.</span>
-                                    </div>
-                                </label>
-
-                                <label className={cn(
-                                    "flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all",
-                                    checks.competence ? "border-green-500 bg-green-50" : "border-slate-200 hover:border-slate-300"
-                                )}>
-                                    <input
-                                        type="checkbox"
-                                        className="mt-1"
-                                        checked={checks.competence}
-                                        onChange={() => toggleCheck('competence')}
-                                    />
-                                    <div className="text-sm">
-                                        <span className="font-semibold text-slate-900 block">Operator Competence</span>
-                                        <span className="text-slate-600">I certify my Competence to safely operate this power tool.</span>
-                                    </div>
-                                </label>
-
-                                <label className={cn(
-                                    "flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all",
-                                    checks.peaceFund ? "border-green-500 bg-green-50" : "border-slate-200 hover:border-slate-300"
-                                )}>
-                                    <input
-                                        type="checkbox"
-                                        className="mt-1"
-                                        checked={checks.peaceFund}
-                                        onChange={() => toggleCheck('peaceFund')}
-                                    />
-                                    <div className="text-sm">
-                                        <span className="font-semibold text-slate-900 block">Peace Fund Contribution</span>
-                                        <span className="text-slate-600">I acknowledge the Peace Fund Contribution in the Platform Fee.</span>
-                                    </div>
-                                </label>
+                                <div className="p-4 border rounded bg-slate-50 text-slate-500 text-sm">
+                                    Payment integration coming soon. This is a demo.
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Column: Financial Summary */}
-                    <div className="space-y-6">
-                        <Card className="border-slate-200 shadow-sm sticky top-6">
-                            <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
-                                <CardTitle className="text-lg font-serif">Order Summary</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-6 space-y-4">
-                                <div className="flex justify-between text-slate-600">
-                                    <span>Rental Fees</span>
-                                    <span className="font-medium text-slate-900">${breakdown.subtotal}</span>
+                    {/* Order Summary */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm sticky top-24">
+                            <h3 className="font-bold text-lg text-slate-900 mb-4">Order Summary</h3>
+                            <div className="space-y-3 text-sm text-slate-600">
+                                <div className="flex justify-between">
+                                    <span>Subtotal</span>
+                                    <span>${subtotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-slate-600">
-                                    <div className="flex items-center gap-1">
-                                        <span>Peace Fund (Insurance)</span>
-                                        <div className="h-4 w-4 rounded-full bg-slate-200 text-[10px] flex items-center justify-center cursor-help" title="Includes Peace Fund Contribution">?</div>
-                                    </div>
-                                    <span className="font-medium text-slate-900">${breakdown.peaceFundTotal}</span>
+                                <div className="flex justify-between">
+                                    <span>Peace Fund</span>
+                                    <span>${peaceFundTotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-slate-600 pb-4 border-b border-slate-100">
-                                    <span>Refundable Deposit</span>
-                                    <span className="font-medium text-slate-900">${breakdown.depositTotal}</span>
+                                <div className="flex justify-between text-safety-orange">
+                                    <span>Deposits</span>
+                                    <span>${depositTotal.toFixed(2)}</span>
                                 </div>
-
-                                <div className="flex justify-between items-end pt-2">
-                                    <span className="font-bold text-slate-900 text-lg">TOTAL DUE NOW</span>
-                                    <span className="font-bold text-safety-orange text-2xl">${cartTotal}</span>
+                                <div className="border-t border-slate-200 pt-3 flex justify-between font-bold text-lg text-slate-900">
+                                    <span>Total</span>
+                                    <span>${finalTotal.toFixed(2)}</span>
                                 </div>
-
-                                <div className="pt-6">
-                                    <Button
-                                        size="lg"
-                                        className="w-full text-base"
-                                        disabled={!allChecked || isProcessing}
-                                        onClick={handleCheckout}
-                                    >
-                                        {isProcessing ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Processing...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Lock className="mr-2 h-4 w-4" />
-                                                Place Hold & Pay
-                                            </>
-                                        )}
-                                    </Button>
-                                    <p className="text-xs text-center text-slate-400 mt-3">
-                                        Secure 256-bit encrypted payment
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                            <Button
+                                className="w-full mt-6 bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12"
+                                onClick={handlePayment}
+                                disabled={isProcessing}
+                            >
+                                {isProcessing ? "Processing..." : "Pay Now"}
+                            </Button>
+                        </div>
                     </div>
-
                 </div>
             </div>
             <Footer />

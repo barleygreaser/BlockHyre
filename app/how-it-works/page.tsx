@@ -89,7 +89,7 @@ export default function HowItWorksPage() {
                                     <Plus className="h-4 w-4 text-slate-300" />
                                     <div className="flex flex-col items-center">
                                         <span className="font-bold text-slate-900">Peace Fund</span>
-                                        <span className="text-xs text-slate-400">(10%)</span>
+                                        <span className="text-xs text-slate-400">($1 - $10)</span>
                                     </div>
                                     <Plus className="h-4 w-4 text-slate-300" />
                                     <div className="flex flex-col items-center">
@@ -102,24 +102,83 @@ export default function HowItWorksPage() {
                             </div>
 
                             <p className="text-slate-600 leading-relaxed">
-                                Your deposit is strictly to cover the insurance deductible ($250 max). It is <span className="font-bold text-slate-900">NOT</span> the full price of the tool. Return it safe, and 100% is refunded instantly.
+                                Your deposit covers the insurance deductible. It is <span className="font-bold text-slate-900">NOT</span> the full price of the tool. Return it safe, and 100% is refunded instantly.
                             </p>
                         </div>
 
-                        {/* The Peace Fund */}
-                        <div className="bg-slate-900 rounded-2xl p-8 md:p-12 text-white flex flex-col justify-center relative overflow-hidden">
+                        {/* The Peace Fund - Improved Visualization */}
+                        <div className="bg-slate-900 rounded-2xl p-8 md:p-12 text-white flex flex-col relative overflow-hidden shadow-2xl">
                             {/* Decorative background */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-safety-orange opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-safety-orange opacity-10 rounded-full blur-[80px] -translate-y-1/3 translate-x-1/3 pointer-events-none"></div>
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500 opacity-10 rounded-full blur-[60px] translate-y-1/3 -translate-x-1/3 pointer-events-none"></div>
 
-                            <div className="relative z-10">
-                                <h2 className="text-2xl font-bold font-serif text-white mb-6">The Peace Fund</h2>
-                                <p className="text-slate-300 text-lg leading-relaxed mb-6">
-                                    We take 10% of fees to build a community pot for minor repairs. Worn blade? The Fund pays. No awkward arguments with neighbors.
-                                </p>
-                                <div className="flex items-center gap-4 text-sm font-medium text-safety-orange">
-                                    <div className="h-1 w-12 bg-safety-orange rounded-full"></div>
-                                    <span>Community Safety Net</span>
+                            <div className="relative z-10 flex flex-col h-full">
+                                <div className="mb-8">
+                                    <h2 className="text-2xl font-bold font-serif text-white mb-2">The Peace Fund: Worry-Free Renting</h2>
+                                    <p className="text-slate-400">Our Community Safety Net: Replaces large security deposits, enables free borrowing, and covers accidental damage.</p>
                                 </div>
+
+                                {/* Visual Tiers Grid */}
+                                <div className="grid grid-cols-3 gap-2 md:gap-3 mb-8">
+                                    <div className="bg-white/5 rounded-xl p-3 md:p-4 text-center border border-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm group cursor-default">
+                                        <div className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 group-hover:text-slate-300">Tier 1</div>
+                                        <div className="text-xl md:text-2xl font-bold text-safety-orange mb-1 leading-none">$1<span className="text-[10px] md:text-xs text-slate-500 font-normal">/day</span></div>
+                                        <div className="text-[10px] md:text-xs text-slate-400 leading-tight mt-1">Up to $100</div>
+                                    </div>
+
+                                    <div className="bg-white/5 rounded-xl p-3 md:p-4 text-center border border-safety-orange/30 hover:bg-white/10 transition-colors backdrop-blur-sm relative group cursor-default">
+                                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-safety-orange text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-lg whitespace-nowrap">STANDARD</div>
+                                        <div className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 group-hover:text-slate-300">Tier 2</div>
+                                        <div className="text-xl md:text-2xl font-bold text-safety-orange mb-1 leading-none">$3<span className="text-[10px] md:text-xs text-slate-500 font-normal">/day</span></div>
+                                        <div className="text-[10px] md:text-xs text-slate-400 leading-tight mt-1">Up to $500</div>
+                                    </div>
+
+                                    <div className="bg-white/5 rounded-xl p-3 md:p-4 text-center border border-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm group cursor-default">
+                                        <div className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 group-hover:text-slate-300">Tier 3</div>
+                                        <div className="text-xl md:text-2xl font-bold text-safety-orange mb-1 leading-none">$10<span className="text-[10px] md:text-xs text-slate-500 font-normal">/day</span></div>
+                                        <div className="text-[10px] md:text-xs text-slate-400 leading-tight mt-1">Up to $3,000</div>
+                                    </div>
+                                </div>
+
+                                {/* Community Safety Net Visual */}
+                                <div className="bg-slate-800/50 rounded-xl p-4 border border-white/10 mb-6 flex-grow">
+                                    <div className="flex items-start gap-4 mb-4">
+                                        <div className="p-3 bg-green-500/10 rounded-full border border-green-500/20 shrink-0">
+                                            <ShieldCheck className="h-6 w-6 text-green-500" />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-white mb-1">What Your Fee Covers</div>
+                                            <p className="text-xs text-slate-400 leading-relaxed">
+                                                <span className="text-slate-200 font-medium">Zero Liability:</span> If accidental damage occurs, the fund covers the cost—you pay no deductible.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Visual Bar */}
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between text-xs font-medium">
+                                            <span className="text-slate-500">Protection Level</span>
+                                            <span className="text-green-500">Active</span>
+                                        </div>
+                                        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden flex">
+                                            <div className="h-full w-full bg-gradient-to-r from-green-600 to-green-400"></div>
+                                        </div>
+                                        <div className="mt-2 flex justify-between items-center bg-white/5 rounded px-2 py-1.5">
+                                            <span className="text-[10px] text-slate-400 uppercase tracking-wider">Renter Deductible</span>
+                                            <span className="font-mono text-sm font-bold text-safety-orange">NONE ($0.00)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Link href="/liability" className="w-full mb-4">
+                                    <Button className="w-full bg-white text-slate-900 hover:bg-slate-200 font-bold border-0">
+                                        Review Full Liability Policy
+                                    </Button>
+                                </Link>
+
+                                <p className="text-[10px] text-slate-500 text-center leading-relaxed px-2">
+                                    <span className="font-bold text-slate-400">Note:</span> The Peace Fund fee is mandatory for all rentals, including free borrows, as it protects the Owner's asset. All rental fees are held in escrow.
+                                </p>
                             </div>
                         </div>
 
@@ -131,7 +190,7 @@ export default function HowItWorksPage() {
             <section className="py-20 bg-slate-50 border-t border-slate-200 text-center">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold font-serif text-slate-900 mb-6">Ready to start your project?</h2>
-                    <Link href="/#inventory">
+                    <Link href="/inventory">
                         <Button size="lg" className="text-base px-8 bg-safety-orange hover:bg-safety-orange/90">
                             Browse Inventory
                             <ArrowRight className="ml-2 h-5 w-5" />

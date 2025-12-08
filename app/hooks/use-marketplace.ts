@@ -157,6 +157,7 @@ export const useMarketplace = () => {
                     name: item.category_name,
                     risk_daily_fee: item.risk_daily_fee
                 },
+                booking_type: item.booking_type as 'instant' | 'request',
                 // Extra fields for UI
                 images: item.images,
                 distance: item.distance_miles,
@@ -172,18 +173,46 @@ export const useMarketplace = () => {
         }
     };
 
-    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+    const [categories, setCategories] = useState<{ id: string; name: string; risk_daily_fee: number }[]>([]);
 
     const fetchCategories = async () => {
         try {
             const { data, error } = await supabase
                 .from('categories')
-                .select('id, name');
+                .select('id, name, risk_daily_fee');
 
             if (error) throw error;
             setCategories(data || []);
         } catch (e) {
             console.error("Error fetching categories:", e);
+        }
+    };
+
+    const fetchUnavailableDates = async (listingId: string): Promise<Date[]> => {
+        try {
+            const { data, error } = await supabase
+                .from('rentals')
+                .select('start_date, end_date')
+                .eq('listing_id', listingId)
+                .eq('status', 'approved');
+
+            if (error) throw error;
+
+            const dates: Date[] = [];
+            data?.forEach((rental: any) => {
+                let current = dayjs(rental.start_date);
+                const end = dayjs(rental.end_date);
+
+                while (current.isBefore(end) || current.isSame(end, 'day')) {
+                    dates.push(current.toDate());
+                    current = current.add(1, 'day');
+                }
+            });
+
+            return dates;
+        } catch (e) {
+            console.error("Error fetching unavailable dates:", e);
+            return [];
         }
     };
 
@@ -198,7 +227,9 @@ export const useMarketplace = () => {
         loading,
         error,
         fetchListings,
-        fetchListing, // Export new function
+        fetchListing,
+        fetchCategories,
+        fetchUnavailableDates, // Export new function
         searchListings,
         createRental
     };

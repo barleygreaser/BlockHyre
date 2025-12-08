@@ -5,8 +5,11 @@ import { useAuth } from '@/app/context/auth-context';
 import { useRouter } from 'next/navigation';
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
+import { AuthGoogleButton } from "@/app/components/auth-google-button";
+import { useAuthRedirect } from "@/app/hooks/use-auth-redirect";
 
 export default function AuthPage() {
+    useAuthRedirect();
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -101,6 +104,19 @@ export default function AuthPage() {
                             >
                                 {loading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
                             </button>
+                        </div>
+
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-slate-300" />
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="bg-white px-2 text-slate-500">Or continue with</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <AuthGoogleButton />
                         </div>
 
                         <div className="text-center mt-4">

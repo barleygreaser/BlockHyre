@@ -7,7 +7,7 @@ import { ToolCard, Tool } from "@/app/components/tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { calculateDistance, Coordinates } from "@/lib/location";
-import { Search, Filter, MapPin, X, Loader2 } from "lucide-react";
+import { Search, Filter, MapPin, X, Loader2, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 
@@ -26,6 +26,8 @@ export default function InventoryPage() {
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
     const [maxDistance, setMaxDistance] = useState(5.0);
     const [showHeavyMachineryOnly, setShowHeavyMachineryOnly] = useState(false);
+    const [acceptsBarterOnly, setAcceptsBarterOnly] = useState(false);
+    const [instantBookOnly, setInstantBookOnly] = useState(false);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     const [userZip, setUserZip] = useState("90012");
@@ -83,6 +85,7 @@ export default function InventoryPage() {
             category: listing.category.name,
             isHeavyMachinery: listing.is_high_powered || listing.category.name === "Heavy Machinery", // Use DB field or fallback
             acceptsBarter: listing.accepts_barter,
+            instantBook: listing.booking_type === 'instant',
             coordinates: listing.coordinates || userLocation,
             distance: listing.distance // Use distance from RPC
         }));
@@ -99,13 +102,21 @@ export default function InventoryPage() {
             if (showHeavyMachineryOnly && !tool.isHeavyMachinery) {
                 return false;
             }
-            // 3. Categories (Client-side enforcement for multi-select support)
+            // 3. Barter
+            if (acceptsBarterOnly && !tool.acceptsBarter) {
+                return false;
+            }
+            // 4. Instant Book
+            if (instantBookOnly && !tool.instantBook) {
+                return false;
+            }
+            // 5. Categories (Client-side enforcement for multi-select support)
             if (selectedCategories.length > 0 && !selectedCategories.includes(tool.category)) {
                 return false;
             }
             return true;
         });
-    }, [inventoryTools, searchQuery, showHeavyMachineryOnly, selectedCategories]);
+    }, [inventoryTools, searchQuery, showHeavyMachineryOnly, acceptsBarterOnly, instantBookOnly, selectedCategories]);
 
     const toggleCategory = (category: string) => {
         setSelectedCategories(prev =>
@@ -115,59 +126,15 @@ export default function InventoryPage() {
         );
     };
 
+    // Sort categories alphabetically
+    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+
     return (
         <main className="min-h-screen bg-slate-50">
             <Navbar />
 
             {/* Header Section */}
-            <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                        <div className="relative w-full md:w-96">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                            <input
-                                type="text"
-                                placeholder="What do you need to build?"
-                                className="w-full h-10 pl-10 pr-4 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 text-sm"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
-                            <MapPin className="h-4 w-4 text-safety-orange" />
-                            <span>Current Location: </span>
-                            {isEditingZip ? (
-                                <input
-                                    type="text"
-                                    className="w-16 border-b border-safety-orange focus:outline-none bg-transparent font-bold text-slate-900"
-                                    value={userZip}
-                                    onChange={(e) => setUserZip(e.target.value)}
-                                    onBlur={() => handleZipUpdate(userZip)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleZipUpdate(userZip)}
-                                    autoFocus
-                                />
-                            ) : (
-                                <strong
-                                    className="cursor-pointer border-b border-dashed border-slate-400 hover:text-safety-orange hover:border-safety-orange transition-colors"
-                                    onClick={() => setIsEditingZip(true)}
-                                >
-                                    {userZip}
-                                </strong>
-                            )}
-                        </div>
-
-                        <Button
-                            variant="outline"
-                            className="md:hidden w-full"
-                            onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-                        >
-                            <Filter className="mr-2 h-4 w-4" />
-                            Filters
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            {/* ... */}
 
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col md:flex-row gap-8">
@@ -177,11 +144,35 @@ export default function InventoryPage() {
                         "w-full md:w-64 space-y-8 flex-shrink-0",
                         isMobileFiltersOpen ? "block" : "hidden md:block"
                     )}>
+                        {/* Search */}
+                        <div>
+                            <h3 className="font-bold font-serif text-slate-900 mb-4">Search</h3>
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Search tools..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 focus:border-safety-orange transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Categories */}
+                        {/* ... */}
+
+                        {/* Price Range */}
+                        {/* ... */}
+
+                        {/* Distance Radius */}
+                        {/* ... */}
+
                         {/* Categories */}
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
                             <div className="space-y-2">
-                                {categories.map(category => (
+                                {sortedCategories.map(category => (
                                     <label key={category.id} className="flex items-center gap-2 cursor-pointer group">
                                         <div className={cn(
                                             "w-4 h-4 rounded border flex items-center justify-center transition-colors",
@@ -244,6 +235,55 @@ export default function InventoryPage() {
                                 <span>0.5 mi</span>
                                 <span>5 mi</span>
                             </div>
+                        </div>
+
+                        {/* Instant Book */}
+                        <div className="bg-yellow-50/80 p-4 rounded-xl border border-yellow-200 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+                            <h3 className="font-bold font-serif text-slate-900 mb-3 flex items-center gap-2">
+                                <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500 animate-pulse" />
+                                Instant Book
+                            </h3>
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <div className={cn(
+                                    "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out shadow-inner",
+                                    instantBookOnly ? "bg-yellow-400" : "bg-slate-200"
+                                )}>
+                                    <div className={cn(
+                                        "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out",
+                                        instantBookOnly ? "translate-x-4" : "translate-x-0"
+                                    )} />
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={instantBookOnly}
+                                    onChange={() => setInstantBookOnly(!instantBookOnly)}
+                                />
+                                <span className="text-sm text-slate-600 font-medium">Instant Book Only</span>
+                            </label>
+                        </div>
+
+                        {/* Barter */}
+                        <div>
+                            <h3 className="font-bold font-serif text-slate-900 mb-4">Barter</h3>
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <div className={cn(
+                                    "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out",
+                                    acceptsBarterOnly ? "bg-emerald-500" : "bg-slate-200"
+                                )}>
+                                    <div className={cn(
+                                        "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out",
+                                        acceptsBarterOnly ? "translate-x-4" : "translate-x-0"
+                                    )} />
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={acceptsBarterOnly}
+                                    onChange={() => setAcceptsBarterOnly(!acceptsBarterOnly)}
+                                />
+                                <span className="text-sm text-slate-600">Accepts Barter Only</span>
+                            </label>
                         </div>
 
                         {/* Safety Level */}

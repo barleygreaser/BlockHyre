@@ -1,19 +1,150 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { ArrowLeft, Shield, AlertTriangle, BookOpen } from "lucide-react";
+import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMarketplace } from "@/app/hooks/use-marketplace";
+import { supabase } from "@/lib/supabase";
+import { Switch } from "@/app/components/ui/switch";
+import { ImageUpload } from "@/app/components/ui/image-upload";
 
 export default function AddToolPage() {
-    const [riskLevel, setRiskLevel] = useState<"standard" | "heavy">("standard");
-    const [price, setPrice] = useState("");
+    const router = useRouter();
+    const { categories, fetchCategories } = useMarketplace();
 
-    const deposit = riskLevel === "standard" ? 50 : 250;
+    const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+
+    // Form State
+    const [formData, setFormData] = useState({
+        title: "",
+        brand: "",
+        displayName: "",
+        categoryId: "",
+        dailyPrice: "",
+        manualUrl: "",
+        description: "",
+        acceptsBarter: false,
+        bookingType: "request" as "request" | "instant",
+        images: ["", "", ""],
+        specs: {
+            weight: "",
+            dimensions: ""
+        }
+    });
+
+    const [isDisplayNameModified, setIsDisplayNameModified] = useState(false);
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const selectedCategory = categories.find(c => c.id === formData.categoryId);
+
+    // Auto-calculate Risk/Deposit based on Category
+    const riskFee = selectedCategory?.risk_daily_fee || 1;
+    const deposit = riskFee >= 10 ? 250 : riskFee >= 3 ? 100 : 50;
+    const isHighRisk = riskFee >= 10;
+    const requiresManual = ["Heavy Machinery", "Power Tools", "Small Power Tools"].includes(selectedCategory?.name || "");
+
+    const handleInputChange = (field: string, value: any) => {
+        setFormData(prev => {
+            const newData = { ...prev, [field]: value };
+
+            // Auto-populate Display Name if not manually modified
+            if ((field === 'title' || field === 'brand') && !isDisplayNameModified) {
+                const brand = field === 'brand' ? value : prev.brand;
+                const title = field === 'title' ? value : prev.title;
+                if (brand && title) {
+                    newData.displayName = `${brand} ${title}`;
+                } else if (title) {
+                    newData.displayName = title;
+                }
+            }
+            return newData;
+        });
+
+        if (field === 'displayName') {
+            setIsDisplayNameModified(true);
+        }
+    };
+
+    const handleSpecChange = (field: string, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            specs: { ...prev.specs, [field]: value }
+        }));
+    };
+
+    const handleImageChange = (index: number, value: string) => {
+        const newImages = [...formData.images];
+        newImages[index] = value;
+        setFormData(prev => ({ ...prev, images: newImages }));
+    };
+
+    // Helper to generate UUID
+    const generateUUID = () => {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        console.log("Submitting with categories available:", categories);
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            // if (!user) {
+            //     alert("You must be logged in to list a tool.");
+            //     setLoading(false);
+            //     return;
+            // }
+
+            const newId = generateUUID();
+
+            const { error } = await supabase
+                .from('listings')
+                .insert({
+                    id: newId,
+                    title: formData.title,
+                    brand: formData.brand,
+                    display_name: formData.displayName,
+                    description: formData.description,
+                    daily_price: parseFloat(formData.dailyPrice),
+                    category_id: formData.categoryId,
+                    images: formData.images.filter(img => img.length > 0),
+                    specifications: JSON.stringify(formData.specs),
+                    manual_url: formData.manualUrl,
+                    is_high_powered: isHighRisk,
+                    accepts_barter: formData.acceptsBarter,
+                    booking_type: formData.bookingType,
+                    owner_id: user?.id
+                });
+
+            if (error) throw error;
+
+            alert("Listing created successfully!");
+            router.push('/inventory');
+
+        } catch (e: any) {
+            console.error("Error creating listing:", e);
+            alert(`Failed to create listing: ${e.message || e.details || "Unknown error"}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <main className="min-h-screen bg-slate-50">
@@ -30,138 +161,241 @@ export default function AddToolPage() {
                     <p className="text-slate-600 mt-2">Turn your idle equipment into income. Safe, insured, and simple.</p>
                 </div>
 
+                {/* Progress Steps */}
+                <div className="flex items-center justify-center gap-4 mb-8">
+                    <div className={cn("h-2 w-16 rounded-full transition-colors", step >= 1 ? "bg-safety-orange" : "bg-slate-200")} />
+                    <div className={cn("h-2 w-16 rounded-full transition-colors", step >= 2 ? "bg-safety-orange" : "bg-slate-200")} />
+                </div>
+
                 <Card className="border-slate-200 shadow-sm">
                     <CardHeader className="bg-slate-900 text-white rounded-t-lg">
                         <CardTitle className="flex items-center gap-2">
                             <Shield className="h-5 w-5 text-safety-orange" />
-                            Asset Protection Setup
+                            {step === 1 ? "Asset Protection Setup" : "Details & Images"}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
 
-                        {/* Basic Info */}
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-900">Tool Name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. DeWalt Table Saw"
-                                        className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-900">Brand</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. DeWalt"
-                                        className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-900">Category</label>
-                                    <select className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 bg-white">
-                                        <option value="">Select a category...</option>
-                                        <option value="harvest">Harvest & Garden</option>
-                                        <option value="build">Build & Repair</option>
-                                        <option value="maintain">Maintain & Clean</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-900">Daily Price ($)</label>
-                                    <input
-                                        type="number"
-                                        placeholder="0.00"
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                        className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Risk Toggle */}
-                        <div className="space-y-3 pt-4 border-t border-slate-100">
-                            <label className="text-sm font-bold text-slate-900 block">Risk Level & Deposit</label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                                <label className={cn(
-                                    "relative flex flex-col p-4 rounded-lg border-2 cursor-pointer transition-all",
-                                    riskLevel === "standard"
-                                        ? "border-safety-orange bg-orange-50/50"
-                                        : "border-slate-200 hover:border-slate-300"
-                                )}>
-                                    <input
-                                        type="radio"
-                                        name="risk"
-                                        className="absolute top-4 right-4 text-safety-orange focus:ring-safety-orange"
-                                        checked={riskLevel === "standard"}
-                                        onChange={() => setRiskLevel("standard")}
-                                    />
-                                    <span className="font-bold text-slate-900">Standard Tool</span>
-                                    <span className="text-xs text-slate-500 mt-1">Drills, Saws, Sanders</span>
-                                    <div className="mt-3 pt-3 border-t border-slate-200/50">
-                                        <span className="text-xs font-bold text-slate-600 uppercase">Renter Deposit</span>
-                                        <div className="text-xl font-bold text-slate-900">$50.00</div>
+                        {step === 1 && (
+                            <>
+                                {/* Basic Info */}
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-slate-900">Brand</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. DeWalt"
+                                                value={formData.brand}
+                                                onChange={(e) => handleInputChange("brand", e.target.value)}
+                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-slate-900">Tool Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Table Saw"
+                                                value={formData.title}
+                                                onChange={(e) => handleInputChange("title", e.target.value)}
+                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                            />
+                                        </div>
                                     </div>
-                                </label>
 
-                                <label className={cn(
-                                    "relative flex flex-col p-4 rounded-lg border-2 cursor-pointer transition-all",
-                                    riskLevel === "heavy"
-                                        ? "border-safety-orange bg-orange-50/50"
-                                        : "border-slate-200 hover:border-slate-300"
-                                )}>
-                                    <input
-                                        type="radio"
-                                        name="risk"
-                                        className="absolute top-4 right-4 text-safety-orange focus:ring-safety-orange"
-                                        checked={riskLevel === "heavy"}
-                                        onChange={() => setRiskLevel("heavy")}
+                                    {/* Display Name */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-slate-900">Display Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. DeWalt Table Saw"
+                                            value={formData.displayName}
+                                            onChange={(e) => handleInputChange("displayName", e.target.value)}
+                                            className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 bg-slate-50"
+                                        />
+                                        <p className="text-xs text-slate-500">This is how your listing will appear to others.</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-slate-900">Category</label>
+                                            <select
+                                                value={formData.categoryId}
+                                                onChange={(e) => handleInputChange("categoryId", e.target.value)}
+                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 bg-white"
+                                            >
+                                                <option value="">Select a category...</option>
+                                                {categories.map(cat => (
+                                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-slate-900">Daily Price ($)</label>
+                                            <input
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={formData.dailyPrice}
+                                                onChange={(e) => handleInputChange("dailyPrice", e.target.value)}
+                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Auto-Calculated Risk Info */}
+                                {selectedCategory && (
+                                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-sm font-bold text-slate-900">Risk Level</span>
+                                            <span className={cn(
+                                                "px-2 py-1 rounded text-xs font-bold",
+                                                isHighRisk ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"
+                                            )}>
+                                                {isHighRisk ? "High Risk" : "Standard Risk"}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm text-slate-600">Required Deposit</span>
+                                            <span className="font-bold text-slate-900">${deposit.toFixed(2)}</span>
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-2">
+                                            Based on the category <strong>{selectedCategory.name}</strong>, we automatically apply this protection level.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Manual Link (Conditional) */}
+                                {requiresManual && (
+                                    <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                                        <div className="flex justify-between items-center">
+                                            <label className="text-sm font-medium text-slate-900">Manufacturer Manual URL</label>
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                Required
+                                            </span>
+                                        </div>
+                                        <div className="relative">
+                                            <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <input
+                                                type="url"
+                                                placeholder="https://..."
+                                                value={formData.manualUrl}
+                                                onChange={(e) => handleInputChange("manualUrl", e.target.value)}
+                                                className="w-full h-10 pl-9 pr-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="pt-6">
+                                    <Button
+                                        onClick={() => setStep(2)}
+                                        disabled={!formData.title || !formData.categoryId || !formData.dailyPrice || (requiresManual && !formData.manualUrl)}
+                                        className="w-full h-12 text-base bg-safety-orange hover:bg-safety-orange/90"
+                                    >
+                                        Next: Details & Images
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+
+                        {step === 2 && (
+                            <>
+                                {/* Description */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-900">Description</label>
+                                    <textarea
+                                        placeholder="Describe the condition, included accessories, etc."
+                                        value={formData.description}
+                                        onChange={(e) => handleInputChange("description", e.target.value)}
+                                        className="w-full h-32 p-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 resize-none"
                                     />
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-bold text-slate-900">Heavy Machinery</span>
-                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                </div>
+
+                                {/* Toggles: Barter & Instant Book */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-0.5">
+                                            <label className="text-sm font-medium text-slate-900">Accept Barter?</label>
+                                            <p className="text-xs text-slate-500">Open to trading for services/goods.</p>
+                                        </div>
+                                        <Switch
+                                            checked={formData.acceptsBarter}
+                                            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, acceptsBarter: checked }))}
+                                        />
                                     </div>
-                                    <span className="text-xs text-slate-500 mt-1">Tractors, Excavators, Splitters</span>
-                                    <div className="mt-3 pt-3 border-t border-slate-200/50">
-                                        <span className="text-xs font-bold text-slate-600 uppercase">Renter Deposit</span>
-                                        <div className="text-xl font-bold text-safety-orange">$250.00</div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-0.5">
+                                            <label className="text-sm font-medium text-slate-900">Instant Book</label>
+                                            <p className="text-xs text-slate-500">Allow booking without approval.</p>
+                                        </div>
+                                        <Switch
+                                            checked={formData.bookingType === 'instant'}
+                                            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, bookingType: checked ? 'instant' : 'request' }))}
+                                        />
                                     </div>
-                                </label>
+                                </div>
 
-                            </div>
-                        </div>
+                                {/* Specs */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-slate-900">Weight (kg)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. 15"
+                                            value={formData.specs.weight}
+                                            onChange={(e) => handleSpecChange("weight", e.target.value)}
+                                            className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-slate-900">Dimensions</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. 50x30x20 cm"
+                                            value={formData.specs.dimensions}
+                                            onChange={(e) => handleSpecChange("dimensions", e.target.value)}
+                                            className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                        />
+                                    </div>
+                                </div>
 
-                        {/* Manual Link */}
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                                <label className="text-sm font-medium text-slate-900">Manufacturer Manual URL</label>
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                    Required for Safety
-                                </span>
-                            </div>
-                            <div className="relative">
-                                <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                <input
-                                    type="url"
-                                    placeholder="https://..."
-                                    className="w-full h-10 pl-9 pr-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
-                                />
-                            </div>
-                            <p className="text-xs text-slate-500">
-                                We provide this to every renter to ensure they know how to operate the tool safely.
-                            </p>
-                        </div>
+                                {/* Images */}
+                                <div className="space-y-4">
+                                    <label className="text-sm font-medium text-slate-900">Images</label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        {formData.images.map((img, idx) => (
+                                            <ImageUpload
+                                                key={idx}
+                                                bucket="tool_images"
+                                                initialValue={img}
+                                                onUpload={(url) => handleImageChange(idx, url)}
+                                                label={`Photo ${idx + 1}`}
+                                                folder="tools"
+                                            />
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-slate-500">Upload clear photos of your item.</p>
+                                </div>
 
-                        <div className="pt-6">
-                            <Button className="w-full h-12 text-base bg-safety-orange hover:bg-safety-orange/90">
-                                List Tool for Rent
-                            </Button>
-                        </div>
+                                <div className="pt-6 flex gap-4">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setStep(1)}
+                                        className="flex-1 h-12"
+                                    >
+                                        Back
+                                    </Button>
+                                    <Button
+                                        onClick={handleSubmit}
+                                        disabled={loading}
+                                        className="flex-1 h-12 text-base bg-safety-orange hover:bg-safety-orange/90"
+                                    >
+                                        {loading ? "Creating Listing..." : "List Tool for Rent"}
+                                    </Button>
+                                </div>
+                            </>
+                        )}
 
                     </CardContent>
                 </Card>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
-import { MapPin, AlertTriangle } from "lucide-react";
+import { MapPin, AlertTriangle, Zap } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 
 export interface Tool {
@@ -19,6 +19,7 @@ export interface Tool {
     };
     distance?: number; // Calculated at runtime
     acceptsBarter?: boolean;
+    instantBook?: boolean;
 }
 
 interface ToolCardProps {
@@ -36,6 +37,12 @@ export function ToolCard({ tool }: ToolCardProps) {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
+                    {tool.instantBook && (
+                        <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white flex items-center gap-1 border-none animate-glow">
+                            <Zap className="h-3 w-3 fill-white" />
+                            Instant Book
+                        </Badge>
+                    )}
                     {tool.isHeavyMachinery && (
                         <Badge variant="destructive" className="flex items-center gap-1 shadow-sm">
                             <AlertTriangle className="h-3 w-3" />
