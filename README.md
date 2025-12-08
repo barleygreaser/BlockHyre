@@ -6,11 +6,11 @@ BlockShare is a "High-Fidelity" MVP for a hyperlocal tool-sharing platform desig
 
 For Renters
 
-Hyperlocal Inventory: Find tools within 2 miles of your home.
+Hyperlocal Inventory: Find tools within 2 miles of your home (limited to three trial neighborhoods at launch).
 
 Safety First: Every rental includes a mandatory "Safety Gate" with liability waivers and safety manual checks.
 
-Transparent Pricing: Clear breakdown of Rental Fees, Platform Fees (including the "Peace Fund"), and Refundable Deposits.
+Transparent Pricing: Clear breakdown of Rental Fees, Platform Fees, the Peace Fund Fee, and the **Temporary Refundable Security Deposit** (Phase 1).
 
 Active Dashboard: Track your rental status, upload pre-use inspection photos, and manage returns.
 
@@ -30,7 +30,7 @@ Community
 
 The Peace Fund: A community-led safety net (funded by 10% of fees) that covers minor accidents and repairs, keeping neighbors friendly.
 
-Verification: All users are ID-verified and limited to a specific neighborhood radius.
+Verification: All users are ID-verified and limited to a specific neighborhood radius. **Verification is tiered: Residency proof for Tiers 1 & 2; Mandatory Government ID for Tier 3.**
 
 🛠️ Tech Stack
 
@@ -50,6 +50,8 @@ Datepicker: Custom implementation based on react-tailwindcss-datepicker for Airb
 
 Animations: canvas-confetti for success states.
 
+**ID Verification: Stripe Identity**
+
 💾 Data Storage & Realtime Enhancements
 
 This MVP leverages advanced Supabase features for critical functionality:
@@ -65,6 +67,8 @@ Profile Photos: User avatars.
 Inspection Photos: Uploaded by renters before and after use for the Active Dashboard and Return Inspection features.
 
 Geospatial: Implemented PostGIS-based "Search Nearby" RPC function for Hyperlocal Inventory.
+
+**Identity & Fraud:** Stripe Identity is used for mandatory Government ID verification on all Tier 3 rentals, mitigating the risk of high-value collusion fraud.
 
 🔄 Recent Updates (Real Data Integration)
 
@@ -88,19 +92,21 @@ To ensure trust and transparency for all community members, BlockShare requires 
 | Terms of Service | Liability Policy | Dispute Tribunal | Community Guidelines |
 | :--- | :--- | :--- | :--- |
 
-### The Peace Fund: Worry-Free Renting
+### The Peace Fund: Worry-Free Renting (Launch Phase)
 Our Community Safety Net: Replaces large security deposits, enables free borrowing, and covers accidental damage.
 
-| Tier 1 | Tier 2 | Tier 3 |
-| :--- | :--- | :--- |
-| **\$1**/day <br> Up to \$100 | **\$3**/day <br> Up to \$500 | **\$10**/day <br> Up to \$3,000 |
+| Tier | Peace Fund Fee (Daily) | Max Payout (Coverage) | **Temporary Refundable Deposit** |
+| :--- | :--- | :--- | :--- |
+| **Tier 1** | **\$1.00** | Up to \$100 | **\$25.00** |
+| **Tier 2** | **\$3.00** | Up to \$500 | **\$50.00** |
+| **Tier 3** | **\$10.00** | Up to \$3,000 | **\$100.00** |
 
 #### What Your Fee Covers
 * **Zero Liability:** If accidental damage occurs, the fund covers the cost—you pay no deductible.
 * **Protection Level:** Active
 * **RENTER DEDUCTIBLE:** NONE (\$0.00)
 
-*Note: The Peace Fund fee is mandatory for all rentals, including free borrows, as it protects the Owner's asset. All rental fees are held in escrow.*
+*Note: The **refundable deposit** is temporary for the first six months to ensure the Peace Fund reserve is solvent. The Peace Fund fee is mandatory for all rentals, including free borrows, as it protects the Owner's asset. All rental fees are held in escrow.*
 
 ---
 
