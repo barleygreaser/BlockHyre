@@ -14,7 +14,7 @@ import { Separator } from "@/app/components/ui/separator";
 import { Calendar } from "@/app/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
-import { MapPin, ShieldCheck, AlertTriangle, Zap, User, Star, Calendar as CalendarIcon, ArrowLeft } from "lucide-react";
+import { MapPin, ShieldCheck, AlertTriangle, Zap, User, Star, Calendar as CalendarIcon, ArrowLeft, Settings } from "lucide-react";
 import { generateSlug } from "@/lib/utils";
 
 export default function ListingDetailPage() {
@@ -172,14 +172,19 @@ export default function ListingDetailPage() {
                             {listing.specifications && Object.keys(listing.specifications).length > 0 && (
                                 <div className="pt-4">
                                     <h3 className="text-xl font-bold font-serif text-slate-900 mb-4">Specifications</h3>
-                                    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
                                         {Object.entries(listing.specifications).map(([key, value]) => (
-                                            <div key={key} className="flex justify-between border-b border-slate-100 pb-2">
-                                                <dt className="text-slate-500 capitalize">{key.replace(/_/g, ' ')}</dt>
-                                                <dd className="font-medium text-slate-900">{String(value)}</dd>
+                                            <div key={key} className="bg-slate-50 rounded-lg p-3 border border-slate-200 flex items-start gap-3">
+                                                <div className="bg-white p-1.5 rounded-md border border-slate-100 shadow-sm shrink-0">
+                                                    <Settings className="h-4 w-4 text-slate-400" />
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-0.5">{key.replace(/_/g, ' ')}</div>
+                                                    <div className="text-sm font-bold text-slate-900 leading-tight">{String(value)}</div>
+                                                </div>
                                             </div>
                                         ))}
-                                    </dl>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -214,13 +219,14 @@ export default function ListingDetailPage() {
 
                                     <div className="space-y-4">
                                         <div className="text-sm font-medium text-slate-700">Select Dates</div>
-                                        <div className="border border-slate-200 rounded-lg p-2 bg-white flex justify-center">
+                                        <div className="flex justify-center">
                                             <Calendar
                                                 mode="range"
                                                 selected={dateRange}
                                                 onSelect={setDateRange}
                                                 blockedDates={unavailableDates}
                                                 className="rounded-md border-0"
+                                                minDate={new Date()} // Disable past dates
                                             />
                                         </div>
                                     </div>

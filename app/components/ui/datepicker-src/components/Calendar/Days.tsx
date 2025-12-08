@@ -174,18 +174,26 @@ const Days = (props: Props) => {
     const buttonClass = useCallback(
         (day: Date, type: "current" | "next" | "previous") => {
             const baseClass = "flex items-center justify-center w-12 h-12 lg:w-10 lg:h-10";
+
+            if (isDateTooEarly(day)) {
+                return cn(baseClass, "bg-slate-100 text-slate-300 cursor-not-allowed");
+            }
+
+            if (isDateDisabled(day)) {
+                return cn(baseClass, "line-through decoration-2 decoration-slate-500 text-slate-400 cursor-not-allowed font-medium");
+            }
+
             if (type === "current") {
                 return cn(
                     baseClass,
                     !activeDateData(day).active
                         ? hoverClassByDay(day)
-                        : activeDateData(day).className,
-                    isDateDisabled(day) && "line-through"
+                        : activeDateData(day).className
                 );
             }
-            return cn(baseClass, isDateDisabled(day) && "line-through", "text-gray-400");
+            return cn(baseClass, "text-gray-400");
         },
-        [activeDateData, hoverClassByDay, isDateDisabled]
+        [activeDateData, hoverClassByDay, isDateDisabled, isDateTooEarly]
     );
 
     const checkIfHoverPeriodContainsDisabledPeriod = useCallback(

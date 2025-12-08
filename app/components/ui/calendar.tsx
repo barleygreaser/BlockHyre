@@ -10,6 +10,7 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
     selected?: any;
     onSelect?: any;
     orientation?: "vertical" | "horizontal";
+    minDate?: Date | null;
 }
 
 function Calendar({
@@ -57,6 +58,7 @@ function Calendar({
                 primaryColor={"orange"}
                 asSingle={false} // Ensure it's range mode
                 numberOfMonths={1} // Pass this new prop
+                minDate={props.minDate}
             />
         </div>
     )
