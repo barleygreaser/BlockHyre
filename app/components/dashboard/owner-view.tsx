@@ -16,6 +16,18 @@ export function OwnerDashboardView() {
     const [isInspectionOpen, setIsInspectionOpen] = useState(false);
     const [stripeConnected, setStripeConnected] = useState(false);
     const [showProTip, setShowProTip] = useState(true);
+
+    useEffect(() => {
+        const dismissed = localStorage.getItem("dashboard_protip_dismissed");
+        if (dismissed === "true") {
+            setShowProTip(false);
+        }
+    }, []);
+
+    const handleDismissProTip = () => {
+        setShowProTip(false);
+        localStorage.setItem("dashboard_protip_dismissed", "true");
+    };
     const [rentalRequests, setRentalRequests] = useState([
         { id: 1, user: "Mike T.", item: "DeWalt Table Saw", dates: "Oct 14 - Oct 16", duration: "2 Days" }
     ]);
@@ -234,7 +246,7 @@ export function OwnerDashboardView() {
                     {showProTip && (
                         <Card className="bg-blue-50 border-blue-100 relative">
                             <button
-                                onClick={() => setShowProTip(false)}
+                                onClick={handleDismissProTip}
                                 className="absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition-colors"
                             >
                                 <X className="h-4 w-4" />
