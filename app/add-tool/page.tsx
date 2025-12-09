@@ -76,19 +76,21 @@ export default function AddToolPage() {
         }
     };
 
-    const handleSuggestionSelect = (item: any) => {
+    const handleBrandSelect = (item: any) => {
         setFormData(prev => ({
             ...prev,
-            brand: item.brand,
-            title: item.tool_name,
-            displayName: `${item.brand} ${item.tool_name}`
+            brand: item.brand || "",
+            displayName: `${item.brand} ${prev.title}`.trim()
         }));
-        // We auto-filled, so we might consider display name modified or not?
-        // Let's assume selecting a specific item implies using that standard name.
-        // If user edits afterwards, handleInputChange will set modified=true.
-        // For now, let's essentially say it is modified to prevent auto-overwrite if they only change one field later?
-        // Actually, if they change brand manually after select, handleInputChange will try to update displayName.
-        // That is fine.
+    };
+
+    const handleToolSelect = (item: any) => {
+        setFormData(prev => ({
+            ...prev,
+            brand: item.brand || prev.brand,
+            title: item.tool_name,
+            displayName: `${item.brand || prev.brand} ${item.tool_name}`.trim()
+        }));
     };
 
     const handleSpecChange = (field: string, value: string) => {
@@ -200,15 +202,18 @@ export default function AddToolPage() {
                                         <TypeaheadInput
                                             label="Brand"
                                             value={formData.brand}
+                                            type="brand"
                                             onChange={(val) => handleInputChange("brand", val)}
-                                            onSelect={handleSuggestionSelect}
+                                            onSelect={handleBrandSelect}
                                             placeholder="e.g. DeWalt"
                                         />
                                         <TypeaheadInput
                                             label="Tool Name"
                                             value={formData.title}
+                                            type="tool"
+                                            brandFilter={formData.brand} // Filter tools by selected brand
                                             onChange={(val) => handleInputChange("title", val)}
-                                            onSelect={handleSuggestionSelect}
+                                            onSelect={handleToolSelect}
                                             placeholder="e.g. Table Saw"
                                         />
                                     </div>
@@ -288,7 +293,7 @@ export default function AddToolPage() {
                                             <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="url"
-                                                placeholder="https://..."
+                                                placeholder="https://www.manualslib.com/..."
                                                 value={formData.manualUrl}
                                                 onChange={(e) => handleInputChange("manualUrl", e.target.value)}
                                                 className="w-full h-10 pl-9 pr-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"

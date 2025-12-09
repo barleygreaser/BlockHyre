@@ -6,22 +6,24 @@ import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
 interface Suggestion {
-    id: string;
-    brand: string;
-    tool_name: string;
-    tier_suggestion: number;
+    id?: string;
+    brand?: string;
+    tool_name?: string;
+    tier_suggestion?: number;
 }
 
 interface TypeaheadInputProps {
     label: string;
     value: string;
+    type: 'brand' | 'tool';
+    brandFilter?: string; // Optional filter for tool lookup
     onChange: (val: string) => void;
     onSelect: (item: Suggestion) => void;
     placeholder?: string;
     className?: string;
 }
 
-export function TypeaheadInput({ label, value, onChange, onSelect, placeholder, className }: TypeaheadInputProps) {
+export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSelect, placeholder, className }: TypeaheadInputProps) {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -46,42 +48,44 @@ export function TypeaheadInput({ label, value, onChange, onSelect, placeholder, 
     // Fetch Suggestions
     useEffect(() => {
         const fetchSuggestions = async () => {
-            if (debouncedValue.length < 2 || justSelected) {
-                // If just selected, we don't clear suggestions immediately to avoid flash, but we don't fetch new ones.
-                // Actually better to clear suggestions if we matched exactly? 
-                // Let's just return.
-                if (debouncedValue.length < 2) setSuggestions([]);
+            if (debouncedValue.length < 1 || justSelected) {
+                if (debouncedValue.length < 1) setSuggestions([]);
                 return;
             }
 
             setIsLoading(true);
             try {
-                const res = await fetch(`/api/fetch-suggestions?query=${encodeURIComponent(debouncedValue)}`);
+                let url = `/api/fetch-suggestions?query=${encodeURIComponent(debouncedValue)}&type=${type}`;
+                if (brandFilter) {
+                    url += `&brandFilter=${encodeURIComponent(brandFilter)}`;
+                }
+
+                const res = await fetch(url);
                 const data = await res.json();
                 if (data.suggestions) {
                     setSuggestions(data.suggestions);
-                    setIsOpen(true);
+                    if (data.suggestions.length > 0) setIsOpen(true);
                 }
             } catch (error) {
                 console.error("Error fetching suggestions:", error);
             } finally {
                 setIsLoading(false);
-                setJustSelected(false); // Reset the flag after processing
+                setJustSelected(false);
             }
         };
 
         fetchSuggestions();
-    }, [debouncedValue]); // Intentionally omitting justSelected from deps to avoid loop managed by flow
+    }, [debouncedValue, type, brandFilter]);
 
     const handleSelect = (item: Suggestion) => {
-        setJustSelected(true); // Set true BEFORE value change triggers debounce
+        setJustSelected(true);
         onSelect(item);
         setIsOpen(false);
         setSuggestions([]);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setJustSelected(false); // Reset on typing
+        setJustSelected(false);
         onChange(e.target.value);
     };
 
@@ -108,14 +112,18 @@ export function TypeaheadInput({ label, value, onChange, onSelect, placeholder, 
 
             {isOpen && suggestions.length > 0 && (
                 <div className="absolute z-50 w-full mt-1 bg-white rounded-md shadow-lg border border-slate-200 max-h-60 overflow-auto">
-                    {suggestions.map((item) => (
+                    {suggestions.map((item, idx) => (
                         <button
-                            key={item.id}
+                            key={item.id || idx}
                             className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm flex items-center justify-between group border-b border-slate-100 last:border-0"
                             onClick={() => handleSelect(item)}
                         >
                             <span className="font-medium text-slate-700">
-                                {item.brand} <span className="font-normal text-slate-500">{item.tool_name}</span>
+                                {type === 'brand' ? item.brand : (
+                                    <>
+                                        {item.brand} <span className="font-normal text-slate-500">{item.tool_name}</span>
+                                    </>
+                                )}
                             </span>
                         </button>
                     ))}
