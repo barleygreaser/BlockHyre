@@ -11,7 +11,7 @@ interface FeaturedInventoryProps {
     listings: Listing[];
 }
 
-const CATEGORIES = ["All", "Heavy Machinery", "Electronics & Photo", "Woodworking", "Specialty Tools"];
+const CATEGORIES = ["All", "Harvest", "Heavy Machinery", "Small Power Tools", "Hand Tools", "Gardening", "Camping & Outdoor"];
 
 // Helper to normalize category strings for comparison
 const normalize = (s: string) => s.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-');
@@ -26,20 +26,15 @@ export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryPr
         return listings
             .filter(tool => {
                 // Tier 2+ check (Change logic here if "Tier 2" definition changes)
-                const isHighValue = tool.daily_price > 50 || tool.is_high_powered;
+                const price = Number(tool.daily_price);
+                const isHighValue = price > 50 || tool.is_high_powered;
                 if (!isHighValue) return false;
 
                 if (selectedCategory === "All") return true;
 
-                // Simple category matching
-                // In a real app, you'd map IDs or check the category_id relation
-                // adhering to the mock data strings for now
-                if (selectedCategory === "Heavy Machinery") return tool.is_high_powered;
-
-                // Fallback fuzzy match for other categories
+                // Match category name exactly as they now align with DB
                 const categoryName = tool.category?.name || "";
-                return categoryName.includes(selectedCategory)
-                    || (selectedCategory === "Specialty Tools" && !["Heavy Machinery", "Woodworking", "Electronics", "Photo"].some(c => categoryName.includes(c)));
+                return categoryName === selectedCategory;
             })
             .slice(0, 6); // Limit to 6 items
     }, [listings, selectedCategory]);

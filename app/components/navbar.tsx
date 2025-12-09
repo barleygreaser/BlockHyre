@@ -2,13 +2,24 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Shield, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 
 export function Navbar() {
-    const { user, signOut } = useAuth();
+    const { user, signOut, loading } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+        try {
+            await signOut();
+            router.push('/');
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
+    };
 
     return (
         <nav className="border-b border-slate-200 bg-white relative z-50">
@@ -42,72 +53,80 @@ export function Navbar() {
                         </Button>
                     </Link>
 
-                    {user ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="flex items-center gap-2 focus:outline-none"
-                            >
-                                <div className="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
-                                    {/* Try to use the user's uploaded avatar, fallback to initial */}
-                                    {/* Note: user metadata might not be immediately updated, so we might need to rely on the profile fetch or context update. For now using basic metadata if available. */}
-                                    {/* In a real app, we'd sync this better. */}
-                                    <span className="font-bold text-slate-600">
-                                        {user.email?.charAt(0).toUpperCase()}
-                                    </span>
-                                </div>
-                            </button>
+                    {loading ? (
+                        <div className="h-10 w-24 bg-slate-100 animate-pulse rounded-md" />
+                    ) : user ? (
+                        <div className="flex items-center gap-3">
+                            <Link href="/owner/dashboard">
+                                <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold shadow-md hidden sm:flex">
+                                    Dashboard
+                                </Button>
+                            </Link>
 
-                            {isMenuOpen && (
-                                <>
-                                    <div
-                                        className="fixed inset-0 z-40"
-                                        onClick={() => setIsMenuOpen(false)}
-                                    />
-                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 border border-slate-100 z-50">
-                                        <div className="px-4 py-2 border-b border-slate-100">
-                                            <p className="text-sm font-medium text-slate-900 truncate">
-                                                {user.email}
-                                            </p>
-                                        </div>
-                                        <Link
-                                            href="/profile"
-                                            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                                            onClick={() => setIsMenuOpen(false)}
-                                        >
-                                            Profile
-                                        </Link>
-                                        <Link
-                                            href="/owner/dashboard"
-                                            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                                            onClick={() => setIsMenuOpen(false)}
-                                        >
-                                            Owner Dashboard
-                                        </Link>
-                                        <Link
-                                            href="/my-rentals"
-                                            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                                            onClick={() => setIsMenuOpen(false)}
-                                        >
-                                            My Rentals
-                                        </Link>
-                                        <button
-                                            onClick={() => {
-                                                signOut();
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                                        >
-                                            Log Out
-                                        </button>
+                            {/* Mobile/Tablet Menu Trigger - keeping existing logic but simplified */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    className="flex items-center gap-2 focus:outline-none"
+                                >
+                                    <div className="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-safety-orange/50 transition-all">
+                                        <span className="font-bold text-slate-600">
+                                            {user.email?.charAt(0).toUpperCase()}
+                                        </span>
                                     </div>
-                                </>
-                            )}
+                                </button>
+
+                                {isMenuOpen && (
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        />
+                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 border border-slate-100 z-50">
+                                            <div className="px-4 py-2 border-b border-slate-100">
+                                                <p className="text-sm font-medium text-slate-900 truncate">
+                                                    {user.email}
+                                                </p>
+                                            </div>
+                                            <Link
+                                                href="/owner/dashboard"
+                                                className="block sm:hidden px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                                onClick={() => setIsMenuOpen(false)}
+                                            >
+                                                Dashboard
+                                            </Link>
+                                            <Link
+                                                href="/profile"
+                                                className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                                onClick={() => setIsMenuOpen(false)}
+                                            >
+                                                Profile
+                                            </Link>
+                                            <Link
+                                                href="/my-rentals"
+                                                className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                                onClick={() => setIsMenuOpen(false)}
+                                            >
+                                                My Rentals
+                                            </Link>
+                                            <button
+                                                onClick={() => {
+                                                    handleSignOut();
+                                                    setIsMenuOpen(false);
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                            >
+                                                Log Out
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <>
                             <Link href="/auth">
-                                <Button variant="outline" className="hidden sm:flex bg-white text-slate-900 border-slate-200 hover:bg-slate-50 font-bold">
+                                <Button variant="ghost" className="hidden sm:flex text-slate-600 hover:text-slate-900 font-bold hover:bg-slate-50">
                                     Log In
                                 </Button>
                             </Link>

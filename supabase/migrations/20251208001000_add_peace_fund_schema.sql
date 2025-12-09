@@ -8,7 +8,7 @@ ADD COLUMN IF NOT EXISTS total_paid numeric(10, 2);
 -- using UUIDs to match existing schema architecture instead of INT
 CREATE TABLE IF NOT EXISTS public.peace_fund_claims (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  rental_id integer REFERENCES public.rentals(id),
+  rental_id uuid REFERENCES public.rentals(id),
   owner_id uuid REFERENCES auth.users(id),
   claim_amount numeric(10, 2),
   status text DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),

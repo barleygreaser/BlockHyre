@@ -11,14 +11,14 @@ create table if not exists public.users (
 
 -- 2. Categories Table
 create table if not exists public.categories (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   name text not null,
   risk_daily_fee numeric not null -- The "Peace Fund" rate
 );
 
 -- 3. Listings Table
 create table if not exists public.listings (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   title text not null,
   daily_price numeric not null,
   accepts_barter boolean default false,
@@ -27,7 +27,7 @@ create table if not exists public.listings (
 
 -- 4. Rentals Table
 create table if not exists public.rentals (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   listing_id uuid references public.listings(id),
   renter_id uuid references auth.users(id),
   start_date timestamp with time zone,

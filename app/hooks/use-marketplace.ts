@@ -38,14 +38,21 @@ export const useMarketplace = () => {
                 .from('listings')
                 .select(`
                     *,
-                    category:categories (
+                    categories (
                         name,
                         risk_daily_fee
                     )
                 `);
 
             if (error) throw error;
-            setListings(data as Listing[]);
+
+            // Map 'categories' (DB relation) to 'category' (UI interface)
+            const mappedListings = (data || []).map((item: any) => ({
+                ...item,
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0 }
+            }));
+
+            setListings(mappedListings as Listing[]);
         } catch (e) {
             setError(e);
             console.error("Error fetching listings:", e);
@@ -61,7 +68,7 @@ export const useMarketplace = () => {
                 .from('listings')
                 .select(`
                     *,
-                    category:categories (
+                    categories (
                         name,
                         risk_daily_fee
                     )
@@ -70,7 +77,15 @@ export const useMarketplace = () => {
                 .single();
 
             if (error) throw error;
-            return data as Listing;
+
+            // Map relation
+            const item = data as any;
+            const mappedItem = {
+                ...item,
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0 }
+            };
+
+            return mappedItem as Listing;
         } catch (e) {
             console.error("Error fetching listing:", e);
             setError(e);

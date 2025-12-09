@@ -70,6 +70,32 @@ Replaces large security deposits and covers accidental damage.
 
 ---
 
+## 🔐 Database & Security
+
+### Security State: **SECURE**
+Role-Level Security (RLS) is strictly enforced on all core tables to ensure data privacy and integrity.
+
+| Table | Read Access | Write Access |
+| :--- | :--- | :--- |
+| **Listings** | **Public** | **Owner Only** |
+| **Rentals** | **Participants (Owner/Renter)** | **Renters (Create), Participants (Update)** |
+| **Users** | **Public (Profiles)** | **Self Only** |
+| **Categories** | **Public** | **Admin Only** |
+
+### Database Reset
+The database schema uses `UUID` primary keys. To reset the database to a clean state:
+```bash
+npx supabase db reset --linked
+```
+*Note: This will verify the schema against `supabase/migrations` and re-seed initial data.*
+
+### Recent Database Actions
+- **Reversion:** Revered schema from a 'wrecked' state (Integer vs UUID conflict) back to a clean UUID-based state.
+- **Audited:** Full security audit conducted to ensure congruency between Frontend permissions and Backend enforcement.
+- **Hardened:** Strict RLS policies applied via `20251209003000_apply_strict_rls.sql`.
+
+---
+
 ## 📦 Installation & Usage
 
 1. **Clone the repository:**
