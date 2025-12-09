@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { Search, Calendar, Check, MessageSquare } from "lucide-react";
+import { Search, Calendar, Check, MessageSquare, TriangleAlert } from "lucide-react";
 
 export function RenterDashboardView() {
+    const [activeDisputes, setActiveDisputes] = useState([]);
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -104,17 +107,35 @@ export function RenterDashboardView() {
                     </Card>
 
                     {/* Disputes */}
-                    <Card className="border-slate-200 shadow-sm">
-                        <CardHeader>
-                            <CardTitle className="text-lg font-serif">Disputes</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center gap-2 text-slate-500 text-sm">
-                                <Check className="h-4 w-4 text-green-500" />
-                                No active disputes
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {/* Disputes */}
+                    {activeDisputes.length > 0 ? (
+                        <Card className="border-red-200 shadow-sm bg-red-50">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-serif text-red-700 flex items-center gap-2">
+                                    <TriangleAlert className="h-5 w-5" />
+                                    Active Dispute
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-red-600 text-sm mb-4">
+                                    Action is required on your rental for <strong>Makita Circular Saw</strong>.
+                                </p>
+                                <Button size="sm" className="w-full font-bold bg-red-600 hover:bg-red-700 text-white">
+                                    View Details
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Card className="border-slate-200 shadow-sm">
+                            <CardContent className="p-4 flex items-center justify-between">
+                                <span className="font-serif text-slate-900 font-medium">Disputes</span>
+                                <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
+                                    <Check className="h-4 w-4" />
+                                    No active disputes
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>
