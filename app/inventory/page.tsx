@@ -7,7 +7,8 @@ import { ToolCard, Tool } from "@/app/components/tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { calculateDistance, Coordinates } from "@/lib/location";
-import { Search, Filter, MapPin, X, Loader2, Zap, Shield, ArrowUpDown } from "lucide-react";
+import { InventoryFiltersModal } from "@/app/components/inventory/inventory-filters-modal";
+import { Search, Filter, MapPin, X, Loader2, Zap, Shield, ArrowUpDown, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
@@ -36,6 +37,7 @@ export default function InventoryPage() {
     const [userLocation, setUserLocation] = useState<Coordinates>({ latitude: 34.0522, longitude: -118.2437 });
     const [isEditingZip, setIsEditingZip] = useState(false);
     const [sortOption, setSortOption] = useState<"price-asc" | "price-desc" | null>(null);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
     // Simple Zip to Coords map (Mocking a geocoding service)
     const getCoordsFromZip = (zip: string): Coordinates | null => {
@@ -419,6 +421,38 @@ export default function InventoryPage() {
 
                 </div>
             </div>
+            <InventoryFiltersModal
+                isOpen={isFiltersOpen}
+                onClose={() => setIsFiltersOpen(false)}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                categories={categories}
+                selectedCategories={selectedCategories}
+                toggleCategory={toggleCategory}
+                selectedTier={selectedTier}
+                setSelectedTier={setSelectedTier}
+                verifiedOwnersOnly={verifiedOwnersOnly}
+                setVerifiedOwnersOnly={setVerifiedOwnersOnly}
+                maxDistance={maxDistance}
+                setMaxDistance={setMaxDistance}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                acceptsBarterOnly={acceptsBarterOnly}
+                setAcceptsBarterOnly={setAcceptsBarterOnly}
+                instantBookOnly={instantBookOnly}
+                setInstantBookOnly={setInstantBookOnly}
+            />
+
+            {/* Mobile Filter FAB */}
+            <div className="fixed bottom-6 right-6 z-40 md:hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <Button
+                    onClick={() => setIsFiltersOpen(true)}
+                    className="h-14 w-14 rounded-full bg-slate-900 text-white shadow-xl flex items-center justify-center hover:bg-slate-800 hover:scale-105 transition-all border border-slate-700 hover:shadow-2xl"
+                >
+                    <SlidersHorizontal className="h-6 w-6" />
+                </Button>
+            </div>
+
             <Footer />
         </main>
     );
