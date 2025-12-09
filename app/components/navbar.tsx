@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { Shield, ShoppingCart, Menu, X, CheckCircle } from "lucide-react";
+import { Shield, ShoppingCart, Menu, X } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 
@@ -13,27 +13,25 @@ export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false); // Dropdown for desktop user menu
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile drawer toggle
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-    const [userName, setUserName] = useState<string | null>(null);
-    const [verificationStatus, setVerificationStatus] = useState<'none' | 'pending' | 'verified'>('none');
+    const [fullName, setFullName] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchUserProfile = async () => {
             if (!user) return;
             const { data } = await supabase
                 .from('users')
-                .select('profile_photo_url, first_name, last_name, id_verification_status')
+                .select('profile_photo_url, full_name')
                 .eq('id', user.id)
                 .single();
 
             if (data) {
                 if (data.profile_photo_url) setAvatarUrl(data.profile_photo_url);
-                if (data.first_name) setUserName(`${data.first_name} ${data.last_name || ''}`.trim());
-                if (data.id_verification_status) setVerificationStatus(data.id_verification_status);
+                if (data.full_name) setFullName(data.full_name);
             }
         };
 
-        fetchUserData();
+        fetchUserProfile();
     }, [user]);
 
     const handleSignOut = async () => {
@@ -41,6 +39,8 @@ export function Navbar() {
             await signOut();
             router.push('/');
             setIsMobileMenuOpen(false);
+            setAvatarUrl(null);
+            setFullName(null);
         } catch (error) {
             console.error("Error signing out:", error);
         }
@@ -229,14 +229,7 @@ export function Navbar() {
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-1.5">
-                                                <p className="font-bold text-slate-900 truncate">
-                                                    {userName || "Hello, Maker!"}
-                                                </p>
-                                                {verificationStatus === 'verified' && (
-                                                    <CheckCircle className="h-4 w-4 text-emerald-500 fill-emerald-500 text-white" />
-                                                )}
-                                            </div>
+                                            <p className="font-bold text-slate-900 truncate">Hello, {fullName || 'Maker'}!</p>
                                             <p className="text-sm text-slate-500 truncate">{user.email}</p>
                                         </div>
                                     </div>
