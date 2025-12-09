@@ -7,6 +7,8 @@ import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/app/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/app/components/ui/dialog";
+import { AvatarUpload } from "@/app/components/profile/avatar-upload";
 import { User, Shield, CreditCard, Activity, CheckCircle, AlertTriangle, ExternalLink } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
@@ -17,6 +19,60 @@ export default function ProfilePage() {
     const { user, loading } = useAuth();
     const [profile, setProfile] = useState<any>(null);
     const [stripeLoading, setStripeLoading] = useState(false);
+
+    // Edit Profile State
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [saveLoading, setSaveLoading] = useState(false);
+
+    const handleSaveProfile = async () => {
+        setSaveLoading(true);
+        try {
+            let avatarUrl = profile?.profile_photo_url;
+
+            if (selectedFile && user) {
+                // Upload to 'avatars' bucket
+                const fileExt = selectedFile.name.split('.').pop();
+                const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('avatars')
+                    .upload(fileName, selectedFile, { upsert: true });
+
+                if (uploadError) throw uploadError;
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from('avatars')
+                    .getPublicUrl(fileName);
+
+                avatarUrl = publicUrl;
+            }
+
+            // Update Profile Record
+            if (avatarUrl !== profile?.profile_photo_url) {
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({
+                        profile_photo_url: avatarUrl,
+                        // Add full_name update here if we adding input for it later
+                    })
+                    .eq('id', user?.id);
+
+                if (updateError) throw updateError;
+
+                // Refresh local state
+                setProfile((prev: any) => ({ ...prev, profile_photo_url: avatarUrl }));
+            }
+
+            setIsEditOpen(false);
+            setSelectedFile(null); // Reset
+        } catch (error) {
+            console.error("Error saving profile:", error);
+            alert("Failed to save profile changes.");
+        } finally {
+            setSaveLoading(false);
+        }
+    };
 
     // Initial Data Fetch
     useEffect(() => {
@@ -124,7 +180,34 @@ export default function ProfilePage() {
                                             <p className="text-sm text-slate-500">{user.email}</p>
                                         </div>
                                     </div>
-                                    <Button variant="outline" size="sm">Edit</Button>
+                                    <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" size="sm">Edit</Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Edit Profile</DialogTitle>
+                                            </DialogHeader>
+
+                                            <div className="py-6">
+                                                <AvatarUpload
+                                                    currentUrl={profile?.profile_photo_url}
+                                                    onFileSelect={setSelectedFile}
+                                                />
+                                            </div>
+
+                                            <DialogFooter>
+                                                <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+                                                <Button
+                                                    onClick={handleSaveProfile}
+                                                    disabled={saveLoading}
+                                                    className="bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                                >
+                                                    {saveLoading ? "Saving..." : "Save Changes"}
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
                                 </div>
 
                                 <div className="grid gap-4">

@@ -54,6 +54,7 @@
   - **Profile Dashboard:** New tabbed interface (Identity, Activity, Financials).
   - **Stripe Connect:** Integrated Stripe onboarding flow for secure user payouts.
   - **Verification:** UI supports Residency Verification display.
+  - **Identity:** Secure Profile Photo upload with client-side validation (3MB limit, type checking) and Supabase Storage integration.
 
 ---
 
