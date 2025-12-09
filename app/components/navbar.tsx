@@ -102,7 +102,7 @@ export function Navbar() {
                                     </Button>
                                 </Link>
 
-                                <Link href="/owner/dashboard">
+                                <Link href="/dashboard">
                                     <Button
                                         className="bg-white hover:bg-slate-50 text-safety-orange border border-safety-orange font-bold shadow-sm"
                                     >
@@ -253,7 +253,7 @@ export function Navbar() {
                                             + List a Tool
                                         </Link>
                                         <Link
-                                            href="/owner/dashboard"
+                                            href="/dashboard"
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className={buttonVariants({ variant: "outline", className: "w-full border-safety-orange text-safety-orange hover:bg-orange-50 font-bold h-12 text-base" })}
                                         >

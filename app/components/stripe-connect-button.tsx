@@ -19,8 +19,8 @@ export function StripeConnectButton() {
 
             const { data, error } = await supabase.functions.invoke('connect-stripe', {
                 body: {
-                    returnUrl: window.location.origin + '/owner/dashboard',
-                    refreshUrl: window.location.origin + '/owner/dashboard',
+                    returnUrl: window.location.origin + '/dashboard',
+                    refreshUrl: window.location.origin + '/dashboard',
                 },
             });
 
