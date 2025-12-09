@@ -281,18 +281,29 @@ export default function ListingDetailPage() {
                             </Card>
 
                             {/* Owner Profile Preview */}
-                            <div className="mt-6 flex items-center gap-4 p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div className="h-12 w-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
-                                    <User className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <div className="font-bold text-slate-900">Owner</div>
-                                    <div className="flex items-center text-xs text-slate-500">
-                                        <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                                        <span>4.9 (12 reviews)</span>
+                            {listing.owner && (
+                                <div className="mt-6 flex items-center gap-4 p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                    {listing.owner.profile_photo_url ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
+                                            src={listing.owner.profile_photo_url}
+                                            alt={listing.owner.full_name}
+                                            className="h-12 w-12 rounded-full object-cover border border-slate-200"
+                                        />
+                                    ) : (
+                                        <div className="h-12 w-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold border border-slate-200">
+                                            {listing.owner.full_name ? listing.owner.full_name.charAt(0).toUpperCase() : <User className="h-6 w-6" />}
+                                        </div>
+                                    )}
+                                    <div>
+                                        <div className="font-bold text-slate-900">{listing.owner.full_name || "Unknown Owner"}</div>
+                                        <div className="flex items-center text-xs text-slate-500">
+                                            <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+                                            <span>New BlockShare Member</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
 

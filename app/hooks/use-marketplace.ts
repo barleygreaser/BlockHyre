@@ -24,6 +24,11 @@ export type Listing = {
     dimensions_cm?: string;
     specifications?: Record<string, any>;
     owner_id?: string;
+    owner?: {
+        id: string;
+        full_name: string;
+        profile_photo_url: string;
+    };
 };
 
 export const useMarketplace = () => {
@@ -78,11 +83,26 @@ export const useMarketplace = () => {
 
             if (error) throw error;
 
+            // Fetch Owner Profile
+            let ownerProfile = null;
+            if (data.owner_id) {
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('id, full_name, profile_photo_url')
+                    .eq('id', data.owner_id)
+                    .single();
+
+                if (userData) {
+                    ownerProfile = userData;
+                }
+            }
+
             // Map relation
             const item = data as any;
             const mappedItem = {
                 ...item,
-                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0 }
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0 },
+                owner: ownerProfile
             };
 
             return mappedItem as Listing;
