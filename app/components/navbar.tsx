@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "./ui/button";
 import { Shield, ShoppingCart, Menu, X } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
+import { getUserDisplayName } from "@/lib/utils";
 
 export function Navbar() {
     const { user, signOut, loading } = useAuth();
@@ -55,7 +56,7 @@ export function Navbar() {
     };
 
     return (
-        <nav className="border-b border-slate-200 bg-white relative z-50">
+        <nav className="border-b border-slate-200 bg-white relative z-40">
             <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
@@ -124,7 +125,7 @@ export function Navbar() {
                                                 />
                                             ) : (
                                                 <span className="font-bold text-slate-600">
-                                                    {user.email?.charAt(0).toUpperCase()}
+                                                    {getUserDisplayName(user, fullName).charAt(0).toUpperCase()}
                                                 </span>
                                             )}
                                         </div>
@@ -139,7 +140,7 @@ export function Navbar() {
                                             <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 border border-slate-100 z-50">
                                                 <div className="px-4 py-2 border-b border-slate-100">
                                                     <p className="text-sm font-medium text-slate-900 truncate">
-                                                        {user.email}
+                                                        {getUserDisplayName(user, fullName)}
                                                     </p>
                                                 </div>
                                                 <Link
@@ -232,12 +233,12 @@ export function Navbar() {
                                                 <img src={avatarUrl} alt="User" className="h-full w-full object-cover" />
                                             ) : (
                                                 <span className="font-bold text-xl text-slate-600">
-                                                    {user.email?.charAt(0).toUpperCase()}
+                                                    {getUserDisplayName(user, fullName).charAt(0).toUpperCase()}
                                                 </span>
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-bold text-slate-900 truncate">Hello, {fullName || 'Maker'}!</p>
+                                            <p className="font-bold text-slate-900 truncate">Hello, {getUserDisplayName(user, fullName)}!</p>
                                             <p className="text-sm text-slate-500 truncate">{user.email}</p>
                                         </div>
                                     </div>

@@ -1,8 +1,16 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { User } from "@supabase/supabase-js"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function getUserDisplayName(user: User | null, profileName?: string | null): string {
+  if (profileName) return profileName;
+  if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
+  if (user?.email) return user.email.split('@')[0]; // Fallback to email username
+  return "Maker";
 }
 
 export function generateSlug(text: string) {
