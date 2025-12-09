@@ -91,8 +91,13 @@ export function RenterDashboardView() {
                                     <p className="font-medium text-slate-900">Ladder (20ft)</p>
                                     <p className="text-xs text-slate-500">Returned Sept 28</p>
                                 </div>
-                                <div className="text-xs text-green-600 font-bold">
-                                    Completed
+                                <div className="text-right">
+                                    <div className="text-xs text-green-600 font-bold mb-1">
+                                        Completed
+                                    </div>
+                                    <Link href="#" className="text-xs text-slate-400 hover:text-slate-600 underline decoration-slate-300 underline-offset-2">
+                                        Rent Again
+                                    </Link>
                                 </div>
                             </div>
                         </CardContent>
