@@ -181,27 +181,55 @@ export function OwnerDashboardView() {
 
                 {/* Right Column: Quick Stats / Tips */}
                 <div className="space-y-6">
-                    {/* Payout Status */}
-                    <Card className="border-slate-200">
-                        <CardHeader>
-                            <CardTitle className="text-lg font-serif">Payout Settings</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {stripeConnected ? (
-                                <div className="flex items-center gap-2 text-green-600 font-bold">
-                                    <Check className="h-5 w-5" />
-                                    Bank Account Connected
+                    {/* Payout Status / Recent Payouts */}
+                    {stripeConnected ? (
+                        <Card className="border-slate-200">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-lg font-serif">Recent Payouts</CardTitle>
+                                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs font-normal">
+                                    Stripe: Connected ●
+                                </Badge>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {/* Mock Payouts */}
+                                    <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
+                                        <div>
+                                            <p className="font-medium text-slate-900">Oct 15, 2025</p>
+                                            <p className="text-xs text-slate-500">To: ****4242</p>
+                                        </div>
+                                        <span className="text-green-600 font-bold">+$124.50</span>
+                                    </div>
+                                    <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
+                                        <div>
+                                            <p className="font-medium text-slate-900">Oct 08, 2025</p>
+                                            <p className="text-xs text-slate-500">To: ****4242</p>
+                                        </div>
+                                        <span className="text-green-600 font-bold">+$85.00</span>
+                                    </div>
+                                    <Link href="#">
+                                        <Button variant="link" className="text-slate-500 p-0 h-auto text-xs w-full justify-start mt-2">
+                                            View all transactions &rarr;
+                                        </Button>
+                                    </Link>
                                 </div>
-                            ) : (
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Card className="border-slate-200">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-serif">Payout Settings</CardTitle>
+                            </CardHeader>
+                            <CardContent>
                                 <div className="space-y-4">
                                     <p className="text-sm text-slate-500">
                                         Connect your bank account to receive payouts for your rentals.
                                     </p>
                                     <StripeConnectButton />
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {showProTip && (
                         <Card className="bg-blue-50 border-blue-100 relative">
