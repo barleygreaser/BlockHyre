@@ -9,6 +9,55 @@ import { Search, Calendar, Check, MessageSquare, TriangleAlert } from "lucide-re
 
 export function RenterDashboardView() {
     const [activeDisputes, setActiveDisputes] = useState([]);
+    const [activeRentals, setActiveRentals] = useState([
+        {
+            id: 1,
+            item: "Makita Circular Saw",
+            owner: "John D.",
+            status: "overdue",
+            badgeText: "OVERDUE",
+            dueText: "Due Yesterday",
+        },
+        {
+            id: 2,
+            item: "Hilti Hammer Drill",
+            owner: "Sarah M.",
+            status: "due-today",
+            badgeText: "Return Today",
+            dueText: "Due by 5:00 PM",
+        },
+        {
+            id: 3,
+            item: "Werner Extension Ladder",
+            owner: "Mike T.",
+            status: "due-future",
+            badgeText: "Due in 3 Days",
+            dueText: "Oct 15",
+        }
+    ]);
+
+    const getRentalStyles = (status: string) => {
+        switch (status) {
+            case 'overdue':
+                return {
+                    card: "border-2 border-red-500 bg-red-50",
+                    badge: "bg-red-600 text-white hover:bg-red-700 border-none",
+                    text: "text-red-700 font-bold"
+                };
+            case 'due-today':
+                return {
+                    card: "border-l-4 border-l-amber-500 border-y border-r border-amber-200 bg-amber-50",
+                    badge: "bg-amber-500 text-white hover:bg-amber-600 border-none",
+                    text: "text-amber-700 font-medium"
+                };
+            default: // due-future
+                return {
+                    card: "border border-slate-200 bg-white",
+                    badge: "bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200",
+                    text: "text-slate-500 font-normal"
+                };
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -32,25 +81,29 @@ export function RenterDashboardView() {
                     {/* Active Rentals */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold font-serif text-slate-900">Active Rentals</h2>
-                        {/* Example Active Rental */}
-                        <Card className="border-l-4 border-l-red-500 border-y border-r border-red-200 shadow-sm bg-red-50/50">
-                            <CardContent className="p-6">
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <Badge variant="secondary" className="bg-red-600 text-white hover:bg-red-700 border-none shadow-sm">Return Today</Badge>
-                                            <span className="text-xs text-red-700 font-medium">Due by 5:00 PM</span>
+                        {activeRentals.map((rental) => {
+                            const styles = getRentalStyles(rental.status);
+                            return (
+                                <Card key={rental.id} className={`shadow-sm ${styles.card}`}>
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Badge variant="secondary" className={`${styles.badge} shadow-sm`}>{rental.badgeText}</Badge>
+                                                    <span className={`text-xs ${styles.text}`}>{rental.dueText}</span>
+                                                </div>
+                                                <h4 className="font-bold text-slate-900 text-lg">{rental.item}</h4>
+                                                <p className="text-sm text-slate-600">Owner: <span className="font-medium">{rental.owner}</span></p>
+                                            </div>
+                                            <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
+                                                <MessageSquare className="mr-2 h-4 w-4" />
+                                                Message {rental.owner}
+                                            </Button>
                                         </div>
-                                        <h4 className="font-bold text-slate-900 text-lg">Makita Circular Saw</h4>
-                                        <p className="text-sm text-slate-600">Owner: <span className="font-medium">John D.</span></p>
-                                    </div>
-                                    <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
-                                        <MessageSquare className="mr-2 h-4 w-4" />
-                                        Message John D.
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
                     </div>
 
                     {/* Upcoming Bookings */}
