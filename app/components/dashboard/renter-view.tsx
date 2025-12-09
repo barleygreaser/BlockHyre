@@ -30,20 +30,20 @@ export function RenterDashboardView() {
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold font-serif text-slate-900">Active Rentals</h2>
                         {/* Example Active Rental */}
-                        <Card className="border-l-4 border-l-blue-500 border-y border-r border-slate-200 shadow-sm bg-blue-50/30">
+                        <Card className="border-l-4 border-l-red-500 border-y border-r border-red-200 shadow-sm bg-red-50/50">
                             <CardContent className="p-6">
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <Badge variant="secondary" className="bg-white text-blue-600 border-blue-200 shadow-sm">Return Today</Badge>
-                                            <span className="text-xs text-slate-500">Due by 5:00 PM</span>
+                                            <Badge variant="secondary" className="bg-red-600 text-white hover:bg-red-700 border-none shadow-sm">Return Today</Badge>
+                                            <span className="text-xs text-red-700 font-medium">Due by 5:00 PM</span>
                                         </div>
                                         <h4 className="font-bold text-slate-900 text-lg">Makita Circular Saw</h4>
                                         <p className="text-sm text-slate-600">Owner: <span className="font-medium">John D.</span></p>
                                     </div>
                                     <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
                                         <MessageSquare className="mr-2 h-4 w-4" />
-                                        Contact Owner
+                                        Message John D.
                                     </Button>
                                 </div>
                             </CardContent>
