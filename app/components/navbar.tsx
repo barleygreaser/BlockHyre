@@ -76,8 +76,16 @@ export function Navbar() {
                         <div className="h-10 w-24 bg-slate-100 animate-pulse rounded-md" />
                     ) : user ? (
                         <div className="flex items-center gap-3">
-                            <Link href="/owner/dashboard">
+                            <Link href="/add-tool">
                                 <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold shadow-md hidden sm:flex">
+                                    + List a Tool
+                                </Button>
+                            </Link>
+
+                            <Link href="/owner/dashboard">
+                                <Button
+                                    className="bg-white hover:bg-slate-50 text-safety-orange border border-safety-orange font-bold shadow-sm hidden sm:flex"
+                                >
                                     Dashboard
                                 </Button>
                             </Link>
@@ -115,6 +123,13 @@ export function Navbar() {
                                                     {user.email}
                                                 </p>
                                             </div>
+                                            <Link
+                                                href="/add-tool"
+                                                className="block sm:hidden px-4 py-2 text-sm text-safety-orange font-bold hover:bg-slate-50"
+                                                onClick={() => setIsMenuOpen(false)}
+                                            >
+                                                + List a Tool
+                                            </Link>
                                             <Link
                                                 href="/owner/dashboard"
                                                 className="block sm:hidden px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
