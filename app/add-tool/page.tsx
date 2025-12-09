@@ -13,6 +13,7 @@ import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { supabase } from "@/lib/supabase";
 import { Switch } from "@/app/components/ui/switch";
 import { ImageUpload } from "@/app/components/ui/image-upload";
+import { TypeaheadInput } from "@/app/components/ui/typeahead-input";
 
 export default function AddToolPage() {
     const router = useRouter();
@@ -73,6 +74,21 @@ export default function AddToolPage() {
         if (field === 'displayName') {
             setIsDisplayNameModified(true);
         }
+    };
+
+    const handleSuggestionSelect = (item: any) => {
+        setFormData(prev => ({
+            ...prev,
+            brand: item.brand,
+            title: item.tool_name,
+            displayName: `${item.brand} ${item.tool_name}`
+        }));
+        // We auto-filled, so we might consider display name modified or not?
+        // Let's assume selecting a specific item implies using that standard name.
+        // If user edits afterwards, handleInputChange will set modified=true.
+        // For now, let's essentially say it is modified to prevent auto-overwrite if they only change one field later?
+        // Actually, if they change brand manually after select, handleInputChange will try to update displayName.
+        // That is fine.
     };
 
     const handleSpecChange = (field: string, value: string) => {
@@ -181,26 +197,20 @@ export default function AddToolPage() {
                                 {/* Basic Info */}
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-900">Brand</label>
-                                            <input
-                                                type="text"
-                                                placeholder="e.g. DeWalt"
-                                                value={formData.brand}
-                                                onChange={(e) => handleInputChange("brand", e.target.value)}
-                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-900">Tool Name</label>
-                                            <input
-                                                type="text"
-                                                placeholder="e.g. Table Saw"
-                                                value={formData.title}
-                                                onChange={(e) => handleInputChange("title", e.target.value)}
-                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
-                                            />
-                                        </div>
+                                        <TypeaheadInput
+                                            label="Brand"
+                                            value={formData.brand}
+                                            onChange={(val) => handleInputChange("brand", val)}
+                                            onSelect={handleSuggestionSelect}
+                                            placeholder="e.g. DeWalt"
+                                        />
+                                        <TypeaheadInput
+                                            label="Tool Name"
+                                            value={formData.title}
+                                            onChange={(val) => handleInputChange("title", val)}
+                                            onSelect={handleSuggestionSelect}
+                                            placeholder="e.g. Table Saw"
+                                        />
                                     </div>
 
                                     {/* Display Name */}
