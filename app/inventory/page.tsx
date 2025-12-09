@@ -7,7 +7,7 @@ import { ToolCard, Tool } from "@/app/components/tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { calculateDistance, Coordinates } from "@/lib/location";
-import { Search, Filter, MapPin, X, Loader2, Zap, Shield } from "lucide-react";
+import { Search, Filter, MapPin, X, Loader2, Zap, Shield, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
@@ -365,16 +365,19 @@ export default function InventoryPage() {
                         </div>
 
                         {/* Sorting Controls */}
-                        <div className="flex justify-end mb-4">
-                            <select
-                                className="px-3 py-1.5 border border-slate-300 rounded text-sm text-slate-700 focus:outline-none focus:ring-1 focus:ring-safety-orange"
-                                value={sortOption || ""}
-                                onChange={(e) => setSortOption(e.target.value as any || null)}
-                            >
-                                <option value="">Sort by: Distance (Default)</option>
-                                <option value="price-asc">Price: Low to High</option>
-                                <option value="price-desc">Price: High to Low</option>
-                            </select>
+                        <div className="flex justify-end mb-6">
+                            <div className="relative group">
+                                <ArrowUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-hover:text-safety-orange transition-colors pointer-events-none" />
+                                <select
+                                    className="appearance-none bg-white border border-slate-200 text-slate-700 py-2.5 pl-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-safety-orange/20 focus:border-safety-orange font-medium text-sm transition-all cursor-pointer hover:border-slate-300 w-[240px]"
+                                    value={sortOption || ""}
+                                    onChange={(e) => setSortOption(e.target.value as any || null)}
+                                >
+                                    <option value="">Sort by: Best Match (Default)</option>
+                                    <option value="price-asc">Price: Lowest First</option>
+                                    <option value="price-desc">Price: Highest First</option>
+                                </select>
+                            </div>
                         </div>
 
                         {loading ? (
