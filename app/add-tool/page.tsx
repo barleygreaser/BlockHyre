@@ -7,13 +7,22 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle } from "lucide-react";
+import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2 } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { supabase } from "@/lib/supabase";
 import { Switch } from "@/app/components/ui/switch";
 import { ImageUpload } from "@/app/components/ui/image-upload";
 import { TypeaheadInput } from "@/app/components/ui/typeahead-input";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter
+} from "@/app/components/ui/dialog";
 
 export default function AddToolPage() {
     const router = useRouter();
@@ -41,6 +50,8 @@ export default function AddToolPage() {
     });
 
     const [isDisplayNameModified, setIsDisplayNameModified] = useState(false);
+    const [isAffirmationOpen, setIsAffirmationOpen] = useState(false);
+    const [isAffirmed, setIsAffirmed] = useState(false);
 
     useEffect(() => {
         fetchCategories();
@@ -402,18 +413,69 @@ export default function AddToolPage() {
                                         Back
                                     </Button>
                                     <Button
-                                        onClick={handleSubmit}
+                                        onClick={() => setIsAffirmationOpen(true)}
                                         disabled={loading}
                                         className="flex-1 h-12 text-base bg-safety-orange hover:bg-safety-orange/90"
                                     >
-                                        {loading ? "Creating Listing..." : "List Tool for Rent"}
+                                        Review & Submit
                                     </Button>
                                 </div>
                             </>
                         )}
-
                     </CardContent>
                 </Card>
+
+                {/* Affirmation Dialog */}
+                <Dialog open={isAffirmationOpen} onOpenChange={setIsAffirmationOpen}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-slate-900">
+                                <Shield className="h-5 w-5 text-safety-orange" />
+                                Final Safety Check
+                            </DialogTitle>
+                            <DialogDescription>
+                                Please confirm that your listing is accurate and safe for the community.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4 space-y-4">
+                            <div className="flex items-start space-x-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                <input
+                                    type="checkbox"
+                                    id="affirmation"
+                                    checked={isAffirmed}
+                                    onChange={(e) => setIsAffirmed(e.target.checked)}
+                                    className="mt-1 h-4 w-4 rounded border-slate-300 text-safety-orange focus:ring-safety-orange"
+                                />
+                                <label htmlFor="affirmation" className="text-sm text-slate-700 leading-relaxed cursor-pointer select-none">
+                                    I affirm that I have reviewed the specific details of this listing (Tier level, price, photos) and that this asset complies with the current Terms, Waiver, and Peace Fund policy.
+                                </label>
+                            </div>
+                        </div>
+                        <DialogFooter className="gap-2 sm:gap-0">
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsAffirmationOpen(false)}
+                                className="w-full sm:w-auto"
+                            >
+                                Back
+                            </Button>
+                            <Button
+                                onClick={handleSubmit}
+                                disabled={!isAffirmed || loading}
+                                className="w-full sm:w-auto bg-safety-orange hover:bg-safety-orange/90"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Publishing...
+                                    </>
+                                ) : (
+                                    "Publish Listing"
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
             <Footer />
         </main>
