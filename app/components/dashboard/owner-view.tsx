@@ -29,7 +29,7 @@ export function OwnerDashboardView() {
         localStorage.setItem("dashboard_protip_dismissed", "true");
     };
     const [rentalRequests, setRentalRequests] = useState([
-        { id: 1, user: "Mike T.", item: "DeWalt Table Saw", dates: "Oct 14 - Oct 16", duration: "2 Days" }
+        { id: 1, user: "Mike T.", rating: 4.9, item: "DeWalt Table Saw", dates: "Oct 14 - Oct 16", duration: "2 Days" }
     ]);
 
     useEffect(() => {
@@ -146,7 +146,15 @@ export function OwnerDashboardView() {
                                                     {request.user.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-bold text-slate-900">{request.user}</h4>
+                                                    <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                                                        {request.user}
+                                                        {request.rating && (
+                                                            <span className="flex items-center text-xs font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                                                                <span className="text-yellow-400 mr-1">★</span>
+                                                                {request.rating}
+                                                            </span>
+                                                        )}
+                                                    </h4>
                                                     <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.item}</span></p>
                                                     <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
                                                         <span className="bg-slate-100 px-2 py-0.5 rounded">{request.dates}</span>
