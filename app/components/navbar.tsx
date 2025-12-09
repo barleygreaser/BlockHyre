@@ -16,18 +16,26 @@ export function Navbar() {
     const [fullName, setFullName] = useState<string | null>(null);
     const router = useRouter();
 
+    interface UserProfile {
+        profile_photo_url: string | null;
+        full_name: string | null;
+    }
+
     useEffect(() => {
         const fetchUserProfile = async () => {
             if (!user) return;
+
             const { data } = await supabase
                 .from('users')
                 .select('profile_photo_url, full_name')
                 .eq('id', user.id)
                 .single();
 
-            if (data) {
-                if (data.profile_photo_url) setAvatarUrl(data.profile_photo_url);
-                if (data.full_name) setFullName(data.full_name);
+            const profile = data as UserProfile | null;
+
+            if (profile) {
+                if (profile.profile_photo_url) setAvatarUrl(profile.profile_photo_url);
+                if (profile.full_name) setFullName(profile.full_name);
             }
         };
 
