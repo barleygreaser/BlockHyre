@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Shield, ShoppingCart, Menu, X } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
@@ -236,15 +236,19 @@ export function Navbar() {
 
                                     {/* Primary Actions */}
                                     <div className="space-y-3">
-                                        <Link href="/add-tool" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Button className="w-full bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 text-base shadow-md">
-                                                + List a Tool
-                                            </Button>
+                                        <Link
+                                            href="/add-tool"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 text-base shadow-md" })}
+                                        >
+                                            + List a Tool
                                         </Link>
-                                        <Link href="/owner/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Button variant="outline" className="w-full border-safety-orange text-safety-orange hover:bg-orange-50 font-bold h-12 text-base">
-                                                Dashboard
-                                            </Button>
+                                        <Link
+                                            href="/owner/dashboard"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={buttonVariants({ variant: "outline", className: "w-full border-safety-orange text-safety-orange hover:bg-orange-50 font-bold h-12 text-base" })}
+                                        >
+                                            Dashboard
                                         </Link>
                                     </div>
 
@@ -281,15 +285,19 @@ export function Navbar() {
                                 /* Logged Out State */
                                 <>
                                     <div className="space-y-4 pb-6 border-b border-slate-100">
-                                        <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Button className="w-full bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 text-lg shadow-md">
-                                                Sign Up Free
-                                            </Button>
+                                        <Link
+                                            href="/signup"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 text-lg shadow-md" })}
+                                        >
+                                            Sign Up Free
                                         </Link>
-                                        <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Button variant="ghost" className="w-full text-slate-600 hover:text-slate-900 font-bold text-base hover:bg-slate-50">
-                                                Log In
-                                            </Button>
+                                        <Link
+                                            href="/auth"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={buttonVariants({ variant: "ghost", className: "w-full text-slate-600 hover:text-slate-900 font-bold text-base hover:bg-slate-50" })}
+                                        >
+                                            Log In
                                         </Link>
                                     </div>
 
