@@ -35,6 +35,7 @@ export default function InventoryPage() {
     const [userZip, setUserZip] = useState("90012");
     const [userLocation, setUserLocation] = useState<Coordinates>({ latitude: 34.0522, longitude: -118.2437 });
     const [isEditingZip, setIsEditingZip] = useState(false);
+    const [sortOption, setSortOption] = useState<"price-asc" | "price-desc" | null>(null);
 
     // Simple Zip to Coords map (Mocking a geocoding service)
     const getCoordsFromZip = (zip: string): Coordinates | null => {
@@ -131,8 +132,16 @@ export default function InventoryPage() {
                 return false;
             }
             return true;
-        });
-    }, [inventoryTools, searchQuery, selectedTier, verifiedOwnersOnly, acceptsBarterOnly, instantBookOnly, selectedCategories]);
+        })
+            .sort((a, b) => {
+                if (sortOption === "price-asc") {
+                    return a.price - b.price;
+                } else if (sortOption === "price-desc") {
+                    return b.price - a.price;
+                }
+                return 0;
+            });
+    }, [inventoryTools, searchQuery, selectedTier, verifiedOwnersOnly, acceptsBarterOnly, instantBookOnly, selectedCategories, sortOption]);
 
     const toggleCategory = (category: string) => {
         setSelectedCategories(prev =>
@@ -353,6 +362,19 @@ export default function InventoryPage() {
                                     </Badge>
                                 ))}
                             </div>
+                        </div>
+
+                        {/* Sorting Controls */}
+                        <div className="flex justify-end mb-4">
+                            <select
+                                className="px-3 py-1.5 border border-slate-300 rounded text-sm text-slate-700 focus:outline-none focus:ring-1 focus:ring-safety-orange"
+                                value={sortOption || ""}
+                                onChange={(e) => setSortOption(e.target.value as any || null)}
+                            >
+                                <option value="">Sort by: Distance (Default)</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
                         </div>
 
                         {loading ? (
