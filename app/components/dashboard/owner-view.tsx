@@ -15,6 +15,7 @@ export function OwnerDashboardView() {
     const { user } = useAuth();
     const [isInspectionOpen, setIsInspectionOpen] = useState(false);
     const [stripeConnected, setStripeConnected] = useState(false);
+    const [showProTip, setShowProTip] = useState(true);
 
     useEffect(() => {
         async function checkStripeStatus() {
@@ -92,6 +93,30 @@ export function OwnerDashboardView() {
                 {/* Left Column: Rental Requests & Active Rentals */}
                 <div className="lg:col-span-2 space-y-8">
 
+                    {/* Active Rentals (Action Required) */}
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-bold font-serif text-slate-900">Action Required</h2>
+
+                        <Card className="border-[1.5px] border-[#FFC107] shadow-sm bg-[#FFFBE6]">
+                            <CardContent className="p-6">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Badge variant="outline" className="bg-white text-safety-orange border-safety-orange">Returned</Badge>
+                                            <span className="text-xs text-slate-500">Just now</span>
+                                        </div>
+                                        <h4 className="font-bold text-slate-900">Harvest Right Freeze Dryer</h4>
+                                        <p className="text-sm text-slate-600">Returned by <span className="font-medium">Sarah J.</span></p>
+                                    </div>
+                                    <Button onClick={() => setIsInspectionOpen(true)} className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold">
+                                        <Eye className="mr-2 h-4 w-4" />
+                                        Inspect & Release Deposit
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
                     {/* Rental Requests */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold font-serif text-slate-900">Rental Requests</h2>
@@ -128,30 +153,6 @@ export function OwnerDashboardView() {
                         </Card>
                     </div>
 
-                    {/* Active Rentals (Action Required) */}
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-bold font-serif text-slate-900">Action Required</h2>
-
-                        <Card className="border-l-4 border-l-safety-orange border-y border-r border-slate-200 shadow-sm bg-orange-50/30">
-                            <CardContent className="p-6">
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <Badge variant="outline" className="bg-white text-safety-orange border-safety-orange">Returned</Badge>
-                                            <span className="text-xs text-slate-500">Just now</span>
-                                        </div>
-                                        <h4 className="font-bold text-slate-900">Harvest Right Freeze Dryer</h4>
-                                        <p className="text-sm text-slate-600">Returned by <span className="font-medium">Sarah J.</span></p>
-                                    </div>
-                                    <Button onClick={() => setIsInspectionOpen(true)} className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800">
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        Inspect & Release Deposit
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-
                 </div>
 
                 {/* Right Column: Quick Stats / Tips */}
@@ -178,21 +179,29 @@ export function OwnerDashboardView() {
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-slate-900 text-white border-none">
-                        <CardHeader>
-                            <CardTitle className="text-lg font-serif">Pro Tip</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-slate-300 text-sm leading-relaxed">
-                                Adding a link to the manufacturer's manual increases your tool's safety rating and reduces accident disputes by 40%.
-                            </p>
-                            <Link href="/add-tool">
-                                <Button variant="link" className="text-safety-orange p-0 mt-4 h-auto">
-                                    Update your listings &rarr;
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
+                    {showProTip && (
+                        <Card className="bg-blue-50 border-blue-100 relative">
+                            <button
+                                onClick={() => setShowProTip(false)}
+                                className="absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                            <CardHeader>
+                                <CardTitle className="text-lg font-serif text-blue-900">Pro Tip</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-blue-800 text-sm leading-relaxed">
+                                    Adding a link to the manufacturer's manual increases your tool's safety rating and reduces accident disputes by 40%.
+                                </p>
+                                <Link href="/add-tool">
+                                    <Button variant="link" className="text-blue-700 font-bold p-0 mt-4 h-auto hover:text-blue-900">
+                                        Update your listings &rarr;
+                                    </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
 
             </div>
