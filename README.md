@@ -50,6 +50,10 @@
 - **Visual Improvements:**
   - Fixed "Dark Mode" styles in the calendar component to ensure a clean, white aesthetic.
   - Added `Separator` and `Skeleton` UI components.
+- **Profile & Payments:**
+  - **Profile Dashboard:** New tabbed interface (Identity, Activity, Financials).
+  - **Stripe Connect:** Integrated Stripe onboarding flow for secure user payouts.
+  - **Verification:** UI supports Residency Verification display.
 
 ---
 
