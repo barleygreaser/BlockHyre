@@ -1,16 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Shield, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
+import { supabase } from "@/lib/supabase";
 
 export function Navbar() {
     const { user, signOut, loading } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchAvatar = async () => {
+            if (!user) return;
+            const { data } = await supabase
+                .from('users')
+                .select('profile_photo_url')
+                .eq('id', user.id)
+                .single();
+
+            if (data?.profile_photo_url) {
+                setAvatarUrl(data.profile_photo_url);
+            }
+        };
+
+        fetchAvatar();
+    }, [user]);
 
     const handleSignOut = async () => {
         try {
@@ -63,16 +82,24 @@ export function Navbar() {
                                 </Button>
                             </Link>
 
-                            {/* Mobile/Tablet Menu Trigger - keeping existing logic but simplified */}
+                            {/* Mobile/Tablet Menu Trigger */}
                             <div className="relative">
                                 <button
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                                     className="flex items-center gap-2 focus:outline-none"
                                 >
                                     <div className="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-safety-orange/50 transition-all">
-                                        <span className="font-bold text-slate-600">
-                                            {user.email?.charAt(0).toUpperCase()}
-                                        </span>
+                                        {avatarUrl ? (
+                                            <img
+                                                src={avatarUrl}
+                                                alt="User Avatar"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="font-bold text-slate-600">
+                                                {user.email?.charAt(0).toUpperCase()}
+                                            </span>
+                                        )}
                                     </div>
                                 </button>
 
