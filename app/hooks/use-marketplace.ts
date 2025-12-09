@@ -115,9 +115,9 @@ export const useMarketplace = () => {
         }
     };
 
-    useEffect(() => {
-        fetchListings();
-    }, []);
+    // useEffect(() => {
+    //     fetchListings();
+    // }, []);
 
     const createRental = async (
         listingId: string,

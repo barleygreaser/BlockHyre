@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "./components/navbar";
 import { Hero } from "./components/hero";
 import { ValueProps } from "./components/value-props";
@@ -12,7 +12,11 @@ import { useMarketplace } from "./hooks/use-marketplace";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { listings } = useMarketplace();
+  const { listings, fetchListings } = useMarketplace();
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
