@@ -66,7 +66,7 @@ export function OwnerDashboardView() {
                 <Card className="border-slate-200 shadow-sm">
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
-                            <p className="text-sm font-medium text-slate-500">Total Earnings</p>
+                            <p className="text-sm font-medium text-slate-500">Earnings (30d)</p>
                             <h3 className="text-3xl font-bold text-slate-900">$1,240</h3>
                         </div>
                         <div className="h-12 w-12 rounded-full bg-green-50 flex items-center justify-center text-green-600">
