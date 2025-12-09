@@ -10,6 +10,7 @@ import { calculateDistance, Coordinates } from "@/lib/location";
 import { Search, Filter, MapPin, X, Loader2, Zap, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
+import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
 
 // Mock User Location (e.g., Downtown)
 const USER_LOCATION: Coordinates = {
@@ -354,7 +355,9 @@ export default function InventoryPage() {
                             </div>
                         </div>
 
-                        {filteredTools.length > 0 ? (
+                        {loading ? (
+                            <InventorySkeleton />
+                        ) : filteredTools.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredTools.map(tool => (
                                     <ToolCard key={tool.id} tool={tool} />
