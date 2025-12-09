@@ -6,7 +6,7 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
-import { Plus, DollarSign, Wrench, Users, Check, X, Eye } from "lucide-react";
+import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { StripeConnectButton } from "@/app/components/stripe-connect-button";
@@ -16,6 +16,9 @@ export function OwnerDashboardView() {
     const [isInspectionOpen, setIsInspectionOpen] = useState(false);
     const [stripeConnected, setStripeConnected] = useState(false);
     const [showProTip, setShowProTip] = useState(true);
+    const [rentalRequests, setRentalRequests] = useState([
+        { id: 1, user: "Mike T.", item: "DeWalt Table Saw", dates: "Oct 14 - Oct 16", duration: "2 Days" }
+    ]);
 
     useEffect(() => {
         async function checkStripeStatus() {
@@ -121,36 +124,57 @@ export function OwnerDashboardView() {
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold font-serif text-slate-900">Rental Requests</h2>
 
-                        <Card className="border-slate-200 shadow-sm">
-                            <CardContent className="p-6">
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
-                                            M
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900">Mike T.</h4>
-                                            <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">DeWalt Table Saw</span></p>
-                                            <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
-                                                <span className="bg-slate-100 px-2 py-0.5 rounded">Oct 14 - Oct 16</span>
-                                                <span>•</span>
-                                                <span>2 Days</span>
+                        {rentalRequests.length > 0 ? (
+                            rentalRequests.map((request) => (
+                                <Card key={request.id} className="border-slate-200 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
+                                                    {request.user.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-slate-900">{request.user}</h4>
+                                                    <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.item}</span></p>
+                                                    <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
+                                                        <span className="bg-slate-100 px-2 py-0.5 rounded">{request.dates}</span>
+                                                        <span>•</span>
+                                                        <span>{request.duration}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2 w-full sm:w-auto">
+                                                <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200">
+                                                    <X className="mr-2 h-4 w-4" />
+                                                    Deny
+                                                </Button>
+                                                <Button size="sm" className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white">
+                                                    <Check className="mr-2 h-4 w-4" />
+                                                    Approve
+                                                </Button>
                                             </div>
                                         </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        ) : (
+                            <Card className="border-dashed border-slate-200 shadow-sm bg-slate-50/50">
+                                <CardContent className="p-8 text-center flex flex-col items-center">
+                                    <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+                                        <Files className="h-6 w-6" />
                                     </div>
-                                    <div className="flex gap-2 w-full sm:w-auto">
-                                        <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200">
-                                            <X className="mr-2 h-4 w-4" />
-                                            Deny
+                                    <h3 className="text-lg font-medium text-slate-900">No new requests right now</h3>
+                                    <p className="text-slate-500 mt-1 max-w-sm mx-auto">
+                                        Time to optimize your listings! Adding more photos or lowering prices slightly can help attract renters.
+                                    </p>
+                                    <Link href="/inventory" className="mt-4">
+                                        <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
+                                            Manage Listings
                                         </Button>
-                                        <Button size="sm" className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white">
-                                            <Check className="mr-2 h-4 w-4" />
-                                            Approve
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                    </Link>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
 
                 </div>
