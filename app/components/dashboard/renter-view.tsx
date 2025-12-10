@@ -69,7 +69,7 @@ export function RenterDashboardView() {
                     <h2 className="text-2xl font-bold font-serif text-slate-900">My Rentals</h2>
                     <p className="text-slate-500">Track your active rentals and history.</p>
                 </div>
-                <Link href="/inventory">
+                <Link href="/listings">
                     <Button className="bg-safety-orange hover:bg-safety-orange/90">
                         <Search className="mr-2 h-4 w-4" />
                         Find Tools

@@ -165,7 +165,7 @@ export default function AddToolPage() {
             if (error) throw error;
 
             alert("Listing created successfully!");
-            router.push(`/inventory/${newId}/${generateSlug(formData.displayName)}`);
+            router.push(`/listings/${newId}/${generateSlug(formData.displayName)}`);
 
         } catch (e: any) {
             console.error("Error creating listing:", e);

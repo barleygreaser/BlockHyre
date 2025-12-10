@@ -45,7 +45,7 @@ export function Hero() {
 
                     <div className="flex flex-col sm:flex-row gap-4 pt-2">
                         {/* Primary CTA */}
-                        <Link href="/inventory" className="w-full sm:w-auto">
+                        <Link href="/listings" className="w-full sm:w-auto">
                             <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg font-bold bg-[#FF6700] hover:bg-[#E55C00] text-white border-none shadow-lg transition-transform hover:scale-105">
                                 <MapPin className="mr-2 h-5 w-5" />
                                 Find Tools Near Me

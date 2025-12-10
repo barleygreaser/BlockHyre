@@ -70,7 +70,7 @@ export function FeaturedToolCard({ tool }: FeaturedToolCardProps) {
 
                 {/* CTA */}
                 <div className="pt-2 mt-auto">
-                    <Link href={`/inventory/${tool.id}/${generateSlug(tool.title)}`} className="block w-full">
+                    <Link href={`/listings/${tool.id}/${generateSlug(tool.title)}`} className="block w-full">
                         <Button variant="outline" className="w-full border-slate-300 hover:border-safety-orange hover:text-safety-orange transition-colors">
                             View Tool Details
                         </Button>

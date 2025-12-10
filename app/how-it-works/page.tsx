@@ -190,7 +190,7 @@ export default function HowItWorksPage() {
             <section className="py-20 bg-slate-50 border-t border-slate-200 text-center">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold font-serif text-slate-900 mb-6">Ready to start your project?</h2>
-                    <Link href="/inventory">
+                    <Link href="/listings">
                         <Button size="lg" className="text-base px-8 bg-safety-orange hover:bg-safety-orange/90">
                             Browse Inventory
                             <ArrowRight className="ml-2 h-5 w-5" />

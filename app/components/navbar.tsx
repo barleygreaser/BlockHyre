@@ -69,7 +69,7 @@ export function Navbar() {
 
                 {/* DESKTOP Navigation (Hidden on Mobile) */}
                 <div className="hidden md:flex items-center gap-8 font-bold text-slate-600">
-                    <Link href="/inventory" className="hover:text-safety-orange transition-colors duration-200 relative group">
+                    <Link href="/listings" className="hover:text-safety-orange transition-colors duration-200 relative group">
                         Listings
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full"></span>
                     </Link>
@@ -298,7 +298,7 @@ export function Navbar() {
 
                                     {/* Navigation Links */}
                                     <div className="flex flex-col gap-2">
-                                        <Link href="/inventory" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <Link href="/listings" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             Listings
                                         </Link>
                                         <Link href="/my-rentals" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
@@ -346,7 +346,7 @@ export function Navbar() {
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <Link href="/inventory" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <Link href="/listings" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             Listings
                                         </Link>
                                         <Link href="/how-it-works" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>

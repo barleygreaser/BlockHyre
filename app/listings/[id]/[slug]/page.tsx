@@ -73,7 +73,7 @@ export default function ListingDetailsPage() {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
                 <h1 className="text-2xl font-bold text-slate-900">Listing Not Found</h1>
-                <Button onClick={() => router.push('/inventory')}>Back to Inventory</Button>
+                <Button onClick={() => router.push('/listings')}>Back to Listings</Button>
             </div>
         );
     }
@@ -141,8 +141,8 @@ export default function ListingDetailsPage() {
 
                 {/* Breadcrumbs / Back */}
                 <div className="mb-6">
-                    <Button variant="link" className="pl-0 text-slate-500 hover:text-slate-900" onClick={() => router.push('/inventory')}>
-                        &larr; Back to Inventory
+                    <Button variant="link" className="pl-0 text-slate-500 hover:text-slate-900" onClick={() => router.push('/listings')}>
+                        &larr; Back to Listings
                     </Button>
                 </div>
 
