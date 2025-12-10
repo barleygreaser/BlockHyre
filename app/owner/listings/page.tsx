@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Navbar } from "@/app/components/navbar";
@@ -46,10 +47,18 @@ interface InventoryItem {
 
 export default function ManageListingsPage() {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
     const [inventory, setInventory] = useState<InventoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
+
+    useEffect(() => {
+        const statusParam = searchParams.get('status');
+        if (statusParam && ['active', 'draft', 'archived', 'all'].includes(statusParam.toLowerCase())) {
+            setStatusFilter(statusParam.toLowerCase());
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         if (!user) return;
@@ -129,8 +138,8 @@ export default function ManageListingsPage() {
                                         key={status}
                                         onClick={() => setStatusFilter(status)}
                                         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${statusFilter === status
-                                                ? "bg-slate-900 text-white"
-                                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            ? "bg-slate-900 text-white"
+                                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                             }`}
                                     >
                                         {status.charAt(0).toUpperCase() + status.slice(1)}

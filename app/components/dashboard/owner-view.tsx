@@ -156,21 +156,23 @@ export function OwnerDashboardView() {
             {/* Stats Row */}
             {/* ... (Previous Stats Row Code) ... */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-slate-200 shadow-sm">
-                    <CardContent className="p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-slate-500">Active Rentals</p>
-                            {kpiLoading ? (
-                                <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
-                            ) : (
-                                <h3 className="text-3xl font-bold text-slate-900">{kpis.activeRentals}</h3>
-                            )}
-                        </div>
-                        <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                            <Users className="h-6 w-6" />
-                        </div>
-                    </CardContent>
-                </Card>
+                <Link href="/owner/listings?status=active" className="block">
+                    <Card className="border-slate-200 shadow-sm hover:border-blue-500/50 transition-colors cursor-pointer group">
+                        <CardContent className="p-6 flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">Active Rentals</p>
+                                {kpiLoading ? (
+                                    <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
+                                ) : (
+                                    <h3 className="text-3xl font-bold text-slate-900">{kpis.activeRentals}</h3>
+                                )}
+                            </div>
+                            <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                                <Users className="h-6 w-6" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Link>
 
                 <Card className="border-slate-200 shadow-sm">
                     <CardContent className="p-6 flex items-center justify-between">
@@ -297,7 +299,7 @@ export function OwnerDashboardView() {
                                     <p className="text-slate-500 mt-1 max-w-sm mx-auto">
                                         Time to optimize your listings! Adding more photos or lowering prices slightly can help attract renters.
                                     </p>
-                                    <Link href="/inventory" className="mt-4">
+                                    <Link href="/owner/listings" className="mt-4">
                                         <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
                                             Manage Listings
                                         </Button>
