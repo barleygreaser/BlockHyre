@@ -245,6 +245,19 @@ export default function ListingDetailsPage() {
                             <p className="text-slate-600 leading-relaxed">
                                 {listing.description || "No description provided."}
                             </p>
+                            {listing.manual_url && !listing.is_high_powered && (
+                                <div className="mt-4">
+                                    <a
+                                        href={listing.manual_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-3 py-2 rounded-lg border border-blue-100 transition-colors"
+                                    >
+                                        <BookOpen className="h-4 w-4" />
+                                        View Manufacturer Manual / Guide
+                                    </a>
+                                </div>
+                            )}
                         </div>
 
                         {/* Safety Warning */}
@@ -256,6 +269,22 @@ export default function ListingDetailsPage() {
                                     <p className="text-sm text-red-700 mt-1">
                                         This is a high-power tool. You must review the manufacturer manual and pass a quick competence check during checkout.
                                     </p>
+                                    {listing.manual_url ? (
+                                        <a
+                                            href={listing.manual_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 text-sm font-bold text-red-800 mt-2 hover:underline"
+                                        >
+                                            <BookOpen className="h-4 w-4" />
+                                            View Manufacturer Manual
+                                        </a>
+                                    ) : (
+                                        <div className="flex items-center gap-2 text-sm text-red-800/60 mt-2 italic cursor-not-allowed">
+                                            <BookOpen className="h-4 w-4" />
+                                            Manual not provided by owner
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}

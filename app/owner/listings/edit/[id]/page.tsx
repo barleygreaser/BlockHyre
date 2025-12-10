@@ -35,7 +35,7 @@ import {
     TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { Calendar } from "@/app/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
+// import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 
@@ -51,7 +51,7 @@ export default function EditListingPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user } = useAuth();
-    const { fetchListing, categories, fetchBlockedDates, blockDateRange, deleteBlockedDate } = useMarketplace();
+    const { fetchListing, categories, fetchBlockedDates, blockDateRange, deleteBlockedDate, fetchUnavailableDates } = useMarketplace();
 
     const [activeSection, setActiveSection] = useState("details");
     const [loading, setLoading] = useState(true);
@@ -63,6 +63,7 @@ export default function EditListingPage() {
 
     // Availability State
     const [blockedDates, setBlockedDates] = useState<any[]>([]);
+    const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
     const [dateRange, setDateRange] = useState<DateRange | undefined>();
     const [blocking, setBlocking] = useState(false);
 
@@ -86,8 +87,11 @@ export default function EditListingPage() {
                 setLoading(false);
             });
 
-            // Fetch Blocked Dates
+            // Fetch Blocked Dates (List)
             fetchBlockedDates(id as string).then(setBlockedDates);
+
+            // Fetch All Unavailable Dates (Calendar Visuals)
+            fetchUnavailableDates(id as string).then(setUnavailableDates);
         }
     }, [id]);
 
@@ -113,6 +117,13 @@ export default function EditListingPage() {
     const handleSave = async () => {
         setSaving(true);
         try {
+            // Validate Manual URL if present
+            if (formData.manual_url && !formData.manual_url.startsWith("https://www.manualslib.com")) {
+                alert("Invalid User Manual URL. It must start with 'https://www.manualslib.com'.");
+                setSaving(false);
+                return;
+            }
+
             // Convert specs array back to object
             const specsObject = specs.reduce((acc, curr) => {
                 if (curr.key.trim()) {
@@ -140,6 +151,7 @@ export default function EditListingPage() {
                     images: formData.images,
                     is_available: formData.is_available,
                     owner_notes: formData.owner_notes,
+                    manual_url: formData.manual_url,
                 })
                 .eq('id', id);
 
@@ -359,10 +371,21 @@ export default function EditListingPage() {
                                             <input
                                                 type="url"
                                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
-                                                placeholder="https://..."
-                                            // value={formData.manual_url || ""}
-                                            // onChange={(e) => handleInputChange("manual_url", e.target.value)}
+                                                placeholder="https://www.manualslib.com..."
+                                                value={formData.manual_url || ""}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    // Allow empty string to clear it, or strictly enforce prefix if typing
+                                                    handleInputChange("manual_url", val);
+
+                                                    // Optional: Visual warning state could be added, but for now just input binding.
+                                                    // The actual enforcement can happen on blur or save, or we can warn here.
+                                                    // Let's add a helper text below.
+                                                }}
                                             />
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                Must be a valid URL from <strong>manualslib.com</strong> (e.g. https://www.manualslib.com/manual/...)
+                                            </p>
                                         </div>
 
                                     </CardContent>
@@ -415,7 +438,8 @@ export default function EditListingPage() {
                                                                     {/* Overlay Actions */}
                                                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                                                         <Button
-                                                                            variant="destructive"
+                                                                            variant="ghost"
+                                                                            className="bg-red-500 hover:bg-red-600 text-white"
                                                                             size="icon"
                                                                             onClick={() => {
                                                                                 const newImages = [...(formData.images || [])];
@@ -740,11 +764,15 @@ export default function EditListingPage() {
                                                         onSelect={setDateRange}
                                                         className="rounded-md border-0"
                                                         numberOfMonths={1}
+                                                        disabled={[
+                                                            { before: new Date() },
+                                                            ...unavailableDates
+                                                        ]}
                                                     />
                                                     <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
                                                         <Button
                                                             size="sm"
-                                                            variant="secondary"
+                                                            variant="outline"
                                                             disabled={!dateRange?.from || !dateRange?.to || blocking}
                                                             onClick={async () => {
                                                                 if (!dateRange?.from || !dateRange?.to || !id) return;
@@ -754,6 +782,8 @@ export default function EditListingPage() {
                                                                     // Refresh
                                                                     const dates = await fetchBlockedDates(id as string);
                                                                     setBlockedDates(dates);
+                                                                    const allUnavailable = await fetchUnavailableDates(id as string);
+                                                                    setUnavailableDates(allUnavailable);
                                                                     setDateRange(undefined);
                                                                     alert("Dates blocked successfully.");
                                                                 } catch (e: any) {
@@ -794,6 +824,8 @@ export default function EditListingPage() {
                                                                                 await deleteBlockedDate(block.id);
                                                                                 const dates = await fetchBlockedDates(id as string);
                                                                                 setBlockedDates(dates);
+                                                                                const allUnavailable = await fetchUnavailableDates(id as string);
+                                                                                setUnavailableDates(allUnavailable);
                                                                             } catch (e) {
                                                                                 console.error(e);
                                                                             }

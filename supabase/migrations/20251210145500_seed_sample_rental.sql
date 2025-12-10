@@ -16,7 +16,8 @@ BEGIN
     LIMIT 1;
 
     IF v_listing_id IS NULL THEN
-        RAISE EXCEPTION 'No listings found for owner %', v_owner_id;
+        RAISE NOTICE 'No listings found for owner %, skipping sample rental seed.', v_owner_id;
+        RETURN;
     END IF;
 
     -- 2. Insert Rental Request
