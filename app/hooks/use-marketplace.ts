@@ -25,6 +25,7 @@ export type Listing = {
     booking_type?: 'instant' | 'request';
     weight_kg?: number;
     dimensions_cm?: string;
+    min_rental_days?: number;
     specifications?: Record<string, any>;
     owner_id?: string;
     owner?: {
