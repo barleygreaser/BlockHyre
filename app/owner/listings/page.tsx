@@ -190,14 +190,19 @@ export default function ManageListingsPage() {
                                 className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
                             >
                                 {/* Tool Details */}
-                                <div className="col-span-12 md:col-span-5 flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0 font-bold text-slate-500">
-                                        {item.tool_title.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-900">{item.tool_title}</h3>
-                                        <div className="text-sm text-slate-500 font-medium">{formatCurrency(item.daily_price)} / day</div>
-                                    </div>
+                                <div className="col-span-12 md:col-span-5">
+                                    <Link
+                                        href={`/listings/${item.listing_id}/${item.tool_title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                                        className="flex items-center gap-4 group"
+                                    >
+                                        <div className="h-12 w-12 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0 font-bold text-slate-500 group-hover:bg-slate-300 transition-colors">
+                                            {item.tool_title.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-900 group-hover:text-safety-orange transition-colors">{item.tool_title}</h3>
+                                            <div className="text-sm text-slate-500 font-medium">{formatCurrency(item.daily_price)} / day</div>
+                                        </div>
+                                    </Link>
                                 </div>
 
                                 {/* Status */}
