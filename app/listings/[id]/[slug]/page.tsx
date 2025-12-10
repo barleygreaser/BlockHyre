@@ -28,6 +28,12 @@ import { addDays, differenceInDays } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/app/context/cart-context";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/app/components/ui/tooltip";
 import { useAuth } from "@/app/context/auth-context";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
@@ -378,10 +384,36 @@ export default function ListingDetailsPage() {
                                             <span>${subtotal}</span>
                                         </div>
                                         <div className="flex justify-between text-sm text-slate-600">
-                                            <span className="flex items-center gap-1">
-                                                Peace Fund (Tier {riskTier})
-                                                <Info className="h-3 w-3 text-slate-400 cursor-help" />
-                                            </span>
+                                            <div className="flex items-center gap-1">
+                                                <span>Peace Fund (Tier {riskTier})</span>
+                                                <TooltipProvider>
+                                                    <Tooltip delayDuration={300}>
+                                                        <TooltipTrigger asChild>
+                                                            <div className="cursor-help">
+                                                                <Info className="h-3 w-3 text-slate-400" />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="max-w-xs bg-slate-900 text-white border-slate-800">
+                                                            <div className="space-y-2 p-1">
+                                                                <p className="font-bold text-sm">Community Safety Net</p>
+                                                                <p className="text-xs text-slate-300">
+                                                                    This mandatory fee pools into a fund that covers accidental damage during rentals, replacing bulky deposits.
+                                                                </p>
+                                                                <div className="bg-slate-800 rounded p-2 text-xs">
+                                                                    <div className="flex justify-between mb-1">
+                                                                        <span className="text-slate-400">Daily Rate:</span>
+                                                                        <span className="font-bold text-safety-orange">${riskTier === 3 ? '10' : riskTier === 2 ? '3' : '1'}</span>
+                                                                    </div>
+                                                                    <div className="flex justify-between">
+                                                                        <span className="text-slate-400">Coverage Limit:</span>
+                                                                        <span className="font-bold text-emerald-400">${riskTier === 3 ? '3,000' : riskTier === 2 ? '500' : '100'}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </div>
                                             <span>${peaceFundTotal}</span>
                                         </div>
                                         <div className="flex justify-between text-sm font-bold text-safety-orange">
