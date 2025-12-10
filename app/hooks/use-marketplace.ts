@@ -228,11 +228,9 @@ export const useMarketplace = () => {
 
     const fetchUnavailableDates = async (listingId: string): Promise<Date[]> => {
         try {
-            const { data, error } = await supabase
-                .from('rentals')
-                .select('start_date, end_date')
-                .eq('listing_id', listingId)
-                .in('status', ['Approved', 'Active', 'approved', 'active']);
+            const { data, error } = await supabase.rpc('get_unavailable_dates_for_listing', {
+                p_listing_id: listingId
+            });
 
             if (error) throw error;
 
