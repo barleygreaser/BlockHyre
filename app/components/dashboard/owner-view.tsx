@@ -10,6 +10,7 @@ import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files } from "lucide-re
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { StripeConnectButton } from "@/app/components/stripe-connect-button";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 export function OwnerDashboardView() {
     const { user } = useAuth();
@@ -28,26 +29,6 @@ export function OwnerDashboardView() {
         setShowProTip(false);
         localStorage.setItem("dashboard_protip_dismissed", "true");
     };
-    const [rentalRequests, setRentalRequests] = useState([
-        { id: 1, user: "Mike T.", rating: 4.9, item: "DeWalt Table Saw", dates: "Oct 14 - Oct 16", duration: "2 Days" }
-    ]);
-
-    useEffect(() => {
-        async function checkStripeStatus() {
-            if (user) {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('stripe_account_id')
-                    .eq('id', user.id)
-                    .single();
-
-                if (data?.stripe_account_id) {
-                    setStripeConnected(true);
-                }
-            }
-        }
-        checkStripeStatus();
-    }, [user]);
 
     // State for KPIs
     const [kpis, setKpis] = useState({
@@ -95,6 +76,67 @@ export function OwnerDashboardView() {
             maximumFractionDigits: 0,
         }).format(amount);
     };
+    // State for Lists
+    const [actionItems, setActionItems] = useState<any[]>([]);
+    const [rentalRequests, setRentalRequests] = useState<any[]>([]);
+    const [listsLoading, setListsLoading] = useState(true);
+
+    // Fetch Lists
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchLists = async () => {
+            try {
+                // 1. Action Items (Status = Returned) - For Inspection
+                // Need to find rentals for MY listings that are 'Returned'
+                const { data: returnedData, error: returnedError } = await supabase
+                    .from('rentals')
+                    .select(`
+                        id,
+                        status,
+                        created_at,
+                        renter:users!renter_id (full_name),
+                        listing:listings!inner (title, owner_id)
+                    `)
+                    .eq('listings.owner_id', user.id)
+                    .ilike('status', 'returned');
+
+                if (returnedError) throw returnedError;
+                if (returnedData) setActionItems(returnedData);
+
+                // 2. Rental Requests (Status = Pending)
+                const { data: pendingData, error: pendingError } = await supabase
+                    .from('rentals')
+                    .select(`
+                        id,
+                        status,
+                        start_date,
+                        end_date,
+                        total_days,
+                        renter:users!renter_id (full_name, email), 
+                        listing:listings!inner (title, owner_id)
+                    `)
+                    .eq('listings.owner_id', user.id)
+                    .ilike('status', 'pending');
+
+                if (pendingError) throw pendingError;
+                if (pendingData) setRentalRequests(pendingData);
+
+            } catch (error) {
+                console.error("Error fetching dashboard lists:", error);
+            } finally {
+                setListsLoading(false);
+            }
+        };
+
+        fetchLists();
+    }, [user]);
+
+    // Helper for date formatting
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    };
 
     return (
         <div className="space-y-8">
@@ -112,6 +154,7 @@ export function OwnerDashboardView() {
             </div>
 
             {/* Stats Row */}
+            {/* ... (Previous Stats Row Code) ... */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card className="border-slate-200 shadow-sm">
                     <CardContent className="p-6 flex items-center justify-between">
@@ -145,80 +188,88 @@ export function OwnerDashboardView() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-slate-200 shadow-sm">
-                    <CardContent className="p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-slate-500">Tools Listed</p>
-                            {kpiLoading ? (
-                                <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
-                            ) : (
-                                <h3 className="text-3xl font-bold text-slate-900">{kpis.toolsListed}</h3>
-                            )}
-                        </div>
-                        <div className="h-12 w-12 rounded-full bg-orange-50 flex items-center justify-center text-safety-orange">
-                            <Wrench className="h-6 w-6" />
-                        </div>
-                    </CardContent>
-                </Card>
+                <Link href="/owner/listings" className="block">
+                    <Card className="border-slate-200 shadow-sm hover:border-safety-orange/50 transition-colors cursor-pointer group">
+                        <CardContent className="p-6 flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-slate-500 group-hover:text-safety-orange transition-colors">Tools Listed</p>
+                                {kpiLoading ? (
+                                    <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
+                                ) : (
+                                    <h3 className="text-3xl font-bold text-slate-900">{kpis.toolsListed}</h3>
+                                )}
+                            </div>
+                            <div className="h-12 w-12 rounded-full bg-orange-50 flex items-center justify-center text-safety-orange group-hover:scale-110 transition-transform">
+                                <Wrench className="h-6 w-6" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                {/* Left Column: Rental Requests & Active Rentals */}
+                {/* Left Column: Rental Requests & Action Items */}
                 <div className="lg:col-span-2 space-y-8">
 
-                    {/* Active Rentals (Action Required) */}
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-bold font-serif text-slate-900">Action Required</h2>
-
-                        <Card className="border-[1.5px] border-[#FFC107] shadow-sm bg-[#FFFBE6]">
-                            <CardContent className="p-6">
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <Badge variant="outline" className="bg-white text-safety-orange border-safety-orange">Returned</Badge>
-                                            <span className="text-xs text-slate-500">Just now</span>
+                    {/* Action Items (Returns Pending Inspection) */}
+                    {actionItems.length > 0 && (
+                        <div className="space-y-4">
+                            <h2 className="text-xl font-bold font-serif text-slate-900">Action Required</h2>
+                            {actionItems.map(item => (
+                                <Card key={item.id} className="border-[1.5px] border-[#FFC107] shadow-sm bg-[#FFFBE6]">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Badge variant="outline" className="bg-white text-safety-orange border-safety-orange">Returned</Badge>
+                                                    <span className="text-xs text-slate-500">Needs Inspection</span>
+                                                </div>
+                                                <h4 className="font-bold text-slate-900">{item.listing.title}</h4>
+                                                <p className="text-sm text-slate-600">Returned by <span className="font-medium">{item.renter.full_name || 'Renter'}</span></p>
+                                            </div>
+                                            <Button onClick={() => setIsInspectionOpen(true)} className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold">
+                                                <Eye className="mr-2 h-4 w-4" />
+                                                Inspect & Release Deposit
+                                            </Button>
                                         </div>
-                                        <h4 className="font-bold text-slate-900">Harvest Right Freeze Dryer</h4>
-                                        <p className="text-sm text-slate-600">Returned by <span className="font-medium">Sarah J.</span></p>
-                                    </div>
-                                    <Button onClick={() => setIsInspectionOpen(true)} className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold">
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        Inspect & Release Deposit
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
 
                     {/* Rental Requests */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold font-serif text-slate-900">Rental Requests</h2>
 
-                        {rentalRequests.length > 0 ? (
+                        {listsLoading ? (
+                            <Card className="border-slate-200 shadow-sm"><CardContent className="p-6"><Skeleton className="h-20 w-full" /></CardContent></Card>
+                        ) : rentalRequests.length > 0 ? (
                             rentalRequests.map((request) => (
                                 <Card key={request.id} className="border-slate-200 shadow-sm">
                                     <CardContent className="p-6">
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                             <div className="flex items-center gap-4">
-                                                <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
-                                                    {request.user.charAt(0)}
+                                                <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 overflow-hidden">
+                                                    {/* Avatar or Initial */}
+                                                    {request.renter.full_name ? request.renter.full_name.charAt(0) : 'R'}
                                                 </div>
                                                 <div>
                                                     <h4 className="font-bold text-slate-900 flex items-center gap-2">
-                                                        {request.user}
-                                                        {request.rating && (
-                                                            <span className="flex items-center text-xs font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
-                                                                <span className="text-yellow-400 mr-1">★</span>
-                                                                {request.rating}
-                                                            </span>
-                                                        )}
+                                                        {request.renter.full_name || 'Unknown User'}
+                                                        <span className="flex items-center text-xs font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                                                            <span className="text-yellow-400 mr-1">★</span>
+                                                            5.0
+                                                        </span>
                                                     </h4>
-                                                    <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.item}</span></p>
+                                                    <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
                                                     <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
-                                                        <span className="bg-slate-100 px-2 py-0.5 rounded">{request.dates}</span>
+                                                        <span className="bg-slate-100 px-2 py-0.5 rounded">
+                                                            {formatDate(request.start_date)} - {formatDate(request.end_date)}
+                                                        </span>
                                                         <span>•</span>
-                                                        <span>{request.duration}</span>
+                                                        <span>{request.total_days} Days</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -310,7 +361,18 @@ export function OwnerDashboardView() {
                         </Card>
                     )}
 
-                    {showProTip && (
+                    {kpiLoading ? (
+                        <Card className="bg-blue-50 border-blue-100 relative">
+                            <CardHeader>
+                                <Skeleton className="h-6 w-24 bg-blue-200" />
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <Skeleton className="h-4 w-full bg-blue-200" />
+                                <Skeleton className="h-4 w-3/4 bg-blue-200" />
+                                <Skeleton className="h-4 w-1/2 bg-blue-200" />
+                            </CardContent>
+                        </Card>
+                    ) : showProTip && (
                         <Card className="bg-blue-50 border-blue-100 relative">
                             <button
                                 onClick={handleDismissProTip}
