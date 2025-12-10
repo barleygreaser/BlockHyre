@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 export type Listing = {
     id: string;
@@ -229,17 +232,31 @@ export const useMarketplace = () => {
                 .from('rentals')
                 .select('start_date, end_date')
                 .eq('listing_id', listingId)
-                .in('status', ['Approved', 'Active']);
+                .in('status', ['Approved', 'Active', 'approved', 'active']);
 
             if (error) throw error;
 
             const dates: Date[] = [];
             data?.forEach((rental: any) => {
-                let current = dayjs(rental.start_date);
-                const end = dayjs(rental.end_date);
+                // Parse as UTC to avoid local timezone shifts from 00:00:00 timestamps
+                let current = dayjs.utc(rental.start_date);
+                const end = dayjs.utc(rental.end_date);
 
                 while (current.isBefore(end) || current.isSame(end, 'day')) {
-                    dates.push(current.toDate());
+                    // Convert to JS Date. Note: This creates a date derived from the UTC components.
+                    // However, we want the matched DATE to be the same string representation.
+                    // The simplest way for the Calendar component to match is if we store the string "YYYY-MM-DD" or 
+                    // ensure the Date object resolves to the same day in local time.
+                    // If we use .toDate() on a UTC dayjs object, it converts to local time. 
+                    // e.g. 2023-01-01T00:00Z -> 2022-12-31T19:00 EST. This SHIFTS the day.
+
+                    // FIX: We strictly want the calendar date components.
+                    // We will return dates constructed from the Year/Month/Day values match the string.
+                    const dateStr = current.format('YYYY-MM-DD');
+                    // Create a local date from the string components to match Calendar's local inputs
+                    const [y, m, d] = dateStr.split('-').map(Number);
+                    dates.push(new Date(y, m - 1, d));
+
                     current = current.add(1, 'day');
                 }
             });
