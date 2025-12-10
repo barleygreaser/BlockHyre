@@ -132,6 +132,57 @@ export function OwnerDashboardView() {
         fetchLists();
     }, [user]);
 
+    const [processingId, setProcessingId] = useState<string | null>(null);
+
+    const handleApprove = async (rentalId: string) => {
+        setProcessingId(rentalId);
+        try {
+            const { error } = await supabase.rpc('approve_rental_request', {
+                p_rental_id: rentalId
+            });
+
+            if (error) {
+                alert(`Error: ${error.message}`);
+                return;
+            }
+
+            // Refresh lists
+            // In a real app we might just remove the item locally to save a fetch
+            setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
+
+            // Optionally refresh KPIs too as active count changes
+            // fetchKPIs(); 
+        } catch (err) {
+            console.error("Approval failed:", err);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleDeny = async (rentalId: string) => {
+        setProcessingId(rentalId);
+        try {
+            // We'll use a direct update for now if RLS permits, or assume an RPC exists/will exist
+            // For safety/strict RLS, we should really use an RPC. 
+            // Let's assume we'll just update status to 'Denied' via standard query for now 
+            // verifying ownership via RLS policies.
+            // If strict RLS blocks this, we'll need an RPC.
+            const { error } = await supabase
+                .from('rentals')
+                .update({ status: 'denied' })
+                .eq('id', rentalId);
+
+            if (error) throw error;
+
+            setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
+        } catch (err) {
+            console.error("Denial failed:", err);
+            alert("Could not deny request. Please try again.");
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     // Helper for date formatting
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
@@ -276,13 +327,28 @@ export function OwnerDashboardView() {
                                                 </div>
                                             </div>
                                             <div className="flex gap-2 w-full sm:w-auto">
-                                                <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex-1 sm:flex-none text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
+                                                    onClick={() => handleDeny(request.id)}
+                                                    disabled={processingId === request.id}
+                                                >
                                                     <X className="mr-2 h-4 w-4" />
                                                     Deny
                                                 </Button>
-                                                <Button size="sm" className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white">
-                                                    <Check className="mr-2 h-4 w-4" />
-                                                    Approve
+                                                <Button
+                                                    size="sm"
+                                                    className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
+                                                    onClick={() => handleApprove(request.id)}
+                                                    disabled={processingId === request.id}
+                                                >
+                                                    {processingId === request.id ? 'Processing...' : (
+                                                        <>
+                                                            <Check className="mr-2 h-4 w-4" />
+                                                            Approve
+                                                        </>
+                                                    )}
                                                 </Button>
                                             </div>
                                         </div>
