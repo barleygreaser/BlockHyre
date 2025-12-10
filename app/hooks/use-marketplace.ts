@@ -26,6 +26,8 @@ export type Listing = {
     weight_kg?: number;
     dimensions_cm?: string;
     min_rental_days?: number;
+    owner_notes?: string;
+    is_available?: boolean;
     specifications?: Record<string, any>;
     owner_id?: string;
     owner?: {
@@ -272,6 +274,40 @@ export const useMarketplace = () => {
         fetchCategories();
     }, []);
 
+    const blockDateRange = async (listingId: string, startDate: Date, endDate: Date, reason?: string) => {
+        const { error } = await supabase
+            .from('blocked_dates')
+            .insert({
+                listing_id: listingId,
+                owner_id: (await supabase.auth.getUser()).data.user?.id,
+                start_date: dayjs(startDate).format('YYYY-MM-DD'),
+                end_date: dayjs(endDate).format('YYYY-MM-DD'),
+                reason
+            });
+
+        if (error) throw error;
+    };
+
+    const deleteBlockedDate = async (blockId: string) => {
+        const { error } = await supabase
+            .from('blocked_dates')
+            .delete()
+            .eq('id', blockId);
+
+        if (error) throw error;
+    };
+
+    const fetchBlockedDates = async (listingId: string) => {
+        const { data, error } = await supabase
+            .from('blocked_dates')
+            .select('*')
+            .eq('listing_id', listingId)
+            .order('start_date', { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    };
+
     return {
         listings,
         categories,
@@ -280,8 +316,12 @@ export const useMarketplace = () => {
         fetchListings,
         fetchListing,
         fetchCategories,
-        fetchUnavailableDates, // Export new function
+        fetchUnavailableDates,
         searchListings,
-        createRental
+        createRental,
+        blockDateRange,
+        deleteBlockedDate,
+        fetchBlockedDates
     };
 };
+

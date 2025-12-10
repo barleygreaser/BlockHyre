@@ -15,7 +15,7 @@ import {
     LayoutList,
     Image as ImageIcon,
     DollarSign,
-    Calendar,
+    Calendar as CalendarIcon,
     BookOpen,
     Hammer,
     Plus,
@@ -34,20 +34,24 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/app/components/ui/tooltip";
+import { Calendar } from "@/app/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 // Sections for Sidebar
 const SECTIONS = [
     { id: "details", label: "Details & Category", icon: LayoutList },
     { id: "photos", label: "Photos & Media", icon: ImageIcon },
     { id: "pricing", label: "Pricing & Terms", icon: DollarSign },
-    { id: "availability", label: "Availability & Status", icon: Calendar },
+    { id: "availability", label: "Availability & Status", icon: CalendarIcon },
 ];
 
 export default function EditListingPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user } = useAuth();
-    const { fetchListing, categories } = useMarketplace();
+    const { fetchListing, categories, fetchBlockedDates, blockDateRange, deleteBlockedDate } = useMarketplace();
 
     const [activeSection, setActiveSection] = useState("details");
     const [loading, setLoading] = useState(true);
@@ -56,6 +60,11 @@ export default function EditListingPage() {
     // Form State
     const [formData, setFormData] = useState<Partial<Listing>>({});
     const [specs, setSpecs] = useState<{ key: string, value: string }[]>([]);
+
+    // Availability State
+    const [blockedDates, setBlockedDates] = useState<any[]>([]);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>();
+    const [blocking, setBlocking] = useState(false);
 
     // Fetch Data
     useEffect(() => {
@@ -76,6 +85,9 @@ export default function EditListingPage() {
                 }
                 setLoading(false);
             });
+
+            // Fetch Blocked Dates
+            fetchBlockedDates(id as string).then(setBlockedDates);
         }
     }, [id]);
 
@@ -126,6 +138,8 @@ export default function EditListingPage() {
                     min_rental_days: formData.min_rental_days,
                     deposit_amount: (formData as any).deposit_amount,
                     images: formData.images,
+                    is_available: formData.is_available,
+                    owner_notes: formData.owner_notes,
                 })
                 .eq('id', id);
 
@@ -665,11 +679,139 @@ export default function EditListingPage() {
                         )}
 
                         {activeSection === "availability" && (
-                            <Card>
-                                <CardContent className="py-10 text-center text-slate-500">
-                                    Availability & Status editing coming soon.
-                                </CardContent>
-                            </Card>
+                            <div className="space-y-6 animate-in fade-in duration-300">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-xl font-serif">Availability & Status</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-8">
+
+                                        {/* Master Status */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Master Visibility</h3>
+                                            <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg">
+                                                <div className="space-y-0.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <label className="font-medium text-slate-900">Listing Status</label>
+                                                        <Badge variant="outline" className={cn(
+                                                            "ml-2",
+                                                            formData.is_available ? "bg-green-50 text-green-700 border-green-200" : "bg-slate-100 text-slate-600 border-slate-200"
+                                                        )}>
+                                                            {formData.is_available ? "Active" : "Draft"}
+                                                        </Badge>
+                                                    </div>
+                                                    <p className="text-sm text-slate-500">
+                                                        {formData.is_available
+                                                            ? "Your listing is visible in search results and ready for bookings."
+                                                            : "Your listing is hidden from search results."}
+                                                    </p>
+                                                </div>
+                                                <Switch
+                                                    checked={formData.is_available || false}
+                                                    onCheckedChange={(checked) => handleInputChange("is_available", checked)}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Owner Notes */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-sm font-semibold text-slate-900">Private Owner Notes</h3>
+                                                <Badge variant="secondary" className="text-[10px] h-5">Private</Badge>
+                                            </div>
+                                            <textarea
+                                                className="w-full h-24 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 text-sm"
+                                                placeholder="Keep track of maintenance history, lock codes, or reminders..."
+                                                value={formData.owner_notes || ""}
+                                                onChange={(e) => handleInputChange("owner_notes", e.target.value)}
+                                            />
+                                        </div>
+
+                                        {/* Calendar Management */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Calendar & Blocking</h3>
+                                            <p className="text-sm text-slate-500">Select dates to block out for maintenance or personal use.</p>
+
+                                            <div className="flex flex-col md:flex-row gap-8 items-start">
+                                                <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+                                                    <Calendar
+                                                        mode="range"
+                                                        selected={dateRange}
+                                                        onSelect={setDateRange}
+                                                        className="rounded-md border-0"
+                                                        numberOfMonths={1}
+                                                    />
+                                                    <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="secondary"
+                                                            disabled={!dateRange?.from || !dateRange?.to || blocking}
+                                                            onClick={async () => {
+                                                                if (!dateRange?.from || !dateRange?.to || !id) return;
+                                                                setBlocking(true);
+                                                                try {
+                                                                    await blockDateRange(id as string, dateRange.from, dateRange.to, "Owner Block");
+                                                                    // Refresh
+                                                                    const dates = await fetchBlockedDates(id as string);
+                                                                    setBlockedDates(dates);
+                                                                    setDateRange(undefined);
+                                                                    alert("Dates blocked successfully.");
+                                                                } catch (e: any) {
+                                                                    alert("Failed to block dates: " + e.message);
+                                                                } finally {
+                                                                    setBlocking(false);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {blocking ? <Loader2 className="h-4 w-4 animate-spin" /> : "Block Selected Dates"}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex-1 space-y-3">
+                                                    <h4 className="text-sm font-medium text-slate-700">Blocked Periods</h4>
+                                                    {blockedDates.length === 0 ? (
+                                                        <div className="text-sm text-slate-400 italic p-4 bg-slate-50 rounded border border-dashed border-slate-200 text-center">
+                                                            No manually blocked dates.
+                                                        </div>
+                                                    ) : (
+                                                        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                                                            {blockedDates.map((block) => (
+                                                                <div key={block.id} className="flex justify-between items-center p-3 bg-white border border-slate-200 rounded text-sm group">
+                                                                    <div>
+                                                                        <div className="font-medium text-slate-800">
+                                                                            {format(new Date(block.start_date), "MMM d")} - {format(new Date(block.end_date), "MMM d, yyyy")}
+                                                                        </div>
+                                                                        <div className="text-xs text-slate-500">{block.reason || "Unavailable"}</div>
+                                                                    </div>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="h-8 w-8 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                        onClick={async () => {
+                                                                            if (!confirm("Unblock these dates?")) return;
+                                                                            try {
+                                                                                await deleteBlockedDate(block.id);
+                                                                                const dates = await fetchBlockedDates(id as string);
+                                                                                setBlockedDates(dates);
+                                                                            } catch (e) {
+                                                                                console.error(e);
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <X className="h-4 w-4" />
+                                                                    </Button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </CardContent>
+                                </Card>
+                            </div>
                         )}
 
                     </main>
