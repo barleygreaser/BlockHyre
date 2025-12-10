@@ -29,21 +29,13 @@ import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/app/context/cart-context";
 import { useAuth } from "@/app/context/auth-context";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 
 export default function ListingDetailsPage() {
+    const { id } = useParams();
     const searchParams = useSearchParams();
-
-    // ...
-
-    return (
-        // ...
-        {/* Right Column: Booking Card or Owner Actions */ }
-        < div className = "lg:col-span-1" >
-            { user && listing.owner_id === user.id && searchParams.get('view') !== 'public' ? (
-                            // OWNER VIEW
     const { user } = useAuth();
     const { fetchListing, fetchUnavailableDates } = useMarketplace();
     const { addToCart } = useCart();
@@ -295,7 +287,7 @@ export default function ListingDetailsPage() {
 
                     {/* Right Column: Booking Card or Owner Actions */}
                     <div className="lg:col-span-1">
-                        {user && listing.owner_id === user.id ? (
+                        {user && listing.owner_id === user.id && searchParams.get('view') !== 'public' ? (
                             // OWNER VIEW
                             <Card className="sticky top-24 border-safety-orange/50 shadow-lg overflow-hidden bg-orange-50/10">
                                 <div className="bg-safety-orange p-4 text-white text-center">
