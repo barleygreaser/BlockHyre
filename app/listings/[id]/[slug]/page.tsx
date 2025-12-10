@@ -365,7 +365,11 @@ export default function ListingDetailsPage() {
                                                 selected={dateRange}
                                                 onSelect={setDateRange}
                                                 numberOfMonths={1}
-                                                disabled={(date) => date < new Date() || unavailableDates.some(d => d.toDateString() === date.toDateString())}
+                                                disabled={(date) => {
+                                                    const today = new Date();
+                                                    today.setHours(0, 0, 0, 0);
+                                                    return date < today || unavailableDates.some(d => d.toDateString() === date.toDateString());
+                                                }}
                                             />
                                         </div>
                                     </div>
