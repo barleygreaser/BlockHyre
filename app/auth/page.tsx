@@ -33,7 +33,7 @@ export default function AuthPage() {
             } else {
                 // Sign In Logic
                 await signIn(email, password);
-                router.push('/'); // Redirect to home after login
+                router.push('/dashboard'); // Redirect to dashboard after login
             }
         } catch (error: any) {
             setErrorMsg(error.message || "An error occurred");
