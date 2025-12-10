@@ -229,7 +229,7 @@ export const useMarketplace = () => {
                 .from('rentals')
                 .select('start_date, end_date')
                 .eq('listing_id', listingId)
-                .eq('status', 'approved');
+                .in('status', ['Approved', 'Active']);
 
             if (error) throw error;
 
