@@ -8,6 +8,7 @@ import { Shield, ShoppingCart, Menu, X } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { getUserDisplayName } from "@/lib/utils";
+import { Skeleton } from "./ui/skeleton";
 
 export function Navbar() {
     const { user, signOut, loading } = useAuth();
@@ -93,7 +94,12 @@ export function Navbar() {
                     {/* Desktop Auth/User Actions (Hidden on Mobile) */}
                     <div className="hidden md:flex items-center gap-4">
                         {loading ? (
-                            <div className="h-10 w-24 bg-slate-100 animate-pulse rounded-md" />
+                            <div className="flex items-center gap-3">
+                                {/* Fixed Code - Tighter widths to match rendered buttons */}
+                                <Skeleton className="h-10 w-[121px]" />  {/* Reduced from 142px */}
+                                <Skeleton className="h-10 w-[100px]" />  {/* Reduced from 112px */}
+                                <Skeleton className="h-9 w-9 rounded-full" />
+                            </div>
                         ) : user ? (
                             <div className="flex items-center gap-3">
                                 <Link href="/add-tool">
@@ -223,7 +229,36 @@ export function Navbar() {
                         {/* Drawer Content */}
                         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
 
-                            {user ? (
+                            {loading ? (
+                                <div className="space-y-6">
+                                    {/* key={loading} force re-render if needed, but not necessary inside conditional */}
+                                    <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+                                        <Skeleton className="h-12 w-12 rounded-full" />
+                                        <div className="flex-1 space-y-2">
+                                            <Skeleton className="h-5 w-3/4" />
+                                            <Skeleton className="h-4 w-1/2" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Skeleton className="h-12 w-full rounded-md" />
+                                        <Skeleton className="h-12 w-full rounded-md" />
+                                    </div>
+                                    <div className="space-y-6 pt-2">
+                                        <div className="py-2 border-b border-transparent">
+                                            <Skeleton className="h-6 w-24" />
+                                        </div>
+                                        <div className="py-2 border-b border-transparent">
+                                            <Skeleton className="h-6 w-32" />
+                                        </div>
+                                        <div className="py-2 border-b border-transparent">
+                                            <Skeleton className="h-6 w-20" />
+                                        </div>
+                                        <div className="py-2 border-b border-transparent">
+                                            <Skeleton className="h-6 w-28" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : user ? (
                                 /* Logged In State */
                                 <>
                                     {/* User Info */}

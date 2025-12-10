@@ -124,10 +124,34 @@ npx supabase db reset --linked
 
 ---
 
-## 🎨 Design Aesthetic
-- **Style:** Industrial Modern.
-- **Colors:** White backgrounds, Slate-900 text, and **Safety Orange (#FF6700)** accents.
-- **Typography:** *Roboto Slab* for headings, *Inter* for body text.
+## 🎨 Branding & Design System
+
+### Color Palette
+
+**Primary Colors:**
+- **Safety Orange:** `#FF6700` (Used for CTAs, Alerts, and Highlights)
+- **Slate 900:** `#0F172A` (Primary Text, Headings)
+- **White:** `#FFFFFF` (Backgrounds, Cards)
+
+**Secondary Colors:**
+- **Slate 500:** `#64748B` (Secondary Text)
+- **Slate 200:** `#E2E8F0` (Borders, Dividers)
+- **Emerald 500:** `#10B981` (Verified Status, Success)
+- **Red 600:** `#DC2626` (Errors, Urgent Alerts)
+
+### Typography
+
+**Headings (Serif):**
+- **Font Family:** `Roboto Slab`
+- **Usage:** Used for major page titles and section headers to convey trust and established reliability.
+
+**Body (Sans-Serif):**
+- **Font Family:** `Inter`
+- **Usage:** Used for all body text, UI elements, and data displays for maximum readability and modern clarity.
+
+### Design Principles
+- **Industrial Modern:** Clean lines, high contrast, and functional whitespace.
+- **Trust-Centric:** Use of "Safety Orange" serves as a constant reminder of caution and awareness, while ample whitespace suggests organization and clarity.
 
 ---
 

@@ -21,6 +21,7 @@ import { AuthProvider } from "./context/auth-context";
 import { CartProvider } from "./context/cart-context";
 
 // ... imports
+import { LocationOnboardingModal } from "./components/location-onboarding-modal";
 
 export default function RootLayout({
   children,
@@ -34,6 +35,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <CartProvider>
+            <LocationOnboardingModal />
             {children}
           </CartProvider>
         </AuthProvider>

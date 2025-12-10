@@ -59,6 +59,9 @@ export function RenterDashboardView() {
         }
     };
 
+    const totalActive = activeRentals.length;
+    const urgentCount = activeRentals.filter(r => r.status === 'overdue' || r.status === 'due-today').length;
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -80,7 +83,14 @@ export function RenterDashboardView() {
 
                     {/* Active Rentals */}
                     <div className="space-y-4">
-                        <h2 className="text-xl font-bold font-serif text-slate-900">Active Rentals</h2>
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-xl font-bold font-serif text-slate-900">Active Rentals</h2>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 rounded-full text-base font-bold border border-slate-300 shadow-sm">
+                                <span className="text-slate-800">{totalActive}</span>
+                                <span className="text-slate-400">|</span>
+                                <span className="text-red-600 font-extrabold">{urgentCount}</span>
+                            </div>
+                        </div>
                         {activeRentals.map((rental) => {
                             const styles = getRentalStyles(rental.status);
                             return (

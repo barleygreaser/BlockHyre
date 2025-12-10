@@ -12,6 +12,7 @@ import { Search, Filter, MapPin, X, Loader2, Zap, Shield, ArrowUpDown, SlidersHo
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 // Mock User Location (e.g., Downtown)
 const USER_LOCATION: Coordinates = {
@@ -349,9 +350,13 @@ export default function InventoryPage() {
                     {/* Main Content (Grid) */}
                     <div className="flex-1">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-slate-900">
-                                {filteredTools.length} {filteredTools.length === 1 ? 'Tool' : 'Tools'} Found
-                            </h2>
+                            {loading ? (
+                                <Skeleton className="h-7 w-48" />
+                            ) : (
+                                <h2 className="text-xl font-bold text-slate-900">
+                                    {filteredTools.length} {filteredTools.length === 1 ? 'Tool' : 'Tools'} Found
+                                </h2>
+                            )}
                             {/* Active Filters Summary */}
                             <div className="flex gap-2 flex-wrap">
                                 {selectedCategories.map(cat => (
