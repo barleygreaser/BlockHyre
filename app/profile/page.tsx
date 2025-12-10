@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/app
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/app/components/ui/dialog";
 import { AvatarUpload } from "@/app/components/profile/avatar-upload";
-import { User, Shield, CreditCard, Activity, CheckCircle, AlertTriangle, ExternalLink } from "lucide-react";
+import { User, Shield, CreditCard, Activity, CheckCircle, AlertTriangle, ExternalLink, MapPin } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 
@@ -81,7 +81,7 @@ export default function ProfilePage() {
 
             const { data, error } = await supabase
                 .from("users")
-                .select("*")
+                .select("*, neighborhoods(*)")
                 .eq("id", user.id)
                 .single();
 
@@ -238,6 +238,62 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
                             </CardContent>
+
+                        </Card>
+
+                        {/* NEW: My Neighborhood Card */}
+                        <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden mt-6">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-2">
+                                    <MapPin className="h-5 w-5 text-safety-orange" />
+                                    My Neighborhood
+                                </CardTitle>
+                                <CardDescription>Your verified zone for renting and listing tools.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-col md:flex-row gap-6">
+
+                                    {/* Left Side: Text Context */}
+                                    <div className="flex-1 space-y-4">
+                                        <div>
+                                            <h3 className="text-2xl font-bold font-serif text-slate-900">
+                                                {profile?.neighborhoods?.name || "No Neighborhood Set"}
+                                            </h3>
+                                            <p className="text-slate-500 font-medium">
+                                                Woodstock, GA • {profile?.neighborhoods?.service_radius_miles || 2.0} mi Radius
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
+                                                <CheckCircle className="h-3.5 w-3.5" />
+                                                Verified Resident
+                                            </span>
+                                            <span className="text-xs text-slate-400">Since Dec 2025</span>
+                                        </div>
+
+                                        <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 text-sm text-slate-700">
+                                            You can view and rent listings from neighbors within the <strong>{profile?.neighborhoods?.name || "local"}</strong> pilot zone.
+                                        </div>
+                                    </div>
+
+                                    {/* Right Side: Map Visual Receipt */}
+                                    <div className="w-full md:w-64 h-40 bg-slate-100 rounded-lg border border-slate-200 relative overflow-hidden group">
+                                        {/* Map Background */}
+                                        <div
+                                            className="absolute inset-0 opacity-60 bg-[url('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/15/8563/13106.png')] bg-cover bg-center"
+                                            style={{ filter: "grayscale(30%)" }}
+                                        />
+
+                                        {/* Pin & Radius Overlay */}
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="h-24 w-24 bg-safety-orange/10 rounded-full border-2 border-safety-orange flex items-center justify-center relative shadow-sm">
+                                                <div className="h-3 w-3 bg-safety-orange rounded-full shadow-md ring-4 ring-white" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
                         </Card>
                     </TabsContent>
 
@@ -320,6 +376,6 @@ export default function ProfilePage() {
                 </Tabs>
             </div>
             <Footer />
-        </main>
+        </main >
     );
 }

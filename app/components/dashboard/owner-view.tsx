@@ -49,6 +49,53 @@ export function OwnerDashboardView() {
         checkStripeStatus();
     }, [user]);
 
+    // State for KPIs
+    const [kpis, setKpis] = useState({
+        activeRentals: 0,
+        earnings30d: 0,
+        toolsListed: 0
+    });
+    const [kpiLoading, setKpiLoading] = useState(true);
+
+    // Fetch Owner KPIs
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchKPIs = async () => {
+            try {
+                const { data, error } = await supabase.rpc('get_owner_dashboard_kpis', {
+                    p_owner_id: user.id
+                });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    setKpis({
+                        activeRentals: parseInt(data[0].active_rentals_count),
+                        earnings30d: parseFloat(data[0].earnings_30d),
+                        toolsListed: parseInt(data[0].tools_listed_count)
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching owner KPIs:", error);
+            } finally {
+                setKpiLoading(false);
+            }
+        };
+
+        fetchKPIs();
+    }, [user]);
+
+    // Format currency
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -70,7 +117,11 @@ export function OwnerDashboardView() {
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-slate-500">Active Rentals</p>
-                            <h3 className="text-3xl font-bold text-slate-900">3</h3>
+                            {kpiLoading ? (
+                                <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
+                            ) : (
+                                <h3 className="text-3xl font-bold text-slate-900">{kpis.activeRentals}</h3>
+                            )}
                         </div>
                         <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
                             <Users className="h-6 w-6" />
@@ -82,7 +133,11 @@ export function OwnerDashboardView() {
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-slate-500">Earnings (30d)</p>
-                            <h3 className="text-3xl font-bold text-slate-900">$1,240</h3>
+                            {kpiLoading ? (
+                                <div className="h-9 w-24 bg-slate-100 animate-pulse rounded mt-1" />
+                            ) : (
+                                <h3 className="text-3xl font-bold text-slate-900">{formatCurrency(kpis.earnings30d)}</h3>
+                            )}
                         </div>
                         <div className="h-12 w-12 rounded-full bg-green-50 flex items-center justify-center text-green-600">
                             <DollarSign className="h-6 w-6" />
@@ -94,7 +149,11 @@ export function OwnerDashboardView() {
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-slate-500">Tools Listed</p>
-                            <h3 className="text-3xl font-bold text-slate-900">12</h3>
+                            {kpiLoading ? (
+                                <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
+                            ) : (
+                                <h3 className="text-3xl font-bold text-slate-900">{kpis.toolsListed}</h3>
+                            )}
                         </div>
                         <div className="h-12 w-12 rounded-full bg-orange-50 flex items-center justify-center text-safety-orange">
                             <Wrench className="h-6 w-6" />

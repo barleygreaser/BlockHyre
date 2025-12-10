@@ -2,24 +2,45 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/auth-context";
-import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Button } from "./ui/button";
 import { MapPin, Check, Loader2, Navigation } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// ... existing code ...
+interface Neighborhood {
+    id: string;
+    name: string;
+    center_lat: number;
+    center_lon: number;
+    service_radius_miles: number;
+}
+
+import { usePathname } from "next/navigation";
+
+// ... imports
 
 export function LocationOnboardingModal() {
     const { user } = useAuth();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    // ... existing code ...
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [neighborhoods, setNeighborhoods] = useState<Neighborhood[]>([]);
+    const [selectedNeighborhood, setSelectedNeighborhood] = useState<Neighborhood | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     // 1. Check if user needs to select a neighborhood
     useEffect(() => {
         if (!user) return;
-        if (pathname === "/") return; // Don't show on homepage
+
+        // Define protected routes where location is mandatory
+        const protectedPaths = ["/dashboard", "/inventory", "/add-tool", "/profile", "/cart", "/my-rentals", "/messages"];
+        const isProtectedRoute = protectedPaths.some(path => pathname?.startsWith(path));
+
+        if (!isProtectedRoute) {
+            setIsOpen(false);
+            return;
+        }
 
         const checkUserLocation = async () => {
             try {
