@@ -21,7 +21,8 @@ import {
     Info,
     Loader2,
     Pencil,
-    BarChart2
+    BarChart2,
+    Eye
 } from "lucide-react";
 import { addDays, differenceInDays } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -33,7 +34,16 @@ import { calculateRentalPrice } from "@/lib/pricing";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 
 export default function ListingDetailsPage() {
-    const { id } = useParams();
+    const searchParams = useSearchParams();
+
+    // ...
+
+    return (
+        // ...
+        {/* Right Column: Booking Card or Owner Actions */ }
+        < div className = "lg:col-span-1" >
+            { user && listing.owner_id === user.id && searchParams.get('view') !== 'public' ? (
+                            // OWNER VIEW
     const { user } = useAuth();
     const { fetchListing, fetchUnavailableDates } = useMarketplace();
     const { addToCart } = useCart();
@@ -310,10 +320,12 @@ export default function ListingDetailsPage() {
                                             </Button>
                                         </Link>
 
-                                        <Button variant="outline" className="w-full h-12 text-base font-medium border-slate-300 hover:bg-white text-slate-700">
-                                            <BarChart2 className="mr-2 h-5 w-5 text-slate-500" />
-                                            View Analytics
-                                        </Button>
+                                        <Link href={`${location.pathname}?view=public`} className="block">
+                                            <Button variant="outline" className="w-full h-12 text-base font-medium border-slate-300 hover:bg-white text-slate-700">
+                                                <Eye className="mr-2 h-5 w-5 text-slate-500" />
+                                                View Public Listing
+                                            </Button>
+                                        </Link>
                                     </div>
 
                                     <div className="pt-4 border-t border-slate-200">
