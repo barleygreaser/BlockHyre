@@ -593,7 +593,7 @@ export default function EditListingPage() {
                                                                     <div className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded cursor-help">?</div>
                                                                 </TooltipTrigger>
                                                                 <TooltipContent>
-                                                                    Enabling barter may increase your requests by 20%.
+                                                                    Enabling barter may increase your requests by 20%. Barter requires "Request to Book".
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         </TooltipProvider>
@@ -602,7 +602,12 @@ export default function EditListingPage() {
                                                 </div>
                                                 <Switch
                                                     checked={formData.accepts_barter || false}
-                                                    onCheckedChange={(checked) => handleInputChange("accepts_barter", checked)}
+                                                    onCheckedChange={(checked) => {
+                                                        handleInputChange("accepts_barter", checked);
+                                                        if (checked) {
+                                                            handleInputChange("booking_type", "request");
+                                                        }
+                                                    }}
                                                 />
                                             </div>
 
@@ -625,24 +630,16 @@ export default function EditListingPage() {
                                                         />
                                                         <div>
                                                             <div className="font-medium text-sm text-slate-900">Request to Book</div>
-                                                            <div className="text-xs text-slate-500 mt-1">Review every request before approving. Best for high-value items.</div>
+                                                            <div className="text-xs text-slate-500 mt-1">Review every request before approving. Best for high-value items or for bartering.</div>
                                                         </div>
                                                     </label>
 
                                                     <label className={cn(
                                                         "flex-1 flex items-start p-3 rounded-lg border transition-all",
-                                                        // Disable logic: Only enable if verified. For now assumes false/disabled if not checking user state,
-                                                        // but requirements say check user state.
-                                                        // Let's assume we can allow selection but handle validation later or check strict requirements?
-                                                        // Requirement: "Must only be enabled if user.is_residency_verified = TRUE and user.is_id_verified = TRUE."
-                                                        // I need to check `user` object.
-                                                        // Assuming `user` context has this info, or I need to fetch profile.
-                                                        // `useAuth` user object is Supabase user. Profile data might be separate.
-                                                        // For now I will leave it enabled but add a visual note if logic missing.
-                                                        // Actually, I'll enable it for logic demo.
-                                                        formData.booking_type === 'instant'
-                                                            ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange"
-                                                            : "border-slate-200 hover:border-slate-300"
+                                                        formData.accepts_barter ? "opacity-50 cursor-not-allowed bg-slate-50 border-slate-100"
+                                                            : formData.booking_type === 'instant'
+                                                                ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange cursor-pointer"
+                                                                : "border-slate-200 hover:border-slate-300 cursor-pointer"
                                                     )}>
                                                         <input
                                                             type="radio"
@@ -650,11 +647,12 @@ export default function EditListingPage() {
                                                             value="instant"
                                                             className="mt-1 mr-3 text-safety-orange focus:ring-safety-orange"
                                                             checked={formData.booking_type === 'instant'}
-                                                            onChange={() => handleInputChange("booking_type", "instant")}
+                                                            onChange={() => !formData.accepts_barter && handleInputChange("booking_type", "instant")}
+                                                            disabled={formData.accepts_barter === true}
                                                         />
                                                         <div>
                                                             <div className="font-medium text-sm text-slate-900">Instant Book</div>
-                                                            <div className="text-xs text-slate-500 mt-1">Renters book instantly without approval. requires ID verification.</div>
+                                                            <div className="text-xs text-slate-500 mt-1">Renters book instantly without approval. Requires ID verification.</div>
                                                         </div>
                                                     </label>
                                                 </div>
