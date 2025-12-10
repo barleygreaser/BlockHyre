@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, notFound } from "next/navigation";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
@@ -72,6 +72,12 @@ export default function EditListingPage() {
         if (id) {
             fetchListing(id as string).then((data) => {
                 if (data) {
+                    // IDOR PROTECTION: Verify Ownership
+                    if (user && data.owner_id && data.owner_id !== user.id) {
+                        notFound(); // 404 security mask
+                        return;
+                    }
+
                     setFormData(data);
                     // Parse Specifications if they exist
                     if (data.specifications) {
