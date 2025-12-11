@@ -32,13 +32,8 @@ import { ImageUpload } from "@/app/components/ui/image-upload";
 import { Switch } from "@/app/components/ui/switch";
 import { EditListingSpecs, ListingSpecValue } from "@/app/components/listings/edit-listing-specs";
 
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/app/components/ui/tooltip";
-import { Calendar } from "@/app/components/ui/calendar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
+import { ListingCalendar } from "@/app/components/listings/listing-calendar";
 // import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
@@ -768,16 +763,12 @@ export default function EditListingPage() {
 
                                             <div className="flex flex-col md:flex-row gap-8 items-start">
                                                 <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
-                                                    <Calendar
-                                                        mode="range"
-                                                        selected={dateRange}
-                                                        onSelect={setDateRange}
+                                                    <ListingCalendar
+                                                        unavailableDates={unavailableDates}
+                                                        dateRange={dateRange}
+                                                        onDateRangeChange={setDateRange}
+                                                        minDate={new Date()}
                                                         className="rounded-md border-0"
-                                                        numberOfMonths={1}
-                                                        disabled={[
-                                                            { before: new Date() },
-                                                            ...unavailableDates
-                                                        ]}
                                                     />
                                                     <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
                                                         <Button

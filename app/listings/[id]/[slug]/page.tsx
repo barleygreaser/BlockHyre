@@ -7,7 +7,8 @@ import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { Calendar } from "@/app/components/ui/calendar";
+import { Calendar } from "@/app/components/ui/calendar"; // Keep if needed for types or just remove? 
+import { ListingCalendar } from "@/app/components/listings/listing-calendar";
 import {
     MapPin,
     Shield,
@@ -395,12 +396,10 @@ export default function ListingDetailsPage() {
                                     <div className="space-y-6">
                                         <label className="text-sm font-bold text-slate-900">Select Dates</label>
                                         <div className="flex justify-center">
-                                            <Calendar
-                                                mode="range"
-                                                selected={dateRange}
-                                                onSelect={setDateRange}
-                                                numberOfMonths={1}
-                                                blockedDates={unavailableDates}
+                                            <ListingCalendar
+                                                unavailableDates={unavailableDates}
+                                                dateRange={dateRange}
+                                                onDateRangeChange={setDateRange}
                                                 minDate={new Date()}
                                             />
                                         </div>
