@@ -3,10 +3,35 @@
 import { supabase } from "@/lib/supabase";
 
 /**
- * Get or create a chat between two users for a specific listing
- * @param listingId - The listing ID
- * @param otherUserId - The other user's ID (owner or renter)
- * @returns The chat ID
+ * Find or create a conversation between a renter and tool owner
+ * Uses the upsert_conversation RPC function to ensure proper linking
+ * @param toolId - The listing/tool ID
+ * @returns The chat ID or null if failed
+ */
+export async function upsertConversation(toolId: string): Promise<string | null> {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            throw new Error("Not authenticated");
+        }
+
+        // Call the RPC function
+        const { data, error } = await supabase.rpc('upsert_conversation', {
+            p_tool_id: toolId,
+            p_renter_id: user.id
+        });
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error upserting conversation:', error);
+        return null;
+    }
+}
+
+/**
+ * Legacy function - kept for backward compatibility
+ * @deprecated Use upsertConversation instead
  */
 export async function getOrCreateChat(
     listingId: string,

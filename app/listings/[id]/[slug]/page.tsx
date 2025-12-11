@@ -23,7 +23,8 @@ import {
     Loader2,
     Pencil,
     BarChart2,
-    Eye
+    Eye,
+    MessageSquare
 } from "lucide-react";
 import { addDays, differenceInDays } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -39,6 +40,8 @@ import { useAuth } from "@/app/context/auth-context";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
+import { upsertConversation } from "@/app/lib/chat-helpers";
+import { toast } from "sonner";
 
 export default function ListingDetailsPage() {
     const { id } = useParams();
@@ -135,6 +138,26 @@ export default function ListingDetailsPage() {
             to: dateRange.to.toISOString()
         });
         router.push(`/request-booking/${listing.id}?${searchParams.toString()}`);
+    };
+
+    const handleContactOwner = async () => {
+        if (!user) {
+            toast.error('Please log in to contact the owner');
+            router.push('/auth');
+            return;
+        }
+
+        try {
+            const chatId = await upsertConversation(listing.id);
+            if (chatId) {
+                router.push(`/messages?id=${chatId}`);
+            } else {
+                toast.error('Failed to create conversation');
+            }
+        } catch (error) {
+            console.error('Error creating chat:', error);
+            toast.error('Failed to contact owner');
+        }
     };
 
     // Parse specs if string or object
@@ -482,6 +505,16 @@ export default function ListingDetailsPage() {
                                             </div>
                                         )}
                                     </div>
+
+                                    {/* Contact Owner Button */}
+                                    <Button
+                                        onClick={handleContactOwner}
+                                        variant="outline"
+                                        className="w-full h-12 text-base font-medium border-slate-300 text-slate-700 hover:bg-slate-50"
+                                    >
+                                        <MessageSquare className="mr-2 h-5 w-5" />
+                                        Contact Owner
+                                    </Button>
 
                                     <p className="text-xs text-center text-slate-400">
                                         You won't be charged until the owner approves.
