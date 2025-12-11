@@ -49,11 +49,11 @@ export function useMessages() {
                 .from('chats')
                 .select(`
                     *,
-                    listing:listing_id(title),
-                    user_one:user_one_id(id, full_name, profile_photo_url),
-                    user_two:user_two_id(id, full_name, profile_photo_url)
+                    listing:tool_id(title),
+                    owner:owner_id(id, full_name, profile_photo_url),
+                    renter:renter_id(id, full_name, profile_photo_url)
                 `)
-                .or(`user_one_id.eq.${user.id},user_two_id.eq.${user.id}`)
+                .or(`owner_id.eq.${user.id},renter_id.eq.${user.id}`)
                 .order('updated_at', { ascending: false });
 
             if (chatsError) throw chatsError;
@@ -79,11 +79,11 @@ export function useMessages() {
                         .neq('sender_id', user.id);
 
                     // Determine the other user
-                    const otherUser = chat.user_one_id === user.id ? chat.user_two : chat.user_one;
+                    const otherUser = chat.owner_id === user.id ? chat.renter : chat.owner;
 
                     return {
                         id: chat.id,
-                        listing_id: chat.listing_id,
+                        listing_id: chat.tool_id,
                         user_one_id: chat.user_one_id,
                         user_two_id: chat.user_two_id,
                         created_at: chat.created_at,

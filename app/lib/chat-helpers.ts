@@ -15,13 +15,20 @@ export async function upsertConversation(toolId: string): Promise<string | null>
             throw new Error("Not authenticated");
         }
 
+        console.log('Calling upsert_conversation with:', { toolId, userId: user.id });
+
         // Call the RPC function
         const { data, error } = await supabase.rpc('upsert_conversation', {
             p_tool_id: toolId,
             p_renter_id: user.id
         });
 
-        if (error) throw error;
+        if (error) {
+            console.error('RPC error:', error);
+            throw error;
+        }
+
+        console.log('RPC success, chat_id:', data);
         return data;
     } catch (error) {
         console.error('Error upserting conversation:', error);
