@@ -28,6 +28,7 @@ import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { cn, generateSlug } from "@/lib/utils";
+import { toast } from "sonner";
 import { ImageUpload } from "@/app/components/ui/image-upload";
 import { Switch } from "@/app/components/ui/switch";
 import { EditListingSpecs, ListingSpecValue } from "@/app/components/listings/edit-listing-specs";
@@ -77,6 +78,15 @@ export default function EditListingPage() {
     const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
     const [dateRange, setDateRange] = useState<DateRange | undefined>();
     const [blocking, setBlocking] = useState(false);
+
+    // Set document title
+    useEffect(() => {
+        if (formData.title) {
+            document.title = `Edit: ${formData.title} - BlockHyre`;
+        } else {
+            document.title = 'Edit Listing - BlockHyre';
+        }
+    }, [formData.title]);
 
     // Fetch Data
     useEffect(() => {
@@ -151,7 +161,7 @@ export default function EditListingPage() {
         try {
             // Validate Manual URL if present
             if (formData.manual_url && !formData.manual_url.startsWith("https://www.manualslib.com")) {
-                alert("Invalid User Manual URL. It must start with 'https://www.manualslib.com'.");
+                toast.error("Invalid User Manual URL. It must start with 'https://www.manualslib.com'.");
                 setSaving(false);
                 return false;
             }
@@ -193,12 +203,12 @@ export default function EditListingPage() {
 
             // Add visible feedback
             if (!redirectAfter) {
-                alert("Listing updated successfully!");
+                toast.success("Listing updated successfully!");
             }
             return true;
         } catch (e: any) {
             console.error("Error updating listing:", e);
-            alert("Failed to update listing: " + e.message);
+            toast.error("Failed to update listing: " + e.message);
             return false;
         } finally {
             setSaving(false);
@@ -786,9 +796,9 @@ export default function EditListingPage() {
                                                                     const allUnavailable = await fetchUnavailableDates(id as string);
                                                                     setUnavailableDates(allUnavailable);
                                                                     setDateRange(undefined);
-                                                                    alert("Dates blocked successfully.");
+                                                                    toast.success("Dates blocked successfully.");
                                                                 } catch (e: any) {
-                                                                    alert("Failed to block dates: " + e.message);
+                                                                    toast.error("Failed to block dates: " + e.message);
                                                                 } finally {
                                                                     setBlocking(false);
                                                                 }
@@ -819,17 +829,45 @@ export default function EditListingPage() {
                                                                         variant="ghost"
                                                                         size="icon"
                                                                         className="h-8 w-8 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                                        onClick={async () => {
-                                                                            if (!confirm("Unblock these dates?")) return;
-                                                                            try {
-                                                                                await deleteBlockedDate(block.id);
-                                                                                const dates = await fetchBlockedDates(id as string);
-                                                                                setBlockedDates(dates);
-                                                                                const allUnavailable = await fetchUnavailableDates(id as string);
-                                                                                setUnavailableDates(allUnavailable);
-                                                                            } catch (e) {
-                                                                                console.error(e);
-                                                                            }
+                                                                        onClick={() => {
+                                                                            toast.custom(
+                                                                                (t) => (
+                                                                                    <div className="flex flex-col gap-3 bg-white p-4 rounded-lg shadow-lg border border-slate-200">
+                                                                                        <p className="font-medium">Unblock these dates?</p>
+                                                                                        <div className="flex gap-2 justify-end">
+                                                                                            <Button
+                                                                                                size="sm"
+                                                                                                variant="outline"
+                                                                                                onClick={() => toast.dismiss(t)}
+                                                                                            >
+                                                                                                Cancel
+                                                                                            </Button>
+                                                                                            <Button
+                                                                                                size="sm"
+                                                                                                onClick={async () => {
+                                                                                                    toast.dismiss(t);
+                                                                                                    try {
+                                                                                                        await deleteBlockedDate(block.id);
+                                                                                                        const dates = await fetchBlockedDates(id as string);
+                                                                                                        setBlockedDates(dates);
+                                                                                                        const allUnavailable = await fetchUnavailableDates(id as string);
+                                                                                                        setUnavailableDates(allUnavailable);
+                                                                                                        toast.success("Dates unblocked successfully.");
+                                                                                                    } catch (e) {
+                                                                                                        console.error(e);
+                                                                                                        toast.error("Failed to unblock dates.");
+                                                                                                    }
+                                                                                                }}
+                                                                                            >
+                                                                                                OK
+                                                                                            </Button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ),
+                                                                                {
+                                                                                    duration: Infinity,
+                                                                                }
+                                                                            );
                                                                         }}
                                                                     >
                                                                         <X className="h-4 w-4" />

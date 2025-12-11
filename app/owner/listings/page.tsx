@@ -54,6 +54,10 @@ export default function ManageListingsPage() {
     const [statusFilter, setStatusFilter] = useState("all");
 
     useEffect(() => {
+        document.title = 'Manage Listings - BlockHyre';
+    }, []);
+
+    useEffect(() => {
         const statusParam = searchParams.get('status');
         if (statusParam && ['active', 'draft', 'archived', 'all'].includes(statusParam.toLowerCase())) {
             setStatusFilter(statusParam.toLowerCase());

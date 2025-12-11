@@ -22,6 +22,7 @@ import { CartProvider } from "./context/cart-context";
 
 // ... imports
 import { LocationOnboardingModal } from "./components/location-onboarding-modal";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function RootLayout({
   children,
@@ -37,6 +38,7 @@ export default function RootLayout({
           <CartProvider>
             <LocationOnboardingModal />
             {children}
+            <Toaster />
           </CartProvider>
         </AuthProvider>
       </body>

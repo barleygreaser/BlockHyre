@@ -57,7 +57,7 @@ export function Navbar() {
     };
 
     return (
-        <nav className="border-b border-slate-200 bg-white relative z-40">
+        <nav className="border-b border-slate-200 bg-white sticky top-0 z-40">
             <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
