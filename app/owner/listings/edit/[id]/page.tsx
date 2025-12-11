@@ -20,14 +20,18 @@ import {
     Hammer,
     Plus,
     X,
-    Loader2
+    Check,
+    Loader2,
+    Eye
 } from "lucide-react";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
-import { cn } from "@/lib/utils";
+import { cn, generateSlug } from "@/lib/utils";
 import { ImageUpload } from "@/app/components/ui/image-upload";
 import { Switch } from "@/app/components/ui/switch";
+import { EditListingSpecs, ListingSpecValue } from "@/app/components/listings/edit-listing-specs";
+
 import {
     Tooltip,
     TooltipContent,
@@ -38,6 +42,14 @@ import { Calendar } from "@/app/components/ui/calendar";
 // import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/app/components/ui/dialog";
 
 // Sections for Sidebar
 const SECTIONS = [
@@ -59,7 +71,11 @@ export default function EditListingPage() {
 
     // Form State
     const [formData, setFormData] = useState<Partial<Listing>>({});
-    const [specs, setSpecs] = useState<{ key: string, value: string }[]>([]);
+    const [specs, setSpecs] = useState<ListingSpecValue[]>([]);
+
+    // Unsaved Changes Tracking
+    const [initialContext, setInitialContext] = useState<{ data: Partial<Listing>, specs: ListingSpecValue[] } | null>(null);
+    const [showUnsavedModal, setShowUnsavedModal] = useState(false);
 
     // Availability State
     const [blockedDates, setBlockedDates] = useState<any[]>([]);
@@ -79,16 +95,23 @@ export default function EditListingPage() {
                     }
 
                     setFormData(data);
-                    // Parse Specifications if they exist
-                    if (data.specifications) {
-                        const parsedSpecs = Object.entries(data.specifications).map(([key, value]) => ({
-                            key,
-                            value: String(value)
-                        }));
-                        setSpecs(parsedSpecs);
+                    setFormData(data);
+
+                    // Parse Specifications
+                    let initialSpecs: ListingSpecValue[] = [];
+                    if (data.specifications && Array.isArray(data.specifications)) {
+                        initialSpecs = data.specifications as ListingSpecValue[];
+                        setSpecs(initialSpecs);
                     } else {
-                        setSpecs([{ key: "", value: "" }]);
+                        // Migration: If old object format or null, start fresh with empty array
+                        setSpecs([]);
                     }
+
+                    // Set Initial Context for Dirty Checking
+                    setInitialContext({
+                        data: JSON.parse(JSON.stringify(data)), // Deep clone
+                        specs: JSON.parse(JSON.stringify(initialSpecs)) // Deep clone
+                    });
                 }
                 setLoading(false);
             });
@@ -106,37 +129,41 @@ export default function EditListingPage() {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleSpecChange = (index: number, field: "key" | "value", value: string) => {
-        const newSpecs = [...specs];
-        newSpecs[index][field] = value;
-        setSpecs(newSpecs);
+    const hasUnsavedChanges = () => {
+        if (!initialContext) return false;
+
+        // Check specs changes
+        if (!isDeepEqual(specs, initialContext.specs)) return true;
+
+        // Check formData changes
+        // We only check keys that handleInputChange touches or are relevant. 
+        // But since formData starts as full object, simple deep equal on keys present in both might be safest.
+        // Or just deep equal the whole object.
+        return !isDeepEqual(formData, initialContext.data);
     };
 
-    const addSpecRow = () => {
-        setSpecs([...specs, { key: "", value: "" }]);
+    const handleViewListingClick = () => {
+        if (hasUnsavedChanges()) {
+            setShowUnsavedModal(true);
+        } else {
+            const slug = generateSlug(formData.title || 'view');
+            window.open(`/listings/${id}/${slug}?view=public`, '_blank');
+        }
     };
 
-    const removeSpecRow = (index: number) => {
-        setSpecs(specs.filter((_, i) => i !== index));
-    };
-
-    const handleSave = async () => {
+    const handleSave = async (redirectAfter: boolean = false) => {
         setSaving(true);
         try {
             // Validate Manual URL if present
             if (formData.manual_url && !formData.manual_url.startsWith("https://www.manualslib.com")) {
                 alert("Invalid User Manual URL. It must start with 'https://www.manualslib.com'.");
                 setSaving(false);
-                return;
+                return false;
             }
 
-            // Convert specs array back to object
-            const specsObject = specs.reduce((acc, curr) => {
-                if (curr.key.trim()) {
-                    acc[curr.key.trim()] = curr.value.trim();
-                }
-                return acc;
-            }, {} as Record<string, any>);
+            // Convert specs to JSONB compatible structure (Array)
+            // Verify specs are valid?
+            // Actually, we just save the array directly now.
 
             const { error } = await supabase
                 .from('listings')
@@ -147,8 +174,8 @@ export default function EditListingPage() {
                     // If 'brand' column exists, add it. If not, maybe put in specs.
                     // The prompt asked for 'Brand' input. I'll check if column exists later or assumes specs.
                     description: formData.description,
-                    category_id: formData.category_id, // Need to ensure category_id is set
-                    specifications: specsObject,
+                    category_id: formData.category_id,
+                    specifications: specs, // Save as JSONB Array
                     daily_price: formData.daily_price,
                     accepts_barter: formData.accepts_barter,
                     booking_type: formData.booking_type,
@@ -163,11 +190,21 @@ export default function EditListingPage() {
 
             if (error) throw error;
 
+            // Update initial context to new state
+            setInitialContext({
+                data: JSON.parse(JSON.stringify(formData)),
+                specs: JSON.parse(JSON.stringify(specs))
+            });
+
             // Add visible feedback
-            alert("Listing updated successfully!");
+            if (!redirectAfter) {
+                alert("Listing updated successfully!");
+            }
+            return true;
         } catch (e: any) {
             console.error("Error updating listing:", e);
             alert("Failed to update listing: " + e.message);
+            return false;
         } finally {
             setSaving(false);
         }
@@ -210,7 +247,18 @@ export default function EditListingPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-slate-500">Last saved: Just now</span>
+                            <span className="text-sm text-slate-500 mr-2">Last saved: Just now</span>
+
+                            {/* View Listing Button */}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-safety-orange"
+                                onClick={handleViewListingClick}
+                            >
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Listing
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -318,55 +366,11 @@ export default function EditListingPage() {
 
                                         {/* Specifications */}
                                         <div>
-                                            <div className="flex items-center justify-between mb-4">
-                                                <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                                                    <Hammer className="h-4 w-4" />
-                                                    Specifications
-                                                </label>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={addSpecRow}
-                                                    className="text-xs"
-                                                >
-                                                    <Plus className="h-3 w-3 mr-1" />
-                                                    Add Spec
-                                                </Button>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                {specs.map((spec, index) => (
-                                                    <div key={index} className="flex gap-3 items-center">
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Key (e.g. Voltage)"
-                                                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50"
-                                                            value={spec.key}
-                                                            onChange={(e) => handleSpecChange(index, "key", e.target.value)}
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Value (e.g. 18V)"
-                                                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                                                            value={spec.value}
-                                                            onChange={(e) => handleSpecChange(index, "value", e.target.value)}
-                                                        />
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-9 w-9 text-slate-400 hover:text-red-500"
-                                                            onClick={() => removeSpecRow(index)}
-                                                        >
-                                                            <X className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                                {specs.length === 0 && (
-                                                    <p className="text-sm text-slate-400 italic text-center py-4 bg-slate-50 rounded border border-dashed border-slate-200">
-                                                        No specifications added. Add key technical details here.
-                                                    </p>
-                                                )}
-                                            </div>
+                                            <EditListingSpecs
+                                                selectedCategoryId={formData.category_id || null}
+                                                initialSpecs={specs}
+                                                onSpecsChange={setSpecs}
+                                            />
                                         </div>
 
                                         <div className="space-y-2">
@@ -869,7 +873,7 @@ export default function EditListingPage() {
                         </Button>
                         <Button
                             className="bg-safety-orange hover:bg-orange-600 text-white min-w-[120px]"
-                            onClick={handleSave}
+                            onClick={() => handleSave(false)}
                             disabled={saving}
                         >
                             {saving ? (
@@ -887,6 +891,70 @@ export default function EditListingPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Unsaved Changes Modal */}
+            <Dialog open={showUnsavedModal} onOpenChange={setShowUnsavedModal}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Unsaved Changes</DialogTitle>
+                        <DialogDescription>
+                            You have unsaved changes. How would you like to proceed?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="flex-col sm:justify-between sm:space-x-0 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    const slug = generateSlug(formData.title || 'view');
+                                    window.open(`/listings/${id}/${slug}?view=public`, '_blank');
+                                    setShowUnsavedModal(false);
+                                }}
+                                className="w-full"
+                            >
+                                View Last Saved
+                            </Button>
+                            <Button
+                                onClick={async () => {
+                                    const success = await handleSave(true);
+                                    if (success) {
+                                        setShowUnsavedModal(false);
+                                        const slug = generateSlug(formData.title || 'view');
+                                        window.open(`/listings/${id}/${slug}?view=public`, '_blank');
+                                    }
+                                }}
+                                className="w-full bg-safety-orange hover:bg-orange-600 text-white"
+                            >
+                                Save & View
+                            </Button>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setShowUnsavedModal(false)}
+                            className="w-full mt-2"
+                        >
+                            Cancel
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
+}
+
+// Utility for deep comparison
+function isDeepEqual(obj1: any, obj2: any): boolean {
+    if (obj1 === obj2) return true;
+    if (typeof obj1 !== "object" || obj1 === null || typeof obj2 !== "object" || obj2 === null) return false;
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) return false;
+
+    for (const key of keys1) {
+        if (!keys2.includes(key) || !isDeepEqual(obj1[key], obj2[key])) return false;
+    }
+
+    return true;
 }
