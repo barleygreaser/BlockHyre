@@ -23,6 +23,7 @@ import {
     Star
 } from "lucide-react";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import { ListingActions } from "@/app/components/listings/listing-actions";
 
 // Since Input component might not exist based on file list, let's make a local styled one or use standard HTML
 const SearchInput = (props: any) => (
@@ -43,6 +44,8 @@ interface InventoryItem {
     avg_customer_rating: number;
     current_rental_end_date: string | null;
     current_renter_name: string | null;
+    is_available: boolean;
+    status: 'active' | 'draft' | 'archived';
 }
 
 export default function ManageListingsPage() {
@@ -249,10 +252,16 @@ export default function ManageListingsPage() {
 
                                 {/* Actions */}
                                 <div className="col-span-12 md:col-span-1 flex justify-end">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                        <MoreHorizontal className="h-4 w-4 text-slate-400" />
-                                    </Button>
-                                    {/* Ideally this would be a DropdownMenu, but simplifying for now or implementing later */}
+                                    <ListingActions
+                                        listing={{
+                                            id: item.listing_id,
+                                            title: item.tool_title,
+                                            status: item.status || 'active',
+                                            is_available: item.is_available ?? true,
+                                            isBooked: !!item.current_renter_name
+                                        }}
+                                        onUpdate={() => window.location.reload()}
+                                    />
                                 </div>
                             </div>
                         ))
