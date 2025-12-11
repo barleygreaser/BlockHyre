@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "./ui/button";
-import { Shield, ShoppingCart, Menu, X } from "lucide-react";
+import { Shield, ShoppingCart, Menu, X, MessageSquare } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { getUserDisplayName } from "@/lib/utils";
@@ -157,6 +157,13 @@ export function Navbar() {
                                                     Profile
                                                 </Link>
                                                 <Link
+                                                    href="/messages"
+                                                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                >
+                                                    Messages
+                                                </Link>
+                                                <Link
                                                     href="/my-rentals"
                                                     className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                                                     onClick={() => setIsMenuOpen(false)}
@@ -300,6 +307,9 @@ export function Navbar() {
                                     <div className="flex flex-col gap-2">
                                         <Link href="/listings" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             Listings
+                                        </Link>
+                                        <Link href="/messages" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
+                                            Messages
                                         </Link>
                                         <Link href="/my-rentals" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             My Rentals
