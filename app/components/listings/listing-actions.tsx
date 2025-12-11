@@ -35,7 +35,12 @@ export function ListingActions({ listing, onUpdate }: ListingActionsProps) {
                     break;
 
                 case 'preview':
-                    router.push(`/listings/${listing.id}/preview`);
+                    // Generate slug from title
+                    const slug = listing.title
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-|-$/g, '');
+                    router.push(`/listings/${listing.id}/${slug}?view=public`);
                     break;
 
                 case 'availability':
@@ -76,7 +81,7 @@ export function ListingActions({ listing, onUpdate }: ListingActionsProps) {
                         .update({ status: 'archived' })
                         .eq('id', listing.id);
                     toast.success('Listing archived');
-                    onUpdate();
+                    router.push('/owner/listings?status=archived');
                     break;
 
                 case 'unarchive':
