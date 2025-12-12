@@ -1,4 +1,4 @@
--- Enhanced upsert_conversation to create system message with tool details
+-- Fix column name in upsert_conversation from price_per_day to daily_price
 DROP FUNCTION IF EXISTS upsert_conversation(uuid, uuid);
 
 CREATE OR REPLACE FUNCTION upsert_conversation(
@@ -17,8 +17,8 @@ DECLARE
     v_listing_description text;
     v_system_message text;
 BEGIN
-    -- Get listing owner and details
-    SELECT owner_id, title, price_per_day, description
+    -- Get listing owner and details (using correct column names)
+    SELECT owner_id, title, daily_price, description
     INTO v_owner_id, v_listing_title, v_listing_price, v_listing_description
     FROM public.listings 
     WHERE id = p_listing_id;
