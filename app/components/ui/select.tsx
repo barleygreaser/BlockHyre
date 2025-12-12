@@ -5,6 +5,7 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { ScrollArea } from "@/app/components/ui/scroll-area"
 
 const Select = SelectPrimitive.Root
 
@@ -40,7 +41,7 @@ const SelectContent = React.forwardRef<
         <SelectPrimitive.Content
             ref={ref}
             className={cn(
-                "relative z-50 min-w-[8rem] max-h-[300px] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-100 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-400",
+                "relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
                 position === "popper" &&
                 "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
                 className
@@ -48,15 +49,17 @@ const SelectContent = React.forwardRef<
             position={position}
             {...props}
         >
-            <SelectPrimitive.Viewport
-                className={cn(
-                    "p-1",
-                    position === "popper" &&
-                    "w-full min-w-[var(--radix-select-trigger-width)]"
-                )}
-            >
-                {children}
-            </SelectPrimitive.Viewport>
+            <ScrollArea className="h-[200px]">
+                <SelectPrimitive.Viewport
+                    className={cn(
+                        "p-1",
+                        position === "popper" &&
+                        "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+                    )}
+                >
+                    {children}
+                </SelectPrimitive.Viewport>
+            </ScrollArea>
         </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
 ))
