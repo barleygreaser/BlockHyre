@@ -47,7 +47,7 @@ export function useMessages() {
                 .from('chats')
                 .select(`
                     *,
-                    listing:tool_id(title),
+                    listing:listing_id(title),
                     owner:owner_id(id, full_name, profile_photo_url),
                     renter:renter_id(id, full_name, profile_photo_url)
                 `)
@@ -81,7 +81,7 @@ export function useMessages() {
 
                     return {
                         id: chat.id,
-                        listing_id: chat.tool_id,
+                        listing_id: chat.listing_id,
                         created_at: chat.created_at,
                         updated_at: chat.updated_at,
                         listing_title: chat.listing?.title,

@@ -19,7 +19,7 @@ export async function upsertConversation(toolId: string): Promise<string | null>
 
         // Call the RPC function
         const { data, error } = await supabase.rpc('upsert_conversation', {
-            p_tool_id: toolId,
+            p_listing_id: toolId,
             p_renter_id: user.id
         });
 
