@@ -84,8 +84,6 @@ export function useMessages() {
                     return {
                         id: chat.id,
                         listing_id: chat.tool_id,
-                        user_one_id: chat.user_one_id,
-                        user_two_id: chat.user_two_id,
                         created_at: chat.created_at,
                         updated_at: chat.updated_at,
                         listing_title: chat.listing?.title,
