@@ -7,7 +7,7 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2, Hammer } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { supabase } from "@/lib/supabase";
@@ -212,7 +212,11 @@ export default function AddToolPage() {
                 <Card className="border-slate-200 shadow-sm">
                     <CardHeader className="bg-slate-900 text-white rounded-t-lg">
                         <CardTitle className="flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-safety-orange" />
+                            {step === 1 ? (
+                                <Hammer className="h-5 w-5 text-safety-orange" />
+                            ) : (
+                                <Shield className="h-5 w-5 text-safety-orange" />
+                            )}
                             {step === 1 ? "Tool Details" : "Details & Images"}
                         </CardTitle>
                     </CardHeader>
