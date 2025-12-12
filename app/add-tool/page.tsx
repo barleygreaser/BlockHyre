@@ -190,10 +190,13 @@ export default function AddToolPage() {
             <Navbar />
 
             <div className="container mx-auto px-4 py-8 max-w-2xl">
-                <Link href="/" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors">
+                <button
+                    onClick={() => router.back()}
+                    className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors"
+                >
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Cancel
-                </Link>
+                </button>
 
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold font-serif text-slate-900">List Your Tool</h1>
