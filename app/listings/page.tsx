@@ -21,6 +21,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/app/components/ui/select";
+import { Checkbox } from "@/app/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
+import { Label } from "@/app/components/ui/label";
+import { Switch } from "@/app/components/ui/switch";
+import { Slider } from "@/app/components/ui/slider";
 
 // Mock User Location (e.g., Downtown)
 const USER_LOCATION: Coordinates = {
@@ -200,25 +205,22 @@ export default function InventoryPage() {
                         {/* Categories */}
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
-                            <div className="space-y-2 max-h-60 overflow-y-auto scrollbar-hide">
+                            <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide">
                                 {sortedCategories.map(category => (
-                                    <label key={category.id} className="flex items-center gap-2 cursor-pointer group">
-                                        <div className={cn(
-                                            "w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
-                                            selectedCategories.includes(category.name)
-                                                ? "bg-safety-orange border-safety-orange text-white"
-                                                : "border-slate-300 bg-white group-hover:border-safety-orange"
-                                        )}>
-                                            {selectedCategories.includes(category.name) && <span className="text-[10px]">✓</span>}
-                                        </div>
-                                        <input
-                                            type="checkbox"
-                                            className="hidden"
+                                    <div key={category.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`category-${category.id}`}
                                             checked={selectedCategories.includes(category.name)}
-                                            onChange={() => toggleCategory(category.name)}
+                                            onCheckedChange={() => toggleCategory(category.name)}
+                                            className="border-slate-300 data-[state=checked]:bg-safety-orange data-[state=checked]:border-safety-orange"
                                         />
-                                        <span className="text-sm text-slate-600 group-hover:text-slate-900 truncate">{category.name}</span>
-                                    </label>
+                                        <Label
+                                            htmlFor={`category-${category.id}`}
+                                            className="text-sm text-slate-600 cursor-pointer hover:text-slate-900 truncate"
+                                        >
+                                            {category.name}
+                                        </Label>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -232,65 +234,56 @@ export default function InventoryPage() {
 
                             {/* Protection Tier */}
                             <div className="mb-6">
-                                <label className="text-sm font-semibold text-slate-700 mb-2 block">Protection Tier</label>
-                                <div className="space-y-2">
-                                    {[
-                                        { id: "1", label: "Tier 1 (Basic)", sub: "<$50/day" },
-                                        { id: "2", label: "Tier 2 (Standard)", sub: "$50-$200" },
-                                        { id: "3", label: "Tier 3 (Max)", sub: "$200+ or Heavy" },
-                                    ].map(tier => (
-                                        <label key={tier.id} className="flex items-start gap-2 cursor-pointer group">
-                                            <input
-                                                type="radio"
-                                                name="tier"
-                                                className="mt-1 accent-safety-orange"
-                                                checked={selectedTier === tier.id}
-                                                onChange={() => setSelectedTier(selectedTier === tier.id ? null : tier.id)}
-                                                onClick={() => { if (selectedTier === tier.id) setSelectedTier(null); }} // Allow unchecking
-                                            />
-                                            <div className="text-sm">
-                                                <span className="text-slate-700 font-medium block">{tier.label}</span>
-                                                <span className="text-xs text-slate-500">{tier.sub}</span>
+                                <Label className="text-sm font-semibold text-slate-700 mb-3 block">Protection Tier</Label>
+                                <RadioGroup value={selectedTier || ""} onValueChange={(val) => setSelectedTier(val === selectedTier ? null : val)}>
+                                    <div className="space-y-3">
+                                        {[
+                                            { id: "1", label: "Tier 1 (Basic)", sub: "<$50/day" },
+                                            { id: "2", label: "Tier 2 (Standard)", sub: "$50-$200" },
+                                            { id: "3", label: "Tier 3 (Max)", sub: "$200+ or Heavy" },
+                                        ].map(tier => (
+                                            <div key={tier.id} className="flex items-start space-x-2">
+                                                <RadioGroupItem value={tier.id} id={`tier-${tier.id}`} className="mt-0.5" />
+                                                <Label htmlFor={`tier-${tier.id}`} className="cursor-pointer">
+                                                    <span className="text-slate-700 font-medium block text-sm">{tier.label}</span>
+                                                    <span className="text-xs text-slate-500">{tier.sub}</span>
+                                                </Label>
                                             </div>
-                                        </label>
-                                    ))}
-                                </div>
+                                        ))}
+                                    </div>
+                                </RadioGroup>
                             </div>
 
                             {/* Verified Owners Toggle */}
                             <div className="mb-6">
-                                <label className="flex items-center justify-between cursor-pointer">
-                                    <span className="text-sm font-semibold text-slate-700">Verified Owners Only</span>
-                                    <div className={cn(
-                                        "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out relative",
-                                        verifiedOwnersOnly ? "bg-emerald-500" : "bg-slate-200"
-                                    )} onClick={() => setVerifiedOwnersOnly(!verifiedOwnersOnly)}>
-                                        <div className={cn(
-                                            "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out absolute top-1",
-                                            verifiedOwnersOnly ? "translate-x-4 left-1" : "translate-x-0 left-1"
-                                        )} />
-                                    </div>
-                                </label>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="verified-owners" className="text-sm font-semibold text-slate-700 cursor-pointer">Verified Owners Only</Label>
+                                    <Switch
+                                        id="verified-owners"
+                                        checked={verifiedOwnersOnly}
+                                        onCheckedChange={setVerifiedOwnersOnly}
+                                        className="data-[state=checked]:bg-emerald-500"
+                                    />
+                                </div>
                             </div>
 
                             {/* Distance */}
                             <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-semibold text-slate-700">Distance from Home</span>
+                                <div className="flex items-center justify-between mb-3">
+                                    <Label className="text-sm font-semibold text-slate-700">Distance from Home</Label>
                                     <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
                                         {maxDistance} mi
                                     </span>
                                 </div>
-                                <input
-                                    type="range"
-                                    min="0.5"
-                                    max="5"
-                                    step="0.5"
-                                    value={maxDistance}
-                                    onChange={(e) => setMaxDistance(parseFloat(e.target.value))}
-                                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-safety-orange"
+                                <Slider
+                                    min={0.5}
+                                    max={5}
+                                    step={0.5}
+                                    value={[maxDistance]}
+                                    onValueChange={(val) => setMaxDistance(val[0])}
+                                    className="w-full"
                                 />
-                                <div className="flex justify-between text-xs text-slate-400 mt-1">
+                                <div className="flex justify-between text-xs text-slate-400 mt-2">
                                     <span>0.5 mi</span>
                                     <span>5 mi</span>
                                 </div>
@@ -303,54 +296,47 @@ export default function InventoryPage() {
 
                             {/* Daily Rate */}
                             <div className="mb-6">
-                                <div className="flex items-center justify-between text-sm text-slate-600 mb-2">
-                                    <span className="font-semibold text-slate-700">Daily Rate</span>
+                                <div className="flex items-center justify-between text-sm text-slate-600 mb-3">
+                                    <Label className="font-semibold text-slate-700">Daily Rate</Label>
                                     <span>${priceRange[1]}+</span>
                                 </div>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="300"
-                                    step="10"
-                                    value={priceRange[1]}
-                                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-safety-orange"
+                                <Slider
+                                    min={0}
+                                    max={300}
+                                    step={10}
+                                    value={[priceRange[1]]}
+                                    onValueChange={(val) => setPriceRange([priceRange[0], val[0]])}
+                                    className="w-full"
                                 />
                             </div>
 
                             {/* Barter Toggle */}
                             <div className="mb-6">
-                                <label className="flex items-center justify-between cursor-pointer">
-                                    <span className="text-sm font-semibold text-slate-700">Accepts Barter Only</span>
-                                    <div className={cn(
-                                        "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out relative",
-                                        acceptsBarterOnly ? "bg-emerald-500" : "bg-slate-200"
-                                    )} onClick={() => setAcceptsBarterOnly(!acceptsBarterOnly)}>
-                                        <div className={cn(
-                                            "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out absolute top-1",
-                                            acceptsBarterOnly ? "translate-x-4 left-1" : "translate-x-0 left-1"
-                                        )} />
-                                    </div>
-                                </label>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="accepts-barter" className="text-sm font-semibold text-slate-700 cursor-pointer">Accepts Barter Only</Label>
+                                    <Switch
+                                        id="accepts-barter"
+                                        checked={acceptsBarterOnly}
+                                        onCheckedChange={setAcceptsBarterOnly}
+                                        className="data-[state=checked]:bg-emerald-500"
+                                    />
+                                </div>
                             </div>
 
                             {/* Instant Book Toggle */}
                             <div>
-                                <label className="flex items-center justify-between cursor-pointer">
-                                    <span className="text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="instant-book" className="text-sm font-semibold text-slate-700 flex items-center gap-1 cursor-pointer">
                                         <Zap className="h-3 w-3 text-yellow-500 fill-yellow-500" />
                                         Instant Book Only
-                                    </span>
-                                    <div className={cn(
-                                        "w-10 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out relative",
-                                        instantBookOnly ? "bg-yellow-400" : "bg-slate-200"
-                                    )} onClick={() => setInstantBookOnly(!instantBookOnly)}>
-                                        <div className={cn(
-                                            "w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out absolute top-1",
-                                            instantBookOnly ? "translate-x-4 left-1" : "translate-x-0 left-1"
-                                        )} />
-                                    </div>
-                                </label>
+                                    </Label>
+                                    <Switch
+                                        id="instant-book"
+                                        checked={instantBookOnly}
+                                        onCheckedChange={setInstantBookOnly}
+                                        className="data-[state=checked]:bg-yellow-400"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </aside>
