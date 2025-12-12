@@ -11,7 +11,7 @@ import { calculateDistance, Coordinates } from "@/lib/location";
 import { InventoryFiltersModal } from "@/app/components/inventory/inventory-filters-modal";
 import { SortDrawer } from "@/app/components/inventory/sort-drawer";
 import { Search, Filter, MapPin, X, Loader2, Zap, Shield, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, generateSlug } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
 import { Skeleton } from "@/app/components/ui/skeleton";
