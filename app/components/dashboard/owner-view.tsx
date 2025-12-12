@@ -11,6 +11,14 @@ import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { StripeConnectButton } from "@/app/components/stripe-connect-button";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from "@/app/components/ui/empty";
 
 export function OwnerDashboardView() {
     const { user } = useAuth();
@@ -356,22 +364,24 @@ export function OwnerDashboardView() {
                                 </Card>
                             ))
                         ) : (
-                            <Card className="border-dashed border-slate-200 shadow-sm bg-slate-50/50">
-                                <CardContent className="p-8 text-center flex flex-col items-center">
-                                    <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
-                                        <Files className="h-6 w-6" />
-                                    </div>
-                                    <h3 className="text-lg font-medium text-slate-900">No new requests right now</h3>
-                                    <p className="text-slate-500 mt-1 max-w-sm mx-auto">
+                            <Empty className="bg-slate-50/50 shadow-sm">
+                                <EmptyHeader>
+                                    <EmptyMedia variant="icon">
+                                        <Files />
+                                    </EmptyMedia>
+                                    <EmptyTitle>No new requests right now</EmptyTitle>
+                                    <EmptyDescription>
                                         Time to optimize your listings! Adding more photos or lowering prices slightly can help attract renters.
-                                    </p>
-                                    <Link href="/owner/listings" className="mt-4">
+                                    </EmptyDescription>
+                                </EmptyHeader>
+                                <EmptyContent>
+                                    <Link href="/owner/listings">
                                         <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
                                             Manage Listings
                                         </Button>
                                     </Link>
-                                </CardContent>
-                            </Card>
+                                </EmptyContent>
+                            </Empty>
                         )}
                     </div>
 
