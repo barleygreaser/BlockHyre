@@ -54,7 +54,16 @@ export function useMessages() {
                 .or(`owner_id.eq.${user.id},renter_id.eq.${user.id}`)
                 .order('updated_at', { ascending: false });
 
-            if (chatsError) throw chatsError;
+            console.log('Fetch conversations result:', {
+                chatsCount: chats?.length,
+                error: chatsError,
+                userId: user.id
+            });
+
+            if (chatsError) {
+                console.error('Chats error details:', chatsError);
+                throw chatsError;
+            }
 
             // Fetch last message and unread count for each chat
             const enrichedChats = await Promise.all(
