@@ -46,6 +46,17 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/app/components/ui/dialog";
+import { Input } from "@/app/components/ui/input";
+import { Textarea } from "@/app/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/app/components/ui/select";
+import { Label } from "@/app/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 
 // Sections for Sidebar
 const SECTIONS = [
@@ -311,10 +322,10 @@ export default function EditListingPage() {
 
                                         {/* Title */}
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-700">Listing Title <span className="text-red-500">*</span></label>
-                                            <input
+                                            <Label className="text-sm font-medium text-slate-700">Listing Title <span className="text-red-500">*</span></Label>
+                                            <Input
                                                 type="text"
-                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                className="focus-visible:ring-safety-orange/50"
                                                 placeholder="e.g. DeWalt 10-inch Jobsite Table Saw"
                                                 value={formData.title || ""}
                                                 onChange={(e) => handleInputChange("title", e.target.value)}
@@ -325,10 +336,10 @@ export default function EditListingPage() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             {/* Brand - Storing in specs or separate? Using separate state for now, assuming specs mapping later */}
                                             <div className="space-y-2">
-                                                <label className="text-sm font-medium text-slate-700">Brand</label>
-                                                <input
+                                                <Label className="text-sm font-medium text-slate-700">Brand</Label>
+                                                <Input
                                                     type="text"
-                                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                    className="focus-visible:ring-safety-orange/50"
                                                     placeholder="e.g. Makita"
                                                 // Value mapped from specs? Or formData field if exists.
                                                 // For MVP, lets assume it's part of title or specs. 
@@ -339,28 +350,31 @@ export default function EditListingPage() {
 
                                             {/* Category */}
                                             <div className="space-y-2">
-                                                <label className="text-sm font-medium text-slate-700">Category <span className="text-red-500">*</span></label>
-                                                <select
-                                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 bg-white"
+                                                <Label className="text-sm font-medium text-slate-700">Category <span className="text-red-500">*</span></Label>
+                                                <Select
                                                     value={formData.category_id || ""}
-                                                    onChange={(e) => handleInputChange("category_id", e.target.value)}
+                                                    onValueChange={(val) => handleInputChange("category_id", val)}
                                                 >
-                                                    <option value="">Select a Category</option>
-                                                    {categories.map(cat => (
-                                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                                    ))}
-                                                </select>
+                                                    <SelectTrigger className="bg-white focus:ring-safety-orange/50">
+                                                        <SelectValue placeholder="Select a Category" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {categories.map(cat => (
+                                                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                             </div>
                                         </div>
 
                                         {/* Description */}
                                         <div className="space-y-2">
                                             <div className="flex justify-between">
-                                                <label className="text-sm font-medium text-slate-700">Description <span className="text-red-500">*</span></label>
+                                                <Label className="text-sm font-medium text-slate-700">Description <span className="text-red-500">*</span></Label>
                                                 <span className="text-xs text-slate-400">supports markdown</span>
                                             </div>
-                                            <textarea
-                                                className="w-full h-40 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 resize-y"
+                                            <Textarea
+                                                className="h-40 resize-y focus-visible:ring-safety-orange/50"
                                                 placeholder="Describe the condition, what's included, and best use cases..."
                                                 value={formData.description || ""}
                                                 onChange={(e) => handleInputChange("description", e.target.value)}
@@ -379,13 +393,13 @@ export default function EditListingPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                            <Label className="text-sm font-medium text-slate-700 flex items-center gap-2">
                                                 <BookOpen className="h-4 w-4" />
                                                 User Manual URL
-                                            </label>
-                                            <input
+                                            </Label>
+                                            <Input
                                                 type="url"
-                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                className="focus-visible:ring-safety-orange/50"
                                                 placeholder="https://www.manualslib.com..."
                                                 value={formData.manual_url || ""}
                                                 onChange={(e) => {
@@ -549,13 +563,13 @@ export default function EditListingPage() {
                                             <h3 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Core Pricing</h3>
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                                 <div className="space-y-2">
-                                                    <label className="text-sm font-medium text-slate-700">Daily Price ($) <span className="text-red-500">*</span></label>
+                                                    <Label className="text-sm font-medium text-slate-700">Daily Price ($) <span className="text-red-500">*</span></Label>
                                                     <div className="relative">
-                                                        <span className="absolute left-3 top-2.5 text-slate-400">$</span>
-                                                        <input
+                                                        <span className="absolute left-3 top-2.5 text-slate-400 z-10">$</span>
+                                                        <Input
                                                             type="number"
                                                             min="1"
-                                                            className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                            className="pl-7 focus-visible:ring-safety-orange/50"
                                                             placeholder="0.00"
                                                             value={formData.daily_price || ""}
                                                             onChange={(e) => handleInputChange("daily_price", parseFloat(e.target.value))}
@@ -564,13 +578,13 @@ export default function EditListingPage() {
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <label className="text-sm font-medium text-slate-700">Refundable Deposit ($)</label>
+                                                    <Label className="text-sm font-medium text-slate-700">Refundable Deposit ($)</Label>
                                                     <div className="relative">
-                                                        <span className="absolute left-3 top-2.5 text-slate-400">$</span>
-                                                        <input
+                                                        <span className="absolute left-3 top-2.5 text-slate-400 z-10">$</span>
+                                                        <Input
                                                             type="number"
                                                             min="0"
-                                                            className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                            className="pl-7 focus-visible:ring-safety-orange/50"
                                                             placeholder="0.00"
                                                             // Assuming deposit is stored in `specifications.deposit` or similar if no column exists? 
                                                             // Wait, typical schema usually has deposit. 
@@ -589,12 +603,12 @@ export default function EditListingPage() {
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <label className="text-sm font-medium text-slate-700">Min. Rental Days</label>
-                                                    <input
+                                                    <Label className="text-sm font-medium text-slate-700">Min. Rental Days</Label>
+                                                    <Input
                                                         type="number"
                                                         min="1"
                                                         step="1"
-                                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                        className="focus-visible:ring-safety-orange/50"
                                                         value={formData.min_rental_days || 1}
                                                         onChange={(e) => handleInputChange("min_rental_days", parseInt(e.target.value))}
                                                     />
@@ -665,50 +679,48 @@ export default function EditListingPage() {
                                             </div>
 
                                             <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-3">
-                                                <label className="font-medium text-slate-900 block">Booking Method</label>
-                                                <div className="flex flex-col sm:flex-row gap-4">
-                                                    <label className={cn(
+                                                <Label className="font-medium text-slate-900 block">Booking Method</Label>
+                                                <RadioGroup
+                                                    className="flex flex-col sm:flex-row gap-4"
+                                                    value={formData.booking_type || "request"}
+                                                    onValueChange={(val) => {
+                                                        if (!formData.accepts_barter || val === "request") {
+                                                            handleInputChange("booking_type", val);
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className={cn(
                                                         "flex-1 flex items-start p-3 rounded-lg border cursor-pointer transition-all",
                                                         formData.booking_type === 'request' || !formData.booking_type
                                                             ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange"
                                                             : "border-slate-200 hover:border-slate-300"
                                                     )}>
-                                                        <input
-                                                            type="radio"
-                                                            name="booking_type"
-                                                            value="request"
-                                                            className="mt-1 mr-3 text-safety-orange focus:ring-safety-orange"
-                                                            checked={formData.booking_type === 'request' || !formData.booking_type}
-                                                            onChange={() => handleInputChange("booking_type", "request")}
-                                                        />
-                                                        <div>
+                                                        <RadioGroupItem value="request" id="r-request" className="mt-1 mr-3 text-safety-orange border-slate-900" />
+                                                        <Label htmlFor="r-request" className="cursor-pointer">
                                                             <div className="font-medium text-sm text-slate-900">Request to Book</div>
                                                             <div className="text-xs text-slate-500 mt-1">Review every request before approving. Best for high-value items or for bartering.</div>
-                                                        </div>
-                                                    </label>
+                                                        </Label>
+                                                    </div>
 
-                                                    <label className={cn(
+                                                    <div className={cn(
                                                         "flex-1 flex items-start p-3 rounded-lg border transition-all",
                                                         formData.accepts_barter ? "opacity-50 cursor-not-allowed bg-slate-50 border-slate-100"
                                                             : formData.booking_type === 'instant'
                                                                 ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange cursor-pointer"
                                                                 : "border-slate-200 hover:border-slate-300 cursor-pointer"
                                                     )}>
-                                                        <input
-                                                            type="radio"
-                                                            name="booking_type"
+                                                        <RadioGroupItem
                                                             value="instant"
-                                                            className="mt-1 mr-3 text-safety-orange focus:ring-safety-orange"
-                                                            checked={formData.booking_type === 'instant'}
-                                                            onChange={() => !formData.accepts_barter && handleInputChange("booking_type", "instant")}
+                                                            id="r-instant"
+                                                            className="mt-1 mr-3 text-safety-orange border-slate-900"
                                                             disabled={formData.accepts_barter === true}
                                                         />
-                                                        <div>
+                                                        <Label htmlFor="r-instant" className={cn("cursor-pointer", formData.accepts_barter && "cursor-not-allowed")}>
                                                             <div className="font-medium text-sm text-slate-900">Instant Book</div>
                                                             <div className="text-xs text-slate-500 mt-1">Renters book instantly without approval. Requires ID verification.</div>
-                                                        </div>
-                                                    </label>
-                                                </div>
+                                                        </Label>
+                                                    </div>
+                                                </RadioGroup>
                                             </div>
                                         </div>
 
@@ -758,8 +770,8 @@ export default function EditListingPage() {
                                                 <h3 className="text-sm font-semibold text-slate-900">Private Owner Notes</h3>
                                                 <Badge variant="secondary" className="text-[10px] h-5">Private</Badge>
                                             </div>
-                                            <textarea
-                                                className="w-full h-24 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 text-sm"
+                                            <Textarea
+                                                className="h-24 text-sm focus-visible:ring-safety-orange/50"
                                                 placeholder="Keep track of maintenance history, lock codes, or reminders..."
                                                 value={formData.owner_notes || ""}
                                                 onChange={(e) => handleInputChange("owner_notes", e.target.value)}
