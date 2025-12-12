@@ -67,15 +67,15 @@ export function useMessageNotifications() {
                     // Show toast notification
                     toast(
                         <div className="flex flex-col gap-1" >
-                    <div className="font-semibold text-slate-900" > { senderName } </div>
-                    < div className = "text-sm text-slate-600 line-clamp-2" > { newMessage.content } </div>
-                    </div>,
+                            <div className="font-semibold text-slate-900" > {senderName} </div>
+                            < div className="text-sm text-slate-600 line-clamp-2" > {newMessage.content} </div>
+                        </div>,
                         {
                             duration: 5000,
                             action: {
                                 label: 'View Message',
                                 onClick: () => {
-                                    router.push(`/messages?chat=${newMessage.chat_id}`);
+                                    router.push(`/messages/${newMessage.chat_id}`);
                                 },
                             },
                             closeButton: true,
