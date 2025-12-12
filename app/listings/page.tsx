@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ToolCard, Tool } from "@/app/components/tool-card";
@@ -8,7 +9,8 @@ import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { calculateDistance, Coordinates } from "@/lib/location";
 import { InventoryFiltersModal } from "@/app/components/inventory/inventory-filters-modal";
-import { Search, Filter, MapPin, X, Loader2, Zap, Shield, SlidersHorizontal } from "lucide-react";
+import { SortDrawer } from "@/app/components/inventory/sort-drawer";
+import { Search, Filter, MapPin, X, Loader2, Zap, Shield, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
@@ -45,7 +47,7 @@ export default function InventoryPage() {
     const [maxDistance, setMaxDistance] = useState(5.0);
     const [acceptsBarterOnly, setAcceptsBarterOnly] = useState(false);
     const [instantBookOnly, setInstantBookOnly] = useState(false);
-    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+    const [isSortOpen, setIsSortOpen] = useState(false);
 
     const [userZip, setUserZip] = useState("90012");
     const [userLocation, setUserLocation] = useState<Coordinates>({ latitude: 34.0522, longitude: -118.2437 });
@@ -174,6 +176,16 @@ export default function InventoryPage() {
         <main className="min-h-screen bg-slate-50">
             <Navbar />
 
+            {/* Mobile Sticky Control Bar */}
+            <div className="md:hidden sticky top-16 z-30 bg-white border-b border-slate-200 px-4 py-3 shadow-sm flex gap-3">
+                <Button variant="outline" className="flex-1 rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-50" onClick={() => setIsFiltersOpen(true)}>
+                    <Filter className="mr-2 h-4 w-4" /> Filter
+                </Button>
+                <Button variant="outline" className="flex-1 rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-50" onClick={() => setIsSortOpen(true)}>
+                    <ArrowUpDown className="mr-2 h-4 w-4" /> Sort
+                </Button>
+            </div>
+
             {/* Header Section */}
             {/* ... component placeholder if any ... */}
 
@@ -182,8 +194,7 @@ export default function InventoryPage() {
 
                     {/* Sidebar (Filters) */}
                     <aside className={cn(
-                        "w-full md:w-64 space-y-8 flex-shrink-0",
-                        isMobileFiltersOpen ? "block" : "hidden md:block"
+                        "w-full md:w-64 space-y-8 flex-shrink-0 hidden md:block"
                     )}>
                         {/* PHASE 1: CORE DISCOVERY */}
 
@@ -366,7 +377,7 @@ export default function InventoryPage() {
                         </div>
 
                         {/* Sorting Controls */}
-                        <div className="flex justify-end mb-6">
+                        <div className="hidden md:flex justify-end mb-6">
                             <Select
                                 value={sortOption || "default"}
                                 onValueChange={(value) => setSortOption(value === "default" ? null : value as any)}
@@ -385,11 +396,37 @@ export default function InventoryPage() {
                         {loading ? (
                             <InventorySkeleton />
                         ) : filteredTools.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredTools.map(tool => (
-                                    <ToolCard key={tool.id} tool={tool} />
-                                ))}
-                            </div>
+                            <>
+                                {/* Mobile List View */}
+                                <div className="md:hidden space-y-4">
+                                    {filteredTools.map(tool => (
+                                        <Link key={tool.id} href={`/listings/${tool.id}/${generateSlug(tool.title)}`}>
+                                            <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32">
+                                                <div className="w-[35%] relative">
+                                                    <img src={tool.image} alt={tool.title} className="absolute inset-0 w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 p-3 flex flex-col justify-between">
+                                                    <div>
+                                                        <h3 className="font-bold text-slate-900 line-clamp-2 text-sm leading-tight mb-1">{tool.title}</h3>
+                                                        <div className="text-xs text-slate-500">{tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}</div>
+                                                    </div>
+                                                    <div className="mt-1">
+                                                        <span className="font-bold text-lg text-safety-orange">${tool.price}</span>
+                                                        <span className="text-xs text-slate-500">/day</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+
+                                {/* Desktop Grid View */}
+                                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {filteredTools.map(tool => (
+                                        <ToolCard key={tool.id} tool={tool} />
+                                    ))}
+                                </div>
+                            </>
                         ) : (
                             <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">
                                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -443,15 +480,12 @@ export default function InventoryPage() {
                 setInstantBookOnly={setInstantBookOnly}
             />
 
-            {/* Mobile Filter FAB */}
-            <div className="fixed bottom-6 right-6 z-40 md:hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <Button
-                    onClick={() => setIsFiltersOpen(true)}
-                    className="h-14 w-14 rounded-full bg-slate-900 text-white shadow-xl flex items-center justify-center hover:bg-slate-800 hover:scale-105 transition-all border border-slate-700 hover:shadow-2xl"
-                >
-                    <SlidersHorizontal className="h-6 w-6" />
-                </Button>
-            </div>
+            <SortDrawer
+                isOpen={isSortOpen}
+                onClose={() => setIsSortOpen(false)}
+                sortOption={sortOption}
+                setSortOption={setSortOption}
+            />
 
             <Footer />
         </main>
