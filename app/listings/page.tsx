@@ -8,11 +8,19 @@ import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { calculateDistance, Coordinates } from "@/lib/location";
 import { InventoryFiltersModal } from "@/app/components/inventory/inventory-filters-modal";
-import { Search, Filter, MapPin, X, Loader2, Zap, Shield, ArrowUpDown, SlidersHorizontal } from "lucide-react";
+import { Search, Filter, MapPin, X, Loader2, Zap, Shield, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import { Input } from "@/app/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/app/components/ui/select";
 
 // Mock User Location (e.g., Downtown)
 const USER_LOCATION: Coordinates = {
@@ -178,13 +186,13 @@ export default function InventoryPage() {
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Search</h3>
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                <input
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10" />
+                                <Input
                                     type="text"
                                     placeholder="Search tools..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 focus:border-safety-orange transition-all"
+                                    className="w-full pl-10 pr-4 bg-white border-slate-200 focus-visible:ring-safety-orange/50 focus-visible:border-safety-orange transition-all"
                                 />
                             </div>
                         </div>
@@ -373,18 +381,19 @@ export default function InventoryPage() {
 
                         {/* Sorting Controls */}
                         <div className="flex justify-end mb-6">
-                            <div className="relative group">
-                                <ArrowUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-hover:text-safety-orange transition-colors pointer-events-none" />
-                                <select
-                                    className="appearance-none bg-white border border-slate-200 text-slate-700 py-2.5 pl-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-safety-orange/20 focus:border-safety-orange font-medium text-sm transition-all cursor-pointer hover:border-slate-300 w-[240px]"
-                                    value={sortOption || ""}
-                                    onChange={(e) => setSortOption(e.target.value as any || null)}
-                                >
-                                    <option value="">Sort by: Best Match (Default)</option>
-                                    <option value="price-asc">Price: Lowest First</option>
-                                    <option value="price-desc">Price: Highest First</option>
-                                </select>
-                            </div>
+                            <Select
+                                value={sortOption || "default"}
+                                onValueChange={(value) => setSortOption(value === "default" ? null : value as any)}
+                            >
+                                <SelectTrigger className="w-[240px] bg-white border-slate-200 text-slate-700 font-medium focus:ring-safety-orange/20 focus:border-safety-orange">
+                                    <SelectValue placeholder="Sort by: Best Match (Default)" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="default">Sort by: Best Match (Default)</SelectItem>
+                                    <SelectItem value="price-asc">Price: Lowest First</SelectItem>
+                                    <SelectItem value="price-desc">Price: Highest First</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {loading ? (
