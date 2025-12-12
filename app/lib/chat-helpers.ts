@@ -45,7 +45,7 @@ export async function upsertConversation(toolId: string): Promise<string | null>
             fullError: JSON.stringify(error),
             stack: error?.stack
         });
-        return null;
+        throw error;
     }
 }
 

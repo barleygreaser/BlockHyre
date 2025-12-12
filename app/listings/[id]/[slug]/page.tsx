@@ -154,9 +154,10 @@ export default function ListingDetailsPage() {
             } else {
                 toast.error('Failed to create conversation');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating chat:', error);
-            toast.error('Failed to contact owner');
+            // Show specific error message if available (e.g., "Cannot chat with yourself")
+            toast.error(error?.message || 'Failed to contact owner');
         }
     };
 
