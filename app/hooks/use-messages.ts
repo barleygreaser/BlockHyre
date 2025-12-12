@@ -142,10 +142,7 @@ export function useMessages() {
                     sender_id: user.id,
                     content: content.trim(),
                 })
-                .select(`
-                    *,
-                    sender:sender_id(id, full_name, profile_photo_url)
-                `)
+                .select()
                 .single();
 
             if (sendError) throw sendError;
