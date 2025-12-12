@@ -16,6 +16,7 @@ export interface ChatMessage {
     avatarUrl?: string
   }
   createdAt: string
+  messageType?: 'text' | 'system'
 }
 
 const EVENT_MESSAGE_TYPE = 'message'

@@ -62,6 +62,7 @@ export function MessageView({ chatId }: MessageViewProps) {
         id: msg.id,
         content: msg.content,
         createdAt: msg.created_at,
+        messageType: msg.message_type || 'text',
         user: {
             name: msg.sender?.full_name || 'Unknown',
             avatarUrl: msg.sender?.profile_photo_url

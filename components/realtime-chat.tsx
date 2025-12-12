@@ -101,6 +101,28 @@ export const RealtimeChat = ({
             const prevMessage = index > 0 ? allMessages[index - 1] : null
             const showHeader = !prevMessage || prevMessage.user.name !== message.user.name
 
+            // Render system messages differently
+            if (message.messageType === 'system') {
+              return (
+                <div
+                  key={message.id}
+                  className="animate-in fade-in slide-in-from-bottom-4 duration-300"
+                >
+                  {/* SystemMessage component - we'll add import at top */}
+                  <div className="flex justify-center my-4">
+                    <div className="max-w-md w-full bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-sm">
+                      <div className="text-xs text-blue-600 font-semibold mb-2 uppercase tracking-wide">
+                        📋 Listing Inquiry
+                      </div>
+                      <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                        {message.content}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
             return (
               <div
                 key={message.id}

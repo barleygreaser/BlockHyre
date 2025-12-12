@@ -24,6 +24,7 @@ export interface Message {
     content: string;
     is_read: boolean;
     created_at: string;
+    message_type?: 'text' | 'system';
     sender?: {
         id: string;
         full_name: string;
