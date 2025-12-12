@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/hooks/use-realtime-chat'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 interface ChatMessageItemProps {
   message: ChatMessage
@@ -21,6 +22,10 @@ export const ChatMessageItem = ({ message, isOwnMessage, showHeader }: ChatMessa
               'justify-end flex-row-reverse': isOwnMessage,
             })}
           >
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={message.user.avatarUrl} alt={message.user.name} />
+              <AvatarFallback>{message.user.name[0]?.toUpperCase()}</AvatarFallback>
+            </Avatar>
             <span className={'font-medium'}>{message.user.name}</span>
             <span className="text-foreground/50 text-xs">
               {new Date(message.createdAt).toLocaleTimeString('en-US', {

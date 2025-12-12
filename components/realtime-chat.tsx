@@ -15,7 +15,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 interface RealtimeChatProps {
   roomName: string
   username: string
+  userAvatar?: string
   onMessage?: (messages: ChatMessage[]) => void
+  onSend?: (message: ChatMessage) => void
   messages?: ChatMessage[]
 }
 
@@ -30,7 +32,9 @@ interface RealtimeChatProps {
 export const RealtimeChat = ({
   roomName,
   username,
+  userAvatar,
   onMessage,
+  onSend,
   messages: initialMessages = [],
 }: RealtimeChatProps) => {
   const { containerRef, scrollToBottom } = useChatScroll()
@@ -70,14 +74,17 @@ export const RealtimeChat = ({
   }, [allMessages, scrollToBottom])
 
   const handleSendMessage = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault()
       if (!newMessage.trim() || !isConnected) return
 
-      sendMessage(newMessage)
+      const message = await sendMessage(newMessage, userAvatar)
+      if (message && onSend) {
+        onSend(message)
+      }
       setNewMessage('')
     },
-    [newMessage, isConnected, sendMessage]
+    [newMessage, isConnected, sendMessage, userAvatar, onSend]
   )
 
   return (

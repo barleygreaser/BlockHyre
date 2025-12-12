@@ -13,6 +13,7 @@ export interface ChatMessage {
   content: string
   user: {
     name: string
+    avatarUrl?: string
   }
   createdAt: string
 }
@@ -48,7 +49,7 @@ export function useRealtimeChat({ roomName, username }: UseRealtimeChatProps) {
   }, [roomName, username, supabase])
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, avatarUrl?: string) => {
       if (!channel || !isConnected) return
 
       const message: ChatMessage = {
@@ -56,6 +57,7 @@ export function useRealtimeChat({ roomName, username }: UseRealtimeChatProps) {
         content,
         user: {
           name: username,
+          avatarUrl,
         },
         createdAt: new Date().toISOString(),
       }
@@ -68,6 +70,8 @@ export function useRealtimeChat({ roomName, username }: UseRealtimeChatProps) {
         event: EVENT_MESSAGE_TYPE,
         payload: message,
       })
+
+      return message
     },
     [channel, isConnected, username]
   )

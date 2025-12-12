@@ -7,8 +7,6 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 export interface Chat {
     id: string;
     listing_id: string;
-    user_one_id: string;
-    user_two_id: string;
     created_at: string;
     updated_at: string;
     listing_title?: string;
@@ -129,7 +127,8 @@ export function useMessages() {
         }
     };
 
-    const sendMessage = async (chatId: string, content: string): Promise<Message | null> => {
+    const sendMessage = async (chatId: string, content: string, id?: string): Promise<Message | null> => {
+        setLoading(true);
         setError(null);
         try {
             const { data: { user } } = await supabase.auth.getUser();
@@ -138,6 +137,7 @@ export function useMessages() {
             const { data, error: sendError } = await supabase
                 .from('messages')
                 .insert({
+                    id: id, // Optional ID from client
                     chat_id: chatId,
                     sender_id: user.id,
                     content: content.trim(),
