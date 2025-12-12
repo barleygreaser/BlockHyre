@@ -61,6 +61,10 @@ export function useMessages() {
             });
 
             if (chatsError) {
+                console.log('Raw chats error:', chatsError);
+                console.log('Error.message:', chatsError.message);
+                console.log('Error.code:', chatsError.code);
+                console.log('Error.details:', chatsError.details);
                 console.error('Chats error details:', chatsError);
                 throw chatsError;
             }
