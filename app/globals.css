@@ -129,37 +129,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer utilities {
-  /* Hides the scrollbar track and thumb by default */
-  .auto-hide-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent; /* Firefox */
-  }
-
-  /* Webkit (Chrome, Edge, Safari) */
-  .auto-hide-scrollbar::-webkit-scrollbar {
-    width: 6px; /* Slim width */
-  }
-
-  .auto-hide-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .auto-hide-scrollbar::-webkit-scrollbar-thumb {
-    background-color: transparent; /* Invisible by default */
-    border-radius: 20px;
-  }
-
-  /* Show the scrollbar thumb on hover */
-  .auto-hide-scrollbar:hover {
-    scrollbar-color: hsl(var(--muted-foreground) / 0.5) transparent; /* Firefox */
-  }
-
-  .auto-hide-scrollbar:hover::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--muted-foreground) / 0.5); /* Show on hover */
-  }
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -89,7 +89,6 @@ const SelectContent = React.forwardRef<
                     "p-1",
                     // This enables the scrolling behavior you want:
                     "max-h-64 overflow-y-auto",
-                    "auto-hide-scrollbar",      // <--- Auto-hide scrollbar on hover
                     position === "popper" &&
                     "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
                 )}

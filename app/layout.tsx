@@ -24,6 +24,7 @@ import { CartProvider } from "./context/cart-context";
 import { LocationOnboardingModal } from "./components/location-onboarding-modal";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { MessageNotificationProvider } from "./components/message-notification-provider";
 
 export default function RootLayout({
   children,
@@ -38,6 +39,7 @@ export default function RootLayout({
         <NuqsAdapter>
           <AuthProvider>
             <CartProvider>
+              <MessageNotificationProvider />
               <LocationOnboardingModal />
               {children}
               <Toaster />
