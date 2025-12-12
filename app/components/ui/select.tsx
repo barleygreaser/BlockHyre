@@ -3,6 +3,7 @@
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
+import { ScrollArea } from "@/app/components/ui/scroll-area"
 
 import { cn } from "@/lib/utils"
 
@@ -48,21 +49,18 @@ const SelectContent = React.forwardRef<
             position={position}
             {...props}
         >
-            <SelectPrimitive.ScrollUpButton className="flex cursor-default items-center justify-center py-1">
-                <ChevronUp className="h-4 w-4" />
-            </SelectPrimitive.ScrollUpButton>
             <SelectPrimitive.Viewport
+                asChild
                 className={cn(
                     "p-1",
                     position === "popper" &&
                     "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
                 )}
             >
-                {children}
+                <ScrollArea className="h-64">
+                    {children}
+                </ScrollArea>
             </SelectPrimitive.Viewport>
-            <SelectPrimitive.ScrollDownButton className="flex cursor-default items-center justify-center py-1">
-                <ChevronDown className="h-4 w-4" />
-            </SelectPrimitive.ScrollDownButton>
         </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
 ))
