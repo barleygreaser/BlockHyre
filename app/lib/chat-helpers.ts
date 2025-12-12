@@ -23,14 +23,15 @@ export async function upsertConversation(toolId: string): Promise<string | null>
             p_renter_id: user.id
         });
 
+        console.log('RPC response:', { data, error });
+
         if (error) {
-            console.error('RPC error details:', {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-                fullError: JSON.stringify(error)
-            });
+            console.log('Raw error object:', error);
+            console.log('Error type:', typeof error);
+            console.log('Error keys:', Object.keys(error));
+            console.log('Error.message:', error.message);
+            console.log('Error.details:', error.details);
+            console.log('Error.code:', error.code);
             throw error;
         }
 
