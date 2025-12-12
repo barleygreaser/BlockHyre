@@ -213,7 +213,7 @@ export default function AddToolPage() {
                     <CardHeader className="bg-slate-900 text-white rounded-t-lg">
                         <CardTitle className="flex items-center gap-2">
                             <Shield className="h-5 w-5 text-safety-orange" />
-                            {step === 1 ? "Asset Protection Setup" : "Details & Images"}
+                            {step === 1 ? "Tool Details" : "Details & Images"}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
