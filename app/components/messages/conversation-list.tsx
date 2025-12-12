@@ -89,7 +89,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                                     <h3 className="font-semibold text-slate-900 truncate">
                                         {chat.other_user_name}
                                     </h3>
-                                    {chat.unread_count && chat.unread_count > 0 && (
+                                    {(chat.unread_count ?? 0) > 0 && (
                                         <Badge className="bg-safety-orange text-white ml-2 flex-shrink-0">
                                             {chat.unread_count}
                                         </Badge>
