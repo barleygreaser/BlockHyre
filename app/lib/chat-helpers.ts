@@ -24,14 +24,26 @@ export async function upsertConversation(toolId: string): Promise<string | null>
         });
 
         if (error) {
-            console.error('RPC error:', error);
+            console.error('RPC error details:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+                fullError: JSON.stringify(error)
+            });
             throw error;
         }
 
         console.log('RPC success, chat_id:', data);
         return data;
-    } catch (error) {
-        console.error('Error upserting conversation:', error);
+    } catch (error: any) {
+        console.error('Error upserting conversation:', {
+            message: error?.message,
+            details: error?.details,
+            code: error?.code,
+            fullError: JSON.stringify(error),
+            stack: error?.stack
+        });
         return null;
     }
 }
