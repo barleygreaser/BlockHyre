@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useMessages, type Chat } from "@/app/hooks/use-messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/app/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
@@ -90,7 +90,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                                         {chat.other_user_name}
                                     </h3>
                                     {(chat.unread_count ?? 0) > 0 && (
-                                        <Badge className="bg-safety-orange text-white ml-2 flex-shrink-0">
+                                        <Badge className="bg-safety-orange hover:bg-safety-orange text-white ml-2 flex-shrink-0">
                                             {chat.unread_count}
                                         </Badge>
                                     )}

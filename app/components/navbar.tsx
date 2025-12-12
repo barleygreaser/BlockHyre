@@ -9,6 +9,8 @@ import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { getUserDisplayName } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { useUnreadCount } from "@/hooks/use-unread-count";
 
 export function Navbar() {
     const { user, signOut, loading } = useAuth();
@@ -17,6 +19,9 @@ export function Navbar() {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [fullName, setFullName] = useState<string | null>(null);
     const router = useRouter();
+
+    // Global unread count hook
+    const unreadCount = useUnreadCount();
 
     interface UserProfile {
         profile_photo_url: string | null;
@@ -120,9 +125,9 @@ export function Navbar() {
                                 <div className="relative">
                                     <button
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                        className="flex items-center gap-2 focus:outline-none"
+                                        className="flex items-center gap-2 focus:outline-none relative"
                                     >
-                                        <div className="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-safety-orange/50 transition-all">
+                                        <div className="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-safety-orange/50 transition-all relative">
                                             {avatarUrl ? (
                                                 <img
                                                     src={avatarUrl}
@@ -135,6 +140,14 @@ export function Navbar() {
                                                 </span>
                                             )}
                                         </div>
+                                        {/* Avatar Badge */}
+                                        {unreadCount > 0 && (
+                                            <Badge
+                                                className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-safety-orange hover:bg-safety-orange text-white border-white border-2"
+                                            >
+                                                {unreadCount}
+                                            </Badge>
+                                        )}
                                     </button>
 
                                     {isMenuOpen && (
@@ -158,10 +171,13 @@ export function Navbar() {
                                                 </Link>
                                                 <Link
                                                     href="/messages"
-                                                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                                    className="flex items-center justify-between px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                                                     onClick={() => setIsMenuOpen(false)}
                                                 >
-                                                    Messages
+                                                    <span>Messages</span>
+                                                    {unreadCount > 0 && (
+                                                        <Badge className="bg-safety-orange hover:bg-safety-orange">{unreadCount}</Badge>
+                                                    )}
                                                 </Link>
                                                 <Link
                                                     href="/my-rentals"
@@ -202,10 +218,13 @@ export function Navbar() {
 
                     {/* Mobile Hamburger Trigger (Visible < md) */}
                     <button
-                        className="md:hidden p-2 text-slate-600 hover:text-slate-900"
+                        className="md:hidden p-2 text-slate-600 hover:text-slate-900 relative"
                         onClick={() => setIsMobileMenuOpen(true)}
                     >
                         <Menu className="h-6 w-6" />
+                        {user && unreadCount > 0 && (
+                            <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-safety-orange border border-white"></span>
+                        )}
                     </button>
                 </div>
             </div>
@@ -270,7 +289,7 @@ export function Navbar() {
                                 <>
                                     {/* User Info */}
                                     <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                                        <div className="h-12 w-12 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
+                                        <div className="h-12 w-12 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center relative">
                                             {avatarUrl ? (
                                                 <img src={avatarUrl} alt="User" className="h-full w-full object-cover" />
                                             ) : (
@@ -308,8 +327,11 @@ export function Navbar() {
                                         <Link href="/listings" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             Listings
                                         </Link>
-                                        <Link href="/messages" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
-                                            Messages
+                                        <Link href="/messages" className="flex items-center justify-between py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <span>Messages</span>
+                                            {unreadCount > 0 && (
+                                                <Badge className="bg-safety-orange hover:bg-safety-orange">{unreadCount}</Badge>
+                                            )}
                                         </Link>
                                         <Link href="/my-rentals" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             My Rentals
