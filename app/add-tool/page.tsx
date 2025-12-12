@@ -23,6 +23,16 @@ import {
     DialogTrigger,
     DialogFooter
 } from "@/app/components/ui/dialog";
+import { Input } from "@/app/components/ui/input";
+import { Textarea } from "@/app/components/ui/textarea";
+import { Checkbox } from "@/app/components/ui/checkbox";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/app/components/ui/select";
 
 export default function AddToolPage() {
     const router = useRouter();
@@ -232,12 +242,12 @@ export default function AddToolPage() {
                                     {/* Display Name */}
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-slate-900">Display Name</label>
-                                        <input
+                                        <Input
                                             type="text"
                                             placeholder="e.g. DeWalt Table Saw"
                                             value={formData.displayName}
                                             onChange={(e) => handleInputChange("displayName", e.target.value)}
-                                            className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 bg-slate-50"
+                                            className="bg-slate-50 focus-visible:ring-safety-orange/50"
                                         />
                                         <p className="text-xs text-slate-500">This is how your listing will appear to others.</p>
                                     </div>
@@ -245,25 +255,28 @@ export default function AddToolPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-slate-900">Category</label>
-                                            <select
+                                            <Select
                                                 value={formData.categoryId}
-                                                onChange={(e) => handleInputChange("categoryId", e.target.value)}
-                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 bg-white"
+                                                onValueChange={(val) => handleInputChange("categoryId", val)}
                                             >
-                                                <option value="">Select a category...</option>
-                                                {categories.map(cat => (
-                                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                                ))}
-                                            </select>
+                                                <SelectTrigger className="bg-white focus:ring-safety-orange/50">
+                                                    <SelectValue placeholder="Select a category..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {categories.map(cat => (
+                                                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-slate-900">Daily Price ($)</label>
-                                            <input
+                                            <Input
                                                 type="number"
                                                 placeholder="0.00"
                                                 value={formData.dailyPrice}
                                                 onChange={(e) => handleInputChange("dailyPrice", e.target.value)}
-                                                className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                className="focus-visible:ring-safety-orange/50"
                                             />
                                         </div>
                                     </div>
@@ -302,12 +315,12 @@ export default function AddToolPage() {
                                         </div>
                                         <div className="relative">
                                             <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                            <input
+                                            <Input
                                                 type="url"
                                                 placeholder="https://www.manualslib.com/..."
                                                 value={formData.manualUrl}
                                                 onChange={(e) => handleInputChange("manualUrl", e.target.value)}
-                                                className="w-full h-10 pl-9 pr-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                                className="pl-9 focus-visible:ring-safety-orange/50"
                                             />
                                         </div>
                                     </div>
@@ -330,11 +343,11 @@ export default function AddToolPage() {
                                 {/* Description */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-900">Description</label>
-                                    <textarea
+                                    <Textarea
                                         placeholder="Describe the condition, included accessories, etc."
                                         value={formData.description}
                                         onChange={(e) => handleInputChange("description", e.target.value)}
-                                        className="w-full h-32 p-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 resize-none"
+                                        className="h-32 resize-none focus-visible:ring-safety-orange/50"
                                     />
                                 </div>
 
@@ -366,22 +379,22 @@ export default function AddToolPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-slate-900">Weight (kg)</label>
-                                        <input
+                                        <Input
                                             type="text"
                                             placeholder="e.g. 15"
                                             value={formData.specs.weight}
                                             onChange={(e) => handleSpecChange("weight", e.target.value)}
-                                            className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                            className="focus-visible:ring-safety-orange/50"
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-slate-900">Dimensions</label>
-                                        <input
+                                        <Input
                                             type="text"
                                             placeholder="e.g. 50x30x20 cm"
                                             value={formData.specs.dimensions}
                                             onChange={(e) => handleSpecChange("dimensions", e.target.value)}
-                                            className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50"
+                                            className="focus-visible:ring-safety-orange/50"
                                         />
                                     </div>
                                 </div>
@@ -439,12 +452,11 @@ export default function AddToolPage() {
                         </DialogHeader>
                         <div className="py-4 space-y-4">
                             <div className="flex items-start space-x-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                <input
-                                    type="checkbox"
+                                <Checkbox
                                     id="affirmation"
                                     checked={isAffirmed}
-                                    onChange={(e) => setIsAffirmed(e.target.checked)}
-                                    className="mt-1 h-4 w-4 rounded border-slate-300 text-safety-orange focus:ring-safety-orange"
+                                    onCheckedChange={(checked) => setIsAffirmed(checked)}
+                                    className="mt-1 data-[state=checked]:bg-safety-orange border-slate-300"
                                 />
                                 <label htmlFor="affirmation" className="text-sm text-slate-700 leading-relaxed cursor-pointer select-none">
                                     I affirm that I have reviewed the specific details of this listing (Tier level, price, photos) and that this asset complies with the current Terms, Waiver, and Peace Fund policy.
