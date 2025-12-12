@@ -52,7 +52,7 @@ export function useMessages() {
                     renter:renter_id(id, full_name, profile_photo_url)
                 `)
                 .or(`owner_id.eq.${user.id},renter_id.eq.${user.id}`)
-                .order('updated_at', { ascending: false });
+                .order('last_message_at', { ascending: false, nullsFirst: false });
 
             console.log('Fetch conversations result:', {
                 chatsCount: chats?.length,
