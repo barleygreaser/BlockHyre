@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/componen
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/app/components/ui/drawer";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
-import { X, Shield, Zap, Calendar as CalendarIcon, SlidersHorizontal } from "lucide-react";
+import { X, Shield, Zap, Calendar as CalendarIcon, SlidersHorizontal, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/app/hooks/use-media-query";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
@@ -13,6 +13,7 @@ import { Slider } from "@/app/components/ui/slider";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import { Label } from "@/app/components/ui/label";
+import { Input } from "@/app/components/ui/input";
 
 interface InventoryFiltersModalProps {
     isOpen: boolean;
@@ -137,6 +138,20 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
 
     return (
         <div className={cn("p-4 space-y-8", isDesktop ? "flex-1 overflow-y-auto bg-slate-50" : "")}>
+            {/* Search */}
+            <section className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10" />
+                    <Input
+                        type="text"
+                        placeholder="Search tools..."
+                        value={props.searchQuery}
+                        onChange={(e) => props.setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 bg-white border-slate-200 focus-visible:ring-safety-orange/50 focus-visible:border-safety-orange transition-all"
+                    />
+                </div>
+            </section>
+
             {/* Location / Radius */}
             <section className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
                 <div className="flex items-center justify-between mb-4">

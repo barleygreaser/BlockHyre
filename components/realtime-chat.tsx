@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { SystemMessage } from "@/app/components/messages/system-message"
 
 interface RealtimeChatProps {
   roomName: string
@@ -108,17 +109,8 @@ export const RealtimeChat = ({
                   key={message.id}
                   className="animate-in fade-in slide-in-from-bottom-4 duration-300"
                 >
-                  {/* SystemMessage component - we'll add import at top */}
-                  <div className="flex justify-center my-4">
-                    <div className="max-w-md w-full bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-sm">
-                      <div className="text-xs text-blue-600 font-semibold mb-2 uppercase tracking-wide">
-                        📋 Listing Inquiry
-                      </div>
-                      <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
-                        {message.content}
-                      </div>
-                    </div>
-                  </div>
+                  {/* SystemMessage component */}
+                  <SystemMessage content={message.content} />
                 </div>
               )
             }

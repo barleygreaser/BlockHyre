@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "./ui/button";
-import { Shield, ShoppingCart, Menu, X, MessageSquare } from "lucide-react";
+import { Shield, ShoppingCart, Menu, X, MessageSquare, User } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { getUserDisplayName } from "@/lib/utils";
@@ -90,6 +90,11 @@ export function Navbar() {
 
                 {/* Right Side Actions */}
                 <div className="flex items-center gap-4">
+                    <Link href="/auth" className="md:hidden">
+                        <Button variant="ghost" size="icon" className="text-slate-600 hover:text-slate-900">
+                            <User className="h-5 w-5" />
+                        </Button>
+                    </Link>
                     <Link href="/cart">
                         <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900">
                             <ShoppingCart className="h-5 w-5" />
@@ -366,7 +371,7 @@ export function Navbar() {
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 text-lg shadow-md" })}
                                         >
-                                            Sign Up Free
+                                            Sign Up
                                         </Link>
                                         <Link
                                             href="/auth"

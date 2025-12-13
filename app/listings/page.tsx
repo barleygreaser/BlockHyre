@@ -398,7 +398,7 @@ export default function InventoryPage() {
                         ) : filteredTools.length > 0 ? (
                             <>
                                 {/* Mobile List View */}
-                                <div className="md:hidden space-y-4">
+                                <div className="md:hidden space-y-6">
                                     {filteredTools.map(tool => (
                                         <Link key={tool.id} href={`/listings/${tool.id}/${generateSlug(tool.title)}`}>
                                             <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32">
