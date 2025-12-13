@@ -140,6 +140,30 @@ export default function ListingDetailsPage() {
         router.push(`/request-booking/${listing.id}?${searchParams.toString()}`);
     };
 
+    // Calculate transaction details for system message context
+    const getSystemMessageContext = () => {
+        if (!listing || !user) return undefined;
+
+        const priceDisplay = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+        return {
+            tool_name: listing.title,
+            renter_name: user.user_metadata?.full_name || user.email || 'A neighbor',
+            start_date: dateRange?.from?.toLocaleDateString() || 'TBD',
+            end_date: dateRange?.to?.toLocaleDateString() || 'TBD',
+            total_cost: totalDue.toFixed(2),
+            // The link the owner clicks to view the request/chat. 
+            // Since we don't have the chat ID yet, we can't deep link to the specific chat easily 
+            // UNLESS we assume the link will be generated after chat creation? 
+            // In chat-helpers, we generate the message AFTER creating the chat.
+            // But we pass the context IN. 
+            // Let's pass a placeholder or base URL, and let the helper or the template handle it?
+            // Actually, currently `sendSystemMessage` uses the context as is.
+            // Let's use a generic link to the messages page for now, or the dashboard.
+            owner_notes_link: `${window.location.origin}/messages`
+        };
+    };
+
     const handleContactOwner = async () => {
         if (!user) {
             toast.error('Please log in to contact the owner');
@@ -148,7 +172,18 @@ export default function ListingDetailsPage() {
         }
 
         try {
-            const chatId = await upsertConversation(listing.id);
+            const context = getSystemMessageContext();
+
+            // If dates aren't selected, we might want to prompt user? 
+            // Or just send a generic inquiry without dates?
+            // The template requires dates: "from {{ start_date }} to {{ end_date }}".
+            // If missing, it might look broken.
+            // Let's assume for "Contact Owner" button, dates are optional?
+            // BUT the logic implies "Inquiry" is about a specific trip.
+            // If no dates selected, maybe we shouldn't send the "New Inquiry" template?
+            // Just create the chat.
+
+            const chatId = await upsertConversation(listing.id, context);
             if (chatId) {
                 router.push(`/messages?id=${chatId}`);
             } else {
