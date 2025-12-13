@@ -171,6 +171,11 @@ export default function ListingDetailsPage() {
             return;
         }
 
+        if (!listing.owner_id) {
+            toast.error('Listing owner not found');
+            return;
+        }
+
         try {
             const context = getSystemMessageContext();
 
@@ -183,7 +188,7 @@ export default function ListingDetailsPage() {
             // If no dates selected, maybe we shouldn't send the "New Inquiry" template?
             // Just create the chat.
 
-            const chatId = await upsertConversation(listing.id, context);
+            const chatId = await upsertConversation(listing.id, listing.owner_id!, context);
             if (chatId) {
                 router.push(`/messages?id=${chatId}`);
             } else {

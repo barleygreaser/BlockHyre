@@ -18,18 +18,18 @@ const supabase = createClient(
     envVars.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-async function inspect() {
-    console.log('Checking for recipient_id in messages...');
+async function findChat() {
+    console.log('Finding a chat...');
     const { data, error } = await supabase
-        .from('messages')
-        .select('recipient_id')
+        .from('chats')
+        .select('id, owner_id')
         .limit(1);
 
     if (error) {
         console.error('Error:', error);
     } else {
-        console.log('Result:', JSON.stringify(data, null, 2));
+        console.log('Chat found:', data[0]);
     }
 }
 
-inspect();
+findChat();

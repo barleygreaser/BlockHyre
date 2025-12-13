@@ -39,7 +39,12 @@ export async function sendSystemMessage(chatId: string, eventName: string, conte
             recipient_role: 'owner'
         };
 
-        const messageContent = await engine.parseAndRender(templateData.template_body, renderContext);
+        // Fix: LiquidJS uses 'elsif' not 'elif'. The template in DB might have incorrect syntax.
+        // We can hot-fix string before parsing, or better, update DB.
+        // Let's hot-fix here to ensure it works immediately even if DB update lags.
+        const safeTemplate = templateData.template_body.replace(/{% elif /g, '{% elsif ');
+
+        const messageContent = await engine.parseAndRender(safeTemplate, renderContext);
 
         // 3. Get User ID (Sender = System? Or Current User? )
         // Traditionally system messages might come from the 'current user' or a special system ID.
@@ -90,22 +95,24 @@ export async function sendSystemMessage(chatId: string, eventName: string, conte
  * Find or create a conversation between a renter and tool owner
  * Uses the upsert_conversation RPC function to ensure proper linking
  * @param toolId - The listing/tool ID
+ * @param ownerId - The owner's User ID
  * @param context - The context variables for the system message
  * @returns The chat ID or null if failed
  */
-export async function upsertConversation(toolId: string, context?: SystemMessageContext): Promise<string | null> {
+export async function upsertConversation(toolId: string, ownerId: string, context?: SystemMessageContext): Promise<string | null> {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
             throw new Error("Not authenticated");
         }
 
-        console.log('Calling upsert_conversation with:', { toolId, userId: user.id });
+        console.log('Calling upsert_conversation with:', { toolId, ownerId, renterId: user.id });
 
         // Call the RPC function (It now only Creates/Gets chat, DOES NOT insert message)
         const { data: chatId, error } = await supabase.rpc('upsert_conversation', {
-            p_listing_id: toolId,
-            p_renter_id: user.id
+            owner_id_in: ownerId,
+            renter_id_in: user.id,
+            listing_id_in: toolId
         });
 
         console.log('RPC response:', { chatId, error });
