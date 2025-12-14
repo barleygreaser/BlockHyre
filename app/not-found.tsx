@@ -42,7 +42,7 @@ export default function NotFound() {
 
                     {/* CTAs */}
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                        <Link href="/" className="w-full sm:w-auto">
+                        <Link href="/listings" className="w-full sm:w-auto">
                             <Button className="w-full h-12 px-8 text-base bg-safety-orange hover:bg-safety-orange/90 text-white font-bold shadow-md transition-transform hover:-translate-y-0.5">
                                 Find Tools Near Me
                             </Button>
