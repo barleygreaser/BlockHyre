@@ -63,6 +63,8 @@ export function MessageView({ chatId }: MessageViewProps) {
         content: msg.content,
         createdAt: msg.created_at,
         messageType: msg.message_type || 'text',
+        recipient_id: msg.recipient_id,
+        senderId: msg.sender_id,
         user: {
             name: msg.sender?.full_name || 'Unknown',
             avatarUrl: msg.sender?.profile_photo_url
@@ -89,6 +91,7 @@ export function MessageView({ chatId }: MessageViewProps) {
                 userAvatar={userAvatar}
                 messages={mappedMessages}
                 onSend={handlePersistentSend}
+                currentUserId={user?.id}
             />
         </div>
     );

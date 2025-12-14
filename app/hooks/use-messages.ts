@@ -25,6 +25,7 @@ export interface Message {
     is_read: boolean;
     created_at: string;
     message_type?: 'text' | 'system';
+    recipient_id?: string;
     sender?: {
         id: string;
         full_name: string;
@@ -73,11 +74,12 @@ export function useMessages() {
             // Fetch last message and unread count for each chat
             const enrichedChats = await Promise.all(
                 (chats || []).map(async (chat) => {
-                    // Get last message
+                    // Get last message (filtered by recipient_id so users see their own system messages)
                     const { data: lastMessage } = await supabase
                         .from('messages')
                         .select('content, created_at')
                         .eq('chat_id', chat.id)
+                        .or(`recipient_id.is.null,recipient_id.eq.${user.id}`)
                         .order('created_at', { ascending: false })
                         .limit(1)
                         .single();
@@ -128,6 +130,7 @@ export function useMessages() {
                     sender:sender_id(id, full_name, profile_photo_url)
                 `)
                 .eq('chat_id', chatId)
+                .or(`recipient_id.is.null,recipient_id.eq.${(await supabase.auth.getUser()).data.user?.id}`)
                 .order('created_at', { ascending: true })
                 .limit(100);
 
@@ -193,6 +196,12 @@ export function useMessages() {
                         .select('id, full_name, profile_photo_url')
                         .eq('id', payload.new.sender_id)
                         .single();
+
+                    // Filter out messages not meant for us
+                    const currentUser = (await supabase.auth.getUser()).data.user;
+                    if (payload.new.recipient_id && payload.new.recipient_id !== currentUser?.id) {
+                        return;
+                    }
 
                     onMessage({
                         ...payload.new as Message,

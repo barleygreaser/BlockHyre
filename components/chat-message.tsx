@@ -9,6 +9,12 @@ interface ChatMessageItemProps {
 }
 
 export const ChatMessageItem = ({ message, isOwnMessage, showHeader }: ChatMessageItemProps) => {
+  // SAFETY: System messages should never be rendered as chat bubbles
+  // They should be centered and rendered by SystemMessage component
+  if (message.messageType === 'system') {
+    return null;
+  }
+
   return (
     <div className={`flex mt-2 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
       <div

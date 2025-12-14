@@ -17,6 +17,8 @@ export interface ChatMessage {
   }
   createdAt: string
   messageType?: 'text' | 'system'
+  recipient_id?: string
+  senderId?: string
 }
 
 const EVENT_MESSAGE_TYPE = 'message'

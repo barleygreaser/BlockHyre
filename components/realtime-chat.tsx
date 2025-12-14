@@ -20,6 +20,7 @@ interface RealtimeChatProps {
   onMessage?: (messages: ChatMessage[]) => void
   onSend?: (message: ChatMessage) => void
   messages?: ChatMessage[]
+  currentUserId?: string
 }
 
 /**
@@ -37,6 +38,7 @@ export const RealtimeChat = ({
   onMessage,
   onSend,
   messages: initialMessages = [],
+  currentUserId,
 }: RealtimeChatProps) => {
   const { containerRef, scrollToBottom } = useChatScroll()
 
@@ -102,8 +104,18 @@ export const RealtimeChat = ({
             const prevMessage = index > 0 ? allMessages[index - 1] : null
             const showHeader = !prevMessage || prevMessage.user.name !== message.user.name
 
+            // 1. ROBUST CHECK: Handle both camelCase and snake_case
+            const isSystemMessage =
+              message.messageType === 'system' ||
+              (message as any).message_type === 'system';
+
             // Render system messages differently
-            if (message.messageType === 'system') {
+            if (isSystemMessage) {
+              // Filter: Only render if message is for this user OR is a broadcast (null)
+              if (message.recipient_id && message.recipient_id !== currentUserId) {
+                return null; // Skip this message
+              }
+
               return (
                 <div
                   key={message.id}
@@ -115,6 +127,13 @@ export const RealtimeChat = ({
               )
             }
 
+            // --- FIX: Use ID comparison instead of username comparison ---
+            // Prioritize ID comparison. Fallback to name comparison for optimistic messages 
+            // that might not have senderId attached yet (though they should).
+            const isOwnMessage = (currentUserId && (message as any).senderId)
+              ? (message as any).senderId === currentUserId
+              : message.user.name === username;
+
             return (
               <div
                 key={message.id}
@@ -122,7 +141,7 @@ export const RealtimeChat = ({
               >
                 <ChatMessageItem
                   message={message}
-                  isOwnMessage={message.user.name === username}
+                  isOwnMessage={isOwnMessage}
                   showHeader={showHeader}
                 />
               </div>
