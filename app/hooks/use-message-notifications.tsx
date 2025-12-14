@@ -75,7 +75,7 @@ export function useMessageNotifications() {
                             action: {
                                 label: 'View Message',
                                 onClick: () => {
-                                    router.push(`/messages/${newMessage.chat_id}`);
+                                    router.push(`/messages?id=${newMessage.chat_id}`);
                                 },
                             },
                             closeButton: true,
