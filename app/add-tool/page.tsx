@@ -398,14 +398,20 @@ export default function AddToolPage() {
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
                                             <label className="text-sm font-medium text-slate-900">Accept Barter?</label>
-                                            <p className="text-xs text-slate-500">Open to trading for services/goods.</p>
+                                            <p className="text-xs text-slate-500">Open to trading for services/goods. Forces "Request to Book".</p>
                                         </div>
                                         <Switch
                                             checked={formData.acceptsBarter}
-                                            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, acceptsBarter: checked }))}
+                                            onCheckedChange={(checked) => {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    acceptsBarter: checked,
+                                                    bookingType: checked ? 'request' : prev.bookingType
+                                                }));
+                                            }}
                                         />
                                     </div>
-                                    <div className="flex items-center justify-between">
+                                    <div className={cn("flex items-center justify-between transition-opacity", formData.acceptsBarter && "opacity-50 pointer-events-none")}>
                                         <div className="space-y-0.5">
                                             <label className="text-sm font-medium text-slate-900">Instant Book</label>
                                             <p className="text-xs text-slate-500">Allow booking without approval.</p>
@@ -413,6 +419,7 @@ export default function AddToolPage() {
                                         <Switch
                                             checked={formData.bookingType === 'instant'}
                                             onCheckedChange={(checked) => setFormData(prev => ({ ...prev, bookingType: checked ? 'instant' : 'request' }))}
+                                            disabled={formData.acceptsBarter}
                                         />
                                     </div>
                                 </div>
