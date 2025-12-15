@@ -73,7 +73,8 @@ export default function AddToolPage() {
 
     // Auto-calculate Risk/Deposit based on Category risk_tier
     const riskTier = (selectedCategory as any)?.risk_tier || 1;
-    const deposit = riskTier === 3 ? 250 : riskTier === 2 ? 100 : 50;
+    const deductibleAmount = (selectedCategory as any)?.deductible_amount || 0;
+    const deposit = riskTier === 3 ? deductibleAmount : 0; // Only Tier 3 requires deposit
     const isHighRisk = riskTier === 3;
     const requiresManual = riskTier === 3;
 
@@ -309,13 +310,21 @@ export default function AddToolPage() {
                                                 {riskTier === 3 ? "Tier 3 (High)" : riskTier === 2 ? "Tier 2 (Mid)" : "Tier 1 (Low)"}
                                             </span>
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-slate-600">Required Deposit</span>
-                                            <span className="font-bold text-slate-900">${deposit.toFixed(2)}</span>
-                                        </div>
-                                        <p className="text-xs text-slate-500 mt-2">
-                                            Based on the category <strong>{selectedCategory.name}</strong>, we automatically apply this protection level.
-                                        </p>
+                                        {riskTier === 3 ? (
+                                            <>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm text-slate-600">Required Deductible</span>
+                                                    <span className="font-bold text-slate-900">${deposit.toFixed(2)}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-500 mt-2">
+                                                    Tier 3 tools require a refundable deductible + Peace Fund fee (paid by renter).
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <p className="text-xs text-slate-500 mt-2">
+                                                Tier {riskTier} tools only require the Peace Fund fee (paid by renter). No deposit needed.
+                                            </p>
+                                        )}
                                     </div>
                                 )}
 

@@ -19,6 +19,7 @@ export type Listing = {
         name: string;
         risk_daily_fee: number;
         risk_tier: 1 | 2 | 3;
+        deductible_amount: number;
     };
     images?: string[];
     distance?: number;
@@ -55,7 +56,8 @@ export const useMarketplace = () => {
                     categories (
                         name,
                         risk_daily_fee,
-                        risk_tier
+                        risk_tier,
+                        deductible_amount
                     )
                 `)
                 .eq('status', 'active');
@@ -65,7 +67,7 @@ export const useMarketplace = () => {
             // Map 'categories' (DB relation) to 'category' (UI interface)
             const mappedListings = (data || []).map((item: any) => ({
                 ...item,
-                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1 }
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1, deductible_amount: 0 }
             }));
 
             setListings(mappedListings as Listing[]);
@@ -87,7 +89,8 @@ export const useMarketplace = () => {
                     categories (
                         name,
                         risk_daily_fee,
-                        risk_tier
+                        risk_tier,
+                        deductible_amount
                     )
                 `)
                 .eq('id', id)
@@ -113,7 +116,7 @@ export const useMarketplace = () => {
             const item = data as any;
             const mappedItem = {
                 ...item,
-                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1 },
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1, deductible_amount: 0 },
                 owner: ownerProfile
             };
 
