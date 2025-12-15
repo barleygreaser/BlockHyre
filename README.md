@@ -119,6 +119,11 @@ npx supabase db reset --linked
    npm run dev
    ```
 
+   **Run Ngrok:**
+   ```bash
+   ngrok http 3000
+   ```
+
 4. **Open the app:**
    Navigate to `http://localhost:3000`.
 
@@ -152,6 +157,38 @@ npx supabase db reset --linked
 ### Design Principles
 - **Industrial Modern:** Clean lines, high contrast, and functional whitespace.
 - **Trust-Centric:** Use of "Safety Orange" serves as a constant reminder of caution and awareness, while ample whitespace suggests organization and clarity.
+
+---
+
+## 💬 Messaging Platform Architecture
+
+### **Backend & Database (Supabase)**
+*   **PostgreSQL:** The core relational database storing `chats`, `messages`, and user relationships.
+*   **Supabase Realtime:** powered by Phoenix/Elixir channels. We use the **Broadcast** feature for sub-millisecond instant message delivery between online users.
+*   **Postgraphile / PostgREST:** Automatically generates the API endpoints we use to fetch chat history (`supabase.from('messages').select(...)`).
+*   **PL/pgSQL (RPC Functions):** Custom database functions like `upsert_conversation` that handle complex logic (e.g., finding existing chats or creating new ones with system messages) in a single atomic transaction.
+*   **Row Level Security (RLS):** Database policies that enforce security at the lowest level, ensuring users can only access their own conversations.
+*   **Database Triggers:** Automated logic that updates the `last_message_at` timestamp on a chat whenever a new message is inserted.
+
+### **Frontend (Next.js)**
+*   **Framework:** **Next.js 14+** (App Router) using **TypeScript**.
+*   **State Management:**
+    *   **React Hooks:** Custom hooks like `useMessages` and `useRealtimeChat` to encapsulate logic.
+    *   **nuqs:** A library for managing state in the URL (e.g., `?id=...`), making chat links shareable and ensuring the correct chat opens on refresh.
+*   **Styling:**
+    *   **Tailwind CSS:** For utility-first styling.
+    *   **Shadcn UI:** Reusable component primitives (Buttons, Inputs, Avatars, Badges, ScrollAreas) built on Radix UI.
+    *   **Lucide React:** For the icon set.
+
+### **Key Utilities**
+*   **`@supabase/supabase-js`:** The client SDK for interacting with the database and realtime channels.
+*   **`date-fns`:** For human-readable timestamp formatting (e.g., "5 minutes ago").
+
+### **Architecture: "Optimistic Hybrid"**
+We implemented a robust hybrid architecture:
+1.  **Instant:** Messages are broadcast immediately via **Realtime** (WebSockets) so the UI updates instantly.
+2.  **Persistent:** Messages are simultaneously saved to **PostgreSQL** for permanent history.
+3.  **System Injection:** The backend injects "System Messages" (like the tool inquiry details) automatically, treating them as special robust message types.
 
 ---
 
