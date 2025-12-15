@@ -172,7 +172,7 @@ export default function AddToolPage() {
                     category_id: formData.categoryId,
                     images: formData.images.filter(img => img.length > 0),
                     specifications: JSON.stringify(formData.specs),
-                    manual_url: formData.manualUrl,
+                    manual_url: formData.manualUrl || null,
                     is_high_powered: isHighRisk,
                     accepts_barter: formData.acceptsBarter,
                     booking_type: formData.bookingType,
