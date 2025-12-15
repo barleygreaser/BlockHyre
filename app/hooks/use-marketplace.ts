@@ -10,6 +10,8 @@ dayjs.extend(utc);
 export type Listing = {
     id: string;
     title: string;
+    brand?: string;
+    display_name?: string;
     description?: string;
     daily_price: number;
     accepts_barter: boolean;
