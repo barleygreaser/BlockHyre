@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Navbar } from "@/app/components/navbar";
@@ -148,17 +149,13 @@ export default function AddToolPage() {
     };
 
     const handleSubmit = async () => {
-        setLoading(true);
+        // setLoading(true); // Handled by promise toast
         console.log("Submitting with categories available:", categories);
 
-        try {
+        const createListingPromise = async () => {
             const { data: { user } } = await supabase.auth.getUser();
 
-            // if (!user) {
-            //     alert("You must be logged in to list a tool.");
-            //     setLoading(false);
-            //     return;
-            // }
+            // if (!user) throw new Error("You must be logged in to list a tool.");
 
             const newId = generateUUID();
 
@@ -182,16 +179,20 @@ export default function AddToolPage() {
                 });
 
             if (error) throw error;
+            return newId;
+        };
 
-            alert("Listing created successfully!");
-            router.push(`/listings/${newId}/${generateSlug(formData.displayName)}`);
+        toast.promise(createListingPromise(), {
+            loading: 'Creating your listing...',
+            success: (newId) => {
+                router.push(`/listings/${newId}/${generateSlug(formData.displayName)}`);
+                return "Listing created successfully!";
+            },
+            error: (err) => `Failed to create listing: ${err.message || "Unknown error"}`,
+        });
 
-        } catch (e: any) {
-            console.error("Error creating listing:", e);
-            alert(`Failed to create listing: ${e.message || e.details || "Unknown error"}`);
-        } finally {
-            setLoading(false);
-        }
+        // Close modal immediately, toast handles loading state UX
+        setIsAffirmationOpen(false);
     };
 
     return (
@@ -460,10 +461,10 @@ export default function AddToolPage() {
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-slate-900">
                                 <Shield className="h-5 w-5 text-safety-orange" />
-                                Final Safety Check
+                                Final Safety Affirmation
                             </DialogTitle>
                             <DialogDescription>
-                                Please confirm that your listing is accurate and safe for the community.
+                                To protect our community, please verify the following:
                             </DialogDescription>
                         </DialogHeader>
                         <div className="py-4 space-y-4">
@@ -475,7 +476,7 @@ export default function AddToolPage() {
                                     className="mt-1 data-[state=checked]:bg-safety-orange border-slate-300"
                                 />
                                 <label htmlFor="affirmation" className="text-sm text-slate-700 leading-relaxed cursor-pointer select-none">
-                                    I affirm that I have reviewed the specific details of this listing (Tier level, price, photos) and that this asset complies with the current Terms, Waiver, and Peace Fund policy.
+                                    I certify that I am the owner of this tool, it is in good working condition, and I have accurately described its details. I understand that listing unsafe or prohibited items may result in account suspension.
                                 </label>
                             </div>
                         </div>
@@ -498,7 +499,7 @@ export default function AddToolPage() {
                                         Publishing...
                                     </>
                                 ) : (
-                                    "Publish Listing"
+                                    "Confirm & Publish"
                                 )}
                             </Button>
                         </DialogFooter>
