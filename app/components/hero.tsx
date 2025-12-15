@@ -9,14 +9,14 @@ export function Hero() {
             {/* Background Images */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/images/hero_landscape.png"
+                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_landscape.png"
                     alt="BlockHyre Community Tools - Neighbors exchanging tools"
                     fill
                     className="hidden md:block object-cover object-right"
                     priority
                 />
                 <Image
-                    src="/images/hero_portrait.png"
+                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_portrait.png"
                     alt="BlockHyre Community Tools - Neighbors exchanging tools"
                     fill
                     className="md:hidden object-cover object-center"
