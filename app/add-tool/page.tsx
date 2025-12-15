@@ -71,11 +71,11 @@ export default function AddToolPage() {
     // Sort categories alphabetically
     const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
 
-    // Auto-calculate Risk/Deposit based on Category
-    const riskFee = selectedCategory?.risk_daily_fee || 1;
-    const deposit = riskFee >= 10 ? 250 : riskFee >= 3 ? 100 : 50;
-    const isHighRisk = riskFee >= 10;
-    const requiresManual = (selectedCategory as any)?.risk_tier === 3;
+    // Auto-calculate Risk/Deposit based on Category risk_tier
+    const riskTier = (selectedCategory as any)?.risk_tier || 1;
+    const deposit = riskTier === 3 ? 250 : riskTier === 2 ? 100 : 50;
+    const isHighRisk = riskTier === 3;
+    const requiresManual = riskTier === 3;
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => {
@@ -304,9 +304,9 @@ export default function AddToolPage() {
                                             <span className="text-sm font-bold text-slate-900">Risk Level</span>
                                             <span className={cn(
                                                 "px-2 py-1 rounded text-xs font-bold",
-                                                isHighRisk ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"
+                                                riskTier === 3 ? "bg-red-100 text-red-800" : riskTier === 2 ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"
                                             )}>
-                                                {isHighRisk ? "High Risk" : "Standard Risk"}
+                                                {riskTier === 3 ? "Tier 3 (High)" : riskTier === 2 ? "Tier 2 (Mid)" : "Tier 1 (Low)"}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between">
