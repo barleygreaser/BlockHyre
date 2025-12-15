@@ -18,6 +18,7 @@ export type Listing = {
     category: {
         name: string;
         risk_daily_fee: number;
+        risk_tier: 1 | 2 | 3;
     };
     images?: string[];
     distance?: number;
@@ -53,7 +54,8 @@ export const useMarketplace = () => {
                     *,
                     categories (
                         name,
-                        risk_daily_fee
+                        risk_daily_fee,
+                        risk_tier
                     )
                 `)
                 .eq('status', 'active');
@@ -63,7 +65,7 @@ export const useMarketplace = () => {
             // Map 'categories' (DB relation) to 'category' (UI interface)
             const mappedListings = (data || []).map((item: any) => ({
                 ...item,
-                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0 }
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1 }
             }));
 
             setListings(mappedListings as Listing[]);
@@ -84,7 +86,8 @@ export const useMarketplace = () => {
                     *,
                     categories (
                         name,
-                        risk_daily_fee
+                        risk_daily_fee,
+                        risk_tier
                     )
                 `)
                 .eq('id', id)
@@ -110,7 +113,7 @@ export const useMarketplace = () => {
             const item = data as any;
             const mappedItem = {
                 ...item,
-                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0 },
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1 },
                 owner: ownerProfile
             };
 
@@ -204,7 +207,8 @@ export const useMarketplace = () => {
                 category_id: '',
                 category: {
                     name: item.category_name,
-                    risk_daily_fee: item.risk_daily_fee
+                    risk_daily_fee: item.risk_daily_fee,
+                    risk_tier: item.risk_tier || 1
                 },
                 booking_type: item.booking_type as 'instant' | 'request',
                 // Extra fields for UI
@@ -302,7 +306,7 @@ export const useMarketplace = () => {
                 console.warn("Could not fetch platform settings, using defaults:", error.message);
                 setPlatformSettings({
                     seller_fee_percent: 7,
-                    buyer_fee_percent: 10,
+                    buyer_fee_percent: 6.5,
                     maintenance_mode: false
                 });
                 return;
