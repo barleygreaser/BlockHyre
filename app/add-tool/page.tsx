@@ -69,6 +69,9 @@ export default function AddToolPage() {
 
     const selectedCategory = categories.find(c => c.id === formData.categoryId);
 
+    // Sort categories alphabetically
+    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+
     // Auto-calculate Risk/Deposit based on Category
     const riskFee = selectedCategory?.risk_daily_fee || 1;
     const deposit = riskFee >= 10 ? 250 : riskFee >= 3 ? 100 : 50;
@@ -270,7 +273,7 @@ export default function AddToolPage() {
                                                     <SelectValue placeholder="Select a category..." />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {categories.map(cat => (
+                                                    {sortedCategories.map(cat => (
                                                         <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                                                     ))}
                                                 </SelectContent>

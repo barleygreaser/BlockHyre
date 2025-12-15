@@ -2,21 +2,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { MapPin } from "lucide-react";
+import { useAuth } from "@/app/context/auth-context";
 
 export function Hero() {
+    const { user } = useAuth();
     return (
         <section className="relative h-[70vh] min-h-[600px] w-full overflow-hidden flex items-center">
             {/* Background Images */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_landscape.png"
+                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_landscape_opt.jpg"
                     alt="BlockHyre Community Tools - Neighbors exchanging tools"
                     fill
                     className="hidden md:block object-cover object-right"
                     priority
                 />
                 <Image
-                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_portrait.png"
+                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_portrait_opt.jpg"
                     alt="BlockHyre Community Tools - Neighbors exchanging tools"
                     fill
                     className="md:hidden object-cover object-center"
@@ -53,7 +55,10 @@ export function Hero() {
                         </Link>
 
                         {/* Secondary CTA */}
-                        <Link href="/add-tool" className="w-full sm:w-auto">
+                        <Link
+                            href={user ? "/add-tool" : "/signup?intent=list-tool"}
+                            className="w-full sm:w-auto"
+                        >
                             <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg font-bold bg-white text-[#FF6700] border-2 border-[#FF6700] hover:bg-orange-50 transition-colors">
                                 List My Tools
                             </Button>

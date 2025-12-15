@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
@@ -14,6 +14,8 @@ import { useAuthRedirect } from "@/app/hooks/use-auth-redirect";
 export default function SignupPage() {
     useAuthRedirect(); // Redirect if already logged in
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const intent = searchParams.get('intent');
     // ... (rest of state)
 
 
@@ -73,7 +75,8 @@ export default function SignupPage() {
 
             setSuccess(true);
             setTimeout(() => {
-                router.push('/auth'); // Redirect to login page
+                const intentQuery = intent ? `?intent=${intent}` : '';
+                router.push(`/auth${intentQuery}`); // Redirect to login page
             }, 2000);
 
         } catch (err: any) {
@@ -92,10 +95,16 @@ export default function SignupPage() {
 
                     <div className="text-center">
                         <h2 className="text-3xl font-extrabold text-slate-900 font-serif">
-                            Create your account
+                            {intent === 'list-tool'
+                                ? "Turn Your Idle Equipment Into Income"
+                                : "Create your account"
+                            }
                         </h2>
                         <p className="mt-2 text-sm text-slate-600">
-                            Join the community to rent and share tools.
+                            {intent === 'list-tool'
+                                ? "Join the community to safely rent out high-value tools and earn."
+                                : "Join the community to rent and share tools."
+                            }
                         </p>
                     </div>
 

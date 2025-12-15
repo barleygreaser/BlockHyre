@@ -27,12 +27,14 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
 
     // Flag to prevent searching immediately after selection
     const [justSelected, setJustSelected] = useState(false);
 
     const debouncedValue = useDebounce(value, 300);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown on click outside
     useEffect(() => {
@@ -77,6 +79,24 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
         fetchSuggestions();
     }, [debouncedValue, type, brandFilter]);
 
+    // Reset selected index when suggestions change
+    useEffect(() => {
+        setSelectedIndex(-1);
+    }, [suggestions]);
+
+    // Scroll selected item into view
+    useEffect(() => {
+        if (selectedIndex >= 0 && dropdownRef.current) {
+            const selectedElement = dropdownRef.current.children[selectedIndex] as HTMLElement;
+            if (selectedElement) {
+                selectedElement.scrollIntoView({
+                    block: 'nearest',
+                    behavior: 'auto'
+                });
+            }
+        }
+    }, [selectedIndex]);
+
     const handleSelect = (item: Suggestion) => {
         setJustSelected(true);
         onSelect(item);
@@ -89,6 +109,34 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
         onChange(e.target.value);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!isOpen || suggestions.length === 0) return;
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                setSelectedIndex(prev =>
+                    prev < suggestions.length - 1 ? prev + 1 : prev
+                );
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+                    handleSelect(suggestions[selectedIndex]);
+                }
+                break;
+            case 'Escape':
+                e.preventDefault();
+                setIsOpen(false);
+                setSelectedIndex(-1);
+                break;
+        }
+    };
+
     return (
         <div className={cn("relative space-y-2", className)} ref={wrapperRef}>
             <label className="text-sm font-medium text-slate-900">{label}</label>
@@ -97,6 +145,7 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
                     type="text"
                     value={value}
                     onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
                     onFocus={() => {
                         if (suggestions.length > 0) setIsOpen(true);
                     }}
@@ -111,14 +160,23 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
             </div>
 
             {isOpen && suggestions.length > 0 && (
-                <div className="absolute z-50 w-full mt-1 bg-white rounded-md shadow-lg border border-slate-200 max-h-60 overflow-auto">
+                <div
+                    ref={dropdownRef}
+                    className="absolute z-50 w-full mt-1 bg-white rounded-md shadow-lg border border-slate-200 max-h-60 overflow-auto"
+                >
                     {suggestions.map((item, idx) => (
                         <button
                             key={item.id || idx}
-                            className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm flex items-center justify-between group border-b border-slate-100 last:border-0"
+                            className={cn(
+                                "w-full text-left px-4 py-2 text-sm flex items-center justify-between group border-b border-slate-100 last:border-0 transition-colors",
+                                idx === selectedIndex
+                                    ? "bg-safety-orange/10 text-slate-900"
+                                    : "hover:bg-slate-50 text-slate-700"
+                            )}
                             onClick={() => handleSelect(item)}
+                            onMouseEnter={() => setSelectedIndex(idx)}
                         >
-                            <span className="font-medium text-slate-700">
+                            <span className="font-medium">
                                 {type === 'brand' ? item.brand : (
                                     <>
                                         {item.brand} <span className="font-normal text-slate-500">{item.tool_name}</span>

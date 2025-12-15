@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/app/context/auth-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { AuthGoogleButton } from "@/app/components/auth-google-button";
 import { useAuthRedirect } from "@/app/hooks/use-auth-redirect";
 
 export default function AuthPage() {
-    useAuthRedirect();
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,6 +18,11 @@ export default function AuthPage() {
 
     const { signIn, signUp } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const intent = searchParams.get('intent');
+
+    // If intent is list-tool, redirect to /add-tool if already logged in
+    useAuthRedirect(intent === 'list-tool' ? '/add-tool' : '/dashboard');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,7 +37,11 @@ export default function AuthPage() {
             } else {
                 // Sign In Logic
                 await signIn(email, password);
-                router.push('/dashboard'); // Redirect to dashboard after login
+                if (intent === 'list-tool') {
+                    router.push('/add-tool');
+                } else {
+                    router.push('/dashboard'); // Redirect to dashboard after login
+                }
             }
         } catch (error: any) {
             setErrorMsg(error.message || "An error occurred");

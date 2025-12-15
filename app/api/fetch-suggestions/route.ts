@@ -19,17 +19,12 @@ export async function GET(request: Request) {
     let data, error;
 
     if (type === 'brand') {
-        // Fetch distinct brands matching the query
-        // Supabase select doesn't support distinct comfortably on a single column without returning objects.
-        // We will fetch matching rows and dedup in memory or use a trick.
-        // Actually for simplicity in MVP, let's fetch rows matching brand ilike query.
-
-        // Better: Use .select('brand') and then process.
-
+        // Fetch brands from brand_suggestions table
         const result = await supabase
-            .from('tool_suggestions')
-            .select('brand')
-            .ilike('brand', `%${query}%`)
+            .from('brand_suggestions')
+            .select('name')
+            .ilike('name', `%${query}%`)
+            .order('name', { ascending: true })
             .limit(20);
 
         if (result.error) {
@@ -37,26 +32,48 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: result.error.message }, { status: 500 });
         }
 
-        // Deduplicate brands
-        const distinctBrands = Array.from(new Set(result.data.map((item: any) => item.brand)));
-        // Map to format
-        data = distinctBrands.map(b => ({ brand: b }));
+        // Sort: prioritize results that START with the query
+        const sortedData = result.data.sort((a: any, b: any) => {
+            const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
+            const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+
+            if (aStartsWith && !bStartsWith) return -1;
+            if (!aStartsWith && bStartsWith) return 1;
+            return 0; // Keep alphabetical order for same priority
+        });
+
+        // Map to expected format
+        data = sortedData.map((item: any) => ({ brand: item.name }));
 
     } else {
-        // Fetch tools, optionally filtered by brand
-        let dbQuery = supabase
-            .from('tool_suggestions')
+        // Fetch generic tool names from tool_name_suggestions table
+        // Note: brandFilter is ignored since tool names are now generic
+        const result = await supabase
+            .from('tool_name_suggestions')
             .select('*')
-            .ilike('tool_name', `%${query}%`)
+            .ilike('name', `%${query}%`)
+            .order('name', { ascending: true })
             .limit(20);
 
-        if (brandFilter) {
-            dbQuery = dbQuery.ilike('brand', brandFilter);
-        }
-
-        const result = await dbQuery;
         error = result.error;
-        data = result.data;
+
+        if (result.data) {
+            // Sort: prioritize results that START with the query
+            const sortedData = result.data.sort((a: any, b: any) => {
+                const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
+                const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+
+                if (aStartsWith && !bStartsWith) return -1;
+                if (!aStartsWith && bStartsWith) return 1;
+                return 0; // Keep alphabetical order for same priority
+            });
+
+            // Map to expected format
+            data = sortedData.map((item: any) => ({
+                tool_name: item.name,
+                tier_suggestion: item.tier_suggestion
+            }));
+        }
     }
 
     if (error) {

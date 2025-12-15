@@ -291,15 +291,28 @@ export default function ListingDetailsPage() {
                             </div>
 
                             <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                                <div className="h-10 w-10 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center font-bold text-slate-500">
-                                    N
-                                </div>
+                                {listing.owner?.profile_photo_url ? (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                    <img
+                                        src={listing.owner.profile_photo_url}
+                                        alt={listing.owner.full_name || "Owner"}
+                                        className="h-10 w-10 rounded-full object-cover bg-slate-100"
+                                    />
+                                ) : (
+                                    <div className="h-10 w-10 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center font-bold text-slate-500">
+                                        {listing.owner?.full_name ? listing.owner.full_name.charAt(0).toUpperCase() : 'N'}
+                                    </div>
+                                )}
                                 <div>
                                     <p className="text-sm font-bold text-slate-900 flex items-center gap-1">
-                                        Neighbor
-                                        <CheckCircle className="h-3 w-3 text-blue-500" />
+                                        {listing.owner?.full_name || "Neighbor"}
+                                        {listing.owner?.is_id_verified && (
+                                            <CheckCircle className="h-3 w-3 text-blue-500" />
+                                        )}
                                     </p>
-                                    <p className="text-xs text-slate-500">Verified</p>
+                                    <p className="text-xs text-slate-500">
+                                        {listing.owner?.is_id_verified ? "ID Verified" : "Community Member"}
+                                    </p>
                                 </div>
                             </div>
                         </div>

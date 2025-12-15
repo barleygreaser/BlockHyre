@@ -119,6 +119,11 @@ npx supabase db reset --linked
    npm run dev
    ```
 
+   **Run Ngrok:**
+   ```bash
+   ngrok http 3000
+   ```
+
 4. **Open the app:**
    Navigate to `http://localhost:3000`.
 

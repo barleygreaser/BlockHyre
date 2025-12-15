@@ -32,10 +32,10 @@ import { Slider } from "@/app/components/ui/slider";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 
-// Default Fallback (Downtown LA)
+// Default Fallback (Woodstock, GA - Neighborhood f295b7bf-1a7e-427e-9527-5bb621851b4b)
 const DEFAULT_LOCATION: Coordinates = {
-    latitude: 34.0522,
-    longitude: -118.2437,
+    latitude: 34.0924,
+    longitude: -84.5097,
 };
 
 export default function InventoryPage() {
@@ -276,22 +276,37 @@ export default function InventoryPage() {
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
                             <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide">
-                                {sortedCategories.map(category => (
-                                    <div key={category.id} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`category-${category.id}`}
-                                            checked={selectedCategories.includes(category.name)}
-                                            onCheckedChange={() => toggleCategory(category.name)}
-                                            className="border-slate-300 data-[state=checked]:bg-safety-orange data-[state=checked]:border-safety-orange"
-                                        />
-                                        <Label
-                                            htmlFor={`category-${category.id}`}
-                                            className="text-sm text-slate-600 cursor-pointer hover:text-slate-900 truncate"
-                                        >
-                                            {category.name}
-                                        </Label>
-                                    </div>
-                                ))}
+                                {loading ? (
+                                    // SKELETON LOADER IMPLEMENTATION
+                                    Array.from({ length: 8 }).map((_, index) => {
+                                        // Vary the width for more dynamic appearance
+                                        const widths = ['100px', '130px', '110px', '145px', '95px', '125px', '115px', '135px'];
+                                        return (
+                                            <div key={index} className="flex items-center space-x-2">
+                                                <Skeleton className="h-5 w-4 rounded-sm flex-shrink-0" />
+                                                <Skeleton className="h-5 w-full" style={{ maxWidth: widths[index] }} />
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    // ACTUAL CATEGORY LIST
+                                    sortedCategories.map(category => (
+                                        <div key={category.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`category-${category.id}`}
+                                                checked={selectedCategories.includes(category.name)}
+                                                onCheckedChange={() => toggleCategory(category.name)}
+                                                className="border-slate-300 data-[state=checked]:bg-safety-orange data-[state=checked]:border-safety-orange"
+                                            />
+                                            <Label
+                                                htmlFor={`category-${category.id}`}
+                                                className="text-sm text-slate-600 cursor-pointer hover:text-slate-900 truncate"
+                                            >
+                                                {category.name}
+                                            </Label>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
 
