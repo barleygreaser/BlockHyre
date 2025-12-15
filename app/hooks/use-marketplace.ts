@@ -35,6 +35,7 @@ export type Listing = {
         id: string;
         full_name: string;
         profile_photo_url: string;
+        is_id_verified: boolean;
     };
 };
 
@@ -54,7 +55,8 @@ export const useMarketplace = () => {
                         name,
                         risk_daily_fee
                     )
-                `);
+                `)
+                .eq('status', 'active');
 
             if (error) throw error;
 
@@ -95,7 +97,7 @@ export const useMarketplace = () => {
             if (data.owner_id) {
                 const { data: userData } = await supabase
                     .from('users')
-                    .select('id, full_name, profile_photo_url')
+                    .select('id, full_name, profile_photo_url, is_id_verified')
                     .eq('id', data.owner_id)
                     .single();
 
@@ -176,6 +178,7 @@ export const useMarketplace = () => {
     ) => {
         try {
             setLoading(true);
+            console.log("Searching listings with params:", { userLat, userLong, radius, minPrice, maxPrice, category });
             const { data, error } = await supabase.rpc('search_nearby_listings', {
                 user_lat: userLat,
                 user_long: userLong,
@@ -185,7 +188,11 @@ export const useMarketplace = () => {
                 category_filter: category || null
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error("Supabase RPC Error Details:", JSON.stringify(error, null, 2));
+                throw error;
+            }
+            console.log("RPC Search Results:", data);
 
             // Map RPC result to Listing type
             const mappedListings: Listing[] = (data as any[]).map(item => ({
@@ -207,9 +214,9 @@ export const useMarketplace = () => {
             }));
 
             setListings(mappedListings);
-        } catch (e) {
+        } catch (e: any) {
             setError(e);
-            console.error("Error searching listings:", e);
+            console.error("Error searching listings:", e?.message || JSON.stringify(e));
         } finally {
             setLoading(false);
         }
@@ -270,8 +277,15 @@ export const useMarketplace = () => {
         }
     };
 
-    useEffect(() => {
+    // REMOVE OR COMMENT OUT THIS BLOCK
+    // The page controls the fetching based on filters/location now.
+    /* useEffect(() => {
         fetchListings();
+    }, []);
+    */
+
+    // Keep this one, as categories are static and global
+    useEffect(() => {
         fetchCategories();
     }, []);
 

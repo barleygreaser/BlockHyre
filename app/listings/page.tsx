@@ -29,15 +29,18 @@ import { Label } from "@/app/components/ui/label";
 import { Switch } from "@/app/components/ui/switch";
 import { Slider } from "@/app/components/ui/slider";
 
-// Mock User Location (e.g., Downtown)
-const USER_LOCATION: Coordinates = {
+import { useAuth } from "@/app/context/auth-context";
+import { supabase } from "@/lib/supabase";
+
+// Default Fallback (Downtown LA)
+const DEFAULT_LOCATION: Coordinates = {
     latitude: 34.0522,
     longitude: -118.2437,
 };
 
-
-
 export default function InventoryPage() {
+    const { user } = useAuth();
+
     // Filters State
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -50,10 +53,63 @@ export default function InventoryPage() {
     const [isSortOpen, setIsSortOpen] = useState(false);
 
     const [userZip, setUserZip] = useState("90012");
-    const [userLocation, setUserLocation] = useState<Coordinates>({ latitude: 34.0522, longitude: -118.2437 });
+    const [userLocation, setUserLocation] = useState<Coordinates>(DEFAULT_LOCATION);
+    const [locationLoaded, setLocationLoaded] = useState(false);
     const [isEditingZip, setIsEditingZip] = useState(false);
     const [sortOption, setSortOption] = useState<"price-asc" | "price-desc" | null>(null);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+    // Fetch User Location Logic
+    useEffect(() => {
+        const fetchLocation = async () => {
+            try {
+                // 1. If Logged In: Try fetching Neighborhood
+                if (user) {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select(`
+                            neighborhood_id,
+                            neighborhoods (
+                                center_lat,
+                                center_lon,
+                                name
+                            )
+                        `)
+                        .eq('id', user.id)
+                        .single();
+
+                    if (data?.neighborhoods) {
+                        // Cast to any because TS might not know strictly about foreign key expansion types
+                        const nb = data.neighborhoods as any;
+                        setUserLocation({
+                            latitude: nb.center_lat,
+                            longitude: nb.center_lon
+                        });
+                        setLocationLoaded(true);
+                        return;
+                    }
+                }
+
+                // 2. Fallback: IP Geolocation (if not logged in or no neighborhood)
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+
+                if (data.latitude && data.longitude) {
+                    setUserLocation({
+                        latitude: data.latitude,
+                        longitude: data.longitude
+                    });
+                    if (data.postal) setUserZip(data.postal);
+                }
+            } catch (error) {
+                console.error("Error determining user location:", error);
+            } finally {
+                setLocationLoaded(true);
+            }
+        };
+
+        fetchLocation();
+    }, [user]);
 
     // Simple Zip to Coords map (Mocking a geocoding service)
     const getCoordsFromZip = (zip: string): Coordinates | null => {
@@ -79,6 +135,9 @@ export default function InventoryPage() {
 
     // Trigger search when filters change
     useEffect(() => {
+        // PREVENT SEARCH IF LOCATION ISN'T READY
+        if (!locationLoaded) return;
+
         // Debounce could be added here
         const timer = setTimeout(() => {
             searchListings(
@@ -92,7 +151,7 @@ export default function InventoryPage() {
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [maxDistance, priceRange, selectedCategories, userLocation]); // Re-run when these change
+    }, [maxDistance, priceRange, selectedCategories, userLocation, locationLoaded]); // Re-run when these change
 
     // Map Supabase listings to Tool format
     const inventoryTools: (Tool & { tier: number, ownerVerified: boolean })[] = useMemo(() => {
