@@ -62,6 +62,7 @@ export default function AddToolPage() {
 
     const [isAffirmationOpen, setIsAffirmationOpen] = useState(false);
     const [isAffirmed, setIsAffirmed] = useState(false);
+    const [isTosAccepted, setIsTosAccepted] = useState(false);
 
     useEffect(() => {
         fetchCategories();
@@ -479,6 +480,17 @@ export default function AddToolPage() {
                                     I certify that I am the owner of this tool, it is in good working condition, and I have accurately described its details. I understand that listing unsafe or prohibited items may result in account suspension.
                                 </label>
                             </div>
+                            <div className="flex items-start space-x-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                <Checkbox
+                                    id="tos-affirmation"
+                                    checked={isTosAccepted}
+                                    onCheckedChange={(checked) => setIsTosAccepted(checked)}
+                                    className="mt-1 data-[state=checked]:bg-safety-orange border-slate-300"
+                                />
+                                <label htmlFor="tos-affirmation" className="text-sm text-slate-700 leading-relaxed cursor-pointer select-none">
+                                    I agree to the <Link href="/terms" className="text-safety-orange hover:underline" target="_blank">Terms of Service</Link> and pledge to adhere to the BlockHyre community guidelines.
+                                </label>
+                            </div>
                         </div>
                         <DialogFooter className="gap-2 sm:gap-0">
                             <Button
@@ -490,7 +502,7 @@ export default function AddToolPage() {
                             </Button>
                             <Button
                                 onClick={handleSubmit}
-                                disabled={!isAffirmed || loading}
+                                disabled={!isAffirmed || !isTosAccepted || loading}
                                 className="w-full sm:w-auto bg-safety-orange hover:bg-safety-orange/90"
                             >
                                 {loading ? (
