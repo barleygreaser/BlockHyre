@@ -75,11 +75,19 @@ export default function AddToolPage() {
     const riskFee = selectedCategory?.risk_daily_fee || 1;
     const deposit = riskFee >= 10 ? 250 : riskFee >= 3 ? 100 : 50;
     const isHighRisk = riskFee >= 10;
-    const requiresManual = ["Heavy Machinery", "Power Tools", "Small Power Tools"].includes(selectedCategory?.name || "");
+    const requiresManual = (selectedCategory as any)?.risk_tier === 3;
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => {
             const newData = { ...prev, [field]: value };
+
+            // Validate manual URL for high-risk items
+            if (field === 'manualUrl' && value && requiresManual) {
+                if (!value.startsWith('https://www.manualslib.com')) {
+                    // Silently prevent invalid URLs - user will see validation on submit
+                    return prev;
+                }
+            }
 
             // Always auto-populate Display Name from Brand + Tool Name
             if (field === 'title' || field === 'brand') {
@@ -326,10 +334,26 @@ export default function AddToolPage() {
                                                 type="url"
                                                 placeholder="https://www.manualslib.com/..."
                                                 value={formData.manualUrl}
-                                                onChange={(e) => handleInputChange("manualUrl", e.target.value)}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (!val || val.startsWith('https://www.manualslib.com')) {
+                                                        handleInputChange("manualUrl", val);
+                                                    }
+                                                }}
                                                 className="pl-9 focus-visible:ring-safety-orange/50"
                                             />
                                         </div>
+                                        <p className="text-xs text-slate-500">
+                                            Must be a valid URL from{' '}
+                                            <a
+                                                href="https://www.manualslib.com/manual"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-safety-orange hover:underline font-medium"
+                                            >
+                                                manualslib.com
+                                            </a>
+                                        </p>
                                     </div>
                                 )}
 
