@@ -70,7 +70,7 @@ export default function EditListingPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user } = useAuth();
-    const { fetchListing, categories, fetchBlockedDates, blockDateRange, deleteBlockedDate, fetchUnavailableDates } = useMarketplace();
+    const { fetchListing, categories, fetchBlockedDates, blockDateRange, deleteBlockedDate, fetchUnavailableDates, platformSettings } = useMarketplace();
 
     const [activeSection, setActiveSection] = useState("details");
     const [loading, setLoading] = useState(true);
@@ -354,8 +354,9 @@ export default function EditListingPage() {
                                                 <Select
                                                     value={formData.category_id || ""}
                                                     onValueChange={(val) => handleInputChange("category_id", val)}
+                                                    disabled
                                                 >
-                                                    <SelectTrigger className="bg-white focus:ring-safety-orange/50">
+                                                    <SelectTrigger className="bg-white focus:ring-safety-orange/50 disabled:bg-slate-100 disabled:text-slate-500 disabled:opacity-100">
                                                         <SelectValue placeholder="Select a Category" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -639,7 +640,9 @@ export default function EditListingPage() {
                                                     </div>
                                                     <div className="space-y-1">
                                                         <span className="text-xs font-medium text-slate-500 uppercase">Platform Fee</span>
-                                                        <div className="font-semibold text-slate-900">15%</div>
+                                                        <div className="font-semibold text-slate-900">
+                                                            {platformSettings?.seller_fee_percent ?? 7}%
+                                                        </div>
                                                         <div className="text-xs text-slate-500">Deducted from payout</div>
                                                     </div>
                                                 </div>

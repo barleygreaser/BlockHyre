@@ -284,9 +284,40 @@ export const useMarketplace = () => {
     }, []);
     */
 
+    const [platformSettings, setPlatformSettings] = useState<{
+        seller_fee_percent: number;
+        buyer_fee_percent: number;
+        maintenance_mode: boolean;
+    } | null>(null);
+
+    const fetchPlatformSettings = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('platform_settings')
+                .select('*')
+                .single();
+
+            if (error) {
+                // If table doesn't exist or is empty, use defaults gracefully
+                console.warn("Could not fetch platform settings, using defaults:", error.message);
+                setPlatformSettings({
+                    seller_fee_percent: 7,
+                    buyer_fee_percent: 10,
+                    maintenance_mode: false
+                });
+                return;
+            }
+
+            setPlatformSettings(data);
+        } catch (e) {
+            console.error("Error fetching platform settings:", e);
+        }
+    };
+
     // Keep this one, as categories are static and global
     useEffect(() => {
         fetchCategories();
+        fetchPlatformSettings();
     }, []);
 
     const blockDateRange = async (listingId: string, startDate: Date, endDate: Date, reason?: string) => {
@@ -326,11 +357,13 @@ export const useMarketplace = () => {
     return {
         listings,
         categories,
+        platformSettings,
         loading,
         error,
         fetchListings,
         fetchListing,
         fetchCategories,
+        fetchPlatformSettings,
         fetchUnavailableDates,
         searchListings,
         createRental,
