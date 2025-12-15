@@ -415,30 +415,6 @@ export default function AddToolPage() {
                                     </div>
                                 </div>
 
-                                {/* Specs */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-slate-900">Weight (kg)</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="e.g. 15"
-                                            value={formData.specs.weight}
-                                            onChange={(e) => handleSpecChange("weight", e.target.value)}
-                                            className="focus-visible:ring-safety-orange/50"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-slate-900">Dimensions</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="e.g. 50x30x20 cm"
-                                            value={formData.specs.dimensions}
-                                            onChange={(e) => handleSpecChange("dimensions", e.target.value)}
-                                            className="focus-visible:ring-safety-orange/50"
-                                        />
-                                    </div>
-                                </div>
-
                                 {/* Images */}
                                 <div className="space-y-4">
                                     <label className="text-sm font-medium text-slate-900">Images</label>
@@ -530,6 +506,6 @@ export default function AddToolPage() {
                 </Dialog>
             </div>
             <Footer />
-        </main>
+        </main >
     );
 }

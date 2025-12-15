@@ -229,13 +229,13 @@ export const useMarketplace = () => {
         }
     };
 
-    const [categories, setCategories] = useState<{ id: string; name: string; risk_daily_fee: number }[]>([]);
+    const [categories, setCategories] = useState<{ id: string; name: string; risk_daily_fee: number; risk_tier: number; deductible_amount: number }[]>([]);
 
     const fetchCategories = async () => {
         try {
             const { data, error } = await supabase
                 .from('categories')
-                .select('id, name, risk_daily_fee');
+                .select('id, name, risk_daily_fee, risk_tier, deductible_amount');
 
             if (error) throw error;
             setCategories(data || []);
