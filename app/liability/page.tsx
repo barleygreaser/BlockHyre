@@ -23,25 +23,52 @@ export default function LiabilityPage() {
 
                 <div className="space-y-12">
 
-                    {/* Bodily Injury */}
+                    {/* Assumption of Risk */}
                     <section className="flex gap-6">
                         <div className="flex-shrink-0 mt-1">
                             <HardHat className="h-8 w-8 text-slate-400" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-slate-900 mb-3">1. Bodily Injury Waiver</h2>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-3">Assumption of Risk</h2>
                             <div className="prose prose-slate">
-                                <p className="font-bold text-slate-700">
-                                    By renting a tool on BlockHyre, you expressly acknowledge that tool usage involves inherent risks of physical injury.
-                                </p>
                                 <p>
-                                    BlockHyre and the Tool Owner are <strong>NOT LIABLE</strong> for any bodily injury, incapacity, or death resulting from the use of rented equipment.
-                                    The Renter assumes 100% of the safety risk. It is the Renter's responsibility to:
+                                    You voluntarily assume all risk of personal injury, death, or property damage that may arise from the use, operation, transportation, or malfunction of the rented tool.
                                 </p>
-                                <ul className="list-disc pl-5 space-y-2 mt-2">
-                                    <li>Wear appropriate Personal Protective Equipment (PPE).</li>
-                                    <li>Read the manufacturer's manual (linked in every listing).</li>
-                                    <li>Ensure they have the necessary skill to operate the machinery.</li>
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr className="border-slate-200" />
+
+                    {/* Owner Safety Requirement */}
+                    <section className="flex gap-6">
+                        <div className="flex-shrink-0 mt-1">
+                            <FileSignature className="h-8 w-8 text-slate-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-3">Owner Safety Requirement</h2>
+                            <div className="prose prose-slate">
+                                <p>
+                                    You acknowledge that the Tool Owner is required to provide the Manufacturer's Operating Manual (digital or physical) for this tool.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr className="border-slate-200" />
+
+                    {/* Renter Skill & Safety Certification */}
+                    <section className="flex gap-6">
+                        <div className="flex-shrink-0 mt-1">
+                            <ShieldAlert className="h-8 w-8 text-slate-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-3">Renter Skill & Safety Certification <span className="text-base font-normal text-slate-500">(Tier 3 Tools ONLY)</span></h2>
+                            <div className="prose prose-slate">
+                                <ul className="list-disc pl-5 space-y-2">
+                                    <li>You certify that you possess the necessary skill and experience to safely operate this specific machinery.</li>
+                                    <li>You certify that you have read and understood the Manufacturer's Operating Manual provided by the Owner.</li>
+                                    <li>You certify that you will wear all appropriate Personal Protective Equipment (PPE) required for the safe operation of this tool (e.g., safety glasses, gloves, respirators, hearing protection).</li>
                                 </ul>
                             </div>
                         </div>
@@ -49,24 +76,16 @@ export default function LiabilityPage() {
 
                     <hr className="border-slate-200" />
 
-                    {/* Damage to Equipment */}
+                    {/* Waiver of Liability */}
                     <section className="flex gap-6">
                         <div className="flex-shrink-0 mt-1">
                             <FileSignature className="h-8 w-8 text-slate-400" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-slate-900 mb-3">2. Damage to Equipment</h2>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-3">Waiver of Liability</h2>
                             <div className="prose prose-slate">
-                                <p>
-                                    Any damage incurred during the rental period is the sole responsibility of the Renter.
-                                </p>
-                                <p>
-                                    <strong>Minor Wear & Tear:</strong> (Scratches, paint chips) – No charge.<br />
-                                    <strong>Breakage/Malfunction:</strong> Cost of repair deducted from Security Deposit.<br />
-                                    <strong>Total Loss:</strong> Replacement cost charged to Renter's payment method.
-                                </p>
-                                <p className="text-sm bg-slate-50 p-4 border-l-4 border-safety-orange italic">
-                                    *The "Peace Fund" may cover costs exceeding the deposit for verifiable accidents, subject to Tribunal review.
+                                <p className="font-bold text-slate-900">
+                                    You irrevocably waive any right to claim against BlockHyre, Inc. and the Tool Owner for personal injury, death, or property damage resulting from your use of the equipment.
                                 </p>
                             </div>
                         </div>
@@ -74,17 +93,33 @@ export default function LiabilityPage() {
 
                     <hr className="border-slate-200" />
 
-                    {/* Third Party Property */}
+                    {/* Peace Fund is NOT Insurance */}
                     <section className="flex gap-6">
                         <div className="flex-shrink-0 mt-1">
                             <ShieldAlert className="h-8 w-8 text-slate-400" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-slate-900 mb-3">3. Third-Party Property Damage</h2>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-3">Peace Fund is NOT Insurance</h2>
                             <div className="prose prose-slate">
                                 <p>
-                                    If a rented tool causes damage to a third party's property (e.g., a pipe bursts, a car is scratched),
-                                    BlockHyre explicitly disclaims all liability. The Renter is solely responsible for ensuring the work area is safe.
+                                    You understand that the Peace Fund is NOT an insurance policy and does not cover personal injury or third-party property damage. The Fund only applies to physical damage to the rented tool itself, and your coverage is strictly limited to the Tier's maximum payout (e.g., Tier 3 maximum coverage is $3,000).
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr className="border-slate-200" />
+
+                    {/* Renter is Liable */}
+                    <section className="flex gap-6">
+                        <div className="flex-shrink-0 mt-1">
+                            <ShieldAlert className="h-8 w-8 text-slate-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-3">Renter is Liable</h2>
+                            <div className="prose prose-slate">
+                                <p>
+                                    You accept that you are personally liable for the mandatory Deductible and for all repair or replacement costs that exceed the Peace Fund's maximum coverage.
                                 </p>
                             </div>
                         </div>
@@ -100,9 +135,18 @@ export default function LiabilityPage() {
                     </p>
                 </div>
 
+
+
+                <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 mt-12">
+                    <h4 className="text-lg font-bold text-slate-900 mt-0">Contact Us</h4>
+                    <p className="mb-0">
+                        If you have any questions about this Policy, please contact us at <a href="mailto:legal@blockhyre.com" className="text-safety-orange">legal@blockhyre.com</a>.
+                    </p>
+                </div>
+
             </div>
 
             <Footer />
-        </main>
+        </main >
     );
 }

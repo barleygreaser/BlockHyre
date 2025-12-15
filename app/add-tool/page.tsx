@@ -59,7 +59,6 @@ export default function AddToolPage() {
         }
     });
 
-    const [isDisplayNameModified, setIsDisplayNameModified] = useState(false);
     const [isAffirmationOpen, setIsAffirmationOpen] = useState(false);
     const [isAffirmed, setIsAffirmed] = useState(false);
 
@@ -82,22 +81,20 @@ export default function AddToolPage() {
         setFormData(prev => {
             const newData = { ...prev, [field]: value };
 
-            // Auto-populate Display Name if not manually modified
-            if ((field === 'title' || field === 'brand') && !isDisplayNameModified) {
+            // Always auto-populate Display Name from Brand + Tool Name
+            if (field === 'title' || field === 'brand') {
                 const brand = field === 'brand' ? value : prev.brand;
                 const title = field === 'title' ? value : prev.title;
                 if (brand && title) {
                     newData.displayName = `${brand} ${title}`;
                 } else if (title) {
                     newData.displayName = title;
+                } else if (brand) {
+                    newData.displayName = brand;
                 }
             }
             return newData;
         });
-
-        if (field === 'displayName') {
-            setIsDisplayNameModified(true);
-        }
     };
 
     const handleBrandSelect = (item: any) => {
@@ -256,10 +253,10 @@ export default function AddToolPage() {
                                             type="text"
                                             placeholder="e.g. DeWalt Table Saw"
                                             value={formData.displayName}
-                                            onChange={(e) => handleInputChange("displayName", e.target.value)}
-                                            className="bg-slate-50 focus-visible:ring-safety-orange/50"
+                                            readOnly
+                                            className="bg-slate-100 cursor-not-allowed text-slate-600"
                                         />
-                                        <p className="text-xs text-slate-500">This is how your listing will appear to others.</p>
+                                        <p className="text-xs text-slate-500">Auto-generated from Brand + Tool Name</p>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -10,20 +10,22 @@ interface Suggestion {
     brand?: string;
     tool_name?: string;
     tier_suggestion?: number;
+    name?: string; // For categories
 }
 
 interface TypeaheadInputProps {
     label: string;
     value: string;
-    type: 'brand' | 'tool';
+    type: 'brand' | 'tool' | 'category';
     brandFilter?: string; // Optional filter for tool lookup
     onChange: (val: string) => void;
     onSelect: (item: Suggestion) => void;
     placeholder?: string;
     className?: string;
+    categories?: any[]; // For category type
 }
 
-export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSelect, placeholder, className }: TypeaheadInputProps) {
+export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSelect, placeholder, className, categories }: TypeaheadInputProps) {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -55,6 +57,22 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
                 return;
             }
 
+            // Handle categories locally (no API call)
+            if (type === 'category' && categories) {
+                const filtered = categories
+                    .filter(cat => cat.name.toLowerCase().includes(debouncedValue.toLowerCase()))
+                    .sort((a, b) => {
+                        const aStarts = a.name.toLowerCase().startsWith(debouncedValue.toLowerCase());
+                        const bStarts = b.name.toLowerCase().startsWith(debouncedValue.toLowerCase());
+                        if (aStarts && !bStarts) return -1;
+                        if (!aStarts && bStarts) return 1;
+                        return a.name.localeCompare(b.name);
+                    });
+                setSuggestions(filtered);
+                if (filtered.length > 0) setIsOpen(true);
+                return;
+            }
+
             setIsLoading(true);
             try {
                 let url = `/api/fetch-suggestions?query=${encodeURIComponent(debouncedValue)}&type=${type}`;
@@ -77,7 +95,7 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
         };
 
         fetchSuggestions();
-    }, [debouncedValue, type, brandFilter]);
+    }, [debouncedValue, type, brandFilter, categories]);
 
     // Reset selected index when suggestions change
     useEffect(() => {
@@ -177,7 +195,7 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
                             onMouseEnter={() => setSelectedIndex(idx)}
                         >
                             <span className="font-medium">
-                                {type === 'brand' ? item.brand : (
+                                {type === 'brand' ? item.brand : type === 'category' ? item.name : (
                                     <>
                                         {item.brand} <span className="font-normal text-slate-500">{item.tool_name}</span>
                                     </>

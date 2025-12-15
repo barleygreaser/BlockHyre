@@ -625,108 +625,107 @@ export default function EditListingPage() {
                                                     <div className="space-y-1">
                                                         <span className="text-xs font-medium text-slate-500 uppercase">Peace Fund Tier</span>
                                                         <div className="font-semibold text-slate-900">
-                                                            <div className="font-semibold text-slate-900">
-                                                                {formData.category?.risk_tier
-                                                                    ? formData.category.risk_tier === 3 ? "Tier 3 (High)" : formData.category.risk_tier === 2 ? "Tier 2 (Mid)" : "Tier 1 (Low)"
-                                                                    : "Standard"}
-                                                            </div>
-                                                            <div className="text-xs text-slate-500">Based on category</div>
+                                                            {formData.category?.risk_tier
+                                                                ? formData.category.risk_tier === 3 ? "Tier 3 (High)" : formData.category.risk_tier === 2 ? "Tier 2 (Mid)" : "Tier 1 (Low)"
+                                                                : "Standard"}
                                                         </div>
-                                                        <div className="space-y-1">
-                                                            <span className="text-xs font-medium text-slate-500 uppercase">Daily Peace Fee</span>
-                                                            <div className="font-semibold text-slate-900">
-                                                                ${formData.category?.risk_daily_fee?.toFixed(2) || "0.00"}/day
-                                                            </div>
-                                                            <div className="text-xs text-slate-500">Paid by Renter</div>
+                                                        <div className="text-xs text-slate-500">Based on category</div>
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <span className="text-xs font-medium text-slate-500 uppercase">Daily Peace Fee</span>
+                                                        <div className="font-semibold text-slate-900">
+                                                            ${formData.category?.risk_daily_fee?.toFixed(2) || "0.00"}/day
                                                         </div>
-                                                        <div className="space-y-1">
-                                                            <span className="text-xs font-medium text-slate-500 uppercase">Platform Fee</span>
-                                                            <div className="font-semibold text-slate-900">
-                                                                {platformSettings?.seller_fee_percent ?? 7}%
-                                                            </div>
-                                                            <div className="text-xs text-slate-500">Deducted from payout</div>
+                                                        <div className="text-xs text-slate-500">Paid by Renter</div>
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <span className="text-xs font-medium text-slate-500 uppercase">Platform Fee</span>
+                                                        <div className="font-semibold text-slate-900">
+                                                            {platformSettings?.seller_fee_percent ?? 7}%
                                                         </div>
+                                                        <div className="text-xs text-slate-500">Deducted from payout</div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            {/* Booking USPs */}
-                                            <div className="space-y-4">
-                                                <h3 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Booking Terms</h3>
+                                        {/* Booking USPs */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Booking Terms</h3>
 
-                                                <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg">
-                                                    <div className="space-y-0.5">
-                                                        <div className="flex items-center gap-2">
-                                                            <label className="font-medium text-slate-900">Accept Barter?</label>
-                                                            <TooltipProvider>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger>
-                                                                        <div className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded cursor-help">?</div>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>
-                                                                        Enabling barter may increase your requests by 20%. Barter requires "Request to Book".
-                                                                    </TooltipContent>
-                                                                </Tooltip>
-                                                            </TooltipProvider>
-                                                        </div>
-                                                        <p className="text-sm text-slate-500">Open to trading for goods/services instead of cash.</p>
+                                            <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg">
+                                                <div className="space-y-0.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <label className="font-medium text-slate-900">Accept Barter?</label>
+                                                        <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger>
+                                                                    <div className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded cursor-help">?</div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    Enabling barter may increase your requests by 20%. Barter requires "Request to Book".
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
                                                     </div>
-                                                    <Switch
-                                                        checked={formData.accepts_barter || false}
-                                                        onCheckedChange={(checked) => {
-                                                            handleInputChange("accepts_barter", checked);
-                                                            if (checked) {
-                                                                handleInputChange("booking_type", "request");
-                                                            }
-                                                        }}
-                                                    />
+                                                    <p className="text-sm text-slate-500">Open to trading for goods/services instead of cash.</p>
                                                 </div>
-
-                                                <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-3">
-                                                    <Label className="font-medium text-slate-900 block">Booking Method</Label>
-                                                    <RadioGroup
-                                                        className="flex flex-col sm:flex-row gap-4"
-                                                        value={formData.booking_type || "request"}
-                                                        onValueChange={(val) => {
-                                                            if (!formData.accepts_barter || val === "request") {
-                                                                handleInputChange("booking_type", val);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <div className={cn(
-                                                            "flex-1 flex items-start p-3 rounded-lg border cursor-pointer transition-all",
-                                                            formData.booking_type === 'request' || !formData.booking_type
-                                                                ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange"
-                                                                : "border-slate-200 hover:border-slate-300"
-                                                        )}>
-                                                            <RadioGroupItem value="request" id="r-request" className="mt-1 mr-3 text-safety-orange border-slate-900" />
-                                                            <Label htmlFor="r-request" className="cursor-pointer">
-                                                                <div className="font-medium text-sm text-slate-900">Request to Book</div>
-                                                                <div className="text-xs text-slate-500 mt-1">Review every request before approving. Best for high-value items or for bartering.</div>
-                                                            </Label>
-                                                        </div>
-
-                                                        <div className={cn(
-                                                            "flex-1 flex items-start p-3 rounded-lg border transition-all",
-                                                            formData.accepts_barter ? "opacity-50 cursor-not-allowed bg-slate-50 border-slate-100"
-                                                                : formData.booking_type === 'instant'
-                                                                    ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange cursor-pointer"
-                                                                    : "border-slate-200 hover:border-slate-300 cursor-pointer"
-                                                        )}>
-                                                            <RadioGroupItem
-                                                                value="instant"
-                                                                id="r-instant"
-                                                                className="mt-1 mr-3 text-safety-orange border-slate-900"
-                                                                disabled={formData.accepts_barter === true}
-                                                            />
-                                                            <Label htmlFor="r-instant" className={cn("cursor-pointer", formData.accepts_barter && "cursor-not-allowed")}>
-                                                                <div className="font-medium text-sm text-slate-900">Instant Book</div>
-                                                                <div className="text-xs text-slate-500 mt-1">Renters book instantly without approval. Requires ID verification.</div>
-                                                            </Label>
-                                                        </div>
-                                                    </RadioGroup>
-                                                </div>
+                                                <Switch
+                                                    checked={formData.accepts_barter || false}
+                                                    onCheckedChange={(checked) => {
+                                                        handleInputChange("accepts_barter", checked);
+                                                        if (checked) {
+                                                            handleInputChange("booking_type", "request");
+                                                        }
+                                                    }}
+                                                />
                                             </div>
+
+                                            <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-3">
+                                                <Label className="font-medium text-slate-900 block">Booking Method</Label>
+                                                <RadioGroup
+                                                    className="flex flex-col sm:flex-row gap-4"
+                                                    value={formData.booking_type || "request"}
+                                                    onValueChange={(val) => {
+                                                        if (!formData.accepts_barter || val === "request") {
+                                                            handleInputChange("booking_type", val);
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className={cn(
+                                                        "flex-1 flex items-start p-3 rounded-lg border cursor-pointer transition-all",
+                                                        formData.booking_type === 'request' || !formData.booking_type
+                                                            ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange"
+                                                            : "border-slate-200 hover:border-slate-300"
+                                                    )}>
+                                                        <RadioGroupItem value="request" id="r-request" className="mt-1 mr-3 text-safety-orange border-slate-900" />
+                                                        <Label htmlFor="r-request" className="cursor-pointer">
+                                                            <div className="font-medium text-sm text-slate-900">Request to Book</div>
+                                                            <div className="text-xs text-slate-500 mt-1">Review every request before approving. Best for high-value items or for bartering.</div>
+                                                        </Label>
+                                                    </div>
+
+                                                    <div className={cn(
+                                                        "flex-1 flex items-start p-3 rounded-lg border transition-all",
+                                                        formData.accepts_barter ? "opacity-50 cursor-not-allowed bg-slate-50 border-slate-100"
+                                                            : formData.booking_type === 'instant'
+                                                                ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange cursor-pointer"
+                                                                : "border-slate-200 hover:border-slate-300 cursor-pointer"
+                                                    )}>
+                                                        <RadioGroupItem
+                                                            value="instant"
+                                                            id="r-instant"
+                                                            className="mt-1 mr-3 text-safety-orange border-slate-900"
+                                                            disabled={formData.accepts_barter === true}
+                                                        />
+                                                        <Label htmlFor="r-instant" className={cn("cursor-pointer", formData.accepts_barter && "cursor-not-allowed")}>
+                                                            <div className="font-medium text-sm text-slate-900">Instant Book</div>
+                                                            <div className="text-xs text-slate-500 mt-1">Renters book instantly without approval. Requires ID verification.</div>
+                                                        </Label>
+                                                    </div>
+                                                </RadioGroup>
+                                            </div>
+                                        </div>
 
                                     </CardContent>
                                 </Card>
