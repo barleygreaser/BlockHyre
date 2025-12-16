@@ -88,6 +88,7 @@ export function OwnerDashboardView() {
     const [actionItems, setActionItems] = useState<any[]>([]);
     const [rentalRequests, setRentalRequests] = useState<any[]>([]);
     const [listsLoading, setListsLoading] = useState(true);
+    const [sellerFeePercent, setSellerFeePercent] = useState<number>(0);
 
     // Fetch Lists
     useEffect(() => {
@@ -95,6 +96,18 @@ export function OwnerDashboardView() {
 
         const fetchLists = async () => {
             try {
+                // Fetch platform settings for seller fee
+                const { data: settingsData, error: settingsError } = await supabase
+                    .from('platform_settings')
+                    .select('seller_fee_percent')
+                    .single();
+
+                if (settingsError) {
+                    console.error('Error fetching platform settings:', settingsError);
+                } else if (settingsData) {
+                    setSellerFeePercent(settingsData.seller_fee_percent || 0);
+                }
+
                 // 1. Action Items (Status = Returned) - For Inspection
                 // Need to find rentals for MY listings that are 'Returned'
                 const { data: returnedData, error: returnedError } = await supabase
@@ -121,6 +134,7 @@ export function OwnerDashboardView() {
                         start_date,
                         end_date,
                         total_days,
+                        rental_fee,
                         renter:users!renter_id (full_name, email), 
                         listing:listings!inner (title, owner_id)
                     `)
@@ -195,6 +209,13 @@ export function OwnerDashboardView() {
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
         return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    };
+
+    // Calculate owner's revenue after platform fee
+    const calculateOwnerRevenue = (rentalFee: number) => {
+        if (!rentalFee || !sellerFeePercent) return rentalFee || 0;
+        const platformFee = rentalFee * (sellerFeePercent / 100);
+        return rentalFee - platformFee;
     };
 
     return (
@@ -325,12 +346,20 @@ export function OwnerDashboardView() {
                                                         </span>
                                                     </h4>
                                                     <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
-                                                    <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
-                                                        <span className="bg-slate-100 px-2 py-0.5 rounded">
+                                                    <div className="flex items-center gap-3 mt-1 text-xs">
+                                                        <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
                                                             {formatDate(request.start_date)} - {formatDate(request.end_date)}
                                                         </span>
-                                                        <span>•</span>
-                                                        <span>{request.total_days} Days</span>
+                                                        <span className="text-slate-400">•</span>
+                                                        <span className="text-slate-600">{request.total_days} Days</span>
+                                                        {request.rental_fee && (
+                                                            <>
+                                                                <span className="text-slate-400">•</span>
+                                                                <span className="font-bold text-green-600">
+                                                                    {formatCurrency(calculateOwnerRevenue(request.rental_fee))} revenue
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
