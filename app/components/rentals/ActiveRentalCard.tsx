@@ -11,7 +11,7 @@ interface ActiveRentalCardProps {
     rentalId: string;
     listingId: string;
     listingTitle: string;
-    listingImageUrl?: string;
+    listingImageUrl?: string | null;
     ownerName: string;
     ownerId: string;
     endDate: string;

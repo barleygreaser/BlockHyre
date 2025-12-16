@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
@@ -9,6 +8,7 @@ import { ActiveRentalCard } from "@/app/components/rentals/ActiveRentalCard";
 import { UpcomingBookingCard } from "@/app/components/rentals/UpcomingBookingCard";
 import { RentalHistoryItem } from "@/app/components/rentals/RentalHistoryItem";
 import { AlertCircle, Calendar, Clock, Package } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface ActiveRental {
     rental_id: string;
@@ -52,8 +52,6 @@ export default function MyRentalsPage() {
     const [upcomingBookings, setUpcomingBookings] = useState<UpcomingBooking[]>([]);
     const [rentalHistory, setRentalHistory] = useState<RentalHistory[]>([]);
     const [loading, setLoading] = useState(true);
-
-    const supabase = createClientComponentClient();
 
     useEffect(() => {
         async function fetchRentalData() {
@@ -137,17 +135,47 @@ export default function MyRentalsPage() {
                                     <div className="space-y-4">
                                         {/* Overdue - Highest Priority */}
                                         {overdueRentals.map((rental) => (
-                                            <ActiveRentalCard key={rental.rental_id} {...rental} />
+                                            <ActiveRentalCard
+                                                key={rental.rental_id}
+                                                rentalId={rental.rental_id}
+                                                listingId={rental.listing_id}
+                                                listingTitle={rental.listing_title}
+                                                listingImageUrl={rental.listing_image_url ?? undefined}
+                                                ownerName={rental.owner_name}
+                                                ownerId={rental.owner_id}
+                                                endDate={rental.end_date}
+                                                dashboardStatus={rental.dashboard_status}
+                                            />
                                         ))}
 
                                         {/* Due Today - Medium Priority */}
                                         {dueTodayRentals.map((rental) => (
-                                            <ActiveRentalCard key={rental.rental_id} {...rental} />
+                                            <ActiveRentalCard
+                                                key={rental.rental_id}
+                                                rentalId={rental.rental_id}
+                                                listingId={rental.listing_id}
+                                                listingTitle={rental.listing_title}
+                                                listingImageUrl={rental.listing_image_url ?? undefined}
+                                                ownerName={rental.owner_name}
+                                                ownerId={rental.owner_id}
+                                                endDate={rental.end_date}
+                                                dashboardStatus={rental.dashboard_status}
+                                            />
                                         ))}
 
                                         {/* Active - Normal Priority */}
                                         {activeOnlyRentals.map((rental) => (
-                                            <ActiveRentalCard key={rental.rental_id} {...rental} />
+                                            <ActiveRentalCard
+                                                key={rental.rental_id}
+                                                rentalId={rental.rental_id}
+                                                listingId={rental.listing_id}
+                                                listingTitle={rental.listing_title}
+                                                listingImageUrl={rental.listing_image_url ?? undefined}
+                                                ownerName={rental.owner_name}
+                                                ownerId={rental.owner_id}
+                                                endDate={rental.end_date}
+                                                dashboardStatus={rental.dashboard_status}
+                                            />
                                         ))}
                                     </div>
                                 )}
@@ -162,7 +190,17 @@ export default function MyRentalsPage() {
                                     </h2>
                                     <div className="space-y-3">
                                         {upcomingBookings.map((booking) => (
-                                            <UpcomingBookingCard key={booking.rental_id} {...booking} />
+                                            <UpcomingBookingCard
+                                                key={booking.rental_id}
+                                                rentalId={booking.rental_id}
+                                                listingId={booking.listing_id}
+                                                listingTitle={booking.listing_title}
+                                                listingImageUrl={booking.listing_image_url}
+                                                startDate={booking.start_date}
+                                                endDate={booking.end_date}
+                                                totalDays={booking.total_days}
+                                                daysUntilStart={booking.days_until_start}
+                                            />
                                         ))}
                                     </div>
                                 </div>
@@ -204,7 +242,15 @@ export default function MyRentalsPage() {
                                     <CardContent className="p-0">
                                         <div className="px-6 pb-6">
                                             {rentalHistory.map((rental) => (
-                                                <RentalHistoryItem key={rental.rental_id} {...rental} />
+                                                <RentalHistoryItem
+                                                    key={rental.rental_id}
+                                                    rentalId={rental.rental_id}
+                                                    listingId={rental.listing_id}
+                                                    listingTitle={rental.listing_title}
+                                                    listingImageUrl={rental.listing_image_url}
+                                                    endDate={rental.end_date}
+                                                    hasReview={rental.has_review}
+                                                />
                                             ))}
                                         </div>
                                     </CardContent>

@@ -2,12 +2,12 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { Star, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 function ReviewFormContent() {
     const router = useRouter();
@@ -20,8 +20,6 @@ function ReviewFormContent() {
     const [submitting, setSubmitting] = useState(false);
     const [rentalInfo, setRentalInfo] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-
-    const supabase = createClientComponentClient();
 
     useEffect(() => {
         async function fetchRentalInfo() {
@@ -163,8 +161,8 @@ function ReviewFormContent() {
                                         >
                                             <Star
                                                 className={`h-10 w-10 ${star <= (hoverRating || rating)
-                                                        ? 'fill-yellow-400 text-yellow-400'
-                                                        : 'text-slate-300'
+                                                    ? 'fill-yellow-400 text-yellow-400'
+                                                    : 'text-slate-300'
                                                     }`}
                                             />
                                         </button>

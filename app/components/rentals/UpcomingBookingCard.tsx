@@ -10,7 +10,7 @@ interface UpcomingBookingCardProps {
     rentalId: string;
     listingId: string;
     listingTitle: string;
-    listingImageUrl?: string;
+    listingImageUrl?: string | null;
     startDate: string;
     endDate: string;
     totalDays: number;

@@ -9,7 +9,7 @@ interface RentalHistoryItemProps {
     rentalId: string;
     listingId: string;
     listingTitle: string;
-    listingImageUrl?: string;
+    listingImageUrl?: string | null;
     endDate: string;
     hasReview: boolean;
 }
