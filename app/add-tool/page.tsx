@@ -8,13 +8,15 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2, Hammer } from "lucide-react";
+import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2, Hammer, Info, Sparkles, HelpCircle } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { supabase } from "@/lib/supabase";
 import { Switch } from "@/app/components/ui/switch";
 import { ImageUpload } from "@/app/components/ui/image-upload";
 import { TypeaheadInput } from "@/app/components/ui/typeahead-input";
+import { useDebounce } from "@/app/hooks/use-debounce";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
 import {
     Dialog,
     DialogContent,
@@ -37,7 +39,19 @@ import {
 
 export default function AddToolPage() {
     const router = useRouter();
-    const { categories, fetchCategories } = useMarketplace();
+    const {
+        categories,
+        fetchCategories,
+        // NEW: Hybrid System Exports
+        overriddenTier,
+        setOverriddenTier,
+        selectedCategory,
+        setSelectedCategory,
+        financials,
+        isAutoCategorized,
+        setIsAutoCategorized,
+        setAutoCategorizationTitle
+    } = useMarketplace();
 
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -60,6 +74,9 @@ export default function AddToolPage() {
         }
     });
 
+    // NEW: Track title for debounce
+    const debouncedTitle = useDebounce(formData.title, 500);
+
     const [isAffirmationOpen, setIsAffirmationOpen] = useState(false);
     const [isAffirmed, setIsAffirmed] = useState(false);
     const [isTosAccepted, setIsTosAccepted] = useState(false);
@@ -68,17 +85,27 @@ export default function AddToolPage() {
         fetchCategories();
     }, []);
 
-    const selectedCategory = categories.find(c => c.id === formData.categoryId);
+    // NEW: Auto-suggest category when title changes (triggers hook's useEffect)
+    useEffect(() => {
+        setAutoCategorizationTitle(debouncedTitle);
+    }, [debouncedTitle, setAutoCategorizationTitle]);
+
+    // NEW: Sync selectedCategory from hook to formData
+    useEffect(() => {
+        if (selectedCategory && selectedCategory.id !== formData.categoryId) {
+            setFormData(prev => ({ ...prev, categoryId: selectedCategory.id }));
+        }
+    }, [selectedCategory]);
 
     // Sort categories alphabetically
     const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
 
-    // Auto-calculate Risk/Deposit based on Category risk_tier
-    const riskTier = (selectedCategory as any)?.risk_tier || 1;
-    const deductibleAmount = (selectedCategory as any)?.deductible_amount || 0;
-    const deposit = riskTier === 3 ? deductibleAmount : 0; // Only Tier 3 requires deposit
-    const isHighRisk = riskTier === 3;
-    const requiresManual = riskTier === 3;
+    // Auto-calculate Risk/Deposit based on Hybrid Tier (override > default)
+    const currentTier = financials.currentTier;
+    const deposit = financials.deductible;
+    const riskTier = currentTier;
+    const isHighRisk = currentTier === 3;
+    const requiresManual = currentTier === 3;
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => {
@@ -158,6 +185,31 @@ export default function AddToolPage() {
 
             // if (!user) throw new Error("You must be logged in to list a tool.");
 
+            // Fetch user's neighborhood to get latitude/longitude
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select(`
+                    neighborhood_id,
+                    neighborhoods:neighborhood_id (
+                        latitude,
+                        longitude
+                    )
+                `)
+                .eq('id', user?.id)
+                .single();
+
+            if (userError) {
+                console.error('Error fetching user neighborhood:', userError);
+                throw new Error("Could not fetch your location. Please try again.");
+            }
+
+            const latitude = userData?.neighborhoods?.latitude;
+            const longitude = userData?.neighborhoods?.longitude;
+
+            if (!latitude || !longitude) {
+                throw new Error("Your account doesn't have a valid neighborhood location. Please update your profile.");
+            }
+
             const newId = generateUUID();
 
             const { error } = await supabase
@@ -176,7 +228,12 @@ export default function AddToolPage() {
                     is_high_powered: isHighRisk,
                     accepts_barter: formData.acceptsBarter,
                     booking_type: formData.bookingType,
-                    owner_id: user?.id
+                    // NEW: Save the overridden tier (null if not overridden)
+                    overridden_risk_tier: overriddenTier,
+                    owner_id: user?.id,
+                    // Automatically populate from user's neighborhood
+                    latitude: latitude,
+                    longitude: longitude
                 });
 
             if (error) throw error;
@@ -273,9 +330,28 @@ export default function AddToolPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-slate-900">Category</label>
+
+                                            {/* NEW: Auto-Categorization Badge */}
+                                            {isAutoCategorized && selectedCategory && (
+                                                <div className="bg-emerald-50 border border-emerald-200 p-2 rounded-md flex items-center gap-2 text-xs text-emerald-800 mb-2">
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    <span>
+                                                        Auto-selected <strong>{selectedCategory.name}</strong> based on your title
+                                                    </span>
+                                                </div>
+                                            )}
+
                                             <Select
                                                 value={formData.categoryId}
-                                                onValueChange={(val) => handleInputChange("categoryId", val)}
+                                                onValueChange={(val) => {
+                                                    handleInputChange("categoryId", val);
+                                                    const cat = categories.find(c => c.id === val);
+                                                    if (cat) {
+                                                        setSelectedCategory(cat);
+                                                        setIsAutoCategorized(false); // Manual override
+                                                        setOverriddenTier(null); // Reset tier override
+                                                    }
+                                                }}
                                             >
                                                 <SelectTrigger className="bg-white focus:ring-safety-orange/50">
                                                     <SelectValue placeholder="Select a category..." />
@@ -300,31 +376,110 @@ export default function AddToolPage() {
                                     </div>
                                 </div>
 
-                                {/* Auto-Calculated Risk Info */}
+                                {/* Auto-Calculated Risk Info WITH TIER TOGGLE */}
                                 {selectedCategory && (
-                                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-4">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm font-bold text-slate-900">Risk Level</span>
+                                            <span className="text-sm font-bold text-slate-900">Asset Protection Level</span>
                                             <span className={cn(
                                                 "px-2 py-1 rounded text-xs font-bold",
-                                                riskTier === 3 ? "bg-red-100 text-red-800" : riskTier === 2 ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"
+                                                currentTier === 3 ? "bg-red-100 text-red-800" : currentTier === 2 ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"
                                             )}>
-                                                {riskTier === 3 ? "Tier 3 (High)" : riskTier === 2 ? "Tier 2 (Mid)" : "Tier 1 (Low)"}
+                                                Tier {currentTier} Active
                                             </span>
                                         </div>
-                                        {riskTier === 3 ? (
-                                            <>
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-sm text-slate-600">Required Deductible</span>
-                                                    <span className="font-bold text-slate-900">${deposit.toFixed(2)}</span>
+
+                                        {/* Info Banner: Free Upgrade Benefit */}
+                                        {selectedCategory && (selectedCategory.risk_tier || 1) < 3 && (
+                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-3">
+                                                <Shield className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                                                <div className="text-sm">
+                                                    <p className="font-semibold text-blue-900">High-value tool? Upgrade protection for free!</p>
+                                                    <p className="text-blue-700 text-xs mt-1">
+                                                        Higher tiers cost you <strong className="text-blue-900">$0</strong> — renters pay the Peace Fund fee difference.
+                                                    </p>
                                                 </div>
-                                                <p className="text-xs text-slate-500 mt-2">
-                                                    Tier 3 tools require a refundable deductible + Peace Fund fee (paid by renter).
-                                                </p>
-                                            </>
-                                        ) : (
-                                            <p className="text-xs text-slate-500 mt-2">
-                                                Tier {riskTier} tools only require the Peace Fund fee (paid by renter). No deposit needed.
+                                            </div>
+                                        )}
+
+                                        {/* NEW: Tier Toggle Cards */}
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {[1, 2, 3].map((tierLevel) => {
+                                                const categoryDefaultTier = selectedCategory.risk_tier || 1;
+                                                const isDisabled = tierLevel < categoryDefaultTier;
+                                                const isActive = currentTier === tierLevel;
+
+                                                return (
+                                                    <div
+                                                        key={tierLevel}
+                                                        onClick={() => !isDisabled && setOverriddenTier(tierLevel)}
+                                                        className={cn(
+                                                            "p-3 border-2 rounded-xl transition-all",
+                                                            isActive
+                                                                ? "border-safety-orange bg-orange-50 cursor-pointer"
+                                                                : isDisabled
+                                                                    ? "border-slate-200 opacity-40 cursor-not-allowed"
+                                                                    : "border-slate-200 opacity-60 cursor-pointer hover:opacity-100 hover:border-orange-200"
+                                                        )}
+                                                    >
+                                                        <div className="flex justify-between items-start">
+                                                            <span className="text-lg font-bold text-slate-900">Tier {tierLevel}</span>
+                                                            {isActive && <CheckCircle className="text-safety-orange w-4 h-4" />}
+                                                        </div>
+
+                                                        {/* Free Upgrade Badge */}
+                                                        {!isDisabled && tierLevel > categoryDefaultTier && (
+                                                            <div className="flex items-center gap-1 mt-1">
+                                                                <Sparkles className="w-3 h-3 text-emerald-600" />
+                                                                <span className="text-[9px] uppercase tracking-wider text-emerald-700 font-bold">Free Upgrade</span>
+                                                            </div>
+                                                        )}
+
+                                                        <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mt-1">
+                                                            {tierLevel === 3 ? "Pro Asset" : "Standard"}
+                                                        </p>
+                                                        <p className="text-xs mt-2 font-semibold text-slate-700">
+                                                            ${tierLevel === 3 ? "3,000" : tierLevel === 2 ? "1,000" : "300"} Coverage
+                                                        </p>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Financial Breakdown */}
+                                        <div className="border-t border-slate-200 pt-3 space-y-2">
+                                            <div className="flex justify-between items-center text-xs">
+                                                <span className="text-slate-500">Renter Deductible:</span>
+                                                <strong className="text-slate-900">${deposit}</strong>
+                                            </div>
+                                            <div className="flex justify-between items-center text-xs">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-slate-500">Peace Fund Fee</span>
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <HelpCircle className="w-3 h-3 text-slate-400 cursor-help" />
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className="max-w-xs">
+                                                                <p className="font-semibold mb-1">Paid by Renter</p>
+                                                                <p className="text-xs">The Peace Fund fee is automatically added to the renter's total at checkout. This fee protects both you and the renter. <strong>You pay $0</strong> regardless of tier.</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                    <span className="text-[10px] text-emerald-700 font-bold ml-1">(Paid by Renter)</span>
+                                                </div>
+                                                <strong className="text-slate-900">${financials.peaceFundFee.toFixed(2)}/day</strong>
+                                            </div>
+                                        </div>
+
+                                        {currentTier === 3 && (
+                                            <p className="text-xs text-slate-500">
+                                                Tier 3 tools require a refundable deductible + Peace Fund fee (paid by renter).
+                                            </p>
+                                        )}
+                                        {currentTier < 3 && (
+                                            <p className="text-xs text-slate-500">
+                                                Tier {currentTier} tools only require the Peace Fund fee (paid by renter). No deposit needed.
                                             </p>
                                         )}
                                     </div>
