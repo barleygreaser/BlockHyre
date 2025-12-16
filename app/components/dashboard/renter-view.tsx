@@ -1,40 +1,80 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Search, Calendar, Check, MessageSquare, TriangleAlert } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { formatDistanceToNow, format } from "date-fns";
+
+interface ActiveRental {
+    rental_id: string;
+    listing_id: string;
+    listing_title: string;
+    listing_image_url: string | null;
+    owner_id: string;
+    owner_name: string;
+    end_date: string;
+    dashboard_status: 'overdue' | 'due_today' | 'active';
+}
+
+interface UpcomingBooking {
+    rental_id: string;
+    listing_title: string;
+    start_date: string;
+    end_date: string;
+    total_days: number;
+}
+
+interface RentalHistory {
+    rental_id: string;
+    listing_id: string;
+    listing_title: string;
+    end_date: string;
+    has_review: boolean;
+}
 
 export function RenterDashboardView() {
     const [activeDisputes, setActiveDisputes] = useState([]);
-    const [activeRentals, setActiveRentals] = useState([
-        {
-            id: 1,
-            item: "Makita Circular Saw",
-            owner: "John D.",
-            status: "overdue",
-            badgeText: "OVERDUE",
-            dueText: "Due Yesterday",
-        },
-        {
-            id: 2,
-            item: "Hilti Hammer Drill",
-            owner: "Sarah M.",
-            status: "due-today",
-            badgeText: "Return Today",
-            dueText: "Due by 5:00 PM",
-        },
-        {
-            id: 3,
-            item: "Werner Extension Ladder",
-            owner: "Mike T.",
-            status: "due-future",
-            badgeText: "Due in 3 Days",
-            dueText: "Oct 15",
+    const [activeRentals, setActiveRentals] = useState<ActiveRental[]>([]);
+    const [upcomingBookings, setUpcomingBookings] = useState<UpcomingBooking[]>([]);
+    const [rentalHistory, setRentalHistory] = useState<RentalHistory[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchRenterData() {
+            try {
+                // Fetch active rentals
+                const { data: activeData, error: activeError } = await supabase
+                    .rpc('get_my_active_rentals');
+
+                if (activeError) throw activeError;
+                setActiveRentals(activeData || []);
+
+                // Fetch upcoming bookings
+                const { data: upcomingData, error: upcomingError } = await supabase
+                    .rpc('get_my_upcoming_bookings');
+
+                if (upcomingError) throw upcomingError;
+                setUpcomingBookings(upcomingData || []);
+
+                // Fetch rental history
+                const { data: historyData, error: historyError } = await supabase
+                    .rpc('get_my_rental_history');
+
+                if (historyError) throw historyError;
+                setRentalHistory(historyData || []);
+            } catch (error) {
+                console.error('Error fetching renter data:', error);
+            } finally {
+                setLoading(false);
+            }
         }
-    ]);
+
+        fetchRenterData();
+    }, []);
 
     const getRentalStyles = (status: string) => {
         switch (status) {
@@ -60,7 +100,7 @@ export function RenterDashboardView() {
     };
 
     const totalActive = activeRentals.length;
-    const urgentCount = activeRentals.filter(r => r.status === 'overdue' || r.status === 'due-today').length;
+    const urgentCount = activeRentals.filter(r => r.dashboard_status === 'overdue' || r.dashboard_status === 'due_today').length;
 
     return (
         <div className="space-y-8">
@@ -91,24 +131,55 @@ export function RenterDashboardView() {
                                 <span className="text-red-600 font-extrabold">{urgentCount}</span>
                             </div>
                         </div>
-                        {activeRentals.map((rental) => {
-                            const styles = getRentalStyles(rental.status);
+                        {loading ? (
+                            <Card className="border-slate-200">
+                                <CardContent className="p-12 text-center text-slate-500">
+                                    Loading...
+                                </CardContent>
+                            </Card>
+                        ) : activeRentals.length === 0 ? (
+                            <Card className="border-slate-200">
+                                <CardContent className="p-12 text-center text-slate-500">
+                                    No active rentals
+                                </CardContent>
+                            </Card>
+                        ) : activeRentals.map((rental) => {
+                            // Map dashboard_status to display format
+                            const statusMap = {
+                                'overdue': 'overdue',
+                                'due_today': 'due-today',
+                                'active': 'due-future'
+                            };
+                            const displayStatus = statusMap[rental.dashboard_status] || 'due-future';
+                            const styles = getRentalStyles(displayStatus);
+
+                            // Generate badge text and due text
+                            const badgeText = rental.dashboard_status === 'overdue' ? 'OVERDUE' :
+                                rental.dashboard_status === 'due_today' ? 'Return Today' :
+                                    `Due in ${Math.ceil((new Date(rental.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days`;
+
+                            const dueText = rental.dashboard_status === 'overdue' ? 'Due Yesterday' :
+                                rental.dashboard_status === 'due_today' ? 'Due by 5:00 PM' :
+                                    format(new Date(rental.end_date), 'MMM d');
+
                             return (
-                                <Card key={rental.id} className={`shadow-sm ${styles.card}`}>
+                                <Card key={rental.rental_id} className={`shadow-sm ${styles.card}`}>
                                     <CardContent className="p-6">
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <Badge variant="secondary" className={`${styles.badge} shadow-sm`}>{rental.badgeText}</Badge>
-                                                    <span className={`text-xs ${styles.text}`}>{rental.dueText}</span>
+                                                    <Badge variant="secondary" className={`${styles.badge} shadow-sm`}>{badgeText}</Badge>
+                                                    <span className={`text-xs ${styles.text}`}>{dueText}</span>
                                                 </div>
-                                                <h4 className="font-bold text-slate-900 text-lg">{rental.item}</h4>
-                                                <p className="text-sm text-slate-600">Owner: <span className="font-medium">{rental.owner}</span></p>
+                                                <h4 className="font-bold text-slate-900 text-lg">{rental.listing_title}</h4>
+                                                <p className="text-sm text-slate-600">Owner: <span className="font-medium">{rental.owner_name}</span></p>
                                             </div>
-                                            <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
-                                                <MessageSquare className="mr-2 h-4 w-4" />
-                                                Message {rental.owner}
-                                            </Button>
+                                            <Link href={`/messages?listing=${rental.listing_id}&owner=${rental.owner_id}`}>
+                                                <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
+                                                    <MessageSquare className="mr-2 h-4 w-4" />
+                                                    Message {rental.owner_name}
+                                                </Button>
+                                            </Link>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -119,19 +190,29 @@ export function RenterDashboardView() {
                     {/* Upcoming Bookings */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold font-serif text-slate-900">Upcoming Bookings</h2>
-                        <Card className="border-slate-200 shadow-sm">
-                            <CardContent className="p-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
-                                        <Calendar className="h-6 w-6" />
+                        {upcomingBookings.length === 0 ? (
+                            <Card className="border-slate-200 shadow-sm">
+                                <CardContent className="p-12 text-center text-slate-500">
+                                    No upcoming bookings
+                                </CardContent>
+                            </Card>
+                        ) : upcomingBookings.map((booking) => (
+                            <Card key={booking.rental_id} className="border-slate-200 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <Calendar className="h-6 w-6" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-900">{booking.listing_title}</h4>
+                                            <p className="text-sm text-slate-500">
+                                                {format(new Date(booking.start_date), 'MMM d')} - {format(new Date(booking.end_date), 'MMM d')} • {booking.total_days} days
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-bold text-slate-900">Pressure Washer</h4>
-                                        <p className="text-sm text-slate-500">Oct 20 - Oct 22 • 2 days</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
                 </div>
 
@@ -143,29 +224,32 @@ export function RenterDashboardView() {
                             <CardTitle className="text-lg font-serif">Rental History</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex justify-between items-start pb-4 border-b border-slate-100 last:border-0 last:pb-0">
-                                <div>
-                                    <p className="font-medium text-slate-900">Hammer Drill</p>
-                                    <p className="text-xs text-slate-500">Returned Oct 10</p>
-                                </div>
-                                <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold">
-                                    Leave Review
-                                </Button>
-                            </div>
-                            <div className="flex justify-between items-start pb-4 border-b border-slate-100 last:border-0 last:pb-0">
-                                <div>
-                                    <p className="font-medium text-slate-900">Ladder (20ft)</p>
-                                    <p className="text-xs text-slate-500">Returned Sept 28</p>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-xs text-green-600 font-bold mb-1">
-                                        Completed
+                            {rentalHistory.length === 0 ? (
+                                <p className="text-sm text-slate-500 text-center py-4">No rental history yet</p>
+                            ) : rentalHistory.map((rental) => (
+                                <div key={rental.rental_id} className="flex justify-between items-start pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                                    <div>
+                                        <p className="font-medium text-slate-900">{rental.listing_title}</p>
+                                        <p className="text-xs text-slate-500">Returned {format(new Date(rental.end_date), 'MMM d')}</p>
                                     </div>
-                                    <Link href="#" className="text-xs text-slate-400 hover:text-slate-600 underline decoration-slate-300 underline-offset-2">
-                                        Rent Again
-                                    </Link>
+                                    {rental.has_review ? (
+                                        <div className="text-right">
+                                            <div className="text-xs text-green-600 font-bold mb-1">
+                                                Completed
+                                            </div>
+                                            <Link href={`/listings/${rental.listing_id}`} className="text-xs text-slate-400 hover:text-slate-600 underline decoration-slate-300 underline-offset-2">
+                                                Rent Again
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <Link href={`/reviews/new?rental=${rental.rental_id}`}>
+                                            <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold">
+                                                Leave Review
+                                            </Button>
+                                        </Link>
+                                    )}
                                 </div>
-                            </div>
+                            ))}
                         </CardContent>
                     </Card>
 
