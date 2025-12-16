@@ -6,11 +6,17 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
-import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files } from "lucide-react";
+import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { StripeConnectButton } from "@/app/components/stripe-connect-button";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/app/components/ui/tooltip";
 import {
     Empty,
     EmptyContent,
@@ -355,9 +361,33 @@ export function OwnerDashboardView() {
                                                         {request.rental_fee && (
                                                             <>
                                                                 <span className="text-slate-400">•</span>
-                                                                <span className="font-bold text-green-600">
-                                                                    {formatCurrency(calculateOwnerRevenue(request.rental_fee))} revenue
-                                                                </span>
+                                                                <TooltipProvider>
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <span className="font-bold text-green-600 flex items-center gap-1 cursor-help">
+                                                                                {formatCurrency(calculateOwnerRevenue(request.rental_fee))} revenue
+                                                                                <Info className="h-3 w-3" />
+                                                                            </span>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent side="top" className="bg-slate-900 text-white p-3 max-w-xs">
+                                                                            <div className="space-y-1 text-xs">
+                                                                                <div className="flex justify-between gap-4">
+                                                                                    <span className="text-slate-300">Rental Fee:</span>
+                                                                                    <span className="font-semibold">{formatCurrency(request.rental_fee)}</span>
+                                                                                </div>
+                                                                                <div className="flex justify-between gap-4">
+                                                                                    <span className="text-slate-300">Platform Fee ({sellerFeePercent}%):</span>
+                                                                                    <span className="text-red-400">-{formatCurrency(request.rental_fee * (sellerFeePercent / 100))}</span>
+                                                                                </div>
+                                                                                <div className="border-t border-slate-700 pt-1 mt-1"></div>
+                                                                                <div className="flex justify-between gap-4">
+                                                                                    <span className="font-semibold">Your Revenue:</span>
+                                                                                    <span className="font-bold text-green-400">{formatCurrency(calculateOwnerRevenue(request.rental_fee))}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </TooltipContent>
+                                                                    </Tooltip>
+                                                                </TooltipProvider>
                                                             </>
                                                         )}
                                                     </div>
