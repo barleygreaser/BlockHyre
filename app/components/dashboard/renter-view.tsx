@@ -50,24 +50,48 @@ export function RenterDashboardView() {
                 const { data: activeData, error: activeError } = await supabase
                     .rpc('get_my_active_rentals');
 
-                if (activeError) throw activeError;
-                setActiveRentals(activeData || []);
+                if (activeError) {
+                    console.error('Active rentals RPC error:', {
+                        message: activeError.message,
+                        details: activeError.details,
+                        hint: activeError.hint,
+                        code: activeError.code
+                    });
+                } else {
+                    setActiveRentals(activeData || []);
+                }
 
                 // Fetch upcoming bookings
                 const { data: upcomingData, error: upcomingError } = await supabase
                     .rpc('get_my_upcoming_bookings');
 
-                if (upcomingError) throw upcomingError;
-                setUpcomingBookings(upcomingData || []);
+                if (upcomingError) {
+                    console.error('Upcoming bookings RPC error:', {
+                        message: upcomingError.message,
+                        details: upcomingError.details,
+                        hint: upcomingError.hint,
+                        code: upcomingError.code
+                    });
+                } else {
+                    setUpcomingBookings(upcomingData || []);
+                }
 
                 // Fetch rental history
                 const { data: historyData, error: historyError } = await supabase
                     .rpc('get_my_rental_history');
 
-                if (historyError) throw historyError;
-                setRentalHistory(historyData || []);
+                if (historyError) {
+                    console.error('Rental history RPC error:', {
+                        message: historyError.message,
+                        details: historyError.details,
+                        hint: historyError.hint,
+                        code: historyError.code
+                    });
+                } else {
+                    setRentalHistory(historyData || []);
+                }
             } catch (error) {
-                console.error('Error fetching renter data:', error);
+                console.error('Unexpected error in fetchRenterData:', error);
             } finally {
                 setLoading(false);
             }
