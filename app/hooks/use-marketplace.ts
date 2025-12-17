@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -213,7 +213,8 @@ export const useMarketplace = () => {
                 category: {
                     name: item.category_name,
                     risk_daily_fee: item.risk_daily_fee,
-                    risk_tier: item.risk_tier || 1
+                    risk_tier: item.risk_tier || 1,
+                    deductible_amount: item.deductible_amount || 0
                 },
                 booking_type: item.booking_type as 'instant' | 'request',
                 // Extra fields for UI
@@ -363,6 +364,82 @@ export const useMarketplace = () => {
         return data || [];
     };
 
+    // NEW: Hybrid System State
+    const [overriddenTier, setOverriddenTier] = useState<number | null>(null);
+    const [isAutoCategorized, setIsAutoCategorized] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<any>(null);
+
+    // NEW: Calculate financials based on hybrid tier logic
+    const financials = useMemo(() => {
+        if (!selectedCategory) return { peaceFundFee: 0, deductible: 0, currentTier: 1 };
+
+        // Hybrid Logic: Use overridden tier or fall back to category default
+        const currentTier = overriddenTier || selectedCategory.risk_tier;
+
+        // Tier-based fee mapping
+        const tierFees: Record<number, number> = { 1: 1.50, 2: 4.00, 3: 9.00 };
+        const tierDeductibles: Record<number, number> = { 1: 25, 2: 75, 3: 250 };
+
+        return {
+            peaceFundFee: tierFees[currentTier] || selectedCategory.risk_daily_fee,
+            deductible: tierDeductibles[currentTier] || selectedCategory.deductible_amount,
+            currentTier
+        };
+    }, [selectedCategory, overriddenTier]);
+
+    // NEW: State to track the debounced title for auto-categorization
+    const [autoCategorizationTitle, setAutoCategorizationTitle] = useState<string>("");
+
+    // NEW: Auto-categorization useEffect with cleanup phase
+    useEffect(() => {
+        async function checkCategory() {
+            // 1. CLEANUP: If the title is too short, reset the state
+            if (autoCategorizationTitle.length < 3) {
+                // Only clear if the current category was AUTO-selected.
+                // We don't want to clear a category the user manually picked.
+                if (isAutoCategorized) {
+                    setSelectedCategory(null);
+                    setIsAutoCategorized(false);
+                    setOverriddenTier(null);
+                }
+                return;
+            }
+
+            // 2. FETCH: Call the RPC
+            try {
+                const { data, error } = await supabase.rpc('suggest_category', {
+                    tool_title: autoCategorizationTitle
+                });
+
+                if (error) {
+                    // If RPC doesn't exist yet, silently skip (migration not applied)
+                    if (error.message?.includes('function') || error.code === '42883') {
+                        console.warn('suggest_category RPC not yet deployed. Skipping auto-categorization.');
+                        return;
+                    }
+                    console.error('Error suggesting category:', error.message || error);
+                    return;
+                }
+
+                if (data && data.length > 0) {
+                    const suggestedCat = data[0];
+                    const fullCategory = categories.find(c => c.id === suggestedCat.id);
+
+                    // Only update if it's a NEW category to prevent jitter
+                    if (fullCategory && fullCategory.id !== selectedCategory?.id) {
+                        setSelectedCategory(fullCategory);
+                        setIsAutoCategorized(true);
+                        setOverriddenTier(null);
+                    }
+                }
+            } catch (e: any) {
+                console.error('Failed to suggest category:', e?.message || e);
+            }
+        }
+
+        checkCategory();
+    }, [autoCategorizationTitle, categories, isAutoCategorized, selectedCategory]);
+
     return {
         listings,
         categories,
@@ -378,7 +455,16 @@ export const useMarketplace = () => {
         createRental,
         blockDateRange,
         deleteBlockedDate,
-        fetchBlockedDates
+        fetchBlockedDates,
+        // NEW: Hybrid System Exports
+        overriddenTier,
+        setOverriddenTier,
+        selectedCategory,
+        setSelectedCategory,
+        financials,
+        isAutoCategorized,
+        setIsAutoCategorized,
+        setAutoCategorizationTitle
     };
 };
 

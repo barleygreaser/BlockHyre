@@ -242,7 +242,7 @@ export function OwnerDashboardView() {
             {/* Stats Row */}
             {/* ... (Previous Stats Row Code) ... */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Link href="/owner/listings?status=active" className="block">
+                <Link href="/owner/active-rentals" className="block">
                     <Card className="border-slate-200 shadow-sm hover:border-blue-500/50 transition-colors cursor-pointer group">
                         <CardContent className="p-6 flex items-center justify-between">
                             <div>

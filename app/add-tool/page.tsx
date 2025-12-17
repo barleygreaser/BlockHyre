@@ -42,6 +42,7 @@ export default function AddToolPage() {
     const {
         categories,
         fetchCategories,
+        platformSettings,
         // NEW: Hybrid System Exports
         overriddenTier,
         setOverriddenTier,
@@ -183,31 +184,52 @@ export default function AddToolPage() {
         const createListingPromise = async () => {
             const { data: { user } } = await supabase.auth.getUser();
 
-            // if (!user) throw new Error("You must be logged in to list a tool.");
+            if (!user) throw new Error("You must be logged in to list a tool.");
 
             // Fetch user's neighborhood to get latitude/longitude
             const { data: userData, error: userError } = await supabase
                 .from('users')
                 .select(`
                     neighborhood_id,
-                    neighborhoods:neighborhood_id (
-                        latitude,
-                        longitude
+                    neighborhoods (
+                        center_lat,
+                        center_lon
                     )
                 `)
-                .eq('id', user?.id)
+                .eq('id', user.id)
                 .single();
 
             if (userError) {
-                console.error('Error fetching user neighborhood:', userError);
-                throw new Error("Could not fetch your location. Please try again.");
+                console.error('Error fetching user neighborhood:', {
+                    message: userError.message,
+                    details: userError.details,
+                    hint: userError.hint,
+                    code: userError.code
+                });
+                throw new Error(`Could not fetch your location: ${userError.message || 'Unknown error'}`);
             }
 
-            const latitude = userData?.neighborhoods?.latitude;
-            const longitude = userData?.neighborhoods?.longitude;
+            // Check if user record exists
+            if (!userData) {
+                throw new Error("Your user profile could not be found. Please contact support.");
+            }
+
+            // Check if user has a neighborhood assigned
+            if (!userData.neighborhood_id) {
+                throw new Error("Your account doesn't have a neighborhood assigned. Please update your profile with your location.");
+            }
+
+            // Handle neighborhoods as either array or object
+            const neighborhood = Array.isArray(userData.neighborhoods)
+                ? userData.neighborhoods[0]
+                : userData.neighborhoods;
+
+            const latitude = neighborhood?.center_lat;
+            const longitude = neighborhood?.center_lon;
 
             if (!latitude || !longitude) {
-                throw new Error("Your account doesn't have a valid neighborhood location. Please update your profile.");
+                console.error('Neighborhood data missing coordinates:', userData);
+                throw new Error("Your neighborhood doesn't have valid coordinates. Please contact support or update your profile.");
             }
 
             const newId = generateUUID();
@@ -331,16 +353,6 @@ export default function AddToolPage() {
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-slate-900">Category</label>
 
-                                            {/* NEW: Auto-Categorization Badge */}
-                                            {isAutoCategorized && selectedCategory && (
-                                                <div className="bg-emerald-50 border border-emerald-200 p-2 rounded-md flex items-center gap-2 text-xs text-emerald-800 mb-2">
-                                                    <CheckCircle className="w-4 h-4" />
-                                                    <span>
-                                                        Auto-selected <strong>{selectedCategory.name}</strong> based on your title
-                                                    </span>
-                                                </div>
-                                            )}
-
                                             <Select
                                                 value={formData.categoryId}
                                                 onValueChange={(val) => {
@@ -362,6 +374,18 @@ export default function AddToolPage() {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
+
+                                            {/* Auto-Categorization Notification - Fixed height to prevent CLS */}
+                                            <div className="min-h-[2.5rem]">
+                                                {isAutoCategorized && selectedCategory && (
+                                                    <div className="bg-emerald-50 border border-emerald-200 p-2 rounded-md flex items-center gap-2 text-xs text-emerald-800 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                        <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                                                        <span>
+                                                            Auto-selected <strong>{selectedCategory.name}</strong> based on your title
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-slate-900">Daily Price ($)</label>
@@ -372,6 +396,26 @@ export default function AddToolPage() {
                                                 onChange={(e) => handleInputChange("dailyPrice", e.target.value)}
                                                 className="focus-visible:ring-safety-orange/50"
                                             />
+
+                                            {/* Earnings Breakdown - Fixed height to prevent CLS */}
+                                            <div className="min-h-[2.5rem]">
+                                                {formData.dailyPrice && parseFloat(formData.dailyPrice) > 0 && platformSettings && (
+                                                    <div className="bg-blue-50 border border-blue-200 p-2 rounded-md space-y-1 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
+                                                        <div className="flex items-center justify-between text-slate-700">
+                                                            <span>Platform Fee ({platformSettings.seller_fee_percent}%):</span>
+                                                            <span className="font-semibold text-slate-900">
+                                                                -${((parseFloat(formData.dailyPrice) * platformSettings.seller_fee_percent) / 100).toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between text-emerald-700 font-semibold pt-1 border-t border-blue-300">
+                                                            <span>You'll Earn:</span>
+                                                            <span className="text-emerald-900">
+                                                                ${(parseFloat(formData.dailyPrice) - ((parseFloat(formData.dailyPrice) * platformSettings.seller_fee_percent) / 100)).toFixed(2)}/day
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
