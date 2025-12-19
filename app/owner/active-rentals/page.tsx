@@ -325,12 +325,10 @@ export default function ActiveRentalsPage() {
                                                         <div className="w-full md:w-auto space-y-2">
                                                             {(() => {
                                                                 const daysOverdue = Math.ceil((new Date().getTime() - new Date(rental.end_date).getTime()) / (1000 * 60 * 60 * 24));
-                                                                if (daysOverdue >= 2) {
+                                                                if (daysOverdue > 2) {
                                                                     return (
-                                                                        <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-2">
-                                                                            <span className="font-semibold">⚠️ Overdue by {daysOverdue} days</span>
-                                                                            <br />
-                                                                            Need help? <a href="mailto:support@blockhyre.com" className="underline hover:text-red-700 font-medium">Contact Support</a>
+                                                                        <div className="text-xs text-slate-500 mb-2">
+                                                                            Need help? <a href="mailto:support@blockhyre.com" className="text-slate-600 hover:text-safety-orange underline font-medium">Contact Support</a>
                                                                         </div>
                                                                     );
                                                                 }
