@@ -246,10 +246,10 @@ export default function ActiveRentalsPage() {
                                                     </div>
                                                 )}
                                                 <div className="absolute top-1 left-1 md:top-2 md:left-2">
-                                                    <Badge className={`border-none capitalize text-xs px-1.5 py-0.5 md:px-2 md:py-1 ${rental.status.toLowerCase() === 'active' ? 'bg-green-500 hover:bg-green-600' :
-                                                        rental.status.toLowerCase() === 'approved' ? 'bg-blue-500 hover:bg-blue-600' :
-                                                            rental.status.toLowerCase() === 'returned' ? 'bg-yellow-500 hover:bg-yellow-600' :
-                                                                'bg-slate-500'
+                                                    <Badge className={`border-none capitalize text-xs px-1.5 py-0.5 md:px-2 md:py-1 ${rental.status.toLowerCase() === 'active' ? 'bg-green-500/70 md:bg-green-500 hover:bg-green-600' :
+                                                        rental.status.toLowerCase() === 'approved' ? 'bg-blue-500/70 md:bg-blue-500 hover:bg-blue-600' :
+                                                            rental.status.toLowerCase() === 'returned' ? 'bg-yellow-500/70 md:bg-yellow-500 hover:bg-yellow-600' :
+                                                                'bg-slate-500/70 md:bg-slate-500'
                                                         }`}>
                                                         {rental.status}
                                                     </Badge>
@@ -302,7 +302,7 @@ export default function ActiveRentalsPage() {
                                                 </div>
 
                                                 {/* Dates and Time Info */}
-                                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+                                                <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-1 md:gap-x-3 md:gap-y-1 text-xs text-slate-600">
                                                     <div className="flex items-center gap-1">
                                                         <Calendar className="h-3.5 w-3.5 text-slate-400" />
                                                         <span>{formatDate(rental.start_date)} - {formatDate(rental.end_date)}</span>
