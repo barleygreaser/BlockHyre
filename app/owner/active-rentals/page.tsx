@@ -91,7 +91,7 @@ export default function ActiveRentalsPage() {
 
                 const listingIds = listingsData.map(l => l.id);
 
-                // 2. Get rentals for these listings (WITHOUT joins to avoid relationship issues)
+                // 2. Get rentals for these listings (INCLUDING renter_id for messaging)
                 const { data: rentalsData, error: rentalsError } = await supabase
                     .from('rentals')
                     .select('id, status, start_date, end_date, total_days, rental_fee, renter_id, listing_id')
@@ -126,14 +126,21 @@ export default function ActiveRentalsPage() {
                     .select('id, title, images, hourly_price, daily_price')
                     .in('id', rentalListingIds);
 
+                console.log("Rental Listing IDs:", rentalListingIds);
+                console.log("Fetched Listings Details:", listingsDetailsData);
+
                 // 6. Create lookup maps
                 const rentersMap = new Map(rentersData?.map(r => [r.id, r]) || []);
                 const listingsMap = new Map(listingsDetailsData?.map(l => [l.id, l]) || []);
+
+                console.log("Listings Map:", Array.from(listingsMap.entries()));
 
                 // 7. Map to flat structure for the UI
                 const mappedRentals = rentalsData.map((r: any) => {
                     const renter = rentersMap.get(r.renter_id);
                     const listing = listingsMap.get(r.listing_id);
+
+                    console.log(`Rental ${r.id}: looking for listing_id ${r.listing_id}, found:`, listing);
 
                     return {
                         id: r.id,
@@ -142,6 +149,7 @@ export default function ActiveRentalsPage() {
                         end_date: r.end_date,
                         total_days: r.total_days,
                         rental_fee: r.rental_fee,
+                        renter_id: r.renter_id,
                         renter_full_name: renter?.full_name || 'Unknown User',
                         renter_email: renter?.email || '',
                         listing_id: listing?.id || r.listing_id,
@@ -287,10 +295,10 @@ export default function ActiveRentalsPage() {
 
                                                 <div className="flex items-end justify-end">
                                                     <Button variant="outline" className="w-full md:w-auto" asChild>
-                                                        <a href={`mailto:${rental.renter_email}`}>
+                                                        <Link href={`/messages?listing=${rental.listing_id}&renter=${rental.renter_id}`}>
                                                             <MessageCircle className="mr-2 h-4 w-4" />
                                                             Contact {rental.renter_full_name?.split(' ')[0] || 'Renter'}
-                                                        </a>
+                                                        </Link>
                                                     </Button>
                                                 </div>
                                             </div>

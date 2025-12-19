@@ -254,8 +254,18 @@ export default function EditListingPage() {
                                 <h1 className="text-2xl font-bold text-slate-900 font-serif">
                                     Edit: {formData.title}
                                 </h1>
-                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                    Active
+                                <Badge
+                                    variant="outline"
+                                    className={`
+                                        ${(formData as any).status === 'active' ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                                        ${(formData as any).status === 'draft' ? 'bg-slate-100 text-slate-600 border-slate-200' : ''}
+                                        ${(formData as any).status === 'archived' ? 'bg-slate-50 text-slate-400 border-slate-200' : ''}
+                                    `}
+                                >
+                                    {(formData as any).status ?
+                                        (formData as any).status.charAt(0).toUpperCase() + (formData as any).status.slice(1)
+                                        : 'Draft'
+                                    }
                                 </Badge>
                             </div>
                         </div>

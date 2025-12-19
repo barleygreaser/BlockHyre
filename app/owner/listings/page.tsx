@@ -36,6 +36,23 @@ const SearchInput = (props: any) => (
     </div>
 );
 
+const ListingThumbnail = ({ title, src }: { title: string; src?: string }) => {
+    const [error, setError] = useState(false);
+
+    if (src && !error) {
+        return (
+            <img
+                src={src}
+                alt={title}
+                className="w-full h-full object-cover"
+                onError={() => setError(true)}
+            />
+        );
+    }
+
+    return <>{title.charAt(0)}</>;
+};
+
 interface InventoryItem {
     listing_id: string;
     tool_title: string;
@@ -44,8 +61,9 @@ interface InventoryItem {
     avg_customer_rating: number;
     current_rental_end_date: string | null;
     current_renter_name: string | null;
-    is_available: boolean;
     status: 'active' | 'draft' | 'archived';
+    is_available: boolean;
+    image_url?: string;
 }
 
 export default function ManageListingsPage() {
@@ -77,7 +95,33 @@ export default function ManageListingsPage() {
                 });
 
                 if (error) throw error;
-                if (data) setInventory(data);
+
+                if (data) {
+                    // Fetch images for the listings
+                    const listingIds = data.map((item: any) => item.listing_id);
+                    const { data: imageData } = await supabase
+                        .from('listings')
+                        .select('id, images')
+                        .in('id', listingIds);
+
+                    // Create a map of listing_id -> image_url
+                    const imageMap: Record<string, string> = {};
+                    if (imageData) {
+                        imageData.forEach((img: any) => {
+                            if (img.images && Array.isArray(img.images) && img.images.length > 0) {
+                                imageMap[img.id] = img.images[0];
+                            }
+                        });
+                    }
+
+                    // Merge images into the inventory data
+                    const inventoryWithImages = data.map((item: any) => ({
+                        ...item,
+                        image_url: imageMap[item.listing_id]
+                    }));
+
+                    setInventory(inventoryWithImages);
+                }
             } catch (error) {
                 console.error("Error fetching inventory:", error);
             } finally {
@@ -91,7 +135,7 @@ export default function ManageListingsPage() {
     // Filtering
     const filteredInventory = inventory.filter(item => {
         // Status Filter
-        if (statusFilter !== "all" && item.listing_status.toLowerCase() !== statusFilter) {
+        if (statusFilter !== "all" && item.status !== statusFilter) {
             return false;
         }
 
@@ -153,7 +197,7 @@ export default function ManageListingsPage() {
                                         <span className="ml-2 opacity-60 text-xs">
                                             {status === 'all'
                                                 ? inventory.length
-                                                : inventory.filter(i => i.listing_status.toLowerCase() === status).length
+                                                : inventory.filter(i => i.status === status).length
                                             }
                                         </span>
                                     </button>
@@ -202,8 +246,11 @@ export default function ManageListingsPage() {
                                         href={`/listings/${item.listing_id}/${item.tool_title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                                         className="flex items-center gap-4 group"
                                     >
-                                        <div className="h-12 w-12 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0 font-bold text-slate-500 group-hover:bg-slate-300 transition-colors">
-                                            {item.tool_title.charAt(0)}
+                                        <div className="h-12 w-12 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0 font-bold text-slate-500 group-hover:bg-slate-300 transition-colors overflow-hidden relative">
+                                            <ListingThumbnail
+                                                title={item.tool_title}
+                                                src={item.image_url}
+                                            />
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-slate-900 group-hover:text-safety-orange transition-colors">{item.tool_title}</h3>
@@ -217,11 +264,12 @@ export default function ManageListingsPage() {
                                     <Badge
                                         variant="outline"
                                         className={`
-                                            ${item.listing_status === 'Active' ? 'bg-green-50 text-green-700 border-green-200' : ''}
-                                            ${item.listing_status === 'Draft' ? 'bg-slate-100 text-slate-600 border-slate-200' : ''}
+                                            ${item.status === 'active' ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                                            ${item.status === 'draft' ? 'bg-slate-100 text-slate-600 border-slate-200' : ''}
+                                            ${item.status === 'archived' ? 'bg-slate-50 text-slate-400 border-slate-200 decoration-slate-400' : ''}
                                         `}
                                     >
-                                        {item.listing_status}
+                                        {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                                     </Badge>
                                 </div>
 
@@ -238,9 +286,17 @@ export default function ManageListingsPage() {
                                 <div className="hidden md:block col-span-2">
                                     {item.current_renter_name ? (
                                         <div className="text-sm">
-                                            <div className="text-safety-orange font-medium">Rented</div>
+                                            <div className="text-safety-orange font-medium flex items-center gap-1">
+                                                <div className="h-2 w-2 rounded-full bg-safety-orange" />
+                                                Rented
+                                            </div>
                                             <div className="text-xs text-slate-500">until {formatDate(item.current_rental_end_date!)}</div>
                                             <div className="text-xs text-slate-400">by {item.current_renter_name}</div>
+                                        </div>
+                                    ) : (!item.is_available || item.status !== 'active') ? (
+                                        <div className="text-sm text-slate-500 font-medium flex items-center gap-1">
+                                            <div className="h-2 w-2 rounded-full bg-slate-300" />
+                                            {item.status === 'archived' ? 'Archived' : 'Unavailable'}
                                         </div>
                                     ) : (
                                         <div className="text-sm text-green-600 font-medium flex items-center gap-1">
@@ -257,7 +313,7 @@ export default function ManageListingsPage() {
                                             id: item.listing_id,
                                             title: item.tool_title,
                                             status: item.status || 'active',
-                                            is_available: item.is_available ?? true,
+                                            is_available: (item.is_available && item.status === 'active' && !item.current_renter_name),
                                             isBooked: !!item.current_renter_name
                                         }}
                                         onUpdate={() => window.location.reload()}

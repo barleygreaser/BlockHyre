@@ -1,17 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
-
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-11-17.clover" as any, // Updated to match installed types
-});
+import { stripe } from "@/lib/stripe";
 
 // Initialize Supabase Admin (Service Role needed to update user table securely)
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+    console.warn("Supabase credentials missing. Connect will fail.");
+}
+
+function getSupabaseAdmin() {
+    if (!supabaseUrl || !supabaseServiceKey) {
+        throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL");
+    }
+    return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 export async function POST(request: Request) {
     try {
@@ -26,6 +30,7 @@ export async function POST(request: Request) {
         }
 
         const token = authHeader.replace("Bearer ", "");
+        const supabaseAdmin = getSupabaseAdmin();
         const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
         if (authError || !user) {
@@ -46,6 +51,11 @@ export async function POST(request: Request) {
             const account = await stripe.accounts.create({
                 type: "express",
                 email: user.email,
+                business_type: "individual",
+                business_profile: {
+                    url: "https://blockhyre.com", // Pre-fills the website field
+                    mcc: "7394", // Equipment Rental MCC code: skips the industry question
+                },
                 capabilities: {
                     card_payments: { requested: true },
                     transfers: { requested: true },
