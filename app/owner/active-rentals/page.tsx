@@ -208,7 +208,7 @@ export default function ActiveRentalsPage() {
                     </Link>
                     <div className="flex justify-between items-end">
                         <div>
-                            <h1 className="text-3xl font-bold font-serif text-slate-900">Active Rentals</h1>
+                            <h1 className="text-3xl font-bold font-serif text-slate-900">Tool Bookings</h1>
                             <p className="text-slate-500 mt-2">Track tools currently rented out and manage renter communications.</p>
                         </div>
                     </div>
@@ -246,7 +246,7 @@ export default function ActiveRentalsPage() {
                                                     </div>
                                                 )}
                                                 <div className="absolute top-1 left-1 md:top-2 md:left-2">
-                                                    <Badge className={`border-none capitalize text-xs px-1.5 py-0.5 md:px-2 md:py-1 ${rental.status.toLowerCase() === 'active' ? 'bg-green-500/70 md:bg-green-500 hover:bg-green-600' :
+                                                    <Badge className={`border-none capitalize text-xs px-1.5 py-0.5 md:px-2 md:py-1 ${isOverdue ? 'animate-pulse' : ''} ${rental.status.toLowerCase() === 'active' ? 'bg-green-500/70 md:bg-green-500 hover:bg-green-600' :
                                                         rental.status.toLowerCase() === 'approved' ? 'bg-blue-500/70 md:bg-blue-500 hover:bg-blue-600' :
                                                             rental.status.toLowerCase() === 'returned' ? 'bg-yellow-500/70 md:bg-yellow-500 hover:bg-yellow-600' :
                                                                 'bg-slate-500/70 md:bg-slate-500'
@@ -352,7 +352,7 @@ export default function ActiveRentalsPage() {
                                 <EmptyMedia variant="icon">
                                     <Wrench className="text-slate-300" />
                                 </EmptyMedia>
-                                <EmptyTitle>No active rentals</EmptyTitle>
+                                <EmptyTitle>No tool bookings</EmptyTitle>
                                 <EmptyDescription>
                                     You don't have any tools currently rented out.
                                 </EmptyDescription>

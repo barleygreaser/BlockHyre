@@ -262,7 +262,7 @@ export function OwnerDashboardView() {
                     <Card className="border-slate-200 shadow-sm hover:border-blue-500/50 transition-colors cursor-pointer group">
                         <CardContent className="p-6 flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">Active Rentals</p>
+                                <p className="text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">Tool Bookings</p>
                                 {kpiLoading ? (
                                     <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
                                 ) : (
