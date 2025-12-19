@@ -160,7 +160,29 @@ export default function ActiveRentalsPage() {
                     };
                 });
 
-                setActiveRentals(mappedRentals);
+                // Sort rentals: Overdue first (by most overdue), then normal rentals
+                const sortedRentals = mappedRentals.sort((a, b) => {
+                    const now = new Date();
+                    const aEndDate = new Date(a.end_date);
+                    const bEndDate = new Date(b.end_date);
+
+                    const aIsOverdue = aEndDate < now;
+                    const bIsOverdue = bEndDate < now;
+
+                    // If both are overdue, sort by most overdue (earliest end_date first)
+                    if (aIsOverdue && bIsOverdue) {
+                        return aEndDate.getTime() - bEndDate.getTime();
+                    }
+
+                    // If only one is overdue, it comes first
+                    if (aIsOverdue) return -1;
+                    if (bIsOverdue) return 1;
+
+                    // Both are not overdue, sort by start_date descending (newest first)
+                    return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
+                });
+
+                setActiveRentals(sortedRentals);
 
             } catch (error) {
                 console.error("Error fetching active rentals:", error);
