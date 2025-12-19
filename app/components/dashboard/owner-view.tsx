@@ -272,7 +272,7 @@ export function OwnerDashboardView() {
                             <div className="relative h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
                                 <Users className="h-6 w-6" />
                                 {!kpiLoading && overdueCount > 0 && (
-                                    <Badge className="absolute -top-1 -right-1 h-6 w-6 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-xs font-bold">
+                                    <Badge className="absolute -top-1 -right-1 h-6 w-6 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-xs font-bold animate-pulse">
                                         {overdueCount}
                                     </Badge>
                                 )}
