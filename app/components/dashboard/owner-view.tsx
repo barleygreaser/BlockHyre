@@ -76,7 +76,7 @@ export function OwnerDashboardView() {
                 // Fetch overdue rentals count
                 const { data: overdueData, error: overdueError } = await supabase
                     .from('rentals')
-                    .select('id, listing:listings!inner(owner_id)', { count: 'exact', head: true })
+                    .select('id, listing:listings!inner(owner_id)')
                     .eq('listings.owner_id', user.id)
                     .in('status', ['active', 'approved', 'Active', 'Approved'])
                     .lt('end_date', new Date().toISOString());
@@ -84,6 +84,7 @@ export function OwnerDashboardView() {
                 if (overdueError) {
                     console.error("Error fetching overdue count:", overdueError);
                 } else {
+                    console.log("Overdue rentals found:", overdueData?.length || 0, overdueData);
                     setOverdueCount(overdueData?.length || 0);
                 }
             } catch (error) {
