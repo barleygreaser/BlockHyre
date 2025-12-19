@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
+import { Button, buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Navbar } from "@/app/components/navbar";
@@ -294,12 +294,13 @@ export default function ActiveRentalsPage() {
                                                 </div>
 
                                                 <div className="flex items-end justify-end">
-                                                    <Button variant="outline" className="w-full md:w-auto" asChild>
-                                                        <Link href={`/messages?listing=${rental.listing_id}&renter=${rental.renter_id}`}>
-                                                            <MessageCircle className="mr-2 h-4 w-4" />
-                                                            Contact {rental.renter_full_name?.split(' ')[0] || 'Renter'}
-                                                        </Link>
-                                                    </Button>
+                                                    <Link
+                                                        href={`/messages?listing=${rental.listing_id}&renter=${rental.renter_id}`}
+                                                        className={buttonVariants({ className: "w-full md:w-auto bg-safety-orange hover:bg-safety-orange/90 text-white font-bold shadow-md" })}
+                                                    >
+                                                        <MessageCircle className="mr-2 h-4 w-4" />
+                                                        Message {rental.renter_full_name?.split(' ')[0] || 'Renter'}
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
