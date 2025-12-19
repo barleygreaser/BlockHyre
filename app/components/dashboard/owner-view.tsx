@@ -51,6 +51,7 @@ export function OwnerDashboardView() {
         toolsListed: 0
     });
     const [kpiLoading, setKpiLoading] = useState(true);
+    const [overdueCount, setOverdueCount] = useState(0);
 
     // Fetch Owner KPIs
     useEffect(() => {
@@ -70,6 +71,20 @@ export function OwnerDashboardView() {
                         earnings30d: parseFloat(data[0].earnings_30d),
                         toolsListed: parseInt(data[0].tools_listed_count)
                     });
+                }
+
+                // Fetch overdue rentals count
+                const { data: overdueData, error: overdueError } = await supabase
+                    .from('rentals')
+                    .select('id, listing:listings!inner(owner_id)', { count: 'exact', head: true })
+                    .eq('listings.owner_id', user.id)
+                    .in('status', ['active', 'approved', 'Active', 'Approved'])
+                    .lt('end_date', new Date().toISOString());
+
+                if (overdueError) {
+                    console.error("Error fetching overdue count:", overdueError);
+                } else {
+                    setOverdueCount(overdueData?.length || 0);
                 }
             } catch (error) {
                 console.error("Error fetching owner KPIs:", error);
@@ -253,8 +268,13 @@ export function OwnerDashboardView() {
                                     <h3 className="text-3xl font-bold text-slate-900">{kpis.activeRentals}</h3>
                                 )}
                             </div>
-                            <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                            <div className="relative h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
                                 <Users className="h-6 w-6" />
+                                {!kpiLoading && overdueCount > 0 && (
+                                    <Badge className="absolute -top-1 -right-1 h-6 w-6 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-xs font-bold">
+                                        {overdueCount}
+                                    </Badge>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
