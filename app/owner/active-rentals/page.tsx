@@ -178,8 +178,8 @@ export default function ActiveRentalsPage() {
                     if (aIsOverdue) return -1;
                     if (bIsOverdue) return 1;
 
-                    // Both are not overdue, sort by start_date descending (newest first)
-                    return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
+                    // Both are not overdue, sort by end_date ascending (ending soonest first)
+                    return aEndDate.getTime() - bEndDate.getTime();
                 });
 
                 setActiveRentals(sortedRentals);
@@ -221,115 +221,122 @@ export default function ActiveRentalsPage() {
                             <Card className="border-slate-200 shadow-sm"><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
                         </>
                     ) : activeRentals.length > 0 ? (
-                        activeRentals.map((rental) => (
-                            <Card key={rental.id} className="border-slate-200 shadow-sm hover:border-safety-orange/30 transition-all duration-200">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col md:flex-row gap-6">
-                                        {/* Tool Image */}
-                                        <div className="w-full md:w-48 h-32 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-100">
-                                            {rental.listing_images && rental.listing_images.length > 0 ? (
-                                                // eslint-disable-next-line @next/next/no-img-element
-                                                <img
-                                                    src={rental.listing_images[0]}
-                                                    alt={rental.listing_title}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                                    <Wrench className="h-10 w-10" />
+                        activeRentals.map((rental) => {
+                            const isOverdue = new Date(rental.end_date) < new Date();
+                            return (
+                                <Card
+                                    key={rental.id}
+                                    className={`border-slate-200 shadow-sm hover:border-safety-orange/30 transition-all duration-200 ${isOverdue ? 'border-red-400 border-2 bg-red-50/30 animate-pulse-subtle' : ''
+                                        }`}
+                                >
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col md:flex-row gap-6">
+                                            {/* Tool Image */}
+                                            <div className="w-full md:w-48 h-32 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative border border-slate-100">
+                                                {rental.listing_images && rental.listing_images.length > 0 ? (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img
+                                                        src={rental.listing_images[0]}
+                                                        alt={rental.listing_title}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                                        <Wrench className="h-10 w-10" />
+                                                    </div>
+                                                )}
+                                                <div className="absolute top-2 left-2">
+                                                    <Badge className={`border-none capitalize ${rental.status.toLowerCase() === 'active' ? 'bg-green-500 hover:bg-green-600' :
+                                                        rental.status.toLowerCase() === 'approved' ? 'bg-blue-500 hover:bg-blue-600' :
+                                                            rental.status.toLowerCase() === 'returned' ? 'bg-yellow-500 hover:bg-yellow-600' :
+                                                                'bg-slate-500'
+                                                        }`}>
+                                                        {rental.status}
+                                                    </Badge>
                                                 </div>
-                                            )}
-                                            <div className="absolute top-2 left-2">
-                                                <Badge className={`border-none capitalize ${rental.status.toLowerCase() === 'active' ? 'bg-green-500 hover:bg-green-600' :
-                                                    rental.status.toLowerCase() === 'approved' ? 'bg-blue-500 hover:bg-blue-600' :
-                                                        rental.status.toLowerCase() === 'returned' ? 'bg-yellow-500 hover:bg-yellow-600' :
-                                                            'bg-slate-500'
-                                                    }`}>
-                                                    {rental.status}
-                                                </Badge>
                                             </div>
-                                        </div>
 
-                                        {/* Content */}
-                                        <div className="flex-1 flex flex-col justify-between">
-                                            <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                                                <div>
-                                                    <h3 className="font-bold text-lg text-slate-900 mb-1">{rental.listing_title}</h3>
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 overflow-hidden">
-                                                            {rental.renter_full_name ? rental.renter_full_name.charAt(0) : 'R'}
+                                            {/* Content */}
+                                            <div className="flex-1 flex flex-col justify-between">
+                                                <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                                                    <div>
+                                                        <h3 className="font-bold text-lg text-slate-900 mb-1">{rental.listing_title}</h3>
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 overflow-hidden">
+                                                                {rental.renter_full_name ? rental.renter_full_name.charAt(0) : 'R'}
+                                                            </div>
+                                                            <span className="text-sm text-slate-600">
+                                                                Rented by <span className="font-medium text-slate-900">{rental.renter_full_name || 'Unknown User'}</span>
+                                                            </span>
                                                         </div>
-                                                        <span className="text-sm text-slate-600">
-                                                            Rented by <span className="font-medium text-slate-900">{rental.renter_full_name || 'Unknown User'}</span>
-                                                        </span>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-end text-right">
+                                                        <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <span className="font-bold text-green-600 text-lg flex items-center gap-1 cursor-help">
+                                                                        {formatCurrency(calculateOwnerRevenue(rental.rental_fee))}
+                                                                        <Info className="h-3 w-3 opacity-50" />
+                                                                    </span>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="left" className="bg-slate-900 text-white p-3 max-w-xs">
+                                                                    <div className="space-y-1 text-xs">
+                                                                        <div className="flex justify-between gap-4">
+                                                                            <span className="text-slate-300">Rental Fee:</span>
+                                                                            <span className="font-semibold">{formatCurrency(rental.rental_fee)}</span>
+                                                                        </div>
+                                                                        <div className="flex justify-between gap-4">
+                                                                            <span className="text-slate-300">Platform Fee ({sellerFeePercent}%):</span>
+                                                                            <span className="text-red-400">-{formatCurrency(rental.rental_fee * (sellerFeePercent / 100))}</span>
+                                                                        </div>
+                                                                        <div className="border-t border-slate-700 pt-1 mt-1"></div>
+                                                                        <div className="flex justify-between gap-4">
+                                                                            <span className="font-semibold">Your Revenue:</span>
+                                                                            <span className="font-bold text-green-400">{formatCurrency(calculateOwnerRevenue(rental.rental_fee))}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                        <span className="text-xs text-slate-400">Estimated Earnings</span>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex flex-col items-end text-right">
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <span className="font-bold text-green-600 text-lg flex items-center gap-1 cursor-help">
-                                                                    {formatCurrency(calculateOwnerRevenue(rental.rental_fee))}
-                                                                    <Info className="h-3 w-3 opacity-50" />
-                                                                </span>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent side="left" className="bg-slate-900 text-white p-3 max-w-xs">
-                                                                <div className="space-y-1 text-xs">
-                                                                    <div className="flex justify-between gap-4">
-                                                                        <span className="text-slate-300">Rental Fee:</span>
-                                                                        <span className="font-semibold">{formatCurrency(rental.rental_fee)}</span>
-                                                                    </div>
-                                                                    <div className="flex justify-between gap-4">
-                                                                        <span className="text-slate-300">Platform Fee ({sellerFeePercent}%):</span>
-                                                                        <span className="text-red-400">-{formatCurrency(rental.rental_fee * (sellerFeePercent / 100))}</span>
-                                                                    </div>
-                                                                    <div className="border-t border-slate-700 pt-1 mt-1"></div>
-                                                                    <div className="flex justify-between gap-4">
-                                                                        <span className="font-semibold">Your Revenue:</span>
-                                                                        <span className="font-bold text-green-400">{formatCurrency(calculateOwnerRevenue(rental.rental_fee))}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                    <span className="text-xs text-slate-400">Estimated Earnings</span>
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 md:mt-2">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                                                        <Calendar className="h-4 w-4 text-slate-400" />
-                                                        <span>{formatDate(rental.start_date)} - {formatDate(rental.end_date)}</span>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 md:mt-2">
+                                                    <div className="space-y-1">
+                                                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                                                            <Calendar className="h-4 w-4 text-slate-400" />
+                                                            <span>{formatDate(rental.start_date)} - {formatDate(rental.end_date)}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                                                            <Clock className="h-4 w-4 text-slate-400" />
+                                                            {(() => {
+                                                                const daysRemaining = Math.ceil((new Date(rental.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                                                                if (daysRemaining < 0) {
+                                                                    return <span className="text-red-600 font-bold">Overdue by {Math.abs(daysRemaining)} Day{Math.abs(daysRemaining) !== 1 ? 's' : ''}</span>;
+                                                                }
+                                                                return <span>{daysRemaining} Day{daysRemaining !== 1 ? 's' : ''} Remaining</span>;
+                                                            })()}
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                                                        <Clock className="h-4 w-4 text-slate-400" />
-                                                        {(() => {
-                                                            const daysRemaining = Math.ceil((new Date(rental.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                                                            if (daysRemaining < 0) {
-                                                                return <span className="text-red-600 font-bold">Overdue by {Math.abs(daysRemaining)} Day{Math.abs(daysRemaining) !== 1 ? 's' : ''}</span>;
-                                                            }
-                                                            return <span>{daysRemaining} Day{daysRemaining !== 1 ? 's' : ''} Remaining</span>;
-                                                        })()}
-                                                    </div>
-                                                </div>
 
-                                                <div className="flex items-end justify-end">
-                                                    <Link
-                                                        href={`/messages?listing=${rental.listing_id}&renter=${rental.renter_id}`}
-                                                        className={buttonVariants({ className: "w-full md:w-auto bg-safety-orange hover:bg-safety-orange/90 text-white font-bold shadow-md" })}
-                                                    >
-                                                        <MessageCircle className="mr-2 h-4 w-4" />
-                                                        Message {rental.renter_full_name?.split(' ')[0] || 'Renter'}
-                                                    </Link>
+                                                    <div className="flex items-end justify-end">
+                                                        <Link
+                                                            href={`/messages?listing=${rental.listing_id}&renter=${rental.renter_id}`}
+                                                            className={buttonVariants({ className: "w-full md:w-auto bg-safety-orange hover:bg-safety-orange/90 text-white font-bold shadow-md" })}
+                                                        >
+                                                            <MessageCircle className="mr-2 h-4 w-4" />
+                                                            Message {rental.renter_full_name?.split(' ')[0] || 'Renter'}
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))
+                                    </CardContent>
+                                </Card>
+                            );
+                        })
                     ) : (
                         <Empty className="bg-white border-slate-200">
                             <EmptyHeader>
