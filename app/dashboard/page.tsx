@@ -53,9 +53,10 @@ export default function DashboardPage() {
                     {!isMounted ? (
                         <div className="space-y-6">
                             {/* Tabs List Skeleton */}
-                            <div className="flex gap-2">
-                                <Skeleton className="h-10 w-48" />
-                                <Skeleton className="h-10 w-48" />
+                            <div className="bg-slate-200 p-1 w-full sm:w-auto inline-flex h-auto rounded-lg">
+                                <Skeleton className="h-10 flex-1 sm:w-64 rounded-md" />
+                                <div className="w-1"></div> {/* Gap simulation */}
+                                <Skeleton className="h-10 flex-1 sm:w-64 rounded-md opacity-50" />
                             </div>
                             {/* Content Skeleton */}
                             <div className="space-y-4">
