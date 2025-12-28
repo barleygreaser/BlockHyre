@@ -25,6 +25,7 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from "@/app/components/ui/empty";
+import { sendSystemMessage } from "@/app/lib/chat-helpers";
 
 export function OwnerDashboardView() {
     const { user } = useAuth();
@@ -181,6 +182,14 @@ export function OwnerDashboardView() {
     const handleApprove = async (rentalId: string) => {
         setProcessingId(rentalId);
         try {
+            // First, get the rental details before approving
+            const rental = rentalRequests.find(r => r.id === rentalId);
+            if (!rental) {
+                alert("Rental not found");
+                return;
+            }
+
+            // Approve the rental via RPC
             const { error } = await supabase.rpc('approve_rental_request', {
                 p_rental_id: rentalId
             });
@@ -190,8 +199,93 @@ export function OwnerDashboardView() {
                 return;
             }
 
+            // Fetch additional data needed for the confirmation message
+            const { data: rentalData, error: rentalError } = await supabase
+                .from('rentals')
+                .select(`
+                    id,
+                    listing_id,
+                    renter_id,
+                    start_date,
+                    end_date,
+                    total_paid,
+                    listing:listings!inner (
+                        title,
+                        owner_id,
+                        location_address,
+                        owner:users!owner_id (full_name)
+                    ),
+                    renter:users!renter_id (full_name, email)
+                `)
+                .eq('id', rentalId)
+                .single();
+
+            if (rentalError || !rentalData) {
+                console.error("Error fetching rental details for message:", rentalError);
+            } else {
+                // Get or create chat for this rental
+                const { data: existingChat } = await supabase
+                    .from('chats')
+                    .select('id')
+                    .eq('listing_id', rentalData.listing_id)
+                    .eq('owner_id', rentalData.listing.owner_id)
+                    .eq('renter_id', rentalData.renter_id)
+                    .single();
+
+                let chatId = existingChat?.id;
+
+                if (!chatId) {
+                    // Create chat if it doesn't exist
+                    const { data: newChat, error: chatError } = await supabase
+                        .from('chats')
+                        .insert([{
+                            listing_id: rentalData.listing_id,
+                            owner_id: rentalData.listing.owner_id,
+                            renter_id: rentalData.renter_id
+                        }])
+                        .select()
+                        .single();
+
+                    if (chatError) {
+                        console.error("Error creating chat:", chatError);
+                    } else {
+                        chatId = newChat.id;
+                    }
+                }
+
+                // Send BOOKING_CONFIRMED system messages if we have a chat
+                if (chatId) {
+                    const startDate = new Date(rentalData.start_date);
+                    const endDate = new Date(rentalData.end_date);
+
+                    const context = {
+                        tool_name: rentalData.listing.title,
+                        owner_name: rentalData.listing.owner?.full_name || 'Owner',
+                        renter_name: rentalData.renter?.full_name || 'Renter',
+                        start_date: startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        end_date: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        location_address: rentalData.listing.location_address || 'Address to be confirmed',
+                        total_paid: rentalData.total_paid?.toFixed(2) || '0.00',
+                        pickup_time: startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+                        seller_fee_percent: sellerFeePercent
+                    };
+
+                    try {
+                        await sendSystemMessage(
+                            chatId,
+                            'BOOKING_CONFIRMED',
+                            context,
+                            rentalData.listing.owner_id,
+                            rentalData.renter_id
+                        );
+                    } catch (msgError) {
+                        console.error("Error sending confirmation message:", msgError);
+                        // Don't fail the approval if message fails
+                    }
+                }
+            }
+
             // Refresh lists
-            // In a real app we might just remove the item locally to save a fetch
             setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
 
             // Optionally refresh KPIs too as active count changes
@@ -213,7 +307,7 @@ export function OwnerDashboardView() {
             // If strict RLS blocks this, we'll need an RPC.
             const { error } = await supabase
                 .from('rentals')
-                .update({ status: 'denied' })
+                .update({ status: 'rejected' })  //  Changed to 'rejected' from denied
                 .eq('id', rentalId);
 
             if (error) throw error;
@@ -272,7 +366,7 @@ export function OwnerDashboardView() {
                             <div className="relative h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
                                 <Users className="h-6 w-6" />
                                 {!kpiLoading && overdueCount > 0 && (
-                                    <Badge className="absolute -top-1 -right-1 h-6 w-6 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-xs font-bold animate-pulse">
+                                    <Badge className="absolute -top-1 -right-1 h-6 w-6 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-xs font-bold">
                                         {overdueCount}
                                     </Badge>
                                 )}

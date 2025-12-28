@@ -60,7 +60,7 @@ export async function POST(req: Request) {
                         start_date: item.start_date,
                         end_date: item.end_date,
                         total_days: item.days,
-                        status: 'confirmed', // Mark as confirmed after payment
+                        status: 'approved', // ✅ Changed to 'approved' (was 'confirmed')
                         rental_fee: listing.daily_price * item.days,
                         peace_fund_fee: riskTier * item.days,
                         total_paid: session.amount_total ? session.amount_total / 100 : 0,

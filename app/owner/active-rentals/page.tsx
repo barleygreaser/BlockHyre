@@ -27,11 +27,28 @@ import {
 
 import { Skeleton } from "@/app/components/ui/skeleton";
 
+
 export default function ActiveRentalsPage() {
     const { user } = useAuth();
     const [activeRentals, setActiveRentals] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [sellerFeePercent, setSellerFeePercent] = useState<number>(0);
+    const [activeFilter, setActiveFilter] = useState<'all' | 'upcoming' | 'active' | 'overdue' | 'completed' | 'archived'>('all');
+
+    // Read hash from URL on component mount
+    useEffect(() => {
+        const hash = window.location.hash.replace('#', '');
+        if (hash && ['all', 'upcoming', 'active', 'overdue', 'completed', 'archived'].includes(hash)) {
+            setActiveFilter(hash as any);
+        }
+    }, []);
+
+    // Function to update filter and URL hash
+    const handleFilterChange = (filter: 'all' | 'upcoming' | 'active' | 'overdue' | 'completed' | 'archived') => {
+        setActiveFilter(filter);
+        // Update URL hash without triggering a page reload
+        window.history.pushState(null, '', `#${filter}`);
+    };
 
     // Format currency
     const formatCurrency = (amount: number) => {
@@ -56,6 +73,110 @@ export default function ActiveRentalsPage() {
         return rentalFee - platformFee;
     };
 
+    // Categorize a rental based on dates and status
+    const categorizeRental = (rental: any) => {
+        const now = new Date();
+        const startDate = new Date(rental.start_date);
+        const endDate = new Date(rental.end_date);
+        const status = rental.status.toLowerCase();
+
+        // Completed/Archived
+        if (status === 'completed' || status === 'archived') {
+            return 'completed';
+        }
+
+        // Upcoming - hasn't started yet
+        if (startDate > now) {
+            return 'upcoming';
+        }
+
+        // Overdue - past end date but not completed
+        if (endDate < now && status !== 'returned' && status !== 'completed') {
+            return 'overdue';
+        }
+
+        // Active - currently ongoing
+        if (startDate <= now && endDate >= now) {
+            return 'active';
+        }
+
+        return 'active'; // default
+    };
+
+    // Filter rentals based on active filter
+    const filteredRentals = activeRentals.filter(rental => {
+        if (activeFilter === 'all') return true;
+        const category = categorizeRental(rental);
+        if (activeFilter === 'archived') {
+            return category === 'completed';
+        }
+        return category === activeFilter;
+    });
+
+    // Get counts for each category
+    const getCounts = () => {
+        const counts = {
+            all: activeRentals.length,
+            upcoming: 0,
+            active: 0,
+            overdue: 0,
+            completed: 0,
+        };
+
+        activeRentals.forEach(rental => {
+            const category = categorizeRental(rental);
+            if (category === 'upcoming') counts.upcoming++;
+            else if (category === 'active') counts.active++;
+            else if (category === 'overdue') counts.overdue++;
+            else if (category === 'completed') counts.completed++;
+        });
+
+        return counts;
+    };
+
+    const counts = getCounts();
+
+    // Get empty state message based on filter
+    const getEmptyStateInfo = () => {
+        if (activeRentals.length === 0) {
+            return {
+                title: "No rentals yet",
+                description: "You don't have any rental history."
+            };
+        }
+
+        switch (activeFilter) {
+            case 'upcoming':
+                return {
+                    title: "No upcoming rentals",
+                    description: "You don't have any booked rentals starting soon."
+                };
+            case 'active':
+                return {
+                    title: "No active rentals",
+                    description: "You don't have any tools currently being rented."
+                };
+            case 'overdue':
+                return {
+                    title: "No overdue rentals",
+                    description: "Great news! None of your rentals are overdue."
+                };
+            case 'completed':
+            case 'archived':
+                return {
+                    title: "No completed rentals",
+                    description: "You haven't had any completed rentals yet."
+                };
+            default:
+                return {
+                    title: "No rentals found",
+                    description: "No rentals match your current filter."
+                };
+        }
+    };
+
+    const emptyStateInfo = getEmptyStateInfo();
+
     useEffect(() => {
         if (!user) return;
 
@@ -71,36 +192,12 @@ export default function ActiveRentalsPage() {
                     setSellerFeePercent(settingsData.seller_fee_percent || 0);
                 }
 
-                // Fetch Active Rentals
-                // 1. Get all listings owned by user to ensure RLS compliance
-                const { data: listingsData, error: listingsError } = await supabase
-                    .from('listings')
-                    .select('id')
-                    .eq('owner_id', user.id);
-
-                if (listingsError) {
-                    console.error("Error fetching owner listings:", listingsError);
-                    throw listingsError;
-                }
-
-                if (!listingsData || listingsData.length === 0) {
-                    setActiveRentals([]);
-                    setLoading(false);
-                    return;
-                }
-
-                const listingIds = listingsData.map(l => l.id);
-
-                // 2. Get rentals for these listings (INCLUDING renter_id for messaging)
+                // Use the RPC function that already handles all the joins correctly
                 const { data: rentalsData, error: rentalsError } = await supabase
-                    .from('rentals')
-                    .select('id, status, start_date, end_date, total_days, rental_fee, renter_id, listing_id')
-                    .in('listing_id', listingIds)
-                    .in('status', ['active', 'approved', 'returned', 'Active', 'Approved', 'Returned'])
-                    .order('start_date', { ascending: false });
+                    .rpc('get_owner_active_rentals', { p_owner_id: user.id });
 
                 if (rentalsError) {
-                    console.error("Error fetching rentals:", JSON.stringify(rentalsError));
+                    console.error("Error fetching rentals:", rentalsError);
                     throw rentalsError;
                 }
 
@@ -110,58 +207,8 @@ export default function ActiveRentalsPage() {
                     return;
                 }
 
-                // 3. Get unique renter IDs and listing IDs
-                const renterIds = [...new Set(rentalsData.map(r => r.renter_id))];
-                const rentalListingIds = [...new Set(rentalsData.map(r => r.listing_id))];
-
-                // 4. Fetch renter details
-                const { data: rentersData } = await supabase
-                    .from('users')
-                    .select('id, full_name, email')
-                    .in('id', renterIds);
-
-                // 5. Fetch listing details
-                const { data: listingsDetailsData } = await supabase
-                    .from('listings')
-                    .select('id, title, images, hourly_price, daily_price')
-                    .in('id', rentalListingIds);
-
-                console.log("Rental Listing IDs:", rentalListingIds);
-                console.log("Fetched Listings Details:", listingsDetailsData);
-
-                // 6. Create lookup maps
-                const rentersMap = new Map(rentersData?.map(r => [r.id, r]) || []);
-                const listingsMap = new Map(listingsDetailsData?.map(l => [l.id, l]) || []);
-
-                console.log("Listings Map:", Array.from(listingsMap.entries()));
-
-                // 7. Map to flat structure for the UI
-                const mappedRentals = rentalsData.map((r: any) => {
-                    const renter = rentersMap.get(r.renter_id);
-                    const listing = listingsMap.get(r.listing_id);
-
-                    console.log(`Rental ${r.id}: looking for listing_id ${r.listing_id}, found:`, listing);
-
-                    return {
-                        id: r.id,
-                        status: r.status,
-                        start_date: r.start_date,
-                        end_date: r.end_date,
-                        total_days: r.total_days,
-                        rental_fee: r.rental_fee,
-                        renter_id: r.renter_id,
-                        renter_full_name: renter?.full_name || 'Unknown User',
-                        renter_email: renter?.email || '',
-                        listing_id: listing?.id || r.listing_id,
-                        listing_title: listing?.title || 'Unknown Tool',
-                        listing_images: listing?.images || [],
-                        listing_daily_price: listing?.daily_price || 0,
-                        listing_hourly_price: listing?.hourly_price || 0
-                    };
-                });
-
                 // Sort rentals: Overdue first (by most overdue), then normal rentals
-                const sortedRentals = mappedRentals.sort((a, b) => {
+                const sortedRentals = rentalsData.sort((a: any, b: any) => {
                     const now = new Date();
                     const aEndDate = new Date(a.end_date);
                     const bEndDate = new Date(b.end_date);
@@ -186,7 +233,6 @@ export default function ActiveRentalsPage() {
 
             } catch (error) {
                 console.error("Error fetching active rentals:", error);
-                console.error("Error details:", JSON.stringify(error));
                 // toast.error("Failed to load rentals");
             } finally {
                 setLoading(false);
@@ -214,19 +260,92 @@ export default function ActiveRentalsPage() {
                     </div>
                 </div>
 
+                {/* Filter Pills */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                    <button
+                        onClick={() => handleFilterChange('all')}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === 'all'
+                            ? 'bg-safety-orange text-white shadow-md'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            }`}
+                    >
+                        All
+                        <span className="ml-2 px-2 py-0.5 rounded-full bg-white/20 text-xs">
+                            {counts.all}
+                        </span>
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange('upcoming')}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === 'upcoming'
+                            ? 'bg-blue-500 text-white shadow-md'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            }`}
+                    >
+                        Upcoming
+                        <span className="ml-2 px-2 py-0.5 rounded-full bg-white/20 text-xs">
+                            {counts.upcoming}
+                        </span>
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange('active')}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === 'active'
+                            ? 'bg-green-500 text-white shadow-md'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            }`}
+                    >
+                        Active
+                        <span className="ml-2 px-2 py-0.5 rounded-full bg-white/20 text-xs">
+                            {counts.active}
+                        </span>
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange('overdue')}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === 'overdue'
+                            ? 'bg-red-500 text-white shadow-md'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            }`}
+                    >
+                        Overdue
+                        <span className="ml-2 px-2 py-0.5 rounded-full bg-white/20 text-xs">
+                            {counts.overdue}
+                        </span>
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange('archived')}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === 'archived'
+                            ? 'bg-slate-600 text-white shadow-md'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            }`}
+                    >
+                        Completed
+                        <span className="ml-2 px-2 py-0.5 rounded-full bg-white/20 text-xs">
+                            {counts.completed}
+                        </span>
+                    </button>
+                </div>
+
                 <div className="space-y-4">
                     {loading ? (
                         <>
                             <Card className="border-slate-200 shadow-sm"><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
                             <Card className="border-slate-200 shadow-sm"><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
                         </>
-                    ) : activeRentals.length > 0 ? (
-                        activeRentals.map((rental) => {
-                            const isOverdue = new Date(rental.end_date) < new Date();
+                    ) : filteredRentals.length > 0 ? (
+                        filteredRentals.map((rental) => {
+                            const now = new Date();
+                            const endDate = new Date(rental.end_date);
+                            const daysRemaining = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                            const isOverdue = daysRemaining < 0;
+                            const isDueToday = daysRemaining === 0;
+
                             return (
                                 <Card
                                     key={rental.id}
-                                    className={`border-slate-200 shadow-sm hover:border-safety-orange/30 transition-all duration-200 ${isOverdue ? 'border-red-400 border-2 bg-red-50/30 animate-pulse-subtle' : ''
+                                    className={`border-slate-200 shadow-sm hover:border-safety-orange/30 transition-all duration-200 ${isOverdue
+                                        ? 'border-red-400 border-2 bg-red-50/30 animate-pulse-subtle'
+                                        : isDueToday
+                                            ? 'border-orange-300 border-2 bg-yellow-50/20'
+                                            : ''
                                         }`}
                                 >
                                     <CardContent className="p-4">
@@ -314,6 +433,9 @@ export default function ActiveRentalsPage() {
                                                             if (daysRemaining < 0) {
                                                                 return <span className="text-red-600 font-bold">Overdue by {Math.abs(daysRemaining)} Day{Math.abs(daysRemaining) !== 1 ? 's' : ''}</span>;
                                                             }
+                                                            if (daysRemaining === 0) {
+                                                                return <span className="text-orange-600 font-semibold">Due Today</span>;
+                                                            }
                                                             return <span>{daysRemaining} Day{daysRemaining !== 1 ? 's' : ''} Remaining</span>;
                                                         })()}
                                                     </div>
@@ -352,9 +474,9 @@ export default function ActiveRentalsPage() {
                                 <EmptyMedia variant="icon">
                                     <Wrench className="text-slate-300" />
                                 </EmptyMedia>
-                                <EmptyTitle>No active rentals</EmptyTitle>
+                                <EmptyTitle>{emptyStateInfo.title}</EmptyTitle>
                                 <EmptyDescription>
-                                    You don't have any tools currently rented out.
+                                    {emptyStateInfo.description}
                                 </EmptyDescription>
                             </EmptyHeader>
                             <EmptyContent>
