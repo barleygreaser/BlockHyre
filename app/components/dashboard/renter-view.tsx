@@ -5,9 +5,12 @@ import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { Search, Calendar, Check, MessageSquare, TriangleAlert } from "lucide-react";
+import { Search, Calendar, Check, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatDistanceToNow, format } from "date-fns";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
+import { RescheduleModal } from "@/app/components/reschedule-modal";
+import Image from "next/image";
 
 interface ActiveRental {
     rental_id: string;
@@ -22,7 +25,9 @@ interface ActiveRental {
 
 interface UpcomingBooking {
     rental_id: string;
+    listing_id: string;
     listing_title: string;
+    listing_image_url: string | null;
     start_date: string;
     end_date: string;
     total_days: number;
@@ -44,6 +49,8 @@ export function RenterDashboardView() {
     const [upcomingBookings, setUpcomingBookings] = useState<UpcomingBooking[]>([]);
     const [rentalHistory, setRentalHistory] = useState<RentalHistory[]>([]);
     const [loading, setLoading] = useState(true);
+    const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<UpcomingBooking | null>(null);
 
     useEffect(() => {
         async function fetchRenterData() {
@@ -229,16 +236,70 @@ export function RenterDashboardView() {
                         ) : upcomingBookings.map((booking) => (
                             <Card key={booking.rental_id} className="border-slate-200 shadow-sm">
                                 <CardContent className="p-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
-                                            <Calendar className="h-6 w-6" />
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className="relative h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                                {booking.listing_image_url ? (
+                                                    <Image
+                                                        src={booking.listing_image_url}
+                                                        alt={booking.listing_title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                                        <Calendar className="h-6 w-6" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">{booking.listing_title}</h4>
+                                                <p className="text-sm text-slate-500">
+                                                    {format(new Date(booking.start_date), 'MMM d')} - {format(new Date(booking.end_date), 'MMM d')} • {booking.total_days} days
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900">{booking.listing_title}</h4>
-                                            <p className="text-sm text-slate-500">
-                                                {format(new Date(booking.start_date), 'MMM d')} - {format(new Date(booking.end_date), 'MMM d')} • {booking.total_days} days
-                                            </p>
-                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <MoreVertical className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem
+                                                    onClick={() => {
+                                                        setSelectedBooking(booking);
+                                                        setRescheduleModalOpen(true);
+                                                    }}
+                                                >
+                                                    <CalendarClock className="mr-2 h-4 w-4" />
+                                                    Change Dates
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="text-red-600 focus:text-red-600"
+                                                    onClick={async () => {
+                                                        if (confirm(`Are you sure you want to cancel your booking for ${booking.listing_title}?`)) {
+                                                            try {
+                                                                const { error } = await supabase.rpc('cancel_rental_request', {
+                                                                    p_rental_id: booking.rental_id
+                                                                });
+                                                                if (error) {
+                                                                    alert(`Error: ${error.message}`);
+                                                                } else {
+                                                                    // Remove from list
+                                                                    setUpcomingBookings(prev => prev.filter(b => b.rental_id !== booking.rental_id));
+                                                                }
+                                                            } catch (err) {
+                                                                alert('Failed to cancel booking');
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    <X className="mr-2 h-4 w-4" />
+                                                    Cancel Booking
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -315,6 +376,24 @@ export function RenterDashboardView() {
                     )}
                 </div>
             </div>
+
+            {selectedBooking && (
+                <RescheduleModal
+                    isOpen={rescheduleModalOpen}
+                    onClose={() => {
+                        setRescheduleModalOpen(false);
+                        setSelectedBooking(null);
+                    }}
+                    rentalId={selectedBooking.rental_id}
+                    currentStartDate={selectedBooking.start_date}
+                    currentEndDate={selectedBooking.end_date}
+                    listingTitle={selectedBooking.listing_title}
+                    onSuccess={() => {
+                        // Refresh the bookings list
+                        window.location.reload();
+                    }}
+                />
+            )}
         </div>
     );
 }
