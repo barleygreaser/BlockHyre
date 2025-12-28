@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { formatDistanceToNow, format } from "date-fns";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
 import { RescheduleModal } from "@/app/components/reschedule-modal";
+import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
 import Image from "next/image";
 
 interface ActiveRental {
@@ -50,6 +51,7 @@ export function RenterDashboardView() {
     const [rentalHistory, setRentalHistory] = useState<RentalHistory[]>([]);
     const [loading, setLoading] = useState(true);
     const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<UpcomingBooking | null>(null);
 
     useEffect(() => {
@@ -277,22 +279,9 @@ export function RenterDashboardView() {
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     className="text-red-600 focus:text-red-600"
-                                                    onClick={async () => {
-                                                        if (confirm(`Are you sure you want to cancel your booking for ${booking.listing_title}?`)) {
-                                                            try {
-                                                                const { error } = await supabase.rpc('cancel_rental_request', {
-                                                                    p_rental_id: booking.rental_id
-                                                                });
-                                                                if (error) {
-                                                                    alert(`Error: ${error.message}`);
-                                                                } else {
-                                                                    // Remove from list
-                                                                    setUpcomingBookings(prev => prev.filter(b => b.rental_id !== booking.rental_id));
-                                                                }
-                                                            } catch (err) {
-                                                                alert('Failed to cancel booking');
-                                                            }
-                                                        }
+                                                    onClick={() => {
+                                                        setSelectedBooking(booking);
+                                                        setCancelModalOpen(true);
                                                     }}
                                                 >
                                                     <X className="mr-2 h-4 w-4" />
@@ -390,6 +379,21 @@ export function RenterDashboardView() {
                     listingTitle={selectedBooking.listing_title}
                     onSuccess={() => {
                         // Refresh the bookings list
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {selectedBooking && (
+                <CancelRentalModal
+                    isOpen={cancelModalOpen}
+                    onClose={() => {
+                        setCancelModalOpen(false);
+                        setSelectedBooking(null);
+                    }}
+                    rentalId={selectedBooking.rental_id}
+                    listingTitle={selectedBooking.listing_title}
+                    onSuccess={() => {
                         window.location.reload();
                     }}
                 />
