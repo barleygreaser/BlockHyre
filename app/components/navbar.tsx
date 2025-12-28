@@ -90,7 +90,7 @@ export function Navbar() {
 
                 {/* Right Side Actions */}
                 <div className="flex items-center gap-4">
-                    <Link href="/auth" className="md:hidden">
+                    <Link href={user ? "/dashboard" : "/auth"} className="md:hidden">
                         <Button variant="ghost" size="icon" className="text-slate-600 hover:text-slate-900">
                             <User className="h-5 w-5" />
                         </Button>
