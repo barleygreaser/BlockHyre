@@ -36,6 +36,8 @@ interface RentalHistory {
     has_review: boolean;
 }
 
+import { RenterDashboardSkeleton } from "@/app/components/dashboard/dashboard-skeletons";
+
 export function RenterDashboardView() {
     const [activeDisputes, setActiveDisputes] = useState([]);
     const [activeRentals, setActiveRentals] = useState<ActiveRental[]>([]);
@@ -125,6 +127,10 @@ export function RenterDashboardView() {
 
     const totalActive = activeRentals.length;
     const urgentCount = activeRentals.filter(r => r.dashboard_status === 'overdue' || r.dashboard_status === 'due_today').length;
+
+    if (loading) {
+        return <RenterDashboardSkeleton />;
+    }
 
     return (
         <div className="space-y-8">
