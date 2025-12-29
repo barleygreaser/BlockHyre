@@ -278,17 +278,29 @@ export function RenterDashboardView() {
 
                                             <div className="flex items-center gap-2">
                                                 {canReceiveTool && (
-                                                    <Button
-                                                        onClick={() => {
-                                                            setSelectedBooking(booking);
-                                                            setHandoverModalOpen(true);
-                                                        }}
-                                                        className="bg-safety-orange hover:bg-safety-orange/90 text-white font-semibold"
-                                                        size="sm"
-                                                    >
-                                                        <Package className="mr-2 h-4 w-4" />
-                                                        Receive Tool
-                                                    </Button>
+                                                    <div className="flex flex-col gap-2">
+                                                        <Button
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setHandoverModalOpen(true);
+                                                            }}
+                                                            className="bg-safety-orange hover:bg-safety-orange/90 text-white font-semibold"
+                                                            size="sm"
+                                                        >
+                                                            <Package className="mr-2 h-4 w-4" />
+                                                            Receive Tool
+                                                        </Button>
+
+                                                        {/* Show contact support if >24h past pickup */}
+                                                        {hoursUntilStart < -24 && (
+                                                            <a
+                                                                href={`mailto:contact@blockhyre.com?subject=Handover Issue - Rental ID: ${booking.rental_id}`}
+                                                                className="text-xs text-slate-600 hover:text-safety-orange text-center underline"
+                                                            >
+                                                                Having trouble? Contact support
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                 )}
 
                                                 <DropdownMenu>
