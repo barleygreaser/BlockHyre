@@ -1,5 +1,7 @@
 -- Update get_my_active_rentals RPC to include daily_price and risk_fee for extension calculations
-CREATE OR REPLACE FUNCTION public.get_my_active_rentals()
+DROP FUNCTION IF EXISTS public.get_my_active_rentals();
+
+CREATE FUNCTION public.get_my_active_rentals()
 RETURNS TABLE (
   rental_id uuid,
   listing_id uuid,
