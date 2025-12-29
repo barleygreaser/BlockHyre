@@ -219,11 +219,16 @@ export function OwnerDashboardView() {
                 console.error("Rental data received:", rentalData);
             } else {
                 // Fetch listing details
-                const { data: listingData } = await supabase
+                const { data: listingData, error: listingError } = await supabase
                     .from('listings')
                     .select('title, owner_id, location_address')
                     .eq('id', rentalData.listing_id)
                     .single();
+
+                if (listingError) {
+                    console.error("Error fetching listing:", listingError);
+                    console.error("Attempted listing_id:", rentalData.listing_id);
+                }
 
                 // Fetch renter details
                 const { data: renterData } = await supabase
