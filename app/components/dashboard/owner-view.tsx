@@ -240,7 +240,11 @@ export function OwnerDashboardView() {
                     .single();
 
                 if (!listingData || !renterData || !ownerData) {
-                    console.error("Missing related data for rental", { listingData, renterData, ownerData });
+                    console.error("Missing related data for rental", JSON.stringify({
+                        listingData,
+                        renterData,
+                        ownerData
+                    }, null, 2));
                     // Continue anyway, just use defaults
                 }
 
@@ -287,8 +291,11 @@ export function OwnerDashboardView() {
                         end_date: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                         location_address: listingData?.location_address || 'Address to be confirmed',
                         total_paid: rentalData.total_paid?.toFixed(2) || '0.00',
+                        total_cost: rentalData.total_paid?.toFixed(2) || '0.00', // Alias for total_paid
                         pickup_time: startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-                        seller_fee_percent: sellerFeePercent
+                        seller_fee_percent: sellerFeePercent,
+                        owner_earnings: (rentalData.total_paid * (1 - sellerFeePercent / 100)).toFixed(2),
+                        owner_notes_link: '#' // Not applicable for this event
                     };
 
                     try {
