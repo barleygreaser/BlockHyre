@@ -206,29 +206,50 @@ export function OwnerDashboardView() {
                     id,
                     listing_id,
                     renter_id,
+                    owner_id,
                     start_date,
                     end_date,
-                    total_paid,
-                    listing:listings!inner (
-                        title,
-                        owner_id,
-                        location_address,
-                        owner:users!owner_id (full_name)
-                    ),
-                    renter:users!renter_id (full_name, email)
+                    total_paid
                 `)
                 .eq('id', rentalId)
                 .single();
 
             if (rentalError || !rentalData) {
-                console.error("Error fetching rental details for message:", rentalError);
+                console.error("Error fetching rental details for message:", JSON.stringify(rentalError, null, 2));
+                console.error("Rental data received:", rentalData);
             } else {
+                // Fetch listing details
+                const { data: listingData } = await supabase
+                    .from('listings')
+                    .select('title, owner_id, location_address')
+                    .eq('id', rentalData.listing_id)
+                    .single();
+
+                // Fetch renter details
+                const { data: renterData } = await supabase
+                    .from('users')
+                    .select('full_name, email')
+                    .eq('id', rentalData.renter_id)
+                    .single();
+
+                // Fetch owner details
+                const { data: ownerData } = await supabase
+                    .from('users')
+                    .select('full_name')
+                    .eq('id', rentalData.owner_id)
+                    .single();
+
+                if (!listingData || !renterData || !ownerData) {
+                    console.error("Missing related data for rental", { listingData, renterData, ownerData });
+                    // Continue anyway, just use defaults
+                }
+
                 // Get or create chat for this rental
                 const { data: existingChat } = await supabase
                     .from('chats')
                     .select('id')
                     .eq('listing_id', rentalData.listing_id)
-                    .eq('owner_id', rentalData.listing.owner_id)
+                    .eq('owner_id', rentalData.owner_id)
                     .eq('renter_id', rentalData.renter_id)
                     .single();
 
@@ -240,7 +261,7 @@ export function OwnerDashboardView() {
                         .from('chats')
                         .insert([{
                             listing_id: rentalData.listing_id,
-                            owner_id: rentalData.listing.owner_id,
+                            owner_id: rentalData.owner_id,
                             renter_id: rentalData.renter_id
                         }])
                         .select()
@@ -259,12 +280,12 @@ export function OwnerDashboardView() {
                     const endDate = new Date(rentalData.end_date);
 
                     const context = {
-                        tool_name: rentalData.listing.title,
-                        owner_name: rentalData.listing.owner?.full_name || 'Owner',
-                        renter_name: rentalData.renter?.full_name || 'Renter',
+                        tool_name: listingData?.title || 'Tool',
+                        owner_name: ownerData?.full_name || 'Owner',
+                        renter_name: renterData?.full_name || 'Renter',
                         start_date: startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                         end_date: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                        location_address: rentalData.listing.location_address || 'Address to be confirmed',
+                        location_address: listingData?.location_address || 'Address to be confirmed',
                         total_paid: rentalData.total_paid?.toFixed(2) || '0.00',
                         pickup_time: startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
                         seller_fee_percent: sellerFeePercent
@@ -275,7 +296,7 @@ export function OwnerDashboardView() {
                             chatId,
                             'BOOKING_CONFIRMED',
                             context,
-                            rentalData.listing.owner_id,
+                            rentalData.owner_id,
                             rentalData.renter_id
                         );
                     } catch (msgError) {
