@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { RescheduleModal } from "@/app/components/reschedule-modal";
 import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
 import { HandoverModal } from "@/app/components/modals/handover-modal";
+import { ExtensionModal } from "@/app/components/extension-modal";
 import Image from "next/image";
 
 interface ActiveRental {
@@ -23,6 +24,8 @@ interface ActiveRental {
     owner_name: string;
     end_date: string;
     dashboard_status: 'overdue' | 'due_today' | 'active';
+    daily_price?: number;
+    risk_fee?: number;
 }
 
 interface UpcomingBooking {
@@ -54,7 +57,9 @@ export function RenterDashboardView() {
     const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
     const [handoverModalOpen, setHandoverModalOpen] = useState(false);
+    const [extensionModalOpen, setExtensionModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<UpcomingBooking | null>(null);
+    const [selectedRental, setSelectedRental] = useState<ActiveRental | null>(null);
 
     useEffect(() => {
         async function fetchRenterData() {
@@ -215,12 +220,25 @@ export function RenterDashboardView() {
                                                 <h4 className="font-bold text-slate-900 text-lg">{rental.listing_title}</h4>
                                                 <p className="text-sm text-slate-600">Owner: <span className="font-medium">{rental.owner_name}</span></p>
                                             </div>
-                                            <Link href={`/messages?listing=${rental.listing_id}&owner=${rental.owner_id}`}>
-                                                <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
-                                                    <MessageSquare className="mr-2 h-4 w-4" />
-                                                    Message {rental.owner_name}
+                                            <div className="flex flex-col gap-2 w-full sm:w-auto">
+                                                <Link href={`/messages?listing=${rental.listing_id}&owner=${rental.owner_id}`}>
+                                                    <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
+                                                        <MessageSquare className="mr-2 h-4 w-4" />
+                                                        Message {rental.owner_name}
+                                                    </Button>
+                                                </Link>
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full border-safety-orange text-safety-orange hover:bg-safety-orange hover:text-white"
+                                                    onClick={() => {
+                                                        setSelectedRental(rental);
+                                                        setExtensionModalOpen(true);
+                                                    }}
+                                                >
+                                                    <CalendarClock className="mr-2 h-4 w-4" />
+                                                    Request Extension
                                                 </Button>
-                                            </Link>
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -460,6 +478,25 @@ export function RenterDashboardView() {
                     listingTitle={selectedBooking.listing_title}
                     onSuccess={() => {
                         // Refresh to move rental from upcoming to active
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {selectedRental && (
+                <ExtensionModal
+                    isOpen={extensionModalOpen}
+                    onClose={() => {
+                        setExtensionModalOpen(false);
+                        setSelectedRental(null);
+                    }}
+                    rentalId={selectedRental.rental_id}
+                    listingTitle={selectedRental.listing_title}
+                    currentEndDate={selectedRental.end_date}
+                    dailyPrice={selectedRental.daily_price || 0}
+                    riskFee={selectedRental.risk_fee || 0}
+                    onSuccess={() => {
+                        // Refresh to show pending extension
                         window.location.reload();
                     }}
                 />
