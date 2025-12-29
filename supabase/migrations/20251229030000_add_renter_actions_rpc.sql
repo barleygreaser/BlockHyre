@@ -9,8 +9,7 @@ BEGIN
     -- Update rental status to cancelled
     -- Only allow if rental belongs to current user AND hasn't started yet
     UPDATE public.rentals
-    SET status = 'cancelled',
-        updated_at = NOW()
+    SET status = 'cancelled'
     WHERE id = p_rental_id 
     AND renter_id = auth.uid()
     AND status IN ('approved', 'pending')
@@ -88,8 +87,7 @@ BEGIN
     SET start_date = p_start_date,
         end_date = p_end_date,
         total_days = v_new_total_days,
-        rental_fee = v_daily_rate * v_new_total_days,
-        updated_at = NOW()
+        rental_fee = v_daily_rate * v_new_total_days
     WHERE id = p_rental_id;
 
     -- TODO: Trigger payment adjustment via Stripe if fees changed
