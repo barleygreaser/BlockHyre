@@ -218,17 +218,13 @@ export function OwnerDashboardView() {
                 console.error("Error fetching rental details for message:", JSON.stringify(rentalError, null, 2));
                 console.error("Rental data received:", rentalData);
             } else {
-                // Fetch listing details
-                const { data: listingData, error: listingError } = await supabase
-                    .from('listings')
-                    .select('title, owner_id, location_address')
-                    .eq('id', rentalData.listing_id)
-                    .single();
-
-                if (listingError) {
-                    console.error("Error fetching listing:", listingError);
-                    console.error("Attempted listing_id:", rentalData.listing_id);
-                }
+                // Use listing data from the rental object (already fetched in rentalRequests)
+                // The rental object includes: listing:listings!inner (title, owner_id)
+                const listingData = rental.listing ? {
+                    title: rental.listing.title,
+                    owner_id: rental.listing.owner_id,
+                    location_address: rental.listing.location_address || 'Address to be confirmed'
+                } : null;
 
                 // Fetch renter details
                 const { data: renterData } = await supabase
