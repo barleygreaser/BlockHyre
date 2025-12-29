@@ -30,7 +30,5 @@ BEGIN
 END;
 $$;
 
--- Update grant to include the new signature
+-- Grant execute permission for the updated signature
 GRANT EXECUTE ON FUNCTION send_system_message(uuid, text, uuid, uuid) TO authenticated;
--- Keep old signature for backwards compatibility
-GRANT EXECUTE ON FUNCTION send_system_message(uuid, text, uuid) TO authenticated;
