@@ -237,74 +237,100 @@ export function RenterDashboardView() {
                                     No upcoming bookings
                                 </CardContent>
                             </Card>
-                        ) : upcomingBookings.map((booking) => (
-                            <Card key={booking.rental_id} className="border-slate-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="relative h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
-                                                {booking.listing_image_url ? (
-                                                    <Image
-                                                        src={booking.listing_image_url}
-                                                        alt={booking.listing_title}
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                                        <Calendar className="h-6 w-6" />
-                                                    </div>
-                                                )}
+                        ) : upcomingBookings.map((booking) => {
+                            // Check if we're within 24 hours of the start date
+                            const startDate = new Date(booking.start_date);
+                            const now = new Date();
+                            const hoursUntilStart = (startDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+                            const canReceiveTool = hoursUntilStart <= 24 && hoursUntilStart >= -24;
+
+                            return (
+                                <Card key={booking.rental_id} className="border-slate-200 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center justify-between gap-4">
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className="relative h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                                    {booking.listing_image_url ? (
+                                                        <Image
+                                                            src={booking.listing_image_url}
+                                                            alt={booking.listing_title}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                                            <Calendar className="h-6 w-6" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-slate-900">{booking.listing_title}</h4>
+                                                    <p className="text-sm text-slate-500">
+                                                        {format(new Date(booking.start_date), 'MMM d')} - {format(new Date(booking.end_date), 'MMM d')} • {booking.total_days} days
+                                                    </p>
+                                                    {canReceiveTool && (
+                                                        <p className="text-xs text-safety-orange font-medium mt-1">
+                                                            📦 Ready for pickup!
+                                                        </p>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 className="font-bold text-slate-900">{booking.listing_title}</h4>
-                                                <p className="text-sm text-slate-500">
-                                                    {format(new Date(booking.start_date), 'MMM d')} - {format(new Date(booking.end_date), 'MMM d')} • {booking.total_days} days
-                                                </p>
+
+                                            <div className="flex items-center gap-2">
+                                                {canReceiveTool && (
+                                                    <Button
+                                                        onClick={() => {
+                                                            setSelectedBooking(booking);
+                                                            setHandoverModalOpen(true);
+                                                        }}
+                                                        className="bg-safety-orange hover:bg-safety-orange/90 text-white font-semibold"
+                                                        size="sm"
+                                                    >
+                                                        <Package className="mr-2 h-4 w-4" />
+                                                        Receive Tool
+                                                    </Button>
+                                                )}
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        {!canReceiveTool && (
+                                                            <DropdownMenuItem disabled className="text-slate-400">
+                                                                <Package className="mr-2 h-4 w-4" />
+                                                                Receive Tool (available on pickup day)
+                                                            </DropdownMenuItem>
+                                                        )}
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setRescheduleModalOpen(true);
+                                                            }}
+                                                        >
+                                                            <CalendarClock className="mr-2 h-4 w-4" />
+                                                            Change Dates
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-red-600 focus:text-red-600"
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setCancelModalOpen(true);
+                                                            }}
+                                                        >
+                                                            <X className="mr-2 h-4 w-4" />
+                                                            Cancel Booking
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
                                         </div>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem
-                                                    onClick={() => {
-                                                        setSelectedBooking(booking);
-                                                        setHandoverModalOpen(true);
-                                                    }}
-                                                    className="text-safety-orange focus:text-safety-orange font-medium"
-                                                >
-                                                    <Package className="mr-2 h-4 w-4" />
-                                                    Receive Tool
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => {
-                                                        setSelectedBooking(booking);
-                                                        setRescheduleModalOpen(true);
-                                                    }}
-                                                >
-                                                    <CalendarClock className="mr-2 h-4 w-4" />
-                                                    Change Dates
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    className="text-red-600 focus:text-red-600"
-                                                    onClick={() => {
-                                                        setSelectedBooking(booking);
-                                                        setCancelModalOpen(true);
-                                                    }}
-                                                >
-                                                    <X className="mr-2 h-4 w-4" />
-                                                    Cancel Booking
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
                     </div>
                 </div>
 
