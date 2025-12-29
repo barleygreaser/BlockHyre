@@ -5,12 +5,13 @@ import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { Search, Calendar, Check, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X } from "lucide-react";
+import { Search, Calendar, Check, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X, Package } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatDistanceToNow, format } from "date-fns";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
 import { RescheduleModal } from "@/app/components/reschedule-modal";
 import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
+import { HandoverModal } from "@/app/components/modals/handover-modal";
 import Image from "next/image";
 
 interface ActiveRental {
@@ -52,6 +53,7 @@ export function RenterDashboardView() {
     const [loading, setLoading] = useState(true);
     const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [handoverModalOpen, setHandoverModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<UpcomingBooking | null>(null);
 
     useEffect(() => {
@@ -271,6 +273,16 @@ export function RenterDashboardView() {
                                                 <DropdownMenuItem
                                                     onClick={() => {
                                                         setSelectedBooking(booking);
+                                                        setHandoverModalOpen(true);
+                                                    }}
+                                                    className="text-safety-orange focus:text-safety-orange font-medium"
+                                                >
+                                                    <Package className="mr-2 h-4 w-4" />
+                                                    Receive Tool
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={() => {
+                                                        setSelectedBooking(booking);
                                                         setRescheduleModalOpen(true);
                                                     }}
                                                 >
@@ -394,6 +406,22 @@ export function RenterDashboardView() {
                     rentalId={selectedBooking.rental_id}
                     listingTitle={selectedBooking.listing_title}
                     onSuccess={() => {
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {selectedBooking && (
+                <HandoverModal
+                    isOpen={handoverModalOpen}
+                    onClose={() => {
+                        setHandoverModalOpen(false);
+                        setSelectedBooking(null);
+                    }}
+                    rentalId={selectedBooking.rental_id}
+                    listingTitle={selectedBooking.listing_title}
+                    onSuccess={() => {
+                        // Refresh to move rental from upcoming to active
                         window.location.reload();
                     }}
                 />
