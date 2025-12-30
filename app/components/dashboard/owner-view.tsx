@@ -6,7 +6,7 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
-import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info } from "lucide-react";
+import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info, CalendarClock } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { StripeConnectButton } from "@/app/components/stripe-connect-button";
@@ -110,6 +110,7 @@ export function OwnerDashboardView() {
     // State for Lists
     const [actionItems, setActionItems] = useState<any[]>([]);
     const [rentalRequests, setRentalRequests] = useState<any[]>([]);
+    const [extensionRequests, setExtensionRequests] = useState<any[]>([]);
     const [listsLoading, setListsLoading] = useState(true);
     const [sellerFeePercent, setSellerFeePercent] = useState<number>(0);
 
@@ -166,6 +167,16 @@ export function OwnerDashboardView() {
 
                 if (pendingError) throw pendingError;
                 if (pendingData) setRentalRequests(pendingData);
+
+                // 3. Extension Requests
+                const { data: extensionsData, error: extensionsError } = await supabase
+                    .rpc('get_owner_pending_extensions');
+
+                if (extensionsError) {
+                    console.error('Error fetching extensions:', extensionsError);
+                } else if (extensionsData) {
+                    setExtensionRequests(extensionsData);
+                }
 
             } catch (error) {
                 console.error("Error fetching dashboard lists:", error);
@@ -477,213 +488,277 @@ export function OwnerDashboardView() {
 
                         {listsLoading ? (
                             <Card className="border-slate-200 shadow-sm"><CardContent className="p-6"><Skeleton className="h-20 w-full" /></CardContent></Card>
-                        ) : rentalRequests.length > 0 ? (
-                            rentalRequests.map((request) => (
-                                <Card key={request.id} className="border-slate-200 shadow-sm">
-                                    <CardContent className="p-6">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 overflow-hidden">
-                                                    {/* Avatar or Initial */}
-                                                    {request.renter.full_name ? request.renter.full_name.charAt(0) : 'R'}
+                        ) : (
+                            <>
+                                {/* Extension Requests - Priority Display */}
+                                {extensionRequests.map((ext) => (
+                                    <Card key={ext.extension_id} className="border-2 border-amber-400 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50">
+                                        <CardContent className="p-6">
+                                            <div className="flex items-start gap-3 mb-4">
+                                                <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                                                    <CalendarClock className="h-6 w-6 text-amber-600" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <Badge className="bg-amber-500 text-white font-semibold mb-2">
+                                                        ⏰ EXTENSION REQUEST
+                                                    </Badge>
+                                                    <h4 className="font-bold text-slate-900 text-lg">{ext.renter_name}</h4>
+                                                    <p className="text-sm text-slate-700">
+                                                        wants to extend <span className="font-semibold">{ext.listing_title}</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3 bg-white/60 rounded-lg p-4 mb-4 text-sm">
+                                                <div>
+                                                    <p className="text-xs text-slate-600 mb-1">Current End</p>
+                                                    <p className="font-semibold">{formatDate(ext.current_end_date)}</p>
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-bold text-slate-900 flex items-center gap-2">
-                                                        {request.renter.full_name || 'Unknown User'}
-                                                        <span className="flex items-center text-xs font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
-                                                            <span className="text-yellow-400 mr-1">★</span>
-                                                            5.0
-                                                        </span>
-                                                    </h4>
-                                                    <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
-                                                    <div className="flex items-center gap-3 mt-1 text-xs">
-                                                        <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
-                                                            {formatDate(request.start_date)} - {formatDate(request.end_date)}
-                                                        </span>
-                                                        <span className="text-slate-400">•</span>
-                                                        <span className="text-slate-600">{request.total_days} Days</span>
-                                                        {request.rental_fee && (
-                                                            <>
-                                                                <span className="text-slate-400">•</span>
-                                                                <TooltipProvider>
-                                                                    <Tooltip>
-                                                                        <TooltipTrigger asChild>
-                                                                            <span className="font-bold text-green-600 flex items-center gap-1 cursor-help">
-                                                                                {formatCurrency(calculateOwnerRevenue(request.rental_fee))} revenue
-                                                                                <Info className="h-3 w-3" />
-                                                                            </span>
-                                                                        </TooltipTrigger>
-                                                                        <TooltipContent side="top" className="bg-slate-900 text-white p-3 max-w-xs">
-                                                                            <div className="space-y-1 text-xs">
-                                                                                <div className="flex justify-between gap-4">
-                                                                                    <span className="text-slate-300">Rental Fee:</span>
-                                                                                    <span className="font-semibold">{formatCurrency(request.rental_fee)}</span>
-                                                                                </div>
-                                                                                <div className="flex justify-between gap-4">
-                                                                                    <span className="text-slate-300">Platform Fee ({sellerFeePercent}%):</span>
-                                                                                    <span className="text-red-400">-{formatCurrency(request.rental_fee * (sellerFeePercent / 100))}</span>
-                                                                                </div>
-                                                                                <div className="border-t border-slate-700 pt-1 mt-1"></div>
-                                                                                <div className="flex justify-between gap-4">
-                                                                                    <span className="font-semibold">Your Revenue:</span>
-                                                                                    <span className="font-bold text-green-400">{formatCurrency(calculateOwnerRevenue(request.rental_fee))}</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </TooltipContent>
-                                                                    </Tooltip>
-                                                                </TooltipProvider>
-                                                            </>
-                                                        )}
-                                                    </div>
+                                                    <p className="text-xs text-slate-600 mb-1">New End</p>
+                                                    <p className="font-semibold text-amber-700">{formatDate(ext.new_end_date)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-slate-600 mb-1">Extra Days</p>
+                                                    <p className="font-semibold">+{ext.extra_days}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-slate-600 mb-1">Extra Earnings</p>
+                                                    <p className="font-bold text-green-600">
+                                                        {formatCurrency(calculateOwnerRevenue(ext.additional_rental_fee))}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2 w-full sm:w-auto">
+
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                                                    disabled={processingId === ext.extension_id}
+                                                >
+                                                    <Check className="mr-2 h-4 w-4" />
+                                                    Approve
+                                                </Button>
                                                 <Button
                                                     variant="outline"
-                                                    size="sm"
-                                                    className="flex-1 sm:flex-none text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
-                                                    onClick={() => handleDeny(request.id)}
-                                                    disabled={processingId === request.id}
+                                                    className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                                                    disabled={processingId === ext.extension_id}
                                                 >
                                                     <X className="mr-2 h-4 w-4" />
-                                                    Deny
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
-                                                    onClick={() => handleApprove(request.id)}
-                                                    disabled={processingId === request.id}
-                                                >
-                                                    {processingId === request.id ? 'Processing...' : (
-                                                        <>
-                                                            <Check className="mr-2 h-4 w-4" />
-                                                            Approve
-                                                        </>
-                                                    )}
+                                                    Decline
                                                 </Button>
                                             </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+
+                                {/* Regular Rental Requests */}
+                                {rentalRequests.length > 0 ? (
+                                    rentalRequests.map((request) => (
+                                        <Card key={request.id} className="border-slate-200 shadow-sm">
+                                            <CardContent className="p-6">
+                                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 overflow-hidden">
+                                                            {/* Avatar or Initial */}
+                                                            {request.renter.full_name ? request.renter.full_name.charAt(0) : 'R'}
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                                                                {request.renter.full_name || 'Unknown User'}
+                                                                <span className="flex items-center text-xs font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                                                                    <span className="text-yellow-400 mr-1">★</span>
+                                                                    5.0
+                                                                </span>
+                                                            </h4>
+                                                            <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
+                                                            <div className="flex items-center gap-3 mt-1 text-xs">
+                                                                <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
+                                                                    {formatDate(request.start_date)} - {formatDate(request.end_date)}
+                                                                </span>
+                                                                <span className="text-slate-400">•</span>
+                                                                <span className="text-slate-600">{request.total_days} Days</span>
+                                                                {request.rental_fee && (
+                                                                    <>
+                                                                        <span className="text-slate-400">•</span>
+                                                                        <TooltipProvider>
+                                                                            <Tooltip>
+                                                                                <TooltipTrigger asChild>
+                                                                                    <span className="font-bold text-green-600 flex items-center gap-1 cursor-help">
+                                                                                        {formatCurrency(calculateOwnerRevenue(request.rental_fee))} revenue
+                                                                                        <Info className="h-3 w-3" />
+                                                                                    </span>
+                                                                                </TooltipTrigger>
+                                                                                <TooltipContent side="top" className="bg-slate-900 text-white p-3 max-w-xs">
+                                                                                    <div className="space-y-1 text-xs">
+                                                                                        <div className="flex justify-between gap-4">
+                                                                                            <span className="text-slate-300">Rental Fee:</span>
+                                                                                            <span className="font-semibold">{formatCurrency(request.rental_fee)}</span>
+                                                                                        </div>
+                                                                                        <div className="flex justify-between gap-4">
+                                                                                            <span className="text-slate-300">Platform Fee ({sellerFeePercent}%):</span>
+                                                                                            <span className="text-red-400">-{formatCurrency(request.rental_fee * (sellerFeePercent / 100))}</span>
+                                                                                        </div>
+                                                                                        <div className="border-t border-slate-700 pt-1 mt-1"></div>
+                                                                                        <div className="flex justify-between gap-4">
+                                                                                            <span className="font-semibold">Your Revenue:</span>
+                                                                                            <span className="font-bold text-green-400">{formatCurrency(calculateOwnerRevenue(request.rental_fee))}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </TooltipContent>
+                                                                            </Tooltip>
+                                                                        </TooltipProvider>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2 w-full sm:w-auto">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="flex-1 sm:flex-none text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
+                                                            onClick={() => handleDeny(request.id)}
+                                                            disabled={processingId === request.id}
+                                                        >
+                                                            <X className="mr-2 h-4 w-4" />
+                                                            Deny
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
+                                                            onClick={() => handleApprove(request.id)}
+                                                            disabled={processingId === request.id}
+                                                        >
+                                                            {processingId === request.id ? 'Processing...' : (
+                                                                <>
+                                                                    <Check className="mr-2 h-4 w-4" />
+                                                                    Approve
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <Empty className="bg-slate-50/50 shadow-sm">
+                                        <EmptyHeader>
+                                            <EmptyMedia variant="icon">
+                                                <Files />
+                                            </EmptyMedia>
+                                            <EmptyTitle>No new requests right now</EmptyTitle>
+                                            <EmptyDescription>
+                                                Time to optimize your listings! Adding more photos or lowering prices slightly can help attract renters.
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                        <EmptyContent>
+                                            <Link href="/owner/listings">
+                                                <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
+                                                    Manage Listings
+                                                </Button>
+                                            </Link>
+                                        </EmptyContent>
+                                    </Empty>
+                                )}
+                            </>
+                        )}
+                    </div>
+
+                    {/* Right Column: Quick Stats / Tips */}
+                    <div className="space-y-6">
+                        {/* Payout Status / Recent Payouts */}
+                        {stripeConnected ? (
+                            <Card className="border-slate-200">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-lg font-serif">Recent Payouts</CardTitle>
+                                    <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs font-normal">
+                                        Stripe: Connected ●
+                                    </Badge>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {/* Mock Payouts */}
+                                        <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
+                                            <div>
+                                                <p className="font-medium text-slate-900">Oct 15, 2025</p>
+                                                <p className="text-xs text-slate-500">To: ****4242</p>
+                                            </div>
+                                            <span className="text-green-600 font-bold">+$124.50</span>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            ))
+                                        <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
+                                            <div>
+                                                <p className="font-medium text-slate-900">Oct 08, 2025</p>
+                                                <p className="text-xs text-slate-500">To: ****4242</p>
+                                            </div>
+                                            <span className="text-green-600 font-bold">+$85.00</span>
+                                        </div>
+                                        <Link href="#">
+                                            <Button variant="link" className="text-slate-500 p-0 h-auto text-xs w-full justify-start mt-2">
+                                                View all transactions &rarr;
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         ) : (
-                            <Empty className="bg-slate-50/50 shadow-sm">
-                                <EmptyHeader>
-                                    <EmptyMedia variant="icon">
-                                        <Files />
-                                    </EmptyMedia>
-                                    <EmptyTitle>No new requests right now</EmptyTitle>
-                                    <EmptyDescription>
-                                        Time to optimize your listings! Adding more photos or lowering prices slightly can help attract renters.
-                                    </EmptyDescription>
-                                </EmptyHeader>
-                                <EmptyContent>
-                                    <Link href="/owner/listings">
-                                        <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
-                                            Manage Listings
+                            <Card className="border-slate-200">
+                                <CardHeader>
+                                    <CardTitle className="text-lg font-serif">Payout Settings</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        <p className="text-sm text-slate-500">
+                                            Connect your bank account to receive payouts for your rentals.
+                                        </p>
+                                        <StripeConnectButton />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {kpiLoading ? (
+                            <Card className="bg-blue-50 border-blue-100 relative">
+                                <CardHeader>
+                                    <Skeleton className="h-6 w-24 bg-blue-200" />
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <Skeleton className="h-4 w-full bg-blue-200" />
+                                    <Skeleton className="h-4 w-3/4 bg-blue-200" />
+                                    <Skeleton className="h-4 w-1/2 bg-blue-200" />
+                                </CardContent>
+                            </Card>
+                        ) : showProTip && (
+                            <Card className="bg-blue-50 border-blue-100 relative">
+                                <button
+                                    onClick={handleDismissProTip}
+                                    className="absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition-colors"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                                <CardHeader>
+                                    <CardTitle className="text-lg font-serif text-blue-900">Pro Tip</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-blue-800 text-sm leading-relaxed">
+                                        Adding a link to the manufacturer's manual increases your tool's safety rating and reduces accident disputes by 40%.
+                                    </p>
+                                    <Link href="/add-tool">
+                                        <Button variant="link" className="text-blue-700 font-bold p-0 mt-4 h-auto hover:text-blue-900">
+                                            Update your listings &rarr;
                                         </Button>
                                     </Link>
-                                </EmptyContent>
-                            </Empty>
+                                </CardContent>
+                            </Card>
                         )}
                     </div>
 
                 </div>
 
-                {/* Right Column: Quick Stats / Tips */}
-                <div className="space-y-6">
-                    {/* Payout Status / Recent Payouts */}
-                    {stripeConnected ? (
-                        <Card className="border-slate-200">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-lg font-serif">Recent Payouts</CardTitle>
-                                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs font-normal">
-                                    Stripe: Connected ●
-                                </Badge>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {/* Mock Payouts */}
-                                    <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                                        <div>
-                                            <p className="font-medium text-slate-900">Oct 15, 2025</p>
-                                            <p className="text-xs text-slate-500">To: ****4242</p>
-                                        </div>
-                                        <span className="text-green-600 font-bold">+$124.50</span>
-                                    </div>
-                                    <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                                        <div>
-                                            <p className="font-medium text-slate-900">Oct 08, 2025</p>
-                                            <p className="text-xs text-slate-500">To: ****4242</p>
-                                        </div>
-                                        <span className="text-green-600 font-bold">+$85.00</span>
-                                    </div>
-                                    <Link href="#">
-                                        <Button variant="link" className="text-slate-500 p-0 h-auto text-xs w-full justify-start mt-2">
-                                            View all transactions &rarr;
-                                        </Button>
-                                    </Link>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : (
-                        <Card className="border-slate-200">
-                            <CardHeader>
-                                <CardTitle className="text-lg font-serif">Payout Settings</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <p className="text-sm text-slate-500">
-                                        Connect your bank account to receive payouts for your rentals.
-                                    </p>
-                                    <StripeConnectButton />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {kpiLoading ? (
-                        <Card className="bg-blue-50 border-blue-100 relative">
-                            <CardHeader>
-                                <Skeleton className="h-6 w-24 bg-blue-200" />
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <Skeleton className="h-4 w-full bg-blue-200" />
-                                <Skeleton className="h-4 w-3/4 bg-blue-200" />
-                                <Skeleton className="h-4 w-1/2 bg-blue-200" />
-                            </CardContent>
-                        </Card>
-                    ) : showProTip && (
-                        <Card className="bg-blue-50 border-blue-100 relative">
-                            <button
-                                onClick={handleDismissProTip}
-                                className="absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition-colors"
-                            >
-                                <X className="h-4 w-4" />
-                            </button>
-                            <CardHeader>
-                                <CardTitle className="text-lg font-serif text-blue-900">Pro Tip</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-blue-800 text-sm leading-relaxed">
-                                    Adding a link to the manufacturer's manual increases your tool's safety rating and reduces accident disputes by 40%.
-                                </p>
-                                <Link href="/add-tool">
-                                    <Button variant="link" className="text-blue-700 font-bold p-0 mt-4 h-auto hover:text-blue-900">
-                                        Update your listings &rarr;
-                                    </Button>
-                                </Link>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-
+                <ReturnInspectionModal
+                    isOpen={isInspectionOpen}
+                    onClose={() => setIsInspectionOpen(false)}
+                />
             </div>
-
-            <ReturnInspectionModal
-                isOpen={isInspectionOpen}
-                onClose={() => setIsInspectionOpen(false)}
-            />
-        </div>
-    );
+            );
 }
