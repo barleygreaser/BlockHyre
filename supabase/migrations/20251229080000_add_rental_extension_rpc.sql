@@ -78,7 +78,78 @@ BEGIN
     )
     RETURNING id INTO v_extension_id;
 
-    -- 6. Return success with details
+    -- 6. Send EXTENSION_REQUEST system message
+    DECLARE
+        v_chat_id uuid;
+        v_listing_title text;
+        v_owner_id uuid;
+        v_owner_name text;
+        v_renter_name text;
+        v_seller_fee_percent numeric := 10; -- Default seller fee
+        v_owner_earnings numeric;
+    BEGIN
+        -- Get rental and listing details
+        SELECT 
+            l.title,
+            l.owner_id,
+            COALESCE(owner.full_name, 'Owner') as owner_name,
+            COALESCE(renter.full_name, 'Renter') as renter_name
+        INTO 
+            v_listing_title,
+            v_owner_id,
+            v_owner_name,
+            v_renter_name
+        FROM public.rentals r
+        JOIN public.listings l ON r.listing_id = l.id
+        JOIN public.users owner ON l.owner_id = owner.id
+        JOIN public.users renter ON r.renter_id = renter.id
+        WHERE r.id = p_rental_id;
+
+        -- Get or find chat
+        SELECT id INTO v_chat_id
+        FROM public.chats
+        WHERE listing_id = (SELECT listing_id FROM public.rentals WHERE id = p_rental_id)
+        AND owner_id = v_owner_id
+        AND renter_id = auth.uid()
+        LIMIT 1;
+
+        -- Calculate owner earnings
+        v_owner_earnings := v_additional_total_paid * (1 - v_seller_fee_percent / 100);
+
+        -- Send system messages if chat exists
+        IF v_chat_id IS NOT NULL THEN
+            -- Owner message
+            PERFORM public.send_system_message(
+                v_chat_id,
+                format(
+                    E'➕ **Extension Request:** %s wants to keep the %s until %s.\n\n**Additional Days:** %s\n**Your Extra Earnings:** $%s\n\nPlease approve or decline this request in the app.',
+                    v_renter_name,
+                    v_listing_title,
+                    to_char(p_new_end_date, 'Mon DD, YYYY'),
+                    v_extra_days,
+                    v_owner_earnings::numeric(10,2)
+                ),
+                v_owner_id,
+                v_owner_id
+            );
+
+            -- Renter message
+            PERFORM public.send_system_message(
+                v_chat_id,
+                format(
+                    E'⏳ **Extension Pending:** Your request to extend the %s until %s has been sent.\n\nWe will notify you and process the additional payment of $%s once %s approves.',
+                    v_listing_title,
+                    to_char(p_new_end_date, 'Mon DD, YYYY'),
+                    v_additional_total_paid::numeric(10,2),
+                    v_owner_name
+                ),
+                v_owner_id,
+                auth.uid()
+            );
+        END IF;
+    END;
+
+    -- 7. Return success with details
     RETURN jsonb_build_object(
         'success', true,
         'extension_id', v_extension_id,
