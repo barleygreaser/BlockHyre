@@ -17,6 +17,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/app/components/ui/tooltip";
+import { toast } from "sonner";
+import { formatDistanceToNow } from 'date-fns';
 import {
     Empty,
     EmptyContent,
@@ -370,21 +372,21 @@ export function OwnerDashboardView() {
 
             if (error) {
                 console.error('Error approving extension:', error);
-                alert(`Error: ${error.message}`);
+                toast.error(`Error: ${error.message}`);
                 return;
             }
 
             if (!data.success) {
-                alert(data.error || 'Failed to approve extension');
+                toast.error(data.error || 'Failed to approve extension');
                 return;
             }
 
             // Success - refresh the lists
             setExtensionRequests(prev => prev.filter(ext => ext.extension_id !== extensionId));
-            alert('Extension approved successfully!');
+            toast.success('Extension approved successfully!');
         } catch (err) {
             console.error('Extension approval failed:', err);
-            alert('Failed to approve extension');
+            toast.error('Failed to approve extension');
         } finally {
             setProcessingId(null);
         }
@@ -399,21 +401,21 @@ export function OwnerDashboardView() {
 
             if (error) {
                 console.error('Error declining extension:', error);
-                alert(`Error: ${error.message}`);
+                toast.error(`Error: ${error.message}`);
                 return;
             }
 
             if (!data.success) {
-                alert(data.error || 'Failed to decline extension');
+                toast.error(data.error || 'Failed to decline extension');
                 return;
             }
 
             // Success - refresh the lists
             setExtensionRequests(prev => prev.filter(ext => ext.extension_id !== extensionId));
-            alert('Extension declined.');
+            toast.success('Extension declined');
         } catch (err) {
             console.error('Extension decline failed:', err);
-            alert('Failed to decline extension');
+            toast.error('Failed to decline extension');
         } finally {
             setProcessingId(null);
         }
