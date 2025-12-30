@@ -361,6 +361,64 @@ export function OwnerDashboardView() {
         }
     };
 
+    const handleApproveExtension = async (extensionId: string) => {
+        setProcessingId(extensionId);
+        try {
+            const { data, error } = await supabase.rpc('approve_rental_extension', {
+                p_extension_id: extensionId
+            });
+
+            if (error) {
+                console.error('Error approving extension:', error);
+                alert(`Error: ${error.message}`);
+                return;
+            }
+
+            if (!data.success) {
+                alert(data.error || 'Failed to approve extension');
+                return;
+            }
+
+            // Success - refresh the lists
+            setExtensionRequests(prev => prev.filter(ext => ext.extension_id !== extensionId));
+            alert('Extension approved successfully!');
+        } catch (err) {
+            console.error('Extension approval failed:', err);
+            alert('Failed to approve extension');
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleDeclineExtension = async (extensionId: string) => {
+        setProcessingId(extensionId);
+        try {
+            const { data, error } = await supabase.rpc('decline_rental_extension', {
+                p_extension_id: extensionId
+            });
+
+            if (error) {
+                console.error('Error declining extension:', error);
+                alert(`Error: ${error.message}`);
+                return;
+            }
+
+            if (!data.success) {
+                alert(data.error || 'Failed to decline extension');
+                return;
+            }
+
+            // Success - refresh the lists
+            setExtensionRequests(prev => prev.filter(ext => ext.extension_id !== extensionId));
+            alert('Extension declined.');
+        } catch (err) {
+            console.error('Extension decline failed:', err);
+            alert('Failed to decline extension');
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     // Helper for date formatting
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
@@ -534,6 +592,7 @@ export function OwnerDashboardView() {
                                                 <Button
                                                     className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                                                     disabled={processingId === ext.extension_id}
+                                                    onClick={() => handleApproveExtension(ext.extension_id)}
                                                 >
                                                     <Check className="mr-2 h-4 w-4" />
                                                     Approve
@@ -542,6 +601,7 @@ export function OwnerDashboardView() {
                                                     variant="outline"
                                                     className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
                                                     disabled={processingId === ext.extension_id}
+                                                    onClick={() => handleDeclineExtension(ext.extension_id)}
                                                 >
                                                     <X className="mr-2 h-4 w-4" />
                                                     Decline
