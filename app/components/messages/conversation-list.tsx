@@ -8,6 +8,7 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { MessageSquare } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 
 interface ConversationListProps {
     selectedChatId: string | null;
@@ -100,9 +101,17 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                                 </p>
                                 {chat.last_message_content && (
                                     <div className="flex items-center justify-between">
-                                        <p className="text-sm text-slate-600 truncate flex-1">
-                                            {chat.last_message_content}
-                                        </p>
+                                        <div className="text-sm text-slate-600 truncate flex-1 [&_p]:inline [&_p]:m-0 prose prose-sm max-w-none prose-p:text-slate-600 prose-strong:text-slate-900">
+                                            <ReactMarkdown
+                                                allowedElements={['p', 'strong', 'em', 'span', 'b', 'i']}
+                                                unwrapDisallowed
+                                                components={{
+                                                    p: (props: any) => <span {...props} />
+                                                }}
+                                            >
+                                                {chat.last_message_content?.replace(/\n/g, ' ') || ''}
+                                            </ReactMarkdown>
+                                        </div>
                                         {chat.last_message_time && (
                                             <span className="text-xs text-slate-400 ml-2 flex-shrink-0">
                                                 {formatDistanceToNow(new Date(chat.last_message_time), {
