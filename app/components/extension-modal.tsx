@@ -85,7 +85,7 @@ export function ExtensionModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <CalendarClock className="h-5 w-5 text-safety-orange" />
@@ -103,18 +103,20 @@ export function ExtensionModal({
                         <p className="font-semibold text-slate-900">{format(currentEnd, 'MMMM d, yyyy')}</p>
                     </div>
 
-                    {/* Date Picker */}
+                    {/* Date Picker - Centered */}
                     <div>
                         <label className="text-sm font-medium text-slate-900 mb-2 block">
                             Select new end date:
                         </label>
-                        <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
-                            disabled={(date) => date < minDate}
-                            className="rounded-md border"
-                        />
+                        <div className="flex justify-center">
+                            <Calendar
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={setSelectedDate}
+                                disabled={(date) => date < minDate}
+                                className="rounded-md border"
+                            />
+                        </div>
                     </div>
 
                     {/* Pricing Preview */}
