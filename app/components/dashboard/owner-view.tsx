@@ -760,5 +760,6 @@ export function OwnerDashboardView() {
                     onClose={() => setIsInspectionOpen(false)}
                 />
             </div>
-            );
+        </div>
+    );
 }
