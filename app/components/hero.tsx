@@ -7,7 +7,7 @@ import { useAuth } from "@/app/context/auth-context";
 export function Hero() {
     const { user } = useAuth();
     return (
-        <section className="relative h-[70vh] min-h-[600px] w-full overflow-hidden flex items-center">
+        <section className="relative h-[85vh] min-h-[600px] w-full overflow-hidden flex items-center">
             {/* Background Images */}
             <div className="absolute inset-0 z-0">
                 <Image
