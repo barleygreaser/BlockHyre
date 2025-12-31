@@ -663,28 +663,6 @@ export function OwnerDashboardView() {
                                                                 </span>
                                                             </h4>
                                                             <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
-
-                                                            {/* Time Remaining Warning */}
-                                                            {(() => {
-                                                                const timeInfo = getTimeRemaining(request.created_at);
-                                                                if (!timeInfo) return null;
-                                                                const isUrgent = timeInfo.isUrgent;
-
-                                                                return (
-                                                                    <div className={`flex items-center gap-1.5 mt-2 text-xs font-medium px-2 py-1 rounded-md w-fit ${isUrgent
-                                                                            ? 'bg-red-50 text-red-700 border border-red-200'
-                                                                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                                                                        }`}>
-                                                                        <Clock className={`h-3.5 w-3.5 ${isUrgent ? 'animate-pulse' : ''}`} />
-                                                                        <span>
-                                                                            {isUrgent ? '⚠️ ' : ''}
-                                                                            {formatTimeRemaining(request.created_at)} to respond
-                                                                            {isUrgent ? ' - Auto-denies soon!' : ' or auto-denies'}
-                                                                        </span>
-                                                                    </div>
-                                                                );
-                                                            })()}
-
                                                             <div className="flex items-center gap-3 mt-1 text-xs">
                                                                 <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
                                                                     {formatDate(request.start_date)} - {formatDate(request.end_date)}
@@ -724,6 +702,27 @@ export function OwnerDashboardView() {
                                                                     </>
                                                                 )}
                                                             </div>
+
+                                                            {/* Time Remaining Warning */}
+                                                            {(() => {
+                                                                const timeInfo = getTimeRemaining(request.created_at);
+                                                                if (!timeInfo) return null;
+                                                                const isUrgent = timeInfo.isUrgent;
+
+                                                                return (
+                                                                    <div className={`flex items-center gap-1.5 mt-3 text-xs font-medium px-2 py-1 rounded-md w-fit ${isUrgent
+                                                                        ? 'bg-red-50 text-red-700 border border-red-200'
+                                                                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                                                        }`}>
+                                                                        <Clock className={`h-3.5 w-3.5 ${isUrgent ? 'animate-pulse' : ''}`} />
+                                                                        <span>
+                                                                            {isUrgent ? '⚠️ ' : ''}
+                                                                            {formatTimeRemaining(request.created_at)} to respond
+                                                                            {isUrgent ? ' - Auto-denies soon!' : ' or auto-denies'}
+                                                                        </span>
+                                                                    </div>
+                                                                );
+                                                            })()}
                                                         </div>
                                                     </div>
                                                     <div className="flex gap-2 w-full sm:w-auto">
