@@ -279,12 +279,7 @@ export default function EditListingPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className={cn(
-                                "text-sm mr-2 hidden md:inline-block",
-                                hasUnsavedChanges() ? "text-amber-600 font-medium" : "text-slate-500"
-                            )}>
-                                {hasUnsavedChanges() ? "Unsaved changes" : "All changes saved"}
-                            </span>
+                            <span className="text-sm text-slate-500 mr-2">Last saved: Just now</span>
 
                             {/* View Listing Button */}
                             <Button

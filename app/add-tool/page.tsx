@@ -8,12 +8,13 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2, Hammer, Info, Sparkles, HelpCircle } from "lucide-react";
+import { Badge } from "@/app/components/ui/badge";
+import { ImageManagerModal } from "@/app/components/listings/image-manager-modal";
+import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2, Hammer, Info, Sparkles, HelpCircle, Image as ImageIcon } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { supabase } from "@/lib/supabase";
 import { Switch } from "@/app/components/ui/switch";
-import { ImageUpload } from "@/app/components/ui/image-upload";
 import { TypeaheadInput } from "@/app/components/ui/typeahead-input";
 import { useDebounce } from "@/app/hooks/use-debounce";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
@@ -68,12 +69,14 @@ export default function AddToolPage() {
         description: "",
         acceptsBarter: false,
         bookingType: "request" as "request" | "instant",
-        images: ["", "", ""],
+        images: [] as string[],
         specs: {
             weight: "",
             dimensions: ""
         }
     });
+
+    const [imageManagerOpen, setImageManagerOpen] = useState(false);
 
     // NEW: Track title for debounce
     const debouncedTitle = useDebounce(formData.title, 500);
@@ -160,10 +163,8 @@ export default function AddToolPage() {
         }));
     };
 
-    const handleImageChange = (index: number, value: string) => {
-        const newImages = [...formData.images];
-        newImages[index] = value;
-        setFormData(prev => ({ ...prev, images: newImages }));
+    const handleImagesSave = (reorderedImages: string[]) => {
+        setFormData(prev => ({ ...prev, images: reorderedImages }));
     };
 
     // Helper to generate UUID
@@ -207,6 +208,11 @@ export default function AddToolPage() {
                     code: userError.code
                 });
                 throw new Error(`Could not fetch your location: ${userError.message || 'Unknown error'}`);
+            }
+
+            // Check image count (server-side safety)
+            if (formData.images.length < 2) {
+                throw new Error("You must upload at least 2 photos of your tool.");
             }
 
             // Check if user record exists
@@ -625,20 +631,68 @@ export default function AddToolPage() {
 
                                 {/* Images */}
                                 <div className="space-y-4">
-                                    <label className="text-sm font-medium text-slate-900">Images</label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        {formData.images.map((img, idx) => (
-                                            <ImageUpload
-                                                key={idx}
-                                                bucket="tool_images"
-                                                initialValue={img}
-                                                onUpload={(url) => handleImageChange(idx, url)}
-                                                label={`Photo ${idx + 1}`}
-                                                folder="tools"
-                                            />
-                                        ))}
+                                    <label className="text-sm font-medium text-slate-900">Photos</label>
+
+                                    {/* Guidelines */}
+                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-start gap-3">
+                                        <div className="p-1 bg-blue-100 rounded-full">
+                                            <ImageIcon className="h-4 w-4 text-blue-600" />
+                                        </div>
+                                        <div className="text-sm">
+                                            <p className="font-medium text-slate-800">Photo Guidelines</p>
+                                            <ul className="list-disc list-inside text-slate-600 mt-1 space-y-1">
+                                                <li><strong>2-5 images</strong> required per listing.</li>
+                                                <li>The <strong>first image</strong> will be your main cover photo.</li>
+                                                <li>Max <strong>3MB</strong> per image (JPG, PNG only).</li>
+                                                <li>Clear photos increase rental requests by 40%.</li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500">Upload clear photos of your item.</p>
+
+                                    {/* Preview Strip */}
+                                    {formData.images.length > 0 && (
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                            {formData.images.map((url, index) => (
+                                                <div key={index} className="relative aspect-square rounded-lg overflow-hidden border-2 border-slate-200 group">
+                                                    <img
+                                                        src={url}
+                                                        alt={`Preview ${index + 1}`}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    {index === 0 && (
+                                                        <div className="absolute top-1 right-1">
+                                                            <Badge className="bg-safety-orange text-white text-[10px] shadow-sm">
+                                                                Main
+                                                            </Badge>
+                                                        </div>
+                                                    )}
+                                                    <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs font-medium px-1.5 py-0.5 rounded">
+                                                        {index + 1}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Manage Button */}
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setImageManagerOpen(true)}
+                                        className="w-full h-12 border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 text-slate-600"
+                                    >
+                                        <ImageIcon className="h-4 w-4 mr-2" />
+                                        {formData.images.length > 0
+                                            ? `Manage Photos (${formData.images.length})`
+                                            : "Upload Photos"}
+                                    </Button>
+
+                                    {/* Validation Warning */}
+                                    {formData.images.length < 2 && (
+                                        <p className="text-xs text-amber-600 font-medium flex items-center gap-1">
+                                            <AlertTriangle className="h-3 w-3" />
+                                            At least 2 photos required to continue.
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="pt-6 flex gap-4">
@@ -651,7 +705,7 @@ export default function AddToolPage() {
                                     </Button>
                                     <Button
                                         onClick={() => setIsAffirmationOpen(true)}
-                                        disabled={loading}
+                                        disabled={loading || formData.images.length < 2}
                                         className="flex-1 h-12 text-base bg-safety-orange hover:bg-safety-orange/90"
                                     >
                                         Review & Submit
@@ -724,6 +778,14 @@ export default function AddToolPage() {
                     </DialogContent>
                 </Dialog>
             </div>
+
+            <ImageManagerModal
+                open={imageManagerOpen}
+                onOpenChange={setImageManagerOpen}
+                images={formData.images}
+                onSave={handleImagesSave}
+            />
+
             <Footer />
         </main >
     );
