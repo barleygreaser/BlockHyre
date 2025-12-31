@@ -146,12 +146,12 @@ export default function InventoryPage() {
                 maxDistance,
                 priceRange[0],
                 priceRange[1],
-                selectedCategories.length === 1 ? selectedCategories[0] : undefined // RPC only supports one category for now
+                undefined // Don't pass category filter to backend - handle all category filtering client-side for instant response
             );
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [maxDistance, priceRange, selectedCategories, userLocation, locationLoaded]); // Re-run when these change
+    }, [maxDistance, priceRange, userLocation, locationLoaded]); // Category filtering is handled client-side, so selectedCategories removed from deps
 
     // Map Supabase listings to Tool format
     const inventoryTools: (Tool & { tier: number, ownerVerified: boolean })[] = useMemo(() => {
