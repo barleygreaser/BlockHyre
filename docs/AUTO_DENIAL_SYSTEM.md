@@ -100,7 +100,11 @@ You must schedule the Edge Function to run periodically. See `supabase/functions
 3. Timer changes color/style:
    - **Green zone** (24-2 hours): Amber badge, calm display
    - **Red zone** (< 2 hours): Red badge, pulsing icon, urgent warning
-4. Owner can:
+4. **At < 2 hours**: System sends urgent warning message to owner's chat
+   - Message type: `RENTAL_REQUEST_EXPIRING`
+   - Shows renter name, tool, dates, and potential earnings
+   - Only sent once per request
+5. Owner can:
    - **Approve**: Request accepted, timer removed
    - **Deny**: Request rejected manually
    - **Ignore**: Auto-denied after 24 hours
@@ -122,11 +126,17 @@ The `/status` endpoint or public rental status page will show:
 - `status` (existing): Rental status, updated to 'rejected' on auto-denial
 - `cancelled_at` (existing): Set to NOW() when auto-denied
 - `cancellation_reason` (existing): Set to auto-denial message
+- `expiring_warning_sent_at` (new): Timestamp when the < 2 hour warning was sent to owner
 
 ### Functions Added
 
 - `public.auto_deny_expired_rentals()` - Service role only
 - `public.get_rental_time_remaining(uuid)` - Available to authenticated users
+- `public.send_expiring_rental_warnings()` - Service role only, sends urgent warnings when < 2 hours remain
+
+### System Messages
+
+- `RENTAL_REQUEST_EXPIRING` - Template for urgent warning sent to owners when < 2 hours remain
 
 ## Testing
 
@@ -223,9 +233,14 @@ LIMIT 20;
 ## Files Modified/Created
 
 ### New Files
-- `supabase/migrations/20251231000000_add_rental_auto_denial.sql`
+- ✅ `supabase/migrations/20251231000000_add_rental_auto_denial.sql` (deployed)
+- ✅ `supabase/migrations/20251231000001_add_expiring_request_template.sql`
+- ✅ `supabase/migrations/20251231000002_add_expiring_warning_function.sql`
 - `supabase/functions/auto-deny-rentals/index.ts`
 - `supabase/functions/auto-deny-rentals/README.md`
+- `.github/workflows/auto-deny-rentals.yml`
+- `.github/workflows/SECRETS_SETUP.md`
+- `docs/AUTO_DENIAL_SYSTEM.md` (full documentation)
 
 ### Modified Files
 - `app/components/dashboard/owner-view.tsx`

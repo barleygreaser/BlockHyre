@@ -17,7 +17,17 @@ Deno.serve(async (req) => {
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // Call the auto-denial function
+        // Step 1: Send expiring warnings (< 2 hours remaining)
+        const { data: warningsData, error: warningsError } = await supabase.rpc('send_expiring_rental_warnings');
+
+        if (warningsError) {
+            console.error('Error sending expiring warnings:', warningsError);
+            // Continue to auto-denial even if warnings fail
+        } else {
+            console.log('Expiring warnings sent:', warningsData?.length || 0);
+        }
+
+        // Step 2: Call the auto-denial function
         const { error } = await supabase.rpc('auto_deny_expired_rentals');
 
         if (error) {

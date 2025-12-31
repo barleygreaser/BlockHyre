@@ -149,6 +149,7 @@ CREATE FUNCTION send_system_message(
 |------------|---------|-------|
 | `BOOKING_CONFIRMED` | Owner approves rental | Owner, Renter |
 | `RENTAL_REQUEST_SUBMITTED` | Renter submits request | Owner, Renter |
+| `RENTAL_REQUEST_EXPIRING` | Request < 2 hours until auto-denial | Owner only |
 | `RENTAL_CANCELLED` | Cancellation occurs | Owner, Renter |
 | `LISTING_INQUIRY` | New chat started | Owner, Renter |
 | `RENTAL_OVERDUE` | Return date passed | Owner, Renter |
