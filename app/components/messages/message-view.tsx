@@ -17,11 +17,13 @@ export function MessageView({ chatId }: MessageViewProps) {
     const { fetchMessages, sendMessage, markMessagesAsRead, subscribeToChat, loading } = useMessages();
     const [messages, setMessages] = useState<Message[]>([]);
     const channelRef = useRef<RealtimeChannel | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         if (chatId) {
             loadMessages();
             markMessagesAsRead(chatId);
+            setIsVisible(true);
 
             // Subscribe to real-time updates (DB)
             channelRef.current = subscribeToChat(chatId, (message) => {
@@ -33,19 +35,20 @@ export function MessageView({ chatId }: MessageViewProps) {
                     return [...prev, message];
                 });
 
-                // Mark as read if message is from other user
-                if (message.sender_id !== user?.id) {
+                // Mark as read ONLY if message is from other user AND chat is visible
+                if (message.sender_id !== user?.id && isVisible) {
                     markMessagesAsRead(chatId);
                 }
             });
 
             return () => {
+                setIsVisible(false);
                 if (channelRef.current) {
                     channelRef.current.unsubscribe();
                 }
             };
         }
-    }, [chatId, user?.id]);
+    }, [chatId, user?.id, isVisible]);
 
     const loadMessages = async () => {
         const data = await fetchMessages(chatId);
@@ -84,7 +87,7 @@ export function MessageView({ chatId }: MessageViewProps) {
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
             <RealtimeChat
                 roomName={chatId}
                 username={userName}

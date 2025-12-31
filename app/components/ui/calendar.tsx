@@ -63,8 +63,14 @@ function Calendar({
                 });
 
                 if (hasCollision) {
-                    toast.error("Selected range includes unavailable dates.");
-                    return; // Stop propagation
+                    // If range includes blocked dates, reset to the clicked date
+                    // This improves UX when a previous start date "traps" the user
+                    if (onSelect) {
+                        onSelect({ from: selectedDay, to: undefined }, selectedDay, activeModifiers, e);
+                    } else {
+                        toast.error("Selected range includes unavailable dates.");
+                    }
+                    return;
                 }
             }
         }

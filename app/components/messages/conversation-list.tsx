@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useMessages, type Chat } from "@/app/hooks/use-messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,9 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { MessageSquare } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/context/auth-context";
 
 interface ConversationListProps {
     selectedChatId: string | null;
@@ -17,17 +20,64 @@ interface ConversationListProps {
 export function ConversationList({ selectedChatId, onSelectChat }: ConversationListProps) {
     const { fetchConversations, loading } = useMessages();
     const [conversations, setConversations] = useState<Chat[]>([]);
+    const { user } = useAuth();
+    const channelRef = useRef<any>(null);
+    const [initialLoad, setInitialLoad] = useState(true);
 
     useEffect(() => {
         loadConversations();
     }, []);
 
-    const loadConversations = async () => {
+    useEffect(() => {
+        if (!user) return;
+
+        // Subscribe to messages table for realtime updates
+        const channel = supabase
+            .channel('conversation-list-updates')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'messages',
+                },
+                () => {
+                    // Reload conversations when any message changes
+                    loadConversations(true); // Pass true for background update
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'chats',
+                },
+                () => {
+                    // Reload when new chat is created
+                    loadConversations(true); // Pass true for background update
+                }
+            )
+            .subscribe();
+
+        channelRef.current = channel;
+
+        return () => {
+            if (channelRef.current) {
+                supabase.removeChannel(channelRef.current);
+            }
+        };
+    }, [user]);
+
+    const loadConversations = async (isBackgroundUpdate = false) => {
         const data = await fetchConversations();
         setConversations(data);
+        if (initialLoad) {
+            setInitialLoad(false);
+        }
     };
 
-    if (loading) {
+    if (loading && initialLoad) {
         return (
             <div className="p-4 space-y-3">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -57,13 +107,13 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
 
     return (
         <ScrollArea className="h-full">
-            <div className="p-2">
+            <div className="divide-y divide-slate-200">
                 {conversations.map((chat) => (
                     <button
                         key={chat.id}
                         onClick={() => onSelectChat(chat.id)}
                         className={cn(
-                            "w-full p-3 rounded-lg mb-1 transition-colors text-left hover:bg-slate-50",
+                            "w-full p-4 transition-colors text-left hover:bg-slate-50",
                             selectedChatId === chat.id && "bg-slate-100"
                         )}
                     >
@@ -99,15 +149,21 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                                     {chat.listing_title}
                                 </p>
                                 {chat.last_message_content && (
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-sm text-slate-600 truncate flex-1">
-                                            {chat.last_message_content}
+                                    <div className="flex items-center justify-between gap-2">
+                                        <p className="text-sm text-slate-600 flex-1 min-w-0 truncate">
+                                            {chat.last_message_content?.replace(/\n/g, ' ').replace(/\*\*/g, '').substring(0, 60) || ''}
+                                            {(chat.last_message_content?.length || 0) > 60 ? '...' : ''}
                                         </p>
                                         {chat.last_message_time && (
-                                            <span className="text-xs text-slate-400 ml-2 flex-shrink-0">
-                                                {formatDistanceToNow(new Date(chat.last_message_time), {
-                                                    addSuffix: true,
-                                                })}
+                                            <span className="text-xs text-slate-400 flex-shrink-0 whitespace-nowrap ml-auto">
+                                                {formatDistanceToNow(new Date(chat.last_message_time), { addSuffix: false })
+                                                    .replace('about ', '')
+                                                    .replace('less than a minute', 'now')
+                                                    .replace(' minute', 'm').replace(' minutes', 'm')
+                                                    .replace(' hour', 'h').replace(' hours', 'h')
+                                                    .replace(' day', 'd').replace(' days', 'd')
+                                                    .replace(' month', 'mo').replace(' months', 'mo')
+                                                    .replace(' year', 'y').replace(' years', 'y')}
                                             </span>
                                         )}
                                     </div>

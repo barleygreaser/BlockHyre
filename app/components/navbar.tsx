@@ -63,7 +63,7 @@ export function Navbar() {
 
     return (
         <nav className="border-b border-slate-200 bg-white sticky top-0 z-40">
-            <div className="container mx-auto flex h-16 items-center justify-between px-4">
+            <div className="flex h-16 items-center justify-between px-4 w-full">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-900 text-white group-hover:bg-safety-orange transition-colors duration-300">
@@ -90,7 +90,7 @@ export function Navbar() {
 
                 {/* Right Side Actions */}
                 <div className="flex items-center gap-4">
-                    <Link href="/auth" className="md:hidden">
+                    <Link href={user ? "/dashboard" : "/auth"} className="md:hidden">
                         <Button variant="ghost" size="icon" className="text-slate-600 hover:text-slate-900">
                             <User className="h-5 w-5" />
                         </Button>

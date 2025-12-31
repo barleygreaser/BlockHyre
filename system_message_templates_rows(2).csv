@@ -1,0 +1,133 @@
+id,event_name,template_body,description,created_at,sends_external_alert,alert_type
+0a3f023b-ac17-4482-9562-d357df5bfc32,EXTENSION_REQUEST,"
+{% if recipient_role == 'owner' %}
+    ➕ **Extension Request:** {{ renter_name }} wants to keep the {{ tool_name }} until {{ new_end_date }}.
+    
+    **Additional Days:** {{ extra_days }}
+    **Your Extra Earnings:** ${{ additional_total_paid * (1 - seller_fee_percent / 100) }}
+    
+    Please approve or decline this request in the app.
+    
+{% elif recipient_role == 'renter' %}
+
+    ⏳ **Extension Pending:** Your request to extend the {{ tool_name }} until {{ new_end_date }} has been sent.
+    
+    We will notify you and process the additional payment of ${{ additional_total_paid }} once {{ owner_name }} approves.
+    
+{% endif %}
+        ",Sent when a renter requests to extend an active rental.,2025-12-16 19:50:11.231326+00,true,"email, push"
+0b057a67-6a0d-41bd-ad60-646df157d914,RENTAL_CANCELLED,"
+{% if recipient_role == 'renter' %}
+    ❌ **Booking Cancelled:** The rental for {{ tool_name }} has been cancelled.
+    
+    {% if cancelled_by == 'owner' %}
+        The owner was unable to fulfill the request. A full refund of ${{ total_paid }} has been processed.
+    {% else %}
+        Your cancellation is confirmed.
+    {% endif %}
+    
+{% elif recipient_role == 'owner' %}
+
+    ❌ **Booking Cancelled:** The rental for {{ tool_name }} with {{ renter_name }} was cancelled.
+    
+    The potential earnings of ${{ total_paid * (1 - seller_fee_percent / 100) }} will not be processed. Your item is now back on the market.
+    
+{% endif %}
+        ",Sent when a rental is cancelled by either party before completion.,2025-12-16 19:50:11.231326+00,true,"email, push"
+151a438d-9a96-49ea-83fd-092eab6846e3,RETURN_REMINDER_TOMORROW,"
+    {% if recipient_role == 'renter' %}
+        ⏰ Reminder: Your rental for the {{ tool_name }} is due back tomorrow, {{ due_date }}, by {{ due_time }}.
+        
+        Please check the owner's return instructions to ensure a smooth drop-off: {{ return_instructions_link }}.
+        
+    {% elif recipient_role == 'owner' %}
+    
+        🗓️ Heads up! Your {{ tool_name }} (Rented by {{ renter_name }}) is scheduled to be returned tomorrow, {{ due_date }}, by {{ due_time }}.
+        
+        Please ensure your drop-off location is accessible for the renter.
+        
+    {% endif %}
+    ",Sent 24 hours before the rental end date. Time-sensitive alert.,2025-12-13 09:25:12.526423+00,true,"push,email"
+1f1fbbff-b121-44cd-b168-1a5c0c4a7788,RETURN_REMINDER_TODAY,"
+    {% if recipient_role == 'renter' %}
+        📢 **DUE TODAY:** Your rental for the {{ tool_name }} must be returned today by {{ due_time }} to avoid late fees.
+        
+        Coordinate with the owner via chat if you have any issues!
+        
+    {% elif recipient_role == 'owner' %}
+    
+        ✅ **DUE TODAY:** Your {{ tool_name }} (Rented by {{ renter_name }}) is scheduled to be returned today by {{ due_time }}.
+        
+        Please prepare to receive the tool and mark the rental as complete upon drop-off.
+        
+    {% endif %}
+    ",Sent on the morning of the rental end date. Time-sensitive alert.,2025-12-13 09:25:12.526423+00,true,"push,email"
+2230e219-69f8-409d-a695-6b14eb4319d7,LISTING_INQUIRY,"
+{% if recipient_role == 'owner' %}
+📢 New Inquiry: {{ tool_name }}
+
+{{ renter_name }} has started a conversation about your **{{ tool_name }}**.
+
+They are interested in the period from **{{ start_date }} to {{ end_date }}**, with an estimated cost of **${{ total_cost }}**.
+
+Please respond to {{ renter_name }} in this chat to coordinate details and confirm availability.
+{% endif %}
+
+{% if recipient_role == 'renter' %}
+✅ Conversation Started!
+
+Your message thread for the **{{ tool_name }}** has been successfully created. The owner, {{ owner_name }}, has been notified of your interest.
+
+You can now use this chat to coordinate dates and pickup details directly with the owner.
+{% endif %}
+",Sent when a renter submits a new rental request. This is an IN-APP ONLY chat message and does NOT trigger email/push.,2025-12-13 09:21:27.880261+00,false,
+43adccb9-4b1c-4349-b57d-cd10dadeb7ae,RENTAL_OVERDUE,"
+    {% if recipient_role == 'renter' %}
+        🚨 Your rental for the {{ tool_name }} is OVERDUE! It was due back at {{ due_time }} on {{ due_date }}.
+        
+        Late fees of {{ late_fee_amount }} per day are now applying. Please contact {{ owner_name }} immediately to arrange the return.
+        
+    {% elif recipient_role == 'owner' %}
+    
+        ⚠️ The rental for your {{ tool_name }} (Rented by {{ renter_name }}) is now overdue. 
+        
+        The system has started applying late fees. You may contact the renter now to follow up.
+        
+    {% endif %}
+    ",Sent when the scheduled return time passes. Critical alert.,2025-12-13 09:17:24.254887+00,true,"email, push"
+ad68254c-5a73-4104-873f-fdf1af24e4c8,BOOKING_CONFIRMED,"
+{% if recipient_role == 'renter' %}
+    🎉 Rental Confirmed! Your booking for the {{ tool_name }} from {{ owner_name }} is confirmed for {{ start_date }} to {{ end_date }}.
+    
+    Pickup location: {{ location_address }}. Total Paid: ${{ total_paid }}.
+    
+{% elif recipient_role == 'owner' %}
+
+    ✅ New Booking Confirmed! The {{ tool_name }} has been rented by {{ renter_name }} for the period {{ start_date }} to {{ end_date }}.
+    
+    Please prepare the tool for pickup at {{ pickup_time }}. 
+    **Total Earnings:** ${{ total_paid * (1 - seller_fee_percent / 100) }}.
+    
+{% endif %}
+        ",Sent immediately after a rental payment is successful.,2025-12-13 09:17:24.254887+00,true,"email, push"
+d17f62ce-3b8b-481a-b849-e988b4ae3277,RENTAL_REQUEST_SUBMITTED,"
+{% if recipient_role == 'owner' %}
+    🔔 **Action Required:** New Rental Request for {{ tool_name }}!
+    
+    {{ renter_name }} has requested to rent your tool from {{ start_date }} to {{ end_date }}.
+    
+    **Total Price:** ${{ total_paid }}
+    **Your Potential Earnings:** ${{ total_paid * (1 - seller_fee_percent / 100) }}
+    
+    Please accept or decline this request within 24 hours.
+    
+{% elif recipient_role == 'renter' %}
+
+    ⏳ Request Sent! 
+    
+    We have sent your request for the {{ tool_name }} to {{ owner_name }}.
+    
+    Your card will only be charged once the owner accepts the booking. We will notify you as soon as they respond!
+    
+{% endif %}
+        ",Sent when a renter submits a formal rental request pending approval.,2025-12-16 19:50:11.231326+00,true,"email, push"

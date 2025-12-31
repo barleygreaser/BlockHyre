@@ -131,7 +131,7 @@ export default function InventoryPage() {
         }
     };
 
-    const { listings, loading, error, searchListings, categories } = useMarketplace();
+    const { listings, loading, categoriesLoading, error, searchListings, categories } = useMarketplace();
 
     // Trigger search when filters change
     useEffect(() => {
@@ -276,7 +276,7 @@ export default function InventoryPage() {
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
                             <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide">
-                                {loading ? (
+                                {categoriesLoading ? (
                                     // SKELETON LOADER IMPLEMENTATION
                                     Array.from({ length: 8 }).map((_, index) => {
                                         // Vary the width for more dynamic appearance

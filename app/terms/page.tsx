@@ -192,7 +192,7 @@ export default function TermsPage() {
                     <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 mt-12">
                         <h4 className="text-lg font-bold text-slate-900 mt-0">Contact Us</h4>
                         <p className="mb-0">
-                            If you have any questions about these Terms, please contact us at <a href="mailto:legal@blockshare.com" className="text-safety-orange">legal@blockshare.com</a>.
+                            If you have any questions about these Terms, please contact us at <a href="mailto:legal@blockhyre.com" className="text-safety-orange">legal@blockhyre.com</a>.
                         </p>
                     </div>
                 </div>

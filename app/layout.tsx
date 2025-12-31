@@ -15,6 +15,11 @@ const robotoSlab = Roboto_Slab({
 export const metadata: Metadata = {
   title: "BlockHyre - Hyperlocal Tool Sharing",
   description: "Turn Your Neighborhood into a Factory. Rent high-value tools from neighbors.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5, // Allow manual zoom for accessibility
+  },
 };
 
 import { AuthProvider } from "./context/auth-context";

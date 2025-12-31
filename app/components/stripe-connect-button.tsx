@@ -17,23 +17,26 @@ export function StripeConnectButton() {
                 return;
             }
 
-            const { data, error } = await supabase.functions.invoke('connect-stripe', {
-                body: {
-                    returnUrl: window.location.origin + '/dashboard',
-                    refreshUrl: window.location.origin + '/dashboard',
+            const response = await fetch("/api/stripe/connect", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`,
                 },
             });
 
-            if (error) {
-                throw error;
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to connect");
             }
 
-            if (data?.url) {
+            if (data.url) {
                 window.location.href = data.url; // Redirect to Stripe
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error linking Stripe:", error);
-            alert("Failed to initialize Stripe connection. Please try again.");
+            alert(`Failed to initialize Stripe connection: ${error.message || "Unknown error"}`);
         } finally {
             setIsLoading(false);
         }

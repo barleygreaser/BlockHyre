@@ -1,40 +1,122 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { Search, Calendar, Check, MessageSquare, TriangleAlert } from "lucide-react";
+import { Search, Calendar, Check, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X, Package } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { formatDistanceToNow, format } from "date-fns";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
+import { RescheduleModal } from "@/app/components/reschedule-modal";
+import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
+import { HandoverModal } from "@/app/components/modals/handover-modal";
+import { ExtensionModal } from "@/app/components/extension-modal";
+import Image from "next/image";
+
+interface ActiveRental {
+    rental_id: string;
+    listing_id: string;
+    listing_title: string;
+    listing_image_url: string | null;
+    owner_id: string;
+    owner_name: string;
+    end_date: string;
+    dashboard_status: 'overdue' | 'due_today' | 'active';
+    daily_price?: number;
+    risk_fee?: number;
+}
+
+interface UpcomingBooking {
+    rental_id: string;
+    listing_id: string;
+    listing_title: string;
+    listing_image_url: string | null;
+    start_date: string;
+    end_date: string;
+    total_days: number;
+}
+
+interface RentalHistory {
+    rental_id: string;
+    listing_id: string;
+    listing_title: string;
+    end_date: string;
+    has_review: boolean;
+}
+
+import { RenterDashboardSkeleton } from "@/app/components/dashboard/dashboard-skeletons";
 
 export function RenterDashboardView() {
     const [activeDisputes, setActiveDisputes] = useState([]);
-    const [activeRentals, setActiveRentals] = useState([
-        {
-            id: 1,
-            item: "Makita Circular Saw",
-            owner: "John D.",
-            status: "overdue",
-            badgeText: "OVERDUE",
-            dueText: "Due Yesterday",
-        },
-        {
-            id: 2,
-            item: "Hilti Hammer Drill",
-            owner: "Sarah M.",
-            status: "due-today",
-            badgeText: "Return Today",
-            dueText: "Due by 5:00 PM",
-        },
-        {
-            id: 3,
-            item: "Werner Extension Ladder",
-            owner: "Mike T.",
-            status: "due-future",
-            badgeText: "Due in 3 Days",
-            dueText: "Oct 15",
+    const [activeRentals, setActiveRentals] = useState<ActiveRental[]>([]);
+    const [upcomingBookings, setUpcomingBookings] = useState<UpcomingBooking[]>([]);
+    const [rentalHistory, setRentalHistory] = useState<RentalHistory[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [handoverModalOpen, setHandoverModalOpen] = useState(false);
+    const [extensionModalOpen, setExtensionModalOpen] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<UpcomingBooking | null>(null);
+    const [selectedRental, setSelectedRental] = useState<ActiveRental | null>(null);
+
+    useEffect(() => {
+        async function fetchRenterData() {
+            try {
+                // Fetch active rentals
+                const { data: activeData, error: activeError } = await supabase
+                    .rpc('get_my_active_rentals');
+
+                if (activeError) {
+                    console.error('Active rentals RPC error:', {
+                        message: activeError.message,
+                        details: activeError.details,
+                        hint: activeError.hint,
+                        code: activeError.code
+                    });
+                } else {
+                    setActiveRentals(activeData || []);
+                }
+
+                // Fetch upcoming bookings
+                const { data: upcomingData, error: upcomingError } = await supabase
+                    .rpc('get_my_upcoming_bookings');
+
+                if (upcomingError) {
+                    console.error('Upcoming bookings RPC error:', {
+                        message: upcomingError.message,
+                        details: upcomingError.details,
+                        hint: upcomingError.hint,
+                        code: upcomingError.code
+                    });
+                } else {
+                    setUpcomingBookings(upcomingData || []);
+                }
+
+                // Fetch rental history
+                const { data: historyData, error: historyError } = await supabase
+                    .rpc('get_my_rental_history');
+
+                if (historyError) {
+                    console.error('Rental history RPC error:', {
+                        message: historyError.message,
+                        details: historyError.details,
+                        hint: historyError.hint,
+                        code: historyError.code
+                    });
+                } else {
+                    setRentalHistory(historyData || []);
+                }
+            } catch (error) {
+                console.error('Unexpected error in fetchRenterData:', error);
+            } finally {
+                setLoading(false);
+            }
         }
-    ]);
+
+        fetchRenterData();
+    }, []);
 
     const getRentalStyles = (status: string) => {
         switch (status) {
@@ -60,7 +142,11 @@ export function RenterDashboardView() {
     };
 
     const totalActive = activeRentals.length;
-    const urgentCount = activeRentals.filter(r => r.status === 'overdue' || r.status === 'due-today').length;
+    const urgentCount = activeRentals.filter(r => r.dashboard_status === 'overdue' || r.dashboard_status === 'due_today').length;
+
+    if (loading) {
+        return <RenterDashboardSkeleton />;
+    }
 
     return (
         <div className="space-y-8">
@@ -91,24 +177,68 @@ export function RenterDashboardView() {
                                 <span className="text-red-600 font-extrabold">{urgentCount}</span>
                             </div>
                         </div>
-                        {activeRentals.map((rental) => {
-                            const styles = getRentalStyles(rental.status);
+                        {loading ? (
+                            <Card className="border-slate-200">
+                                <CardContent className="p-12 text-center text-slate-500">
+                                    Loading...
+                                </CardContent>
+                            </Card>
+                        ) : activeRentals.length === 0 ? (
+                            <Card className="border-slate-200">
+                                <CardContent className="p-12 text-center text-slate-500">
+                                    No active rentals
+                                </CardContent>
+                            </Card>
+                        ) : activeRentals.map((rental) => {
+                            // Map dashboard_status to display format
+                            const statusMap = {
+                                'overdue': 'overdue',
+                                'due_today': 'due-today',
+                                'active': 'due-future'
+                            };
+                            const displayStatus = statusMap[rental.dashboard_status] || 'due-future';
+                            const styles = getRentalStyles(displayStatus);
+
+                            // Generate badge text and due text
+                            const badgeText = rental.dashboard_status === 'overdue' ? 'OVERDUE' :
+                                rental.dashboard_status === 'due_today' ? 'Return Today' :
+                                    `Due in ${Math.ceil((new Date(rental.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days`;
+
+                            const dueText = rental.dashboard_status === 'overdue' ? 'Due Yesterday' :
+                                rental.dashboard_status === 'due_today' ? 'Due by 5:00 PM' :
+                                    format(new Date(rental.end_date), 'MMM d');
+
                             return (
-                                <Card key={rental.id} className={`shadow-sm ${styles.card}`}>
+                                <Card key={rental.rental_id} className={`shadow-sm ${styles.card}`}>
                                     <CardContent className="p-6">
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <Badge variant="secondary" className={`${styles.badge} shadow-sm`}>{rental.badgeText}</Badge>
-                                                    <span className={`text-xs ${styles.text}`}>{rental.dueText}</span>
+                                                    <Badge variant="secondary" className={`${styles.badge} shadow-sm`}>{badgeText}</Badge>
+                                                    <span className={`text-xs ${styles.text}`}>{dueText}</span>
                                                 </div>
-                                                <h4 className="font-bold text-slate-900 text-lg">{rental.item}</h4>
-                                                <p className="text-sm text-slate-600">Owner: <span className="font-medium">{rental.owner}</span></p>
+                                                <h4 className="font-bold text-slate-900 text-lg">{rental.listing_title}</h4>
+                                                <p className="text-sm text-slate-600">Owner: <span className="font-medium">{rental.owner_name}</span></p>
                                             </div>
-                                            <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
-                                                <MessageSquare className="mr-2 h-4 w-4" />
-                                                Message {rental.owner}
-                                            </Button>
+                                            <div className="flex flex-col gap-2 w-full sm:w-auto">
+                                                <Link href={`/messages?listing=${rental.listing_id}&owner=${rental.owner_id}`}>
+                                                    <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-white hover:text-slate-900">
+                                                        <MessageSquare className="mr-2 h-4 w-4" />
+                                                        Message {rental.owner_name}
+                                                    </Button>
+                                                </Link>
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full border-safety-orange text-safety-orange hover:bg-safety-orange hover:text-white"
+                                                    onClick={() => {
+                                                        setSelectedRental(rental);
+                                                        setExtensionModalOpen(true);
+                                                    }}
+                                                >
+                                                    <CalendarClock className="mr-2 h-4 w-4" />
+                                                    Request Extension
+                                                </Button>
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -119,19 +249,118 @@ export function RenterDashboardView() {
                     {/* Upcoming Bookings */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold font-serif text-slate-900">Upcoming Bookings</h2>
-                        <Card className="border-slate-200 shadow-sm">
-                            <CardContent className="p-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
-                                        <Calendar className="h-6 w-6" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-slate-900">Pressure Washer</h4>
-                                        <p className="text-sm text-slate-500">Oct 20 - Oct 22 • 2 days</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        {upcomingBookings.length === 0 ? (
+                            <Card className="border-slate-200 shadow-sm">
+                                <CardContent className="p-12 text-center text-slate-500">
+                                    No upcoming bookings
+                                </CardContent>
+                            </Card>
+                        ) : upcomingBookings.map((booking) => {
+                            // Check if we're within 24 hours of the start date
+                            const startDate = new Date(booking.start_date);
+                            const now = new Date();
+                            const hoursUntilStart = (startDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+                            const canReceiveTool = hoursUntilStart <= 24 && hoursUntilStart >= -24;
+
+                            return (
+                                <Card key={booking.rental_id} className="border-slate-200 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center justify-between gap-4">
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className="relative h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                                    {booking.listing_image_url ? (
+                                                        <Image
+                                                            src={booking.listing_image_url}
+                                                            alt={booking.listing_title}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                                            <Calendar className="h-6 w-6" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-slate-900">{booking.listing_title}</h4>
+                                                    <p className="text-sm text-slate-500">
+                                                        {format(new Date(booking.start_date), 'MMM d')} - {format(new Date(booking.end_date), 'MMM d')} • {booking.total_days} days
+                                                    </p>
+                                                    {canReceiveTool && (
+                                                        <p className="text-xs text-safety-orange font-medium mt-1">
+                                                            📦 Ready for pickup!
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                {canReceiveTool && (
+                                                    <div className="flex flex-col gap-2">
+                                                        <Button
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setHandoverModalOpen(true);
+                                                            }}
+                                                            className="bg-safety-orange hover:bg-safety-orange/90 text-white font-semibold"
+                                                            size="sm"
+                                                        >
+                                                            <Package className="mr-2 h-4 w-4" />
+                                                            Receive Tool
+                                                        </Button>
+
+                                                        {/* Show contact support if >24h past pickup */}
+                                                        {hoursUntilStart < -24 && (
+                                                            <a
+                                                                href={`mailto:contact@blockhyre.com?subject=Handover Issue - Rental ID: ${booking.rental_id}`}
+                                                                className="text-xs text-slate-600 hover:text-safety-orange text-center underline"
+                                                            >
+                                                                Having trouble? Contact support
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        {!canReceiveTool && (
+                                                            <DropdownMenuItem disabled className="text-slate-400">
+                                                                <Package className="mr-2 h-4 w-4" />
+                                                                Receive Tool (available on pickup day)
+                                                            </DropdownMenuItem>
+                                                        )}
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setRescheduleModalOpen(true);
+                                                            }}
+                                                        >
+                                                            <CalendarClock className="mr-2 h-4 w-4" />
+                                                            Change Dates
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-red-600 focus:text-red-600"
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setCancelModalOpen(true);
+                                                            }}
+                                                        >
+                                                            <X className="mr-2 h-4 w-4" />
+                                                            Cancel Booking
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
                     </div>
                 </div>
 
@@ -143,29 +372,32 @@ export function RenterDashboardView() {
                             <CardTitle className="text-lg font-serif">Rental History</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex justify-between items-start pb-4 border-b border-slate-100 last:border-0 last:pb-0">
-                                <div>
-                                    <p className="font-medium text-slate-900">Hammer Drill</p>
-                                    <p className="text-xs text-slate-500">Returned Oct 10</p>
-                                </div>
-                                <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold">
-                                    Leave Review
-                                </Button>
-                            </div>
-                            <div className="flex justify-between items-start pb-4 border-b border-slate-100 last:border-0 last:pb-0">
-                                <div>
-                                    <p className="font-medium text-slate-900">Ladder (20ft)</p>
-                                    <p className="text-xs text-slate-500">Returned Sept 28</p>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-xs text-green-600 font-bold mb-1">
-                                        Completed
+                            {rentalHistory.length === 0 ? (
+                                <p className="text-sm text-slate-500 text-center py-4">No rental history yet</p>
+                            ) : rentalHistory.map((rental) => (
+                                <div key={rental.rental_id} className="flex justify-between items-start pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                                    <div>
+                                        <p className="font-medium text-slate-900">{rental.listing_title}</p>
+                                        <p className="text-xs text-slate-500">Returned {format(new Date(rental.end_date), 'MMM d')}</p>
                                     </div>
-                                    <Link href="#" className="text-xs text-slate-400 hover:text-slate-600 underline decoration-slate-300 underline-offset-2">
-                                        Rent Again
-                                    </Link>
+                                    {rental.has_review ? (
+                                        <div className="text-right">
+                                            <div className="text-xs text-green-600 font-bold mb-1">
+                                                Completed
+                                            </div>
+                                            <Link href={`/listings/${rental.listing_id}`} className="text-xs text-slate-400 hover:text-slate-600 underline decoration-slate-300 underline-offset-2">
+                                                Rent Again
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <Link href={`/reviews/new?rental=${rental.rental_id}`}>
+                                            <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold">
+                                                Leave Review
+                                            </Button>
+                                        </Link>
+                                    )}
                                 </div>
-                            </div>
+                            ))}
                         </CardContent>
                     </Card>
 
@@ -201,6 +433,74 @@ export function RenterDashboardView() {
                     )}
                 </div>
             </div>
+
+            {selectedBooking && (
+                <RescheduleModal
+                    isOpen={rescheduleModalOpen}
+                    onClose={() => {
+                        setRescheduleModalOpen(false);
+                        setSelectedBooking(null);
+                    }}
+                    rentalId={selectedBooking.rental_id}
+                    currentStartDate={selectedBooking.start_date}
+                    currentEndDate={selectedBooking.end_date}
+                    listingTitle={selectedBooking.listing_title}
+                    onSuccess={() => {
+                        // Refresh the bookings list
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {selectedBooking && (
+                <CancelRentalModal
+                    isOpen={cancelModalOpen}
+                    onClose={() => {
+                        setCancelModalOpen(false);
+                        setSelectedBooking(null);
+                    }}
+                    rentalId={selectedBooking.rental_id}
+                    listingTitle={selectedBooking.listing_title}
+                    onSuccess={() => {
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {selectedBooking && (
+                <HandoverModal
+                    isOpen={handoverModalOpen}
+                    onClose={() => {
+                        setHandoverModalOpen(false);
+                        setSelectedBooking(null);
+                    }}
+                    rentalId={selectedBooking.rental_id}
+                    listingTitle={selectedBooking.listing_title}
+                    onSuccess={() => {
+                        // Refresh to move rental from upcoming to active
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {selectedRental && (
+                <ExtensionModal
+                    isOpen={extensionModalOpen}
+                    onClose={() => {
+                        setExtensionModalOpen(false);
+                        setSelectedRental(null);
+                    }}
+                    rentalId={selectedRental.rental_id}
+                    listingTitle={selectedRental.listing_title}
+                    currentEndDate={selectedRental.end_date}
+                    dailyPrice={selectedRental.daily_price || 0}
+                    riskFee={selectedRental.risk_fee || 0}
+                    onSuccess={() => {
+                        // Refresh to show pending extension
+                        window.location.reload();
+                    }}
+                />
+            )}
         </div>
     );
 }

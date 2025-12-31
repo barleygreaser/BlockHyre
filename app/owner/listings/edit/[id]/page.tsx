@@ -185,10 +185,7 @@ export default function EditListingPage() {
                 .from('listings')
                 .update({
                     title: formData.title,
-                    // Brand is likely stored in specifications or a separate column if added. 
-                    // For now assuming it's part of spec or title, keeping standard fields.
-                    // If 'brand' column exists, add it. If not, maybe put in specs.
-                    // The prompt asked for 'Brand' input. I'll check if column exists later or assumes specs.
+                    brand: formData.brand,
                     description: formData.description,
                     category_id: formData.category_id,
                     specifications: specs, // Save as JSONB Array
@@ -257,8 +254,18 @@ export default function EditListingPage() {
                                 <h1 className="text-2xl font-bold text-slate-900 font-serif">
                                     Edit: {formData.title}
                                 </h1>
-                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                    Active
+                                <Badge
+                                    variant="outline"
+                                    className={`
+                                        ${(formData as any).status === 'active' ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                                        ${(formData as any).status === 'draft' ? 'bg-slate-100 text-slate-600 border-slate-200' : ''}
+                                        ${(formData as any).status === 'archived' ? 'bg-slate-50 text-slate-400 border-slate-200' : ''}
+                                    `}
+                                >
+                                    {(formData as any).status ?
+                                        (formData as any).status.charAt(0).toUpperCase() + (formData as any).status.slice(1)
+                                        : 'Draft'
+                                    }
                                 </Badge>
                             </div>
                         </div>
@@ -322,11 +329,11 @@ export default function EditListingPage() {
 
                                         {/* Title */}
                                         <div className="space-y-2">
-                                            <Label className="text-sm font-medium text-slate-700">Listing Title <span className="text-red-500">*</span></Label>
+                                            <Label className="text-sm font-medium text-slate-700">Tool Name/ Model <span className="text-red-500">*</span></Label>
                                             <Input
                                                 type="text"
                                                 className="focus-visible:ring-safety-orange/50"
-                                                placeholder="e.g. DeWalt 10-inch Jobsite Table Saw"
+                                                placeholder="e.g. 10-inch Jobsite Table Saw"
                                                 value={formData.title || ""}
                                                 onChange={(e) => handleInputChange("title", e.target.value)}
                                             />
@@ -334,17 +341,15 @@ export default function EditListingPage() {
 
                                         {/* Brand & Category Row */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            {/* Brand - Storing in specs or separate? Using separate state for now, assuming specs mapping later */}
+                                            {/* Brand */}
                                             <div className="space-y-2">
                                                 <Label className="text-sm font-medium text-slate-700">Brand</Label>
                                                 <Input
                                                     type="text"
                                                     className="focus-visible:ring-safety-orange/50"
                                                     placeholder="e.g. Makita"
-                                                // Value mapped from specs? Or formData field if exists.
-                                                // For MVP, lets assume it's part of title or specs. 
-                                                // I'll add a dummy handler that updates specs 'Brand' key if I find one.
-                                                // actually, I'll just leave it as a text input for 'Basic Details'
+                                                    value={formData.brand || ""}
+                                                    onChange={(e) => handleInputChange("brand", e.target.value)}
                                                 />
                                             </div>
 

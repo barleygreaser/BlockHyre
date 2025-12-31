@@ -106,6 +106,15 @@ export default function ListingDetailsPage() {
     const handleAddToCart = () => {
         if (!dateRange?.from || !dateRange?.to) return;
 
+        if (user?.id === listing?.owner_id) {
+            toast.error("You cannot rent your own item", {
+                description: "You are the owner of this listing.",
+                className: "!bg-red-50 !border-red-200 !text-red-900",
+                descriptionClassName: "!text-red-700"
+            });
+            return;
+        }
+
         addToCart({
             id: listing.id,
             title: listing.title,
@@ -127,12 +136,30 @@ export default function ListingDetailsPage() {
 
     const handleRentNow = () => {
         if (!dateRange?.from || !dateRange?.to) return;
+
+        if (user?.id === listing?.owner_id) {
+            toast.error("You cannot rent your own item", {
+                description: "You are the owner of this listing.",
+                className: "!bg-red-50 !border-red-200 !text-red-900",
+                descriptionClassName: "!text-red-700"
+            });
+            return;
+        }
         handleAddToCart(); // Add to cart first
         router.push("/checkout");
     };
 
     const handleRequestToRent = () => {
         if (!dateRange?.from || !dateRange?.to) return;
+
+        if (user?.id === listing?.owner_id) {
+            toast.error("You cannot request to rent your own item", {
+                description: "You are the owner of this listing.",
+                className: "!bg-red-50 !border-red-200 !text-red-900",
+                descriptionClassName: "!text-red-700"
+            });
+            return;
+        }
         const searchParams = new URLSearchParams({
             from: dateRange.from.toISOString(),
             to: dateRange.to.toISOString()
@@ -173,6 +200,15 @@ export default function ListingDetailsPage() {
 
         if (!listing.owner_id) {
             toast.error('Listing owner not found');
+            return;
+        }
+
+        if (user.id === listing.owner_id) {
+            toast.error("You cannot send a message to yourself", {
+                description: "You are the owner of this listing.",
+                className: "!bg-red-50 !border-red-200 !text-red-900",
+                descriptionClassName: "!text-red-700"
+            });
             return;
         }
 
