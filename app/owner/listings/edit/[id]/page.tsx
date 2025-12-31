@@ -455,6 +455,7 @@ export default function EditListingPage() {
                                                 <ul className="list-disc list-inside text-slate-600 mt-1 space-y-1">
                                                     <li><strong>2-5 images</strong> required per listing.</li>
                                                     <li>The <strong>first image</strong> will be your main cover photo in search results.</li>
+                                                    <li>Max <strong>3MB</strong> per image (JPG, PNG only).</li>
                                                     <li>Clear, well-lit photos increase rental requests by up to 40%.</li>
                                                 </ul>
                                             </div>

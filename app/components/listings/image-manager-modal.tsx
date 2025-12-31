@@ -218,6 +218,7 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
                                 <ul className="list-disc list-inside text-slate-600 space-y-0.5">
                                     <li><strong>2-5 images</strong> required per listing</li>
                                     <li>First image becomes your <strong>main cover photo</strong></li>
+                                    <li>Max <strong>3MB</strong> per image (JPG, PNG only)</li>
                                     <li>Drag images to reorder them</li>
                                 </ul>
                             </div>
