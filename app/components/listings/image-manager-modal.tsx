@@ -193,107 +193,109 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="max-w-4xl">
-                    <DialogHeader>
+                <DialogContent className="sm:max-w-4xl max-h-[95vh] flex flex-col p-0 overflow-hidden gap-0">
+                    <DialogHeader className="p-4 sm:p-6 pb-2 shrink-0">
                         <DialogTitle className="text-2xl font-serif">Manage Photos</DialogTitle>
                         <DialogDescription>
                             Drag and drop to reorder. The first image will be your main cover photo.
                         </DialogDescription>
                     </DialogHeader>
 
-                    {/* Guidelines */}
-                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-start gap-3">
-                        <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <div className="text-sm space-y-1">
-                            <p className="font-medium text-slate-800">Photo Requirements</p>
-                            <ul className="list-disc list-inside text-slate-600 space-y-0.5">
-                                <li><strong>2-5 images</strong> required per listing</li>
-                                <li>First image becomes your <strong>main cover photo</strong></li>
-                                <li>Drag images to reorder them</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Image Count */}
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-slate-700">
-                            {localImages.length} of 5 images
-                        </p>
-                        {localImages.length < 2 && (
-                            <Badge variant="destructive" className="gap-1">
-                                <AlertCircle className="h-3 w-3" />
-                                Need {2 - localImages.length} more
-                            </Badge>
-                        )}
-                        {localImages.length >= 2 && localImages.length <= 5 && (
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                ✓ Ready to save
-                            </Badge>
-                        )}
-                    </div>
-
-                    {/* Images Grid with Upload Slot */}
-                    <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleDragEnd}
-                    >
-                        <SortableContext
-                            items={localImages.map((_, i) => i.toString())}
-                            strategy={rectSortingStrategy}
-                        >
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {localImages.map((url, index) => (
-                                    <SortableImage
-                                        key={index}
-                                        id={index.toString()}
-                                        url={url}
-                                        index={index}
-                                        isPrimary={index === 0}
-                                        onDelete={() => handleDelete(index)}
-                                    />
-                                ))}
-
-                                {/* Upload Slot */}
-                                {canUpload && (
-                                    <div className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 transition-all group">
-                                        <ImageUpload
-                                            key={localImages.length} // Force reset after upload to clear internal preview
-                                            bucket="tool_images"
-                                            folder="listings"
-                                            onUpload={handleUpload}
-                                            label=""
-                                            className="w-full h-full"
-                                        >
-                                            <div className="flex flex-col items-center justify-center w-full h-full">
-                                                <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600 mb-2 transition-colors" />
-                                                <p className="text-xs font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Add Image</p>
-                                                <p className="text-[10px] text-slate-400 mt-1">{localImages.length + 1} of 5</p>
-                                            </div>
-                                        </ImageUpload>
-                                    </div>
-                                )}
-
-                                {!canUpload && (
-                                    <div className="relative aspect-square rounded-lg border-2 border-slate-200 bg-slate-100 flex flex-col items-center justify-center opacity-50">
-                                        <Upload className="h-8 w-8 text-slate-400 mb-2" />
-                                        <p className="text-xs font-medium text-slate-500">Maximum</p>
-                                        <p className="text-xs text-slate-500">5 images</p>
-                                    </div>
-                                )}
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-2 space-y-4">
+                        {/* Guidelines */}
+                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-start gap-3">
+                            <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <div className="text-sm space-y-1">
+                                <p className="font-medium text-slate-800">Photo Requirements</p>
+                                <ul className="list-disc list-inside text-slate-600 space-y-0.5">
+                                    <li><strong>2-5 images</strong> required per listing</li>
+                                    <li>First image becomes your <strong>main cover photo</strong></li>
+                                    <li>Drag images to reorder them</li>
+                                </ul>
                             </div>
-                        </SortableContext>
-                    </DndContext>
-
-                    {localImages.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <Upload className="h-12 w-12 text-slate-400 mb-3" />
-                            <p className="text-sm font-medium text-slate-600 mb-1">No images yet</p>
-                            <p className="text-xs text-slate-500">Click the upload box above to add your first image</p>
                         </div>
-                    )}
 
-                    <DialogFooter className="gap-2">
+                        {/* Image Count */}
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium text-slate-700">
+                                {localImages.length} of 5 images
+                            </p>
+                            {localImages.length < 2 && (
+                                <Badge variant="destructive" className="gap-1">
+                                    <AlertCircle className="h-3 w-3" />
+                                    Need {2 - localImages.length} more
+                                </Badge>
+                            )}
+                            {localImages.length >= 2 && localImages.length <= 5 && (
+                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                    ✓ Ready to save
+                                </Badge>
+                            )}
+                        </div>
+
+                        {/* Images Grid with Upload Slot */}
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={localImages.map((_, i) => i.toString())}
+                                strategy={rectSortingStrategy}
+                            >
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {localImages.map((url, index) => (
+                                        <SortableImage
+                                            key={index}
+                                            id={index.toString()}
+                                            url={url}
+                                            index={index}
+                                            isPrimary={index === 0}
+                                            onDelete={() => handleDelete(index)}
+                                        />
+                                    ))}
+
+                                    {/* Upload Slot */}
+                                    {canUpload && (
+                                        <div className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 transition-all group">
+                                            <ImageUpload
+                                                key={localImages.length} // Force reset after upload to clear internal preview
+                                                bucket="tool_images"
+                                                folder="listings"
+                                                onUpload={handleUpload}
+                                                label=""
+                                                className="w-full h-full"
+                                            >
+                                                <div className="flex flex-col items-center justify-center w-full h-full">
+                                                    <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600 mb-2 transition-colors" />
+                                                    <p className="text-xs font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Add Image</p>
+                                                    <p className="text-[10px] text-slate-400 mt-1">{localImages.length + 1} of 5</p>
+                                                </div>
+                                            </ImageUpload>
+                                        </div>
+                                    )}
+
+                                    {!canUpload && (
+                                        <div className="relative aspect-square rounded-lg border-2 border-slate-200 bg-slate-100 flex flex-col items-center justify-center opacity-50">
+                                            <Upload className="h-8 w-8 text-slate-400 mb-2" />
+                                            <p className="text-xs font-medium text-slate-500">Maximum</p>
+                                            <p className="text-xs text-slate-500">5 images</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
+
+                        {localImages.length === 0 && (
+                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                                <Upload className="h-12 w-12 text-slate-400 mb-3" />
+                                <p className="text-sm font-medium text-slate-600 mb-1">No images yet</p>
+                                <p className="text-xs text-slate-500">Click the upload box above to add your first image</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <DialogFooter className="p-4 sm:p-6 pt-2 shrink-0 gap-2">
                         <Button variant="outline" onClick={handleCancel}>
                             Cancel
                         </Button>
