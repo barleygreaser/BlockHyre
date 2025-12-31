@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     DndContext,
     closestCenter,
@@ -103,6 +103,14 @@ function SortableImage({ id, url, index, isPrimary, onDelete }: SortableImagePro
                     variant="destructive"
                     size="icon"
                     className="h-8 w-8 shadow-md"
+                    onPointerDown={(e) => {
+                        // Prevent dnd-kit from catching this event
+                        e.stopPropagation();
+                    }}
+                    onMouseDown={(e) => {
+                        // Prevent potential legacy mouse event issues
+                        e.stopPropagation();
+                    }}
                     onClick={onDelete}
                 >
                     <Trash2 className="h-4 w-4" />
@@ -131,11 +139,11 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
     );
 
     // Sync local state when modal opens or images prop changes
-    useState(() => {
+    useEffect(() => {
         if (open) {
             setLocalImages(images);
         }
-    });
+    }, [open, images]);
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
