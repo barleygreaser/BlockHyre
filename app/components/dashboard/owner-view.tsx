@@ -343,17 +343,108 @@ export function OwnerDashboardView() {
     const handleDeny = async (rentalId: string) => {
         setProcessingId(rentalId);
         try {
-            // We'll use a direct update for now if RLS permits, or assume an RPC exists/will exist
-            // For safety/strict RLS, we should really use an RPC. 
-            // Let's assume we'll just update status to 'Denied' via standard query for now 
-            // verifying ownership via RLS policies.
-            // If strict RLS blocks this, we'll need an RPC.
+            // Get the rental details before denying
+            const rental = rentalRequests.find(r => r.id === rentalId);
+            if (!rental) {
+                alert("Rental not found");
+                return;
+            }
+
+            // Update status to rejected
             const { error } = await supabase
                 .from('rentals')
-                .update({ status: 'rejected' })  //  Changed to 'rejected' from denied
+                .update({
+                    status: 'rejected',
+                    cancelled_at: new Date().toISOString()
+                })
                 .eq('id', rentalId);
 
             if (error) throw error;
+
+            // Fetch additional data for system messages
+            const { data: rentalData, error: rentalError } = await supabase
+                .from('rentals')
+                .select(`
+                    id,
+                    listing_id,
+                    renter_id,
+                    owner_id,
+                    start_date,
+                    end_date
+                `)
+                .eq('id', rentalId)
+                .single();
+
+            if (!rentalError && rentalData) {
+                // Get or create chat
+                const { data: existingChat } = await supabase
+                    .from('chats')
+                    .select('id')
+                    .eq('listing_id', rentalData.listing_id)
+                    .eq('owner_id', rentalData.owner_id)
+                    .eq('renter_id', rentalData.renter_id)
+                    .single();
+
+                let chatId = existingChat?.id;
+
+                if (!chatId) {
+                    const { data: newChat, error: chatError } = await supabase
+                        .from('chats')
+                        .insert([{
+                            listing_id: rentalData.listing_id,
+                            owner_id: rentalData.owner_id,
+                            renter_id: rentalData.renter_id
+                        }])
+                        .select()
+                        .single();
+
+                    if (!chatError && newChat) {
+                        chatId = newChat.id;
+                    }
+                }
+
+                // Send system messages if we have a chat
+                if (chatId) {
+                    // Fetch user names
+                    const { data: renterData } = await supabase
+                        .from('users')
+                        .select('full_name')
+                        .eq('id', rentalData.renter_id)
+                        .single();
+
+                    const { data: ownerData } = await supabase
+                        .from('users')
+                        .select('full_name')
+                        .eq('id', rentalData.owner_id)
+                        .single();
+
+                    const startDate = new Date(rentalData.start_date);
+                    const endDate = new Date(rentalData.end_date);
+
+                    const context = {
+                        tool_name: rental.listing?.title || 'Tool',
+                        owner_name: ownerData?.full_name || 'Owner',
+                        renter_name: renterData?.full_name || 'Renter',
+                        start_date: startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                        end_date: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                        total_cost: '', // Not applicable for rejection
+                        owner_notes_link: '' // Not applicable for rejection
+                    };
+
+                    try {
+                        await sendSystemMessage(
+                            chatId,
+                            'RENTAL_REQUEST_REJECTED',
+                            context,
+                            rentalData.owner_id,
+                            rentalData.renter_id
+                        );
+                    } catch (msgError) {
+                        console.error("Error sending rejection messages:", msgError);
+                        // Don't fail the denial if message fails
+                    }
+                }
+            }
 
             setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
         } catch (err) {
