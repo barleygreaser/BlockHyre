@@ -294,14 +294,6 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
                                 </div>
                             </SortableContext>
                         </DndContext>
-
-                        {localImages.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-8 text-center">
-                                <Upload className="h-12 w-12 text-slate-400 mb-3" />
-                                <p className="text-sm font-medium text-slate-600 mb-1">No images yet</p>
-                                <p className="text-xs text-slate-500">Click the upload box above to add your first image</p>
-                            </div>
-                        )}
                     </div>
 
                     <DialogFooter className="p-4 sm:p-6 pt-2 shrink-0 gap-2">
