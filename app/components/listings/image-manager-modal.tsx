@@ -256,19 +256,21 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
 
                                 {/* Upload Slot */}
                                 {canUpload && (
-                                    <div className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 transition-all flex flex-col items-center justify-center group cursor-pointer">
+                                    <div className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 transition-all group">
                                         <ImageUpload
+                                            key={localImages.length} // Force reset after upload to clear internal preview
                                             bucket="tool_images"
                                             folder="listings"
                                             onUpload={handleUpload}
                                             label=""
                                             className="w-full h-full"
-                                        />
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                            <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600 mb-2" />
-                                            <p className="text-xs font-medium text-slate-500 group-hover:text-slate-700">Add Image</p>
-                                            <p className="text-[10px] text-slate-400 mt-1">{localImages.length + 1} of 5</p>
-                                        </div>
+                                        >
+                                            <div className="flex flex-col items-center justify-center w-full h-full">
+                                                <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600 mb-2 transition-colors" />
+                                                <p className="text-xs font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Add Image</p>
+                                                <p className="text-[10px] text-slate-400 mt-1">{localImages.length + 1} of 5</p>
+                                            </div>
+                                        </ImageUpload>
                                     </div>
                                 )}
 

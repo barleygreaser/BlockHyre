@@ -45,6 +45,7 @@ interface ImageUploadProps {
     className?: string;
     label?: string;
     aspectRatio?: number; // Optional prop to enforce aspect ratio
+    children?: React.ReactNode;
 }
 
 export function ImageUpload({
@@ -54,7 +55,8 @@ export function ImageUpload({
     folder,
     className = "",
     label = "Upload Image",
-    aspectRatio = 4 / 3 // Default aspect ratio for tools
+    aspectRatio = 4 / 3, // Default aspect ratio for tools
+    children
 }: ImageUploadProps) {
     const { user } = useAuth();
     const [preview, setPreview] = useState<string | null>(initialValue || null);
@@ -220,39 +222,62 @@ export function ImageUpload({
         <div className={`space-y-2 ${className}`}>
             {label && <label className="block text-sm font-medium text-gray-700">{label}</label>}
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 h-full w-full">
                 <div
                     onClick={triggerSelect}
-                    className={`
-                    relative w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 
-                    flex flex-col items-center justify-center cursor-pointer 
-                    hover:border-gray-400 transition-colors overflow-hidden bg-gray-50
-                    ${preview ? 'border-solid border-gray-200' : ''}
-                `}
+                    className={children ? `
+                        relative w-full h-full cursor-pointer overflow-hidden
+                    ` : `
+                        relative w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 
+                        flex flex-col items-center justify-center cursor-pointer 
+                        hover:border-gray-400 transition-colors overflow-hidden bg-gray-50
+                        ${preview ? 'border-solid border-gray-200' : ''}
+                    `}
                 >
-                    {preview ? (
-                        <div className="relative w-full h-full group">
-                            <Image
-                                src={preview}
-                                alt="Preview"
-                                fill
-                                className="object-cover"
-                                sizes="128px"
-                            />
+                    {children ? (
+                        <>
+                            {children}
+                            {/* Hidden preview overlay if needed, or we rely on parent to handle preview */}
+                            {preview && !initialValue && (
+                                <div className="absolute inset-0 z-[-1] invisible">
+                                    {/* We don't show preview if children are provided, assuming custom UI or parent handles it. 
+                                         But we might want to still show loading state? 
+                                     */}
+                                </div>
+                            )}
                             {uploading && (
-                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 index-10">
+                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
                                     <Loader2 className="h-6 w-6 text-white animate-spin" />
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <span className="text-white text-xs font-medium">Change</span>
-                            </div>
-                        </div>
+                        </>
                     ) : (
-                        <div className="text-gray-400 text-center p-2">
-                            <Upload className="h-8 w-8 mx-auto mb-1" />
-                            <span className="text-xs">Click to upload</span>
-                        </div>
+                        <>
+                            {preview ? (
+                                <div className="relative w-full h-full group">
+                                    <Image
+                                        src={preview}
+                                        alt="Preview"
+                                        fill
+                                        className="object-cover"
+                                        sizes="128px"
+                                    />
+                                    {uploading && (
+                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 index-10">
+                                            <Loader2 className="h-6 w-6 text-white animate-spin" />
+                                        </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span className="text-white text-xs font-medium">Change</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-gray-400 text-center p-2">
+                                    <Upload className="h-8 w-8 mx-auto mb-1" />
+                                    <span className="text-xs">Click to upload</span>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 
