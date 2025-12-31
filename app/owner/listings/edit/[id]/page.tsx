@@ -22,7 +22,8 @@ import {
     X,
     Check,
     Loader2,
-    Eye
+    Eye,
+    AlertCircle
 } from "lucide-react";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 import { useAuth } from "@/app/context/auth-context";
@@ -35,6 +36,7 @@ import { EditListingSpecs, ListingSpecValue } from "@/app/components/listings/ed
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { ListingCalendar } from "@/app/components/listings/listing-calendar";
+import { ImageManagerModal } from "@/app/components/listings/image-manager-modal";
 // import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
@@ -89,6 +91,9 @@ export default function EditListingPage() {
     const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
     const [dateRange, setDateRange] = useState<DateRange | undefined>();
     const [blocking, setBlocking] = useState(false);
+
+    // Image Manager Modal State
+    const [imageManagerOpen, setImageManagerOpen] = useState(false);
 
     // Set document title
     useEffect(() => {
@@ -221,6 +226,10 @@ export default function EditListingPage() {
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleImagesSave = (reorderedImages: string[]) => {
+        handleInputChange("images", reorderedImages);
     };
 
     if (loading) {
@@ -444,113 +453,64 @@ export default function EditListingPage() {
                                             <div className="text-sm">
                                                 <p className="font-medium text-slate-800">Photo Guidelines</p>
                                                 <ul className="list-disc list-inside text-slate-600 mt-1 space-y-1">
-                                                    <li>We recommend at least <strong>3 images</strong> to showcase your tool.</li>
+                                                    <li><strong>2-5 images</strong> required per listing.</li>
                                                     <li>The <strong>first image</strong> will be your main cover photo in search results.</li>
                                                     <li>Clear, well-lit photos increase rental requests by up to 40%.</li>
                                                 </ul>
                                             </div>
                                         </div>
 
-                                        {/* Image Grid */}
-                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                            {[0, 1, 2, 3].map((index) => {
-                                                const currentImage = formData.images?.[index];
-                                                const isPrimary = index === 0;
-
-                                                return (
-                                                    <div key={index} className="relative group">
-                                                        <div className={cn(
-                                                            "w-full aspect-square rounded-lg border-2 flex flex-col items-center justify-center overflow-hidden bg-slate-50 transition-all",
-                                                            currentImage ? "border-slate-200" : "border-dashed border-slate-300 hover:border-slate-400"
-                                                        )}>
-                                                            {currentImage ? (
-                                                                <>
-                                                                    <img
-                                                                        src={currentImage}
-                                                                        alt={`Slot ${index + 1}`}
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                    {/* Overlay Actions */}
-                                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            className="bg-red-500 hover:bg-red-600 text-white"
-                                                                            size="icon"
-                                                                            onClick={() => {
-                                                                                const newImages = [...(formData.images || [])];
-                                                                                newImages.splice(index, 1);
-                                                                                handleInputChange("images", newImages);
-                                                                            }}
-                                                                        >
-                                                                            <Trash2 className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </div>
-                                                                </>
-                                                            ) : (
-                                                                <div className="w-full h-full">
-                                                                    <ImageUpload
-                                                                        bucket="tool_images"
-                                                                        folder="listings"
-                                                                        onUpload={(url) => {
-                                                                            const newImages = [...(formData.images || [])];
-                                                                            newImages[index] = url;
-                                                                            // Clean array (remove empty slots if logic required, but here strict slots)
-                                                                            // Actually better to just push, but strict slots works for grid.
-                                                                            // Let's filter undefined if we want dynamic list, 
-                                                                            // but for fixed 4 slots index assignment is fine BUT we need to handle "add to end" vs "fill slot".
-                                                                            // Simplest UX: Just display list and an "Add" button?
-                                                                            // The prompt asked for "Drag and Drop Area".
-                                                                            // Let's use the existing ImageUpload but styled to fit the slot.
-                                                                            // Since ImageUpload handles its own UI, we might need to customize it or hide it behind a custom trigger.
-                                                                            // However, reusing ImageUpload as-is inside the slot is easiest for now.
-
-                                                                            // FIX: The ImageUpload component is designed to show a preview. 
-                                                                            // We will hide the default preview of ImageUpload and use our own, OR just use ImageUpload directly.
-                                                                            // Let's use ImageUpload directly but force it to be the slot manager.
-
-                                                                            // Actually, simply appending to the list is safer.
-                                                                            // If index > current length, fill gaps? No. 
-                                                                            // Let's just handle "Add Image" logic.
-
-                                                                            // RE-STRATEGY: 
-                                                                            // If slot is empty, show ImageUpload.
-                                                                            // If valid URL returns, add to images array.
-                                                                            // Why index? Because we want to allow replacing distinct slots?
-                                                                            // Let's just treat gaps as 'append'.
-
-                                                                            const updated = [...(formData.images || [])];
-                                                                            updated[index] = url;
-                                                                            // Filter out empty strings if any gap logic issues, but simple assignment is fine.
-                                                                            handleInputChange("images", updated);
-                                                                        }}
-                                                                        className="w-full h-full"
-                                                                        label=""
-                                                                    />
-                                                                    {/* Override ImageUpload styles? It has fixed w-32 h-32 in its code. 
-                                                                        WE NEED TO MODIFY ImageUpload or accept standard size. 
-                                                                        Standard size is w-32 h-32.
-                                                                        Our grid slots might be bigger.
-                                                                        Let's just position it center.
-                                                                    */}
+                                        {/* Image Preview Strip */}
+                                        {formData.images && formData.images.length > 0 && (
+                                            <div>
+                                                <p className="text-sm font-medium text-slate-700 mb-3">
+                                                    Current Photos ({formData.images.length})
+                                                </p>
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+                                                    {formData.images.map((url, index) => (
+                                                        <div key={index} className="relative aspect-square rounded-lg overflow-hidden border-2 border-slate-200 group">
+                                                            <img
+                                                                src={url}
+                                                                alt={`Preview ${index + 1}`}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                            {index === 0 && (
+                                                                <div className="absolute top-1 right-1">
+                                                                    <Badge className="bg-safety-orange text-white text-[10px] shadow-sm">
+                                                                        Main
+                                                                    </Badge>
                                                                 </div>
                                                             )}
-                                                        </div>
-
-                                                        {/* Primary Badge */}
-                                                        {isPrimary && (
-                                                            <div className="absolute top-2 left-2 bg-safety-orange text-white text-xs font-bold px-2 py-1 rounded shadow-sm z-10 pointer-events-none">
-                                                                Main Cover
+                                                            <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs font-medium px-1.5 py-0.5 rounded">
+                                                                {index + 1}
                                                             </div>
-                                                        )}
-
-                                                        {/* Slot Label */}
-                                                        <div className="text-center mt-2 text-xs text-slate-500 font-medium">
-                                                            {isPrimary ? "Primary Photo" : `Photo ${index + 1}`}
                                                         </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Manage Photos Button */}
+                                        <Button
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={() => setImageManagerOpen(true)}
+                                        >
+                                            <ImageIcon className="h-4 w-4 mr-2" />
+                                            {formData.images && formData.images.length > 0
+                                                ? `Manage Photos (${formData.images.length})`
+                                                : 'Upload Photos'}
+                                        </Button>
+
+                                        {/* Validation Warning */}
+                                        {(!formData.images || formData.images.length < 2) && (
+                                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
+                                                <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                                                <p className="text-sm text-amber-800">
+                                                    <strong>Action required:</strong> Upload at least 2 images to publish this listing.
+                                                </p>
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </div>
@@ -987,6 +947,14 @@ export default function EditListingPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Image Manager Modal */}
+            <ImageManagerModal
+                open={imageManagerOpen}
+                onOpenChange={setImageManagerOpen}
+                images={formData.images || []}
+                onSave={handleImagesSave}
+            />
         </div>
     );
 }
