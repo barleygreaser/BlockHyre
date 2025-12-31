@@ -7,7 +7,7 @@ import { useAuth } from "@/app/context/auth-context";
 export function Hero() {
     const { user } = useAuth();
     return (
-        <section className="relative h-[65vh] min-h-[550px] w-full overflow-hidden flex items-center">
+        <section className="relative h-[60vh] min-h-[500px] w-full overflow-hidden flex items-center">
             {/* Background Images */}
             <div className="absolute inset-0 z-0">
                 <Image
@@ -30,8 +30,8 @@ export function Hero() {
             </div>
 
             <div className="container relative z-10 mx-auto px-4">
-                <div className="max-w-2xl space-y-8">
-                    <div className="space-y-4">
+                <div className="max-w-2xl space-y-6">
+                    <div className="space-y-3">
                         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-serif text-white leading-tight tracking-tight">
                             Turn Your Neighborhood <br /> into a Factory.
                         </h1>

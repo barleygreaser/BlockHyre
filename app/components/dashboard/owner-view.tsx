@@ -6,7 +6,7 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
-import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info, CalendarClock } from "lucide-react";
+import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info, CalendarClock, Clock } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { StripeConnectButton } from "@/app/components/stripe-connect-button";
@@ -161,6 +161,7 @@ export function OwnerDashboardView() {
                         end_date,
                         total_days,
                         rental_fee,
+                        created_at,
                         renter:users!renter_id (full_name, email), 
                         listing:listings!inner (title, owner_id)
                     `)
@@ -434,6 +435,35 @@ export function OwnerDashboardView() {
         return rentalFee - platformFee;
     };
 
+    // Calculate time remaining before auto-denial (24 hours from created_at)
+    const getTimeRemaining = (createdAt: string) => {
+        if (!createdAt) return null;
+
+        const created = new Date(createdAt);
+        const expiresAt = new Date(created.getTime() + 24 * 60 * 60 * 1000); // 24 hours
+        const now = new Date();
+        const diff = expiresAt.getTime() - now.getTime();
+
+        if (diff <= 0) return null; // Expired
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        return { hours, minutes, isUrgent: hours < 2 }; // Urgent if less than 2 hours
+    };
+
+    // Format time remaining for display
+    const formatTimeRemaining = (createdAt: string) => {
+        const timeRemaining = getTimeRemaining(createdAt);
+        if (!timeRemaining) return 'Expired';
+
+        const { hours, minutes } = timeRemaining;
+        if (hours === 0) {
+            return `${minutes}m`;
+        }
+        return `${hours}h ${minutes}m`;
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -633,6 +663,28 @@ export function OwnerDashboardView() {
                                                                 </span>
                                                             </h4>
                                                             <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
+
+                                                            {/* Time Remaining Warning */}
+                                                            {(() => {
+                                                                const timeInfo = getTimeRemaining(request.created_at);
+                                                                if (!timeInfo) return null;
+                                                                const isUrgent = timeInfo.isUrgent;
+
+                                                                return (
+                                                                    <div className={`flex items-center gap-1.5 mt-2 text-xs font-medium px-2 py-1 rounded-md w-fit ${isUrgent
+                                                                            ? 'bg-red-50 text-red-700 border border-red-200'
+                                                                            : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                                                        }`}>
+                                                                        <Clock className={`h-3.5 w-3.5 ${isUrgent ? 'animate-pulse' : ''}`} />
+                                                                        <span>
+                                                                            {isUrgent ? '⚠️ ' : ''}
+                                                                            {formatTimeRemaining(request.created_at)} to respond
+                                                                            {isUrgent ? ' - Auto-denies soon!' : ' or auto-denies'}
+                                                                        </span>
+                                                                    </div>
+                                                                );
+                                                            })()}
+
                                                             <div className="flex items-center gap-3 mt-1 text-xs">
                                                                 <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
                                                                     {formatDate(request.start_date)} - {formatDate(request.end_date)}
