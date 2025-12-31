@@ -67,17 +67,15 @@ function SortableImage({ id, url, index, isPrimary, onDelete }: SortableImagePro
         <div
             ref={setNodeRef}
             style={style}
+            {...attributes}
+            {...listeners}
             className={cn(
-                "relative group rounded-lg border-2 bg-white overflow-hidden transition-all",
+                "relative group rounded-lg border-2 bg-white overflow-hidden transition-all cursor-grab active:cursor-grabbing",
                 isDragging ? "opacity-50 scale-105 shadow-2xl z-50" : "shadow-sm hover:shadow-md"
             )}
         >
-            {/* Drag Handle */}
-            <div
-                {...attributes}
-                {...listeners}
-                className="absolute top-2 left-2 z-10 bg-white/90 backdrop-blur-sm p-1.5 rounded-md cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-            >
+            {/* Drag Handle Icon (visual indicator only) */}
+            <div className="absolute top-2 left-2 z-10 bg-white/90 backdrop-blur-sm p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm pointer-events-none">
                 <GripVertical className="h-4 w-4 text-slate-600" />
             </div>
 
@@ -95,7 +93,7 @@ function SortableImage({ id, url, index, isPrimary, onDelete }: SortableImagePro
                 <img
                     src={url}
                     alt={`Image ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover pointer-events-none"
                 />
             </div>
 
@@ -195,7 +193,7 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-4xl">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-serif">Manage Photos</DialogTitle>
                         <DialogDescription>
@@ -234,55 +232,64 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
                         )}
                     </div>
 
-                    {/* Images Grid */}
-                    {localImages.length > 0 ? (
-                        <DndContext
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragEnd={handleDragEnd}
+                    {/* Images Grid with Upload Slot */}
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={localImages.map((_, i) => i.toString())}
+                            strategy={rectSortingStrategy}
                         >
-                            <SortableContext
-                                items={localImages.map((_, i) => i.toString())}
-                                strategy={rectSortingStrategy}
-                            >
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    {localImages.map((url, index) => (
-                                        <SortableImage
-                                            key={index}
-                                            id={index.toString()}
-                                            url={url}
-                                            index={index}
-                                            isPrimary={index === 0}
-                                            onDelete={() => handleDelete(index)}
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {localImages.map((url, index) => (
+                                    <SortableImage
+                                        key={index}
+                                        id={index.toString()}
+                                        url={url}
+                                        index={index}
+                                        isPrimary={index === 0}
+                                        onDelete={() => handleDelete(index)}
+                                    />
+                                ))}
+
+                                {/* Upload Slot */}
+                                {canUpload && (
+                                    <div className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 transition-all flex flex-col items-center justify-center group cursor-pointer">
+                                        <ImageUpload
+                                            bucket="tool_images"
+                                            folder="listings"
+                                            onUpload={handleUpload}
+                                            label=""
+                                            className="w-full h-full"
                                         />
-                                    ))}
-                                </div>
-                            </SortableContext>
-                        </DndContext>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                            <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600 mb-2" />
+                                            <p className="text-xs font-medium text-slate-500 group-hover:text-slate-700">Add Image</p>
+                                            <p className="text-[10px] text-slate-400 mt-1">{localImages.length + 1} of 5</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {!canUpload && (
+                                    <div className="relative aspect-square rounded-lg border-2 border-slate-200 bg-slate-100 flex flex-col items-center justify-center opacity-50">
+                                        <Upload className="h-8 w-8 text-slate-400 mb-2" />
+                                        <p className="text-xs font-medium text-slate-500">Maximum</p>
+                                        <p className="text-xs text-slate-500">5 images</p>
+                                    </div>
+                                )}
+                            </div>
+                        </SortableContext>
+                    </DndContext>
+
+                    {localImages.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
                             <Upload className="h-12 w-12 text-slate-400 mb-3" />
                             <p className="text-sm font-medium text-slate-600 mb-1">No images yet</p>
-                            <p className="text-xs text-slate-500">Upload at least 2 images to get started</p>
+                            <p className="text-xs text-slate-500">Click the upload box above to add your first image</p>
                         </div>
                     )}
-
-                    {/* Upload Button */}
-                    <div className="flex items-center justify-center">
-                        {canUpload ? (
-                            <ImageUpload
-                                bucket="tool_images"
-                                folder="listings"
-                                onUpload={handleUpload}
-                                label="Add Image"
-                            />
-                        ) : (
-                            <Button variant="outline" disabled className="cursor-not-allowed">
-                                <Upload className="h-4 w-4 mr-2" />
-                                Maximum 5 images
-                            </Button>
-                        )}
-                    </div>
 
                     <DialogFooter className="gap-2">
                         <Button variant="outline" onClick={handleCancel}>
