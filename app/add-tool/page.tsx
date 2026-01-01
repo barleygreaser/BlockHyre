@@ -261,7 +261,10 @@ export default function AddToolPage() {
                     owner_id: user?.id,
                     // Automatically populate from user's neighborhood
                     latitude: latitude,
-                    longitude: longitude
+                    longitude: longitude,
+                    // Set listing as active and available by default
+                    status: 'active',
+                    is_available: true
                 });
 
             if (error) throw error;

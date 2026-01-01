@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
     DndContext,
     closestCenter,
@@ -130,6 +130,7 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -144,6 +145,33 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
             setLocalImages(images);
         }
     }, [open, images]);
+
+    // Detect if there are unsaved changes
+    const hasUnsavedChanges = useMemo(() => {
+        return JSON.stringify(localImages) !== JSON.stringify(images);
+    }, [localImages, images]);
+
+    // Custom close handler to check for unsaved changes
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen && hasUnsavedChanges) {
+            // Trying to close with unsaved changes - show confirmation
+            setShowUnsavedWarning(true);
+        } else {
+            // No changes or opening, proceed normally
+            onOpenChange(newOpen);
+        }
+    };
+
+    const handleDiscardChanges = () => {
+        setShowUnsavedWarning(false);
+        setLocalImages(images); // Reset to original
+        onOpenChange(false); // Close the modal
+    };
+
+    const handleKeepEditing = () => {
+        setShowUnsavedWarning(false);
+        // Stay in the modal
+    };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
@@ -200,7 +228,7 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
 
     return (
         <>
-            <Dialog open={open} onOpenChange={onOpenChange}>
+            <Dialog open={open} onOpenChange={handleOpenChange}>
                 <DialogContent className="sm:max-w-4xl max-h-[95vh] flex flex-col p-0 overflow-hidden gap-0">
                     <DialogHeader className="p-4 sm:p-6 pb-2 shrink-0">
                         <DialogTitle className="text-2xl font-serif">Manage Photos</DialogTitle>
@@ -332,6 +360,29 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
                             variant="destructive"
                         >
                             Delete
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Unsaved Changes Warning Dialog */}
+            <Dialog open={showUnsavedWarning} onOpenChange={setShowUnsavedWarning}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Unsaved Changes</DialogTitle>
+                        <DialogDescription>
+                            You have unsaved changes to your photos. Are you sure you want to close without saving?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2">
+                        <Button variant="outline" onClick={handleKeepEditing}>
+                            Keep Editing
+                        </Button>
+                        <Button
+                            onClick={handleDiscardChanges}
+                            variant="destructive"
+                        >
+                            Discard Changes
                         </Button>
                     </DialogFooter>
                 </DialogContent>
