@@ -63,7 +63,7 @@ export function Navbar() {
 
     return (
         <nav className="border-b border-slate-200 bg-white sticky top-0 z-40">
-            <div className="flex h-16 items-center justify-between px-4 w-full">
+            <div className="flex h-16 items-center justify-between px-6 w-full max-w-[1440px] mx-auto">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-900 text-white group-hover:bg-safety-orange transition-colors duration-300">
