@@ -10,7 +10,7 @@ import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Badge } from "@/app/components/ui/badge";
 import { ImageManagerModal } from "@/app/components/listings/image-manager-modal";
-import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2, Hammer, Info, Sparkles, HelpCircle, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Shield, AlertTriangle, BookOpen, Upload, CheckCircle, Loader2, Hammer, Info, Sparkles, HelpCircle, Image as ImageIcon, MapPin } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { supabase } from "@/lib/supabase";
@@ -70,6 +70,9 @@ export default function AddToolPage() {
         acceptsBarter: false,
         bookingType: "request" as "request" | "instant",
         images: [] as string[],
+        locationAddress: "",
+        preferredPickupTime: "",
+        minRentalDays: 1,
         specs: {
             weight: "",
             dimensions: ""
@@ -262,6 +265,10 @@ export default function AddToolPage() {
                     // Automatically populate from user's neighborhood
                     latitude: latitude,
                     longitude: longitude,
+                    // NEW: Save pickup details
+                    location_address: formData.locationAddress,
+                    preferred_pickup_time: formData.preferredPickupTime,
+                    min_rental_days: formData.minRentalDays,
                     // Set listing as active and available by default
                     status: 'active',
                     is_available: true
@@ -632,8 +639,53 @@ export default function AddToolPage() {
                                     </div>
                                 </div>
 
+                                {/* Minimum Rental Period */}
+                                <div className="space-y-2 pt-4 border-t border-slate-200">
+                                    <label className="text-sm font-medium text-slate-900">Minimum Rental Period (Days)</label>
+                                    <Input
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        placeholder="1"
+                                        value={formData.minRentalDays}
+                                        onChange={(e) => handleInputChange("minRentalDays", parseInt(e.target.value) || 1)}
+                                        className="focus-visible:ring-safety-orange/50"
+                                    />
+                                    <p className="text-xs text-slate-500">Minimum number of days a renter must book this tool for.</p>
+                                </div>
+
+                                {/* Pickup & Logistics */}
+                                <div className="space-y-4 pt-4 border-t border-slate-200">
+                                    <div className="flex items-center gap-2">
+                                        <MapPin className="h-5 w-5 text-safety-orange" />
+                                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Pickup & Logistics</h3>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-slate-900">Exact Pickup Address</label>
+                                        <Input
+                                            placeholder="e.g. 123 Neighborhood Way, Apt 4"
+                                            value={formData.locationAddress}
+                                            onChange={(e) => handleInputChange("locationAddress", e.target.value)}
+                                            className="focus-visible:ring-safety-orange/50"
+                                        />
+                                        <p className="text-xs text-slate-500">Only shared with the renter AFTER a booking is confirmed.</p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-slate-900">Preferred Pickup Window</label>
+                                        <Input
+                                            placeholder="e.g. Weekdays 5pm-8pm, Weekends after 10am"
+                                            value={formData.preferredPickupTime}
+                                            onChange={(e) => handleInputChange("preferredPickupTime", e.target.value)}
+                                            className="focus-visible:ring-safety-orange/50"
+                                        />
+                                        <p className="text-xs text-slate-500">Helps renters plan their request. Flexible is always better!</p>
+                                    </div>
+                                </div>
+
                                 {/* Images */}
-                                <div className="space-y-4">
+                                <div className="space-y-4 pt-4 border-t border-slate-200">
                                     <label className="text-sm font-medium text-slate-900">Photos</label>
 
                                     {/* Guidelines */}

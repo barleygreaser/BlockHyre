@@ -163,7 +163,7 @@ export function OwnerDashboardView() {
                         rental_fee,
                         created_at,
                         renter:users!renter_id (full_name, email), 
-                        listing:listings!inner (title, owner_id)
+                        listing:listings!inner (title, owner_id, location_address, preferred_pickup_time)
                     `)
                     .eq('listings.owner_id', user.id)
                     .ilike('status', 'pending');
@@ -237,7 +237,8 @@ export function OwnerDashboardView() {
                 const listingData = rental.listing ? {
                     title: rental.listing.title,
                     owner_id: rental.listing.owner_id,
-                    location_address: rental.listing.location_address || 'Address to be confirmed'
+                    location_address: rental.listing.location_address || 'Address to be confirmed',
+                    preferred_pickup_time: rental.listing.preferred_pickup_time || 'Check with owner'
                 } : null;
 
                 // Fetch renter details
@@ -299,18 +300,18 @@ export function OwnerDashboardView() {
                     const endDate = new Date(rentalData.end_date);
 
                     const context = {
+                        recipient_role: '', // Set by helper
                         tool_name: listingData?.title || 'Tool',
                         owner_name: ownerData?.full_name || 'Owner',
                         renter_name: renterData?.full_name || 'Renter',
-                        start_date: startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                        end_date: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        start_date: startDate.toLocaleDateString(),
+                        end_date: endDate.toLocaleDateString(),
                         location_address: listingData?.location_address || 'Address to be confirmed',
                         total_paid: rentalData.total_paid?.toFixed(2) || '0.00',
-                        total_cost: rentalData.total_paid?.toFixed(2) || '0.00', // Alias for total_paid
-                        pickup_time: startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-                        seller_fee_percent: sellerFeePercent,
+                        total_cost: rentalData.total_paid?.toFixed(2) || '0.00',
+                        pickup_time: listingData?.preferred_pickup_time || 'Check with owner',
                         owner_earnings: (rentalData.total_paid * (1 - sellerFeePercent / 100)).toFixed(2),
-                        owner_notes_link: '#' // Not applicable for this event
+                        owner_notes_link: `/owner/listings/edit/${rentalData.listing_id}`
                     };
 
                     try {

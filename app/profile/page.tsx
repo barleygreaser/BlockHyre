@@ -9,15 +9,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/app
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/app/components/ui/dialog";
 import { AvatarUpload } from "@/app/components/profile/avatar-upload";
-import { User, Shield, CreditCard, Activity, CheckCircle, AlertTriangle, ExternalLink, MapPin } from "lucide-react";
+import { User, Shield, CreditCard, Activity, CheckCircle, ExternalLink, MapPin } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
+import { NeighborhoodMap } from "@/app/components/neighborhood-map";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 export default function ProfilePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, loading } = useAuth();
     const [profile, setProfile] = useState<any>(null);
+    const [profileLoading, setProfileLoading] = useState(true);
     const [stripeLoading, setStripeLoading] = useState(false);
 
     // Edit Profile State
@@ -79,14 +82,28 @@ export default function ProfilePage() {
         const fetchProfile = async () => {
             if (!user) return;
 
+            setProfileLoading(true);
+
             const { data, error } = await supabase
                 .from("users")
-                .select("*, neighborhoods(*)")
+                .select(`
+                    *,
+                    neighborhoods:neighborhood_id (
+                        id,
+                        name,
+                        center_lat,
+                        center_lon,
+                        service_radius_miles
+                    )
+                `)
                 .eq("id", user.id)
                 .single();
 
-            if (data) setProfile(data);
+            if (data) {
+                setProfile(data);
+            }
             if (error) console.error("Error fetching profile:", error);
+            setProfileLoading(false);
         };
 
         if (user) fetchProfile();
@@ -222,7 +239,7 @@ export default function ProfilePage() {
                                         {isIdVerified ? (
                                             <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded">Verified</span>
                                         ) : (
-                                            <Button size="sm" variant="secondary">Upload Proof</Button>
+                                            <Button size="sm" variant="outline">Upload Proof</Button>
                                         )}
                                     </div>
 
@@ -256,12 +273,21 @@ export default function ProfilePage() {
                                     {/* Left Side: Text Context */}
                                     <div className="flex-1 space-y-4">
                                         <div>
-                                            <h3 className="text-2xl font-bold font-serif text-slate-900">
-                                                {profile?.neighborhoods?.name || "No Neighborhood Set"}
-                                            </h3>
-                                            <p className="text-slate-500 font-medium">
-                                                Woodstock, GA • {profile?.neighborhoods?.service_radius_miles || 2.0} mi Radius
-                                            </p>
+                                            {profileLoading ? (
+                                                <div className="space-y-2">
+                                                    <Skeleton className="h-7 w-48" />
+                                                    <Skeleton className="h-5 w-40" />
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <h3 className="text-2xl font-bold font-serif text-slate-900">
+                                                        {profile?.neighborhoods?.name || "No Neighborhood Set"}
+                                                    </h3>
+                                                    <p className="text-slate-500 font-medium">
+                                                        Woodstock, GA • {profile?.neighborhoods?.service_radius_miles || 2.0} mi Radius
+                                                    </p>
+                                                </>
+                                            )}
                                         </div>
 
                                         <div className="flex items-center gap-2">
@@ -277,20 +303,22 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
 
-                                    {/* Right Side: Map Visual Receipt */}
-                                    <div className="w-full md:w-64 h-40 bg-slate-100 rounded-lg border border-slate-200 relative overflow-hidden group">
-                                        {/* Map Background */}
-                                        <div
-                                            className="absolute inset-0 opacity-60 bg-[url('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/15/8563/13106.png')] bg-cover bg-center"
-                                            style={{ filter: "grayscale(30%)" }}
-                                        />
-
-                                        {/* Pin & Radius Overlay */}
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="h-24 w-24 bg-safety-orange/10 rounded-full border-2 border-safety-orange flex items-center justify-center relative shadow-sm">
-                                                <div className="h-3 w-3 bg-safety-orange rounded-full shadow-md ring-4 ring-white" />
-                                            </div>
-                                        </div>
+                                    {/* Right Side: Interactive Map */}
+                                    <div className="w-full md:w-64 h-40 bg-slate-100 rounded-lg border border-slate-200 relative overflow-hidden">
+                                        {profileLoading ? (
+                                            <Skeleton className="h-full w-full bg-slate-200" />
+                                        ) : (
+                                            profile?.neighborhoods?.center_lat && profile?.neighborhoods?.center_lon ? (
+                                                <NeighborhoodMap
+                                                    latitude={profile.neighborhoods.center_lat}
+                                                    longitude={profile.neighborhoods.center_lon}
+                                                    radiusMiles={profile.neighborhoods.service_radius_miles || 2.0}
+                                                    neighborhoodName={profile.neighborhoods.name}
+                                                />
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full" />
+                                            )
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>

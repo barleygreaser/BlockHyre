@@ -14,6 +14,7 @@ import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
 import { HandoverModal } from "@/app/components/modals/handover-modal";
 import { ExtensionModal } from "@/app/components/extension-modal";
 import Image from "next/image";
+import { CountdownTimer } from "@/app/components/countdown-timer";
 
 interface ActiveRental {
     rental_id: string;
@@ -46,6 +47,18 @@ interface RentalHistory {
     has_review: boolean;
 }
 
+interface PendingRequest {
+    rental_id: string;
+    listing_id: string;
+    listing_title: string;
+    listing_image_url: string | null;
+    start_date: string;
+    end_date: string;
+    total_days: number;
+    created_at: string;
+    owner_name: string;
+}
+
 import { RenterDashboardSkeleton } from "@/app/components/dashboard/dashboard-skeletons";
 
 export function RenterDashboardView() {
@@ -60,6 +73,9 @@ export function RenterDashboardView() {
     const [extensionModalOpen, setExtensionModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<UpcomingBooking | null>(null);
     const [selectedRental, setSelectedRental] = useState<ActiveRental | null>(null);
+    const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
+    const [cancelPendingModalOpen, setCancelPendingModalOpen] = useState(false);
+    const [selectedPendingRequest, setSelectedPendingRequest] = useState<PendingRequest | null>(null);
 
     useEffect(() => {
         async function fetchRenterData() {
@@ -107,6 +123,48 @@ export function RenterDashboardView() {
                     });
                 } else {
                     setRentalHistory(historyData || []);
+                }
+
+                // Fetch pending requests
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const { data: pendingData, error: pendingError } = await supabase
+                        .from('rentals')
+                        .select(`
+                            id,
+                            listing_id,
+                            start_date,
+                            end_date,
+                            total_days,
+                            created_at,
+                            listing:listings!inner (
+                                title,
+                                images,
+                                owner:users!owner_id (
+                                    full_name
+                                )
+                            )
+                        `)
+                        .eq('renter_id', user.id)
+                        .eq('status', 'pending')
+                        .order('created_at', { ascending: false });
+
+                    if (pendingError) {
+                        console.error('Pending requests error:', pendingError);
+                    } else if (pendingData) {
+                        const mapped: PendingRequest[] = pendingData.map((r: any) => ({
+                            rental_id: r.id,
+                            listing_id: r.listing_id,
+                            listing_title: r.listing?.title || 'Unknown',
+                            listing_image_url: r.listing?.images?.[0] || null,
+                            start_date: r.start_date,
+                            end_date: r.end_date,
+                            total_days: r.total_days,
+                            created_at: r.created_at,
+                            owner_name: r.listing?.owner?.full_name || 'Unknown'
+                        }));
+                        setPendingRequests(mapped);
+                    }
                 }
             } catch (error) {
                 console.error('Unexpected error in fetchRenterData:', error);
@@ -244,6 +302,73 @@ export function RenterDashboardView() {
                                 </Card>
                             );
                         })}
+                    </div>
+
+                    {/* Pending Requests */}
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-xl font-bold font-serif text-slate-900">Pending Requests</h2>
+                            {pendingRequests.length > 0 && (
+                                <Badge className="bg-amber-100 text-amber-800 border-amber-300">
+                                    {pendingRequests.length}
+                                </Badge>
+                            )}
+                        </div>
+                        {pendingRequests.length === 0 ? (
+                            <Card className="border-slate-200 shadow-sm">
+                                <CardContent className="p-12 text-center text-slate-500">
+                                    No pending requests
+                                </CardContent>
+                            </Card>
+                        ) : pendingRequests.map((request) => (
+                            <Card key={request.rental_id} className="border-amber-200 bg-amber-50/30 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4 flex-1">
+                                            <div className="relative h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                                {request.listing_image_url ? (
+                                                    <Image
+                                                        src={request.listing_image_url}
+                                                        alt={request.listing_title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                                        <Calendar className="h-6 w-6" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="font-bold text-slate-900">{request.listing_title}</h4>
+                                                <p className="text-sm text-slate-600">
+                                                    Owner: <span className="font-medium">{request.owner_name}</span>
+                                                </p>
+                                                <p className="text-sm text-slate-500">
+                                                    {format(new Date(request.start_date), 'MMM d')} - {format(new Date(request.end_date), 'MMM d')} • {request.total_days} days
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col items-end gap-2">
+                                            <div className="text-xs text-slate-500">Auto-expires in:</div>
+                                            <CountdownTimer createdAt={request.created_at} />
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="mt-1 h-auto py-1 px-2 text-xs text-slate-400 hover:text-red-600 hover:bg-transparent"
+                                                onClick={() => {
+                                                    setSelectedPendingRequest(request);
+                                                    setCancelPendingModalOpen(true);
+                                                }}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
 
                     {/* Upcoming Bookings */}
@@ -497,6 +622,21 @@ export function RenterDashboardView() {
                     riskFee={selectedRental.risk_fee || 0}
                     onSuccess={() => {
                         // Refresh to show pending extension
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {selectedPendingRequest && (
+                <CancelRentalModal
+                    isOpen={cancelPendingModalOpen}
+                    onClose={() => {
+                        setCancelPendingModalOpen(false);
+                        setSelectedPendingRequest(null);
+                    }}
+                    rentalId={selectedPendingRequest.rental_id}
+                    listingTitle={selectedPendingRequest.listing_title}
+                    onSuccess={() => {
                         window.location.reload();
                     }}
                 />

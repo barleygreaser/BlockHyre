@@ -36,6 +36,8 @@ export type Listing = {
     manual_url?: string;
     specifications?: Record<string, any>;
     owner_id?: string;
+    location_address?: string;
+    preferred_pickup_time?: string;
     owner?: {
         id: string;
         full_name: string;

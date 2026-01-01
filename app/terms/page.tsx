@@ -30,10 +30,11 @@ export default function TermsPage() {
 
                     <h2 className="text-2xl font-bold text-slate-900 mt-8 mb-4">3. The Peace Fund: Protection Program & Liability Waiver</h2>
 
-                    <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">3.1 Status: Not an Insurance Policy</h3>
+                    <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">3.1 Status: Contractual Damage Waiver (Not Insurance)</h3>
                     <p>
-                        The Peace Fund is NOT an insurance policy, is NOT regulated by any insurance authority, and does NOT constitute a contract of indemnification.
-                        It is a discretionary community-funded protection program and a damage waiver provided by BlockHyre to facilitate rentals.
+                        The Peace Fund is strictly a <strong>Contractual Damage Waiver</strong> where BlockHyre agrees to indemnify the Owner for specific damages under specific conditions.
+                        It is <strong>NOT an insurance policy</strong>, is not regulated by insurance authorities, and does not constitute a comprehensive insurance contract.
+                        Renters purchase this waiver to limit their out-of-pocket costs for accidental damage, subject to the Deductible.
                     </p>
 
                     <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">3.2 Funding and Discretion</h3>
@@ -91,11 +92,20 @@ export default function TermsPage() {
                         This deposit is returned upon the safe, timely return of the tool.
                     </p>
 
+                    <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">3.6 Theft by Conversion</h3>
+                    <p>
+                        Failure to return a rented item constitutes <strong>Theft by Conversion</strong> (civil or criminal depending on jurisdiction).
+                        Because the Owner voluntarily provided the item, standard theft reports may not apply.
+                        In the event of non-return, BlockHyre will assist the Owner in filing a "Theft by Conversion" report and may engage collections agencies.
+                        The Peace Fund covers Theft by Conversion only if the Owner has verified the Renter's identity through the Platform and filed a formal police report.
+                    </p>
+
                     <h2 className="text-2xl font-bold text-slate-900 mt-8 mb-4">4. Renter Responsibilities</h2>
                     <p className="mb-2">As a Renter, you agree to:</p>
                     <ul className="list-disc pl-6 space-y-2 mb-6">
                         <li><strong>Safety Gate:</strong> Complete all mandatory safety checklists and review manuals before operating any tool.</li>
                         <li><strong>Proper Use:</strong> Use tools only for their intended purpose and within their rated capacity.</li>
+                        <li><strong>Licensing & Certification:</strong> By renting heavy machinery (e.g., excavators, scissor lifts), you strictly certify that you hold all necessary valid licenses and certifications required by OSHA or local laws to operate such machinery.</li>
                         <li><strong>Towing & Road Use:</strong> If renting a trailer or towable equipment: YOU MUST MAINTAIN YOUR OWN AUTO LIABILITY INSURANCE. The Peace Fund covers physical damage to the towable equipment but strictly excludes liability for road accidents, injury to third parties, or damage to your vehicle.</li>
                     </ul>
 
@@ -103,6 +113,7 @@ export default function TermsPage() {
                     <p className="mb-2">As an Owner, you agree to:</p>
                     <ul className="list-disc pl-6 space-y-2 mb-6">
                         <li><strong>Safe Condition:</strong> Ensure all tools are in safe working order and all safety guards are intact before listing.</li>
+                        <li><strong>Maintenance Logs:</strong> You agree to maintain accurate usage and maintenance logs for all listed equipment. BlockHyre may request these logs in the event of a dispute or accident claim. Failure to produce logs may void Peace Fund protection.</li>
                         <li><strong>Indemnification:</strong> You agree to hold BlockHyre harmless for any injury resulting from the use of your equipment. You retain ownership of the asset and acknowledge that BlockHyre is a facilitator, not a lessee.</li>
                     </ul>
 
@@ -165,6 +176,12 @@ export default function TermsPage() {
                         <li><strong>Security Deposit:</strong> Temporary refundable hold may be placed on High-Risk (Tier 3) items.</li>
                     </ul>
 
+                    <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">6.3 Financial Compliance & Taxes</h3>
+                    <p>
+                        BlockHyre utilizes licensed third-party payment processors (e.g., Stripe Connect) to handle all financial transactions to ensure compliance with KYC (Know Your Customer) and AML (Anti-Money Laundering) regulations.
+                        Owners are responsible for their own tax reporting. BlockHyre will issue 1099-K forms only where required by federal/state law based on transaction volume.
+                    </p>
+
                     <h2 className="text-2xl font-bold text-slate-900 mt-8 mb-4">7. Liability & Release (Waiver of Liability)</h2>
                     <p className="font-bold text-slate-900 mb-4">
                         READ CAREFULLY: YOU ARE ASSUMING ALL OPERATIONAL RISK. BLOCKHYRE IS NOT LIABLE FOR ANY PERSONAL INJURY, DEATH, OR PROPERTY DAMAGE ARISING FROM THE USE OF RENTED TOOLS.
@@ -173,6 +190,13 @@ export default function TermsPage() {
                         <li><strong>Assumption of Risk:</strong> You acknowledge that operating machinery carries inherent risks. You assume full responsibility for these risks.</li>
                         <li><strong>Waiver:</strong> You release BlockHyre and the tool Owner from all liability for injuries sustained during the rental period, except in cases of gross negligence by the Owner.</li>
                     </ul>
+
+                    <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">7.3 Platform Neutrality (Section 230)</h3>
+                    <p>
+                        BlockHyre operates as an interactive computer service provider under <strong>Section 230 of the Communications Decency Act</strong>.
+                        We facilitate transactions but do not set prices, inspect equipment in person, or manage handovers.
+                        We are not liable for the conduct of users, the safety of equipment, or the accuracy of listings. The contract is strictly between the Owner and the Renter.
+                    </p>
 
                     <h2 className="text-2xl font-bold text-slate-900 mt-8 mb-4">8. Dispute Resolution</h2>
                     <p>

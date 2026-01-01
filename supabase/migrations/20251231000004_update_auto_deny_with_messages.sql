@@ -1,6 +1,8 @@
 -- Update auto_deny_expired_rentals to send system messages to both owner and renter
 -- This replaces the previous version to include notification functionality
 
+DROP FUNCTION IF EXISTS public.auto_deny_expired_rentals();
+
 CREATE OR REPLACE FUNCTION public.auto_deny_expired_rentals()
 RETURNS TABLE(rental_id uuid, owner_id uuid, renter_id uuid, denied boolean) 
 LANGUAGE plpgsql

@@ -16,6 +16,7 @@ interface Neighborhood {
 }
 
 import { usePathname } from "next/navigation";
+import { NeighborhoodMap } from "@/app/components/neighborhood-map";
 
 // ... imports
 
@@ -118,27 +119,27 @@ export function LocationOnboardingModal() {
                             Welcome to BlockHyre!
                         </span>
                         <span className="text-slate-900 text-xl">
-                            We're currently piloting in two neighborhoods.
+                            We're currently piloting in {neighborhoods.length > 0 ? neighborhoods.length : 'select'} neighborhoods.
                         </span>
                     </h2>
                     <p className="text-slate-600">
-                        Please confirm your address to ensure you are within our service area and can view local listings.
+                        Please confirm your neighborhood to ensure you are within our service area and can view local listings.
                     </p>
                 </div>
 
                 {/* Body */}
                 <div className="p-8 pt-2 space-y-6 overflow-y-auto">
 
-                    {/* Address Input (Mock Autocomplete) */}
+                    {/* Neighborhood Input (Search) */}
                     <div className="relative">
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Enter your address
+                            Select your neighborhood
                         </label>
                         <div className="relative">
                             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="e.g. 123 Pine St, Woodstock, GA"
+                                placeholder="Search pilot neighborhoods (e.g. Woodlands)"
                                 className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 focus:border-safety-orange transition-all font-medium"
                                 value={searchTerm}
                                 onChange={(e) => {
@@ -182,32 +183,23 @@ export function LocationOnboardingModal() {
                         )}
                     </div>
 
-                    {/* Map Visualization (Mock) */}
-                    <div className="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 group">
-                        {/* Placeholder Map Background */}
-                        <div
-                            className="absolute inset-0 opacity-50 bg-[url('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/15/8563/13106.png')] bg-cover bg-center"
-                            style={{ filter: "grayscale(50%)" }}
-                        />
-
-                        {/* Messages */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            {selectedNeighborhood ? (
-                                <div className="text-center animate-in fade-in zoom-in duration-300">
-                                    <div className="h-24 w-24 bg-safety-orange/20 rounded-full border-2 border-safety-orange mx-auto flex items-center justify-center backdrop-blur-sm relative">
-                                        <div className="h-3 w-3 bg-safety-orange rounded-full shadow-lg" />
-                                        <div className="absolute -bottom-8 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold shadow-sm text-slate-800 border border-slate-200 whitespace-nowrap">
-                                            {selectedNeighborhood.name} Radius
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
+                    {/* Map Visualization */}
+                    <div className="relative w-full h-48 bg-[#eceeed] rounded-lg overflow-hidden border border-slate-200">
+                        {selectedNeighborhood ? (
+                            <NeighborhoodMap
+                                latitude={selectedNeighborhood.center_lat}
+                                longitude={selectedNeighborhood.center_lon}
+                                radiusMiles={selectedNeighborhood.service_radius_miles}
+                                neighborhoodName={selectedNeighborhood.name}
+                            />
+                        ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center text-slate-400 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
                                     <Navigation className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                    <p className="text-sm font-medium">Map will update when address is selected</p>
+                                    <p className="text-sm font-medium">Map will update when neighborhood is selected</p>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
                 </div>
@@ -232,7 +224,7 @@ export function LocationOnboardingModal() {
                         ) : selectedNeighborhood ? (
                             "Confirm Location & Start Renting"
                         ) : (
-                            "Enter Address to Continue"
+                            "Select Neighborhood to Continue"
                         )}
                     </Button>
                     <p className="text-center text-xs text-slate-400 mt-4">

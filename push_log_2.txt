@@ -1,0 +1,41 @@
+﻿supabase : Initialising 
+login role...
+At line:1 char:10
++ echo y | supabase db 
+push 2>&1 | Out-File 
+push_log_2.txt -Encoding 
+UT ...
++          
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (Ini  
+  tialising login role..   
+ .:String) [], RemoteEx    
+ception
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+Connecting to remote 
+database...
+Do you want to push these 
+migrations to the remote 
+database?
+ ΓÇó 20260101080000_add_log
+istics_columns.sql
+
+ [Y/n] y
+Applying migration 20260101
+080000_add_logistics_column
+s.sql...
+ERROR: syntax error at or 
+near "∩╗┐" (SQLSTATE 42601)
+At statement: 0            
+                       
+∩╗┐-- Add logistics 
+columns to listings        
+      
+^                          
+                       
+Try rerunning the command 
+with --debug to 
+troubleshoot the error.

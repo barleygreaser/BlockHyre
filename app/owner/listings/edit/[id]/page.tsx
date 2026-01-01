@@ -203,6 +203,8 @@ export default function EditListingPage() {
                     is_available: formData.is_available,
                     owner_notes: formData.owner_notes,
                     manual_url: formData.manual_url,
+                    location_address: formData.location_address,
+                    preferred_pickup_time: formData.preferred_pickup_time,
                 })
                 .eq('id', id);
 
@@ -690,6 +692,33 @@ export default function EditListingPage() {
                                                         </Label>
                                                     </div>
                                                 </RadioGroup>
+                                            </div>
+                                        </div>
+
+                                        {/* Pickup & Logistics */}
+                                        <div className="space-y-4 pt-4 border-t border-slate-100">
+                                            <h3 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Pickup & Logistics</h3>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-slate-700">Exact Pickup Address</Label>
+                                                <Input
+                                                    placeholder="e.g. 123 Neighborhood Way, Apt 4"
+                                                    value={formData.location_address || ""}
+                                                    onChange={(e) => handleInputChange("location_address", e.target.value)}
+                                                    className="focus-visible:ring-safety-orange/50"
+                                                />
+                                                <p className="text-xs text-slate-500 italic">Only shared with the renter AFTER a booking is confirmed.</p>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-slate-700">Preferred Pickup Window</Label>
+                                                <Input
+                                                    placeholder="e.g. Weekdays 5pm-8pm, Weekends after 10am"
+                                                    value={formData.preferred_pickup_time || ""}
+                                                    onChange={(e) => handleInputChange("preferred_pickup_time", e.target.value)}
+                                                    className="focus-visible:ring-safety-orange/50"
+                                                />
+                                                <p className="text-xs text-slate-500 italic">Helps renters plan their request.</p>
                                             </div>
                                         </div>
 
