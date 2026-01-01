@@ -55,7 +55,7 @@ export function ImageUpload({
     folder,
     className = "",
     label = "Upload Image",
-    aspectRatio = 4 / 3, // Default aspect ratio for tools
+    aspectRatio = 16 / 9, // Default aspect ratio for tool images (matches listing displays)
     children
 }: ImageUploadProps) {
     const { user } = useAuth();
