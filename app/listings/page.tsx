@@ -131,7 +131,7 @@ export default function InventoryPage() {
         }
     };
 
-    const { listings, loading, error, searchListings, categories } = useMarketplace();
+    const { listings, loading, categoriesLoading, error, searchListings, categories } = useMarketplace();
 
     // Trigger search when filters change
     useEffect(() => {
@@ -146,12 +146,12 @@ export default function InventoryPage() {
                 maxDistance,
                 priceRange[0],
                 priceRange[1],
-                selectedCategories.length === 1 ? selectedCategories[0] : undefined // RPC only supports one category for now
+                undefined // Don't pass category filter to backend - handle all category filtering client-side for instant response
             );
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [maxDistance, priceRange, selectedCategories, userLocation, locationLoaded]); // Re-run when these change
+    }, [maxDistance, priceRange, userLocation, locationLoaded]); // Category filtering is handled client-side, so selectedCategories removed from deps
 
     // Map Supabase listings to Tool format
     const inventoryTools: (Tool & { tier: number, ownerVerified: boolean })[] = useMemo(() => {
@@ -276,7 +276,7 @@ export default function InventoryPage() {
                         <div>
                             <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
                             <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide">
-                                {loading ? (
+                                {categoriesLoading ? (
                                     // SKELETON LOADER IMPLEMENTATION
                                     Array.from({ length: 8 }).map((_, index) => {
                                         // Vary the width for more dynamic appearance

@@ -7,6 +7,7 @@ import { Button } from "@/app/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { calculateRentalPrice } from "@/lib/pricing";
+import { supabase } from "@/lib/supabase";
 
 export default function CheckoutPage() {
     const { cart, clearCart } = useCart();
@@ -28,14 +29,51 @@ export default function CheckoutPage() {
 
     const handlePayment = async () => {
         setIsProcessing(true);
-        // Simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Please log in to continue.");
+                return;
+            }
 
-        // Here we would create the rentals in Supabase
-        // For now, just clear cart and redirect
-        clearCart();
-        alert("Payment successful! Your rentals are confirmed.");
-        router.push('/inventory');
+            const response = await fetch("/api/stripe/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                    cartItems: cart.map(item => ({
+                        id: item.id,
+                        title: item.title,
+                        days: item.days,
+                        price: item.price,
+                        dates: item.dates,
+                    })),
+                }),
+            });
+
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error("Failed to parse response:", text);
+                throw new Error("Server returned an invalid response. Check console for details.");
+            }
+
+            if (data.url) {
+                // Redirect to Stripe Checkout
+                window.location.href = data.url;
+            } else {
+                throw new Error(data.error || "Failed to create checkout session");
+            }
+        } catch (error: any) {
+            console.error("Payment Error:", error);
+            alert(error.message || "Something went wrong during checkout.");
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     if (cart.length === 0) {
@@ -86,7 +124,7 @@ export default function CheckoutPage() {
                             <h2 className="text-xl font-bold mb-4">Payment Details</h2>
                             <div className="space-y-4">
                                 <div className="p-4 border rounded bg-slate-50 text-slate-500 text-sm">
-                                    Payment integration coming soon. This is a demo.
+                                    You will be redirected to Stripe to securely complete your payment.
                                 </div>
                             </div>
                         </div>

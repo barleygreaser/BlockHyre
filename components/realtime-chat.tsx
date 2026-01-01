@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { SystemMessage } from "@/app/components/messages/system-message"
 
 interface RealtimeChatProps {
@@ -41,6 +41,7 @@ export const RealtimeChat = ({
   currentUserId,
 }: RealtimeChatProps) => {
   const { containerRef, scrollToBottom } = useChatScroll()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const {
     messages: realtimeMessages,
@@ -81,11 +82,27 @@ export const RealtimeChat = ({
       e.preventDefault()
       if (!newMessage.trim() || !isConnected) return
 
-      const message = await sendMessage(newMessage, userAvatar)
+      // Keep reference to input element
+      const inputElement = inputRef.current
+
+      // Store message and clear input immediately
+      const messageToSend = newMessage
+      setNewMessage('')
+
+      // Send the message
+      const message = await sendMessage(messageToSend, userAvatar)
       if (message && onSend) {
         onSend(message)
       }
-      setNewMessage('')
+
+
+      // Refocus after a brief delay to allow iOS to reset autocapitalization
+      // but still keep keyboard open
+      setTimeout(() => {
+        if (inputElement) {
+          inputElement.focus()
+        }
+      }, 50)
     },
     [newMessage, isConnected, sendMessage, userAvatar, onSend]
   )
@@ -93,7 +110,7 @@ export const RealtimeChat = ({
   return (
     <div className="flex flex-col h-full w-full bg-background text-foreground antialiased">
       {/* Messages */}
-      <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {allMessages.length === 0 ? (
           <div className="text-center text-sm text-muted-foreground">
             No messages yet. Start the conversation!
@@ -152,13 +169,16 @@ export const RealtimeChat = ({
 
       <form onSubmit={handleSendMessage} className="flex w-full gap-2 border-t border-border p-4">
         <Input
+          ref={inputRef}
           className={cn(
-            'rounded-full bg-background text-sm transition-all duration-300',
+            'rounded-full bg-background text-base transition-all duration-300',
             isConnected && newMessage.trim() ? 'w-[calc(100%-36px)]' : 'w-full'
           )}
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          enterKeyHint="send"
+          autoCapitalize="sentences"
           placeholder="Type a message..."
           disabled={!isConnected}
         />

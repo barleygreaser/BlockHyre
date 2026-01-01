@@ -9,6 +9,7 @@ import { useAuth } from "@/app/context/auth-context";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function MessagesCenter() {
     const { user, loading } = useAuth();
@@ -49,18 +50,23 @@ export function MessagesCenter() {
             <Navbar />
 
             <div className="container mx-auto px-4 py-6 max-w-7xl">
-                {/* Page Header */}
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold font-serif text-slate-900 flex items-center gap-2">
-                        <MessageSquare className="h-8 w-8 text-safety-orange" />
+                {/* Page Header - Hide on mobile when chat is open */}
+                <div className={`mb-4 md:mb-6 ${chatId ? "hidden md:block" : "block"}`}>
+                    <h1 className="text-xl md:text-3xl font-bold font-serif text-slate-900 flex items-center gap-2">
+                        <MessageSquare className="h-5 w-5 md:h-8 md:w-8 text-safety-orange" />
                         Messages
                     </h1>
-                    <p className="text-slate-600 mt-1">Communicate with tool owners and renters</p>
+
                 </div>
 
                 {/* Two-Pane Layout */}
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="flex h-[calc(100vh-16rem)]">
+                    <div className={cn(
+                        "flex",
+                        chatId
+                            ? "h-[calc(100vh-8rem)] md:h-[calc(100vh-16rem)]"  // Full screen on mobile when chat open
+                            : "h-[calc(100vh-16rem)]"  // Normal height when no chat
+                    )}>
                         {/* Left Sidebar - Conversation List */}
                         <div
                             className={`
@@ -78,11 +84,11 @@ export function MessagesCenter() {
                         </div>
 
                         {/* Right Panel - Message View */}
-                        <div className={`flex-1 ${chatId ? "block" : "hidden md:block"}`}>
+                        <div className={`flex-1 flex flex-col ${chatId ? "block" : "hidden md:block"}`}>
                             {chatId ? (
                                 <>
                                     {/* Mobile Back Button */}
-                                    <div className="md:hidden p-4 border-b border-slate-200 bg-slate-50">
+                                    <div className="md:hidden p-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
                                         <Button
                                             variant="ghost"
                                             size="sm"
@@ -93,7 +99,9 @@ export function MessagesCenter() {
                                             Back to conversations
                                         </Button>
                                     </div>
-                                    <MessageView chatId={chatId} />
+                                    <div className="flex-1 overflow-hidden">
+                                        <MessageView chatId={chatId} />
+                                    </div>
                                 </>
                             ) : (
                                 <div className="hidden md:flex items-center justify-center h-full text-center p-8">

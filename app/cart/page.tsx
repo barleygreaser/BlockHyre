@@ -35,7 +35,7 @@ export default function CartPage() {
                 {cart.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">
                         <p className="text-slate-500 mb-4">Your cart is empty.</p>
-                        <Button onClick={() => router.push('/inventory')}>Browse Inventory</Button>
+                        <Button onClick={() => router.push('/listings')}>Browse Inventory</Button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

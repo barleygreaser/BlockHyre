@@ -40,12 +40,12 @@ export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryPr
     }, [listings, selectedCategory]);
 
     return (
-        <section className="py-20 bg-slate-50 relative" id="inventory">
+        <section className="pt-12 pb-20 bg-slate-50 relative" id="inventory">
             {/* Background enhancement */}
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
             <div className="container mx-auto px-4">
-                <div className="flex flex-col mb-10 gap-6">
+                <div className="flex flex-col mb-8 gap-6">
                     <div className="max-w-3xl">
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 font-serif tracking-tight">
                             Tools Near You
