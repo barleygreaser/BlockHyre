@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/hooks/use-realtime-chat'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { memo } from 'react'
 
 interface ChatMessageItemProps {
   message: ChatMessage
@@ -8,7 +9,7 @@ interface ChatMessageItemProps {
   showHeader: boolean
 }
 
-export const ChatMessageItem = ({ message, isOwnMessage, showHeader }: ChatMessageItemProps) => {
+export const ChatMessageItem = memo(({ message, isOwnMessage, showHeader }: ChatMessageItemProps) => {
   // SAFETY: System messages should never be rendered as chat bubbles
   // They should be centered and rendered by SystemMessage component
   if (message.messageType === 'system') {
@@ -53,4 +54,6 @@ export const ChatMessageItem = ({ message, isOwnMessage, showHeader }: ChatMessa
       </div>
     </div>
   )
-}
+})
+
+ChatMessageItem.displayName = 'ChatMessageItem'

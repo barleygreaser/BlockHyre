@@ -1,12 +1,13 @@
 "use client";
 
+import { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 interface SystemMessageProps {
     content: string;
 }
 
-export function SystemMessage({ content }: SystemMessageProps) {
+export const SystemMessage = memo(({ content }: SystemMessageProps) => {
     // System messages are now rendered via Liquid templates
     // Display them centered with clean styling and markdown support
     return (
@@ -25,4 +26,6 @@ export function SystemMessage({ content }: SystemMessageProps) {
             </div>
         </div>
     );
-}
+})
+
+SystemMessage.displayName = 'SystemMessage'

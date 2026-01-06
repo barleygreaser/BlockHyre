@@ -124,6 +124,7 @@ export const RealtimeChat = ({
             // 1. ROBUST CHECK: Handle both camelCase and snake_case
             const isSystemMessage =
               message.messageType === 'system' ||
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (message as any).message_type === 'system';
 
             // Render system messages differently
@@ -147,8 +148,8 @@ export const RealtimeChat = ({
             // --- FIX: Use ID comparison instead of username comparison ---
             // Prioritize ID comparison. Fallback to name comparison for optimistic messages 
             // that might not have senderId attached yet (though they should).
-            const isOwnMessage = (currentUserId && (message as any).senderId)
-              ? (message as any).senderId === currentUserId
+            const isOwnMessage = (currentUserId && message.senderId)
+              ? message.senderId === currentUserId
               : message.user.name === username;
 
             return (
