@@ -246,16 +246,16 @@ export default function ListingDetailsPage() {
         <main className="min-h-screen bg-slate-50">
             <Navbar />
 
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 md:pt-2 md:pb-8">
 
                 {/* Breadcrumbs / Back */}
-                <div className="mb-6">
+                <div className="mb-3 md:mb-2">
                     <Button variant="link" className="pl-0 text-slate-500 hover:text-slate-900" onClick={() => router.push('/listings')}>
                         &larr; Back to Listings
                     </Button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-5">
 
                     {/* Left Column: Images & Details */}
                     <div className="lg:col-span-2 space-y-8">
@@ -506,8 +506,7 @@ export default function ListingDetailsPage() {
                                 <CardContent className="p-6 space-y-6">
 
                                     {/* Date Picker */}
-                                    <div className="space-y-6">
-                                        <label className="text-sm font-bold text-slate-900">Select Dates</label>
+                                    <div className="space-y-2">
                                         <div className="flex justify-center">
                                             <ListingCalendar
                                                 unavailableDates={unavailableDates}

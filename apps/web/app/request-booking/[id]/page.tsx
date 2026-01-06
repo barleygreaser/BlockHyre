@@ -37,6 +37,41 @@ export default function RequestBookingPage() {
         }
     }, [id]);
 
+    // Security Check: Prevent users from accessing the request form if they already have a pending request
+    useEffect(() => {
+        async function checkPendingRequests() {
+            if (!user || !listing || loading) return;
+
+            // Check if there's already a pending rental for this user + listing
+            const { data: existingRental } = await supabase
+                .from('rentals')
+                .select('id')
+                .eq('listing_id', listing.id)
+                .eq('renter_id', user.id)
+                .eq('status', 'pending')
+                .maybeSingle();
+
+            if (existingRental) {
+                // Find the chat to redirect to
+                const { data: chat } = await supabase
+                    .from('chats')
+                    .select('id')
+                    .eq('listing_id', listing.id)
+                    .eq('renter_id', user.id)
+                    .eq('owner_id', listing.owner_id)
+                    .maybeSingle();
+
+                toast.error("Request already pending", {
+                    description: "Redirecting to your existing request..."
+                });
+
+                router.replace(`/messages?listing=${listing.id}${chat ? `&chat=${chat.id}` : ''}`);
+            }
+        }
+
+        checkPendingRequests();
+    }, [user, listing, loading, router]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -203,7 +238,7 @@ export default function RequestBookingPage() {
 
             // Wait 1 second to show the "Sent!" state, then redirect
             setTimeout(() => {
-                router.push(`/messages?listing=${listing.id}&chat=${chatId}`);
+                router.replace(`/messages?listing=${listing.id}&chat=${chatId}`);
             }, 1000);
 
         } catch (error: any) {

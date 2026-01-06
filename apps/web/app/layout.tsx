@@ -47,7 +47,7 @@ export default function RootLayout({
               <MessageNotificationProvider />
               <LocationOnboardingModal />
               {children}
-              <Toaster />
+              <Toaster richColors theme="light" />
             </CartProvider>
           </AuthProvider>
         </NuqsAdapter>
