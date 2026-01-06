@@ -36,7 +36,6 @@ This document outlines the structure of the web application based on the Next.js
 ## API Routes
 
 * **/api/fetch-suggestions** - `app/api/fetch-suggestions/route.ts`
-* **/api/inspect-system-messages** - `app/api/inspect-system-messages/route.ts`
 * **/api/signup** - `app/api/signup/route.ts`
 * **/api/stripe/checkout** - `app/api/stripe/checkout/route.ts`
 * **/api/stripe/connect** - `app/api/stripe/connect/route.ts`

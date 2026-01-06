@@ -47,7 +47,7 @@ const EmptyMedia = React.forwardRef<HTMLDivElement, EmptyMediaProps>(
                 {...props}
             >
                 {variant === "icon" && React.isValidElement(children)
-                    ? React.cloneElement(children as React.ReactElement, {
+                    ? React.cloneElement(children as React.ReactElement<{ className?: string }>, {
                         className: "h-6 w-6 text-slate-400 dark:text-slate-500",
                     })
                     : children}
