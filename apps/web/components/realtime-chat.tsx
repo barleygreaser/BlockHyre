@@ -56,10 +56,16 @@ export const RealtimeChat = ({
   // Merge realtime messages with initial messages
   const allMessages = useMemo(() => {
     const mergedMessages = [...initialMessages, ...realtimeMessages]
-    // Remove duplicates based on message id
-    const uniqueMessages = mergedMessages.filter(
-      (message, index, self) => index === self.findIndex((m) => m.id === message.id)
-    )
+
+    // Remove duplicates based on message id using Map for O(N) complexity
+    const uniqueMessagesMap = new Map<string, ChatMessage>();
+    for (const msg of mergedMessages) {
+        if (!uniqueMessagesMap.has(msg.id)) {
+            uniqueMessagesMap.set(msg.id, msg);
+        }
+    }
+    const uniqueMessages = Array.from(uniqueMessagesMap.values());
+
     // Sort by creation date
     const sortedMessages = uniqueMessages.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
 
@@ -76,6 +82,70 @@ export const RealtimeChat = ({
     // Scroll to bottom whenever messages change
     scrollToBottom()
   }, [allMessages, scrollToBottom])
+
+  // Memoize the message list rendering to prevent re-renders on keystrokes
+  const messageList = useMemo(() => {
+    if (allMessages.length === 0) {
+      return (
+        <div className="text-center text-sm text-muted-foreground">
+          No messages yet. Start the conversation!
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-1">
+        {allMessages.map((message, index) => {
+          const prevMessage = index > 0 ? allMessages[index - 1] : null
+          const showHeader = !prevMessage || prevMessage.user.name !== message.user.name
+
+          // 1. ROBUST CHECK: Handle both camelCase and snake_case
+          const isSystemMessage =
+            message.messageType === 'system' ||
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (message as any).message_type === 'system';
+
+          // Render system messages differently
+          if (isSystemMessage) {
+            // Filter: Only render if message is for this user OR is a broadcast (null)
+            if (message.recipient_id && message.recipient_id !== currentUserId) {
+              return null; // Skip this message
+            }
+
+            return (
+              <div
+                key={message.id}
+                className="animate-in fade-in slide-in-from-bottom-4 duration-300"
+              >
+                {/* SystemMessage component */}
+                <SystemMessage content={message.content} />
+              </div>
+            )
+          }
+
+          // --- FIX: Use ID comparison instead of username comparison ---
+          // Prioritize ID comparison. Fallback to name comparison for optimistic messages
+          // that might not have senderId attached yet (though they should).
+          const isOwnMessage = (currentUserId && message.senderId)
+            ? message.senderId === currentUserId
+            : message.user.name === username;
+
+          return (
+            <div
+              key={message.id}
+              className="animate-in fade-in slide-in-from-bottom-4 duration-300"
+            >
+              <ChatMessageItem
+                message={message}
+                isOwnMessage={isOwnMessage}
+                showHeader={showHeader}
+              />
+            </div>
+          )
+        })}
+      </div>
+    )
+  }, [allMessages, currentUserId, username])
 
   const handleSendMessage = useCallback(
     async (e: React.FormEvent) => {
@@ -111,61 +181,7 @@ export const RealtimeChat = ({
     <div className="flex flex-col h-full w-full bg-background text-foreground antialiased">
       {/* Messages */}
       <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-        {allMessages.length === 0 ? (
-          <div className="text-center text-sm text-muted-foreground">
-            No messages yet. Start the conversation!
-          </div>
-        ) : null}
-        <div className="space-y-1">
-          {allMessages.map((message, index) => {
-            const prevMessage = index > 0 ? allMessages[index - 1] : null
-            const showHeader = !prevMessage || prevMessage.user.name !== message.user.name
-
-            // 1. ROBUST CHECK: Handle both camelCase and snake_case
-            const isSystemMessage =
-              message.messageType === 'system' ||
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (message as any).message_type === 'system';
-
-            // Render system messages differently
-            if (isSystemMessage) {
-              // Filter: Only render if message is for this user OR is a broadcast (null)
-              if (message.recipient_id && message.recipient_id !== currentUserId) {
-                return null; // Skip this message
-              }
-
-              return (
-                <div
-                  key={message.id}
-                  className="animate-in fade-in slide-in-from-bottom-4 duration-300"
-                >
-                  {/* SystemMessage component */}
-                  <SystemMessage content={message.content} />
-                </div>
-              )
-            }
-
-            // --- FIX: Use ID comparison instead of username comparison ---
-            // Prioritize ID comparison. Fallback to name comparison for optimistic messages 
-            // that might not have senderId attached yet (though they should).
-            const isOwnMessage = (currentUserId && message.senderId)
-              ? message.senderId === currentUserId
-              : message.user.name === username;
-
-            return (
-              <div
-                key={message.id}
-                className="animate-in fade-in slide-in-from-bottom-4 duration-300"
-              >
-                <ChatMessageItem
-                  message={message}
-                  isOwnMessage={isOwnMessage}
-                  showHeader={showHeader}
-                />
-              </div>
-            )
-          })}
-        </div>
+        {messageList}
       </div>
 
       <form onSubmit={handleSendMessage} className="flex w-full gap-2 border-t border-border p-4">
