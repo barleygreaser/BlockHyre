@@ -34,6 +34,8 @@ pnpm-debug.log*
 *.sqlite
 *.db
 supabase/supabase_backup_*.sql
+*.zip
+*.tar.gz
 
 # Editor / IDE
 .vscode/*
@@ -53,3 +55,20 @@ temp_*.json
 # Migration Scripts (if considered one-off)
 migrate.ps1
 fix_deps.ps1
+
+# External Demos
+demos/
+
+# Project Specific
+screenshots/
+.expo/
+.next/
+*.csv
+temp_*.json
+system_message_templates_rows*.csv
+tool_suggestions_rows.sql
+verify_*_columns.sql
+inspect_*.sql
+test_*.sql
+supabase_backup_*.sql
+temp_*.json
