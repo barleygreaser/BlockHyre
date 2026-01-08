@@ -56,10 +56,20 @@ export const RealtimeChat = ({
   // Merge realtime messages with initial messages
   const allMessages = useMemo(() => {
     const mergedMessages = [...initialMessages, ...realtimeMessages]
-    // Remove duplicates based on message id
-    const uniqueMessages = mergedMessages.filter(
-      (message, index, self) => index === self.findIndex((m) => m.id === message.id)
-    )
+    // Remove duplicates based on message id using Map for O(N) performance
+    const uniqueMessagesMap = new Map<string, ChatMessage>()
+
+    // Using a Map ensures we only keep the first occurrence of each message ID
+    // which matches the behavior of the original filter/findIndex implementation
+    // but with O(N) complexity instead of O(N^2)
+    for (const message of mergedMessages) {
+      if (!uniqueMessagesMap.has(message.id)) {
+        uniqueMessagesMap.set(message.id, message)
+      }
+    }
+
+    const uniqueMessages = Array.from(uniqueMessagesMap.values())
+
     // Sort by creation date
     const sortedMessages = uniqueMessages.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
 
