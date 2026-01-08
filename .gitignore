@@ -31,6 +31,7 @@ pnpm-debug.log*
 
 # Database & Backups
 *.sql
+!**/supabase/migrations/*.sql
 *.sqlite
 *.db
 supabase/supabase_backup_*.sql
