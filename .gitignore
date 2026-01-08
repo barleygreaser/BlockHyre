@@ -72,3 +72,10 @@ inspect_*.sql
 test_*.sql
 supabase_backup_*.sql
 temp_*.json
+
+# Supabase CLI
+**/supabase/.temp/
+**/supabase/.branches/
+**/supabase/backups/
+**/supabase/schema.sql
+**/supabase/schema_dump.sql
