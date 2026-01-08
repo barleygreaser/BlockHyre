@@ -11,6 +11,11 @@ export async function GET(request: Request) {
         return NextResponse.json({ suggestions: [] });
     }
 
+    // Security: Limit query length to prevent DoS
+    if (query.length > 100) {
+        return NextResponse.json({ error: "Query too long" }, { status: 400 });
+    }
+
     const supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -29,7 +34,8 @@ export async function GET(request: Request) {
 
         if (result.error) {
             console.error("Brand fetch error:", result.error);
-            return NextResponse.json({ error: result.error.message }, { status: 500 });
+            // Security: Don't leak DB error details to client
+            return NextResponse.json({ error: "Failed to fetch suggestions" }, { status: 500 });
         }
 
         // Sort: prioritize results that START with the query
@@ -78,7 +84,8 @@ export async function GET(request: Request) {
 
     if (error) {
         console.error("Suggestion fetch error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        // Security: Don't leak DB error details to client
+        return NextResponse.json({ error: "Failed to fetch suggestions" }, { status: 500 });
     }
 
     return NextResponse.json({ suggestions: data || [] });

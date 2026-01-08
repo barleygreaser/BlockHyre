@@ -5,3 +5,10 @@
 1. Use distinct file naming conventions for debug scripts (e.g., `_debug.ts`) and exclude them from build/deploy.
 2. Ensure all API routes have explicit authentication checks, even if they seem harmless.
 3. Regularly audit `app/api` folder for unrecognized endpoints.
+
+## 2025-10-27 - [Information Leakage in Search API]
+**Vulnerability:** The search suggestions API (`fetch-suggestions`) was returning raw database error messages to the client and accepting unbounded query strings.
+**Learning:** Even "public" read-only APIs need input validation (length limits) to prevent DoS and careful error handling to avoid leaking schema details or stack traces via `error.message`.
+**Prevention:**
+1. Always enforce maximum length limits on string inputs.
+2. Catch backend errors and return generic "Something went wrong" messages to clients while logging details server-side.
