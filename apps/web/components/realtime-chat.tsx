@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { ChatMessageItem } from '@/components/chat-message'
+import { ChatList } from '@/components/chat-list'
 import { useChatScroll } from '@/hooks/use-chat-scroll'
 import {
   type ChatMessage,
@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
-import { SystemMessage } from "@/app/components/messages/system-message"
 
 interface RealtimeChatProps {
   roomName: string
@@ -121,61 +120,11 @@ export const RealtimeChat = ({
     <div className="flex flex-col h-full w-full bg-background text-foreground antialiased">
       {/* Messages */}
       <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-        {allMessages.length === 0 ? (
-          <div className="text-center text-sm text-muted-foreground">
-            No messages yet. Start the conversation!
-          </div>
-        ) : null}
-        <div className="space-y-1">
-          {allMessages.map((message, index) => {
-            const prevMessage = index > 0 ? allMessages[index - 1] : null
-            const showHeader = !prevMessage || prevMessage.user.name !== message.user.name
-
-            // 1. ROBUST CHECK: Handle both camelCase and snake_case
-            const isSystemMessage =
-              message.messageType === 'system' ||
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (message as any).message_type === 'system';
-
-            // Render system messages differently
-            if (isSystemMessage) {
-              // Filter: Only render if message is for this user OR is a broadcast (null)
-              if (message.recipient_id && message.recipient_id !== currentUserId) {
-                return null; // Skip this message
-              }
-
-              return (
-                <div
-                  key={message.id}
-                  className="animate-in fade-in slide-in-from-bottom-4 duration-300"
-                >
-                  {/* SystemMessage component */}
-                  <SystemMessage content={message.content} />
-                </div>
-              )
-            }
-
-            // --- FIX: Use ID comparison instead of username comparison ---
-            // Prioritize ID comparison. Fallback to name comparison for optimistic messages 
-            // that might not have senderId attached yet (though they should).
-            const isOwnMessage = (currentUserId && message.senderId)
-              ? message.senderId === currentUserId
-              : message.user.name === username;
-
-            return (
-              <div
-                key={message.id}
-                className="animate-in fade-in slide-in-from-bottom-4 duration-300"
-              >
-                <ChatMessageItem
-                  message={message}
-                  isOwnMessage={isOwnMessage}
-                  showHeader={showHeader}
-                />
-              </div>
-            )
-          })}
-        </div>
+        <ChatList
+          messages={allMessages}
+          currentUserId={currentUserId}
+          username={username}
+        />
       </div>
 
       <form onSubmit={handleSendMessage} className="flex w-full gap-2 border-t border-border p-4">
