@@ -11,6 +11,8 @@ import {
     Platform,
     NativeSyntheticEvent,
     NativeScrollEvent,
+    FlatList,
+    ViewToken,
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -20,6 +22,7 @@ import Animated, {
     interpolateColor,
     Extrapolation,
     runOnJS,
+    useAnimatedScrollHandler,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -69,6 +72,9 @@ const TOOL_DATA = {
     price: 45,
     images: [
         'https://lh3.googleusercontent.com/aida-public/AB6AXuDMNLoNQPeIcDDQJ-f_YhETqmgca9ZoNIoUI6-KhN_wg6jyPB4vCqEKj7sPo-g45tRrqKXza-T4vQLxBUHo8lxaqVOqMTnESkF-TnO84SMDV0Vz_hFHVs8-n1XDOv4zUm_1JlebQA1jYuP_GZKgzIYZbJ6FmV2zL2BnTVPMveVsXBvAxr5o-0yBHQ7gmOVpJD2T6YjyWMwowNSTFeG89Benso5ZUDrEhQeO1mnsfpggWGsVV2JRf8A7RcCItQpVjymqjhN9GS6Czg',
+        'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800',
+        'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800',
+        'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=800',
     ],
 };
 
@@ -86,23 +92,44 @@ export default function ListingDetailScreen() {
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
     const [calendarY, setCalendarY] = useState(0);
     const [isCalendarInView, setIsCalendarInView] = useState(false);
-    const scrollRef = useRef<ScrollView>(null);
+    const scrollRef = useAnimatedRef<Animated.ScrollView>();
+    const carouselRef = useRef<FlatList>(null);
 
     const scrollY = useSharedValue(0);
 
-    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const offsetY = event.nativeEvent.contentOffset.y;
-        scrollY.value = offsetY;
-        setIsScrolled(offsetY > HEADER_TRANSITION_POINT);
+    // Viewability config for FlatList carousel
+    const viewabilityConfig = useRef({
+        itemVisiblePercentThreshold: 50,
+    }).current;
 
-        if (calendarY > 0) {
-            // Check if calendar area is within view (with some buffer)
-            const isInView = (offsetY + SCREEN_HEIGHT) > (calendarY + 150);
-            if (isInView !== isCalendarInView) {
-                setIsCalendarInView(isInView);
-            }
+    const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+        if (viewableItems.length > 0 && viewableItems[0].index !== null) {
+            setCurrentImageIndex(viewableItems[0].index);
         }
-    };
+    }).current;
+
+    // Optimized scroll handler running on UI thread
+    const scrollHandler = useAnimatedScrollHandler({
+        onScroll: (event) => {
+            scrollY.value = event.contentOffset.y;
+
+            // Handle header transition state
+            const isScrolledDown = event.contentOffset.y > HEADER_TRANSITION_POINT;
+            if (isScrolledDown !== isScrolled) {
+                runOnJS(setIsScrolled)(isScrolledDown);
+            }
+
+            // Handle calendar visibility check
+            if (calendarY > 0) {
+                // Adjust for hero height and overlap
+                const verticalOffset = HERO_HEIGHT - 24;
+                const isInView = (event.contentOffset.y + SCREEN_HEIGHT) > (calendarY + verticalOffset + 100);
+                if (isInView !== isCalendarInView) {
+                    runOnJS(setIsCalendarInView)(isInView);
+                }
+            }
+        },
+    }, [calendarY, isScrolled, isCalendarInView]);
 
     const toggleLike = () => {
         setIsLiked(!isLiked);
@@ -205,8 +232,37 @@ export default function ListingDetailScreen() {
         return { opacity };
     });
 
+    // Stretchy Header Effect (Zoom on pull down)
+    const heroAnimatedStyle = useAnimatedStyle(() => {
+        const scale = interpolate(
+            scrollY.value,
+            [-HERO_HEIGHT, 0, HERO_HEIGHT],
+            [2, 1, 1],
+            Extrapolation.CLAMP
+        );
+
+        const translateY = interpolate(
+            scrollY.value,
+            [-HERO_HEIGHT, 0, HERO_HEIGHT],
+            [-HERO_HEIGHT / 2, 0, HERO_HEIGHT],
+            Extrapolation.EXTEND
+        );
+
+        return {
+            transform: [
+                { translateY },
+                { scale },
+            ],
+        };
+    });
+
     // Scrolled icon color (depends on dark mode)
     const scrolledIconColor = isDark ? '#FFFFFF' : '#0F172A';
+
+    const scrollToCalendar = () => {
+        const targetY = HERO_HEIGHT - 24 + calendarY - 100;
+        scrollRef.current?.scrollTo({ y: targetY, animated: true });
+    };
 
     const listing = { ...TOOL_DATA, id: id || TOOL_DATA.id };
 
@@ -299,44 +355,64 @@ export default function ListingDetailScreen() {
                 </View>
             </View>
 
-            <ScrollView
+
+
+            <Animated.ScrollView
                 ref={scrollRef}
                 style={styles.scrollView}
                 showsVerticalScrollIndicator={false}
-                onScroll={handleScroll}
+                onScroll={scrollHandler}
                 scrollEventThrottle={16}
-                contentContainerStyle={{ paddingBottom: 120 }}
             >
-                {/* Hero Image Section */}
-                <View style={styles.heroContainer}>
-                    <Image
-                        source={{ uri: listing.images[currentImageIndex] }}
-                        style={styles.heroImage}
-                        resizeMode="cover"
+                {/* Fixed Hero Image Section - Now inside scrollview for touch handling */}
+                <Animated.View style={[styles.heroContainer, heroAnimatedStyle]}>
+                    <FlatList
+                        ref={carouselRef}
+                        data={listing.images}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        snapToAlignment="center"
+                        decelerationRate="fast"
+                        viewabilityConfig={viewabilityConfig}
+                        onViewableItemsChanged={onViewableItemsChanged}
+                        keyExtractor={(item, index) => `image-${index}`}
+                        renderItem={({ item }) => (
+                            <View style={styles.imageSlide}>
+                                <Image
+                                    source={{ uri: item }}
+                                    style={styles.heroImage}
+                                    resizeMode="cover"
+                                />
+                            </View>
+                        )}
                     />
                     {/* Gradient overlay for better button visibility */}
                     <LinearGradient
                         colors={['rgba(0,0,0,0.5)', 'transparent']}
                         style={styles.heroGradient}
+                        pointerEvents="none"
                     />
 
                     {/* Carousel Indicators */}
-                    <Animated.View style={[styles.carouselIndicators, carouselIndicatorStyle]}>
-                        {listing.images.map((_, index) => (
-                            <View
-                                key={index}
-                                style={[
-                                    styles.carouselDot,
-                                    currentImageIndex === index
-                                        ? styles.carouselDotActive
-                                        : styles.carouselDotInactive,
-                                ]}
-                            />
-                        ))}
-                    </Animated.View>
-                </View>
+                    {listing.images.length > 1 && (
+                        <Animated.View style={[styles.carouselIndicators, carouselIndicatorStyle]}>
+                            {listing.images.map((_, index) => (
+                                <View
+                                    key={index}
+                                    style={[
+                                        styles.carouselDot,
+                                        currentImageIndex === index
+                                            ? styles.carouselDotActive
+                                            : styles.carouselDotInactive,
+                                    ]}
+                                />
+                            ))}
+                        </Animated.View>
+                    )}
+                </Animated.View>
 
-                {/* Content Body */}
+                {/* Content Body - Scrolls over the static image */}
                 <View style={[styles.contentBody, isDark && styles.contentBodyDark]}>
                     {/* Title & Stats */}
                     <View style={styles.titleSection}>
@@ -431,7 +507,11 @@ export default function ListingDetailScreen() {
 
                         {/* Date Display Cards */}
                         <View style={styles.dateInputsContainer}>
-                            <View style={[styles.dateInput, isDark && styles.dateInputDark, dateRange.start && styles.dateInputActive]}>
+                            <TouchableOpacity
+                                style={[styles.dateInput, isDark && styles.dateInputDark, dateRange.start && styles.dateInputActive]}
+                                activeOpacity={0.7}
+                                onPress={scrollToCalendar}
+                            >
                                 <Text style={[styles.dateLabel, isDark && styles.dateLabelDark]}>Pickup</Text>
                                 <View style={styles.dateInputRow}>
                                     <Text style={[styles.dateValueLarge, isDark && styles.dateValueLargeDark]}>
@@ -439,9 +519,13 @@ export default function ListingDetailScreen() {
                                     </Text>
                                     <CalendarIcon size={18} color="#FF6700" />
                                 </View>
-                            </View>
+                            </TouchableOpacity>
 
-                            <View style={[styles.dateInput, isDark && styles.dateInputDark, dateRange.end && styles.dateInputActive]}>
+                            <TouchableOpacity
+                                style={[styles.dateInput, isDark && styles.dateInputDark, dateRange.end && styles.dateInputActive]}
+                                activeOpacity={0.7}
+                                onPress={scrollToCalendar}
+                            >
                                 <Text style={[styles.dateLabel, isDark && styles.dateLabelDark]}>Return</Text>
                                 <View style={styles.dateInputRow}>
                                     <Text style={[styles.dateValueLarge, isDark && styles.dateValueLargeDark]}>
@@ -449,7 +533,7 @@ export default function ListingDetailScreen() {
                                     </Text>
                                     <CalendarIcon size={18} color="#FF6700" />
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         </View>
 
                         <View style={[styles.calendarWrapper, isDark && styles.calendarWrapperDark]}>
@@ -477,7 +561,7 @@ export default function ListingDetailScreen() {
 
 
                 </View>
-            </ScrollView>
+            </Animated.ScrollView>
 
             {/* Sticky Bottom Footer */}
             <StickyFooter
@@ -505,7 +589,7 @@ export default function ListingDetailScreen() {
                 buttonText={
                     (dateRange.start && dateRange.end)
                         ? "Request to Rent"
-                        : (isCalendarInView ? "Request to Rent" : "Scroll down to view dates")
+                        : (isCalendarInView ? "Request to Rent" : "Scroll to View Dates")
                 }
                 buttonColor={
                     (dateRange.start && dateRange.end)
@@ -513,7 +597,7 @@ export default function ListingDetailScreen() {
                         : "#FFB380"
                 }
             />
-        </View>
+        </View >
     );
 }
 
@@ -598,10 +682,15 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
 
-    // Hero Image
+    // Hero Image - Fixed at top behind content
     heroContainer: {
         height: HERO_HEIGHT,
-        position: 'relative',
+        zIndex: 0,
+        marginBottom: -24, // Allow content to overlap by 24px
+    },
+    imageSlide: {
+        width: SCREEN_WIDTH,
+        height: HERO_HEIGHT,
     },
     heroImage: {
         width: '100%',
@@ -637,20 +726,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
     },
 
-    // Content Body
+    // Spacer to push content below hero
+
+
+    // Content Body - Scrolls over the static image
     contentBody: {
-        marginTop: -24,
         borderTopLeftRadius: 28,
         borderTopRightRadius: 28,
         backgroundColor: '#FFFFFF',
         paddingHorizontal: 20,
         paddingTop: 28,
+        paddingBottom: 120,
         minHeight: Dimensions.get('window').height,
         ...Platform.select({
             ios: {
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: -4 },
-                shadowOpacity: 0.1,
+                shadowOpacity: 0.15,
                 shadowRadius: 12,
             },
             android: {

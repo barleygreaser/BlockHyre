@@ -100,7 +100,7 @@ const CalendarDay = memo<{
   const dayStyle = useMemo(
     () => [
       styles.dayCell,
-      !item.isCurrentMonth && { opacity: 0.3 },
+      (!item.isCurrentMonth && !item.isSelected && !item.isInRange) && { opacity: 0.3 },
       item.isToday && {
         backgroundColor: theme.mutedForeground + "20",
         borderWidth: 2,
@@ -876,7 +876,6 @@ export const CalendarView = forwardRef<CalendarViewRef, CalendarViewProps>(
                 onPress={handleDateSelect}
                 theme={theme}
                 disabled={
-                  !item.isCurrentMonth ||
                   (calendarMode !== "date" && calendarMode !== "time") ||
                   isDateDisabled(item.date)
                 }
