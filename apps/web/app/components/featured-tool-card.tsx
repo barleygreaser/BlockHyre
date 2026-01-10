@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
@@ -25,12 +26,19 @@ export function FeaturedToolCard({ tool }: FeaturedToolCardProps) {
         <Card className="group overflow-hidden border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full bg-white">
             {/* Image Section - More compact on mobile */}
             <div className="aspect-[4/3] md:aspect-[4/3] w-full bg-slate-100 relative overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    src={tool.image}
-                    alt={tool.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                {tool.image ? (
+                    <Image
+                        src={tool.image}
+                        alt={tool.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">
+                        No Image
+                    </div>
+                )}
 
                 {/* Full-width Price Badge - Smaller on mobile */}
                 <div className="absolute bottom-0 left-0 right-0 bg-safety-orange py-1.5 md:py-2 px-2 md:px-3 flex items-center justify-center">
