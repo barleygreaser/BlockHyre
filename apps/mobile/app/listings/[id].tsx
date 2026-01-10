@@ -92,6 +92,7 @@ export default function ListingDetailScreen() {
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
     const [calendarY, setCalendarY] = useState(0);
     const [isCalendarInView, setIsCalendarInView] = useState(false);
+    const [activeInput, setActiveInput] = useState<'start' | 'end' | null>(null);
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
     const carouselRef = useRef<FlatList>(null);
 
@@ -259,10 +260,18 @@ export default function ListingDetailScreen() {
     // Scrolled icon color (depends on dark mode)
     const scrolledIconColor = isDark ? '#FFFFFF' : '#0F172A';
 
-    const scrollToCalendar = () => {
+    const scrollToCalendar = (input: 'start' | 'end') => {
+        setActiveInput(input);
         const targetY = HERO_HEIGHT - 24 + calendarY - 100;
         scrollRef.current?.scrollTo({ y: targetY, animated: true });
     };
+
+    // Auto-clear active input when selection is complete
+    React.useEffect(() => {
+        if (dateRange.start && dateRange.end) {
+            setActiveInput(null);
+        }
+    }, [dateRange]);
 
     const listing = { ...TOOL_DATA, id: id || TOOL_DATA.id };
 
@@ -508,9 +517,14 @@ export default function ListingDetailScreen() {
                         {/* Date Display Cards */}
                         <View style={styles.dateInputsContainer}>
                             <TouchableOpacity
-                                style={[styles.dateInput, isDark && styles.dateInputDark, dateRange.start && styles.dateInputActive]}
+                                style={[
+                                    styles.dateInput,
+                                    isDark && styles.dateInputDark,
+                                    dateRange.start && styles.dateInputActive,
+                                    activeInput === 'start' && styles.dateInputFocused
+                                ]}
                                 activeOpacity={0.7}
-                                onPress={scrollToCalendar}
+                                onPress={() => scrollToCalendar('start')}
                             >
                                 <Text style={[styles.dateLabel, isDark && styles.dateLabelDark]}>Pickup</Text>
                                 <View style={styles.dateInputRow}>
@@ -522,9 +536,14 @@ export default function ListingDetailScreen() {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={[styles.dateInput, isDark && styles.dateInputDark, dateRange.end && styles.dateInputActive]}
+                                style={[
+                                    styles.dateInput,
+                                    isDark && styles.dateInputDark,
+                                    dateRange.end && styles.dateInputActive,
+                                    activeInput === 'end' && styles.dateInputFocused
+                                ]}
                                 activeOpacity={0.7}
-                                onPress={scrollToCalendar}
+                                onPress={() => scrollToCalendar('end')}
                             >
                                 <Text style={[styles.dateLabel, isDark && styles.dateLabelDark]}>Return</Text>
                                 <View style={styles.dateInputRow}>
@@ -933,6 +952,22 @@ const styles = StyleSheet.create({
             },
             android: {
                 elevation: 4,
+            },
+        }),
+    },
+    dateInputFocused: {
+        borderColor: '#FF6700',
+        borderWidth: 2,
+        backgroundColor: '#FFF7ED',
+        transform: [{ scale: 1.02 }],
+        zIndex: 10,
+        ...Platform.select({
+            ios: {
+                shadowOpacity: 0.4,
+                shadowRadius: 12,
+            },
+            android: {
+                elevation: 8,
             },
         }),
     },
