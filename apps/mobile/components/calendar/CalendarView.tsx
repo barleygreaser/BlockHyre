@@ -125,10 +125,7 @@ const CalendarDay = memo<{
         borderTopLeftRadius: 6,
         borderBottomLeftRadius: 6,
       },
-      item.isBooked && {
-        backgroundColor: theme.destructive + "20",
-      },
-      item.isBlocked && {
+      (item.isBooked || item.isBlocked) && {
         backgroundColor: theme.muted + "60",
       },
       disabled && { opacity: 0.4 },
@@ -142,8 +139,7 @@ const CalendarDay = memo<{
       { color: theme.foreground },
       !item.isCurrentMonth && { color: theme.mutedForeground },
       item.isToday && { fontWeight: "800", color: theme.mutedForeground },
-      item.isBooked && { color: theme.destructive, textDecorationLine: "line-through" },
-      item.isBlocked && { color: theme.mutedForeground },
+      (item.isBooked || item.isBlocked) && { color: theme.mutedForeground, textDecorationLine: "line-through" },
       (item.isSelected || item.isRangeStart || item.isRangeEnd) && {
         color: theme.primaryForeground,
         fontWeight: "800",
