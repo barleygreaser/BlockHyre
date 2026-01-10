@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -42,6 +42,7 @@ import { RentalCalendar } from '@/components/RentalCalendar';
 import { useToast, ToastProvider } from '@/components/toast';
 import * as Haptics from 'expo-haptics';
 import { AlertCircle } from 'lucide-react-native';
+import { ConfirmRequestButton, type ButtonStatus } from '@/components/ConfirmRequestButton';
 
 type Step = 'summary' | 'confirmation';
 
@@ -120,6 +121,63 @@ function RequestRentalContent() {
 
     // Track if we're selecting the start or end of range
     const [rangeSelectionState, setRangeSelectionState] = useState<'start' | 'end'>('start');
+
+    // Request mutation state (similar to demos loading-button pattern)
+    const [requestStatus, setRequestStatus] = useState<ButtonStatus>('idle');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Handle the confirm request with loading animation
+    const handleConfirmRequest = useCallback(async () => {
+        if (isSubmitting || requestStatus === 'loading') {
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            setRequestStatus('loading');
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+            // Simulate API call - in production, this would be a real request to Supabase
+            await new Promise(resolve => setTimeout(resolve, 2500));
+
+            // Success!
+            setRequestStatus('success');
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+            // Wait a moment to show success state, then navigate
+            timeoutRef.current = setTimeout(() => {
+                setStep('confirmation');
+                // Reset for potential return
+                setRequestStatus('idle');
+                setIsSubmitting(false);
+            }, 1000);
+        } catch (error) {
+            setRequestStatus('error');
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            showToast({
+                title: 'Request Failed',
+                subtitle: 'Please try again.',
+                leading: () => <AlertCircle size={20} color="#EF4444" />,
+                autodismiss: true,
+            });
+
+            // Reset after showing error
+            timeoutRef.current = setTimeout(() => {
+                setRequestStatus('idle');
+                setIsSubmitting(false);
+            }, 2000);
+        }
+    }, [isSubmitting, requestStatus, showToast]);
 
     // Get blocked dates (in production, fetch from listing data)
     const blockedDates = useMemo(() => getMockBlockedDates(), []);
@@ -548,15 +606,17 @@ function RequestRentalContent() {
                             <Text style={styles.finalPrice}>${totalWithFees.toFixed(2)}</Text>
                         </View>
 
-                        <TouchableOpacity
-                            style={[styles.continueButton, { flex: 2 }]}
-                            onPress={handleContinue}
-                            activeOpacity={0.8}
-                        >
-                            <Text style={styles.continueButtonText}>
-                                Confirm Request
-                            </Text>
-                        </TouchableOpacity>
+                        <ConfirmRequestButton
+                            status={requestStatus}
+                            onPress={handleConfirmRequest}
+                            flex={2}
+                            titleMap={{
+                                idle: 'Confirm Request',
+                                loading: 'Sending...',
+                                success: 'Request Sent!',
+                                error: 'Try Again',
+                            }}
+                        />
                     </View>
                 </View>
             )}
