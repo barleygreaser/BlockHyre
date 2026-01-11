@@ -1,6 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
+const MAX_EMAIL_LENGTH = 255;
+const MAX_PASSWORD_LENGTH = 100;
+const MAX_FULLNAME_LENGTH = 100;
+const MAX_USERNAME_LENGTH = 30;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/;
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();
@@ -12,6 +19,31 @@ export async function POST(request: Request) {
                 { error: "Missing required fields" },
                 { status: 400 }
             );
+        }
+
+        // Validate lengths
+        if (email.length > MAX_EMAIL_LENGTH) {
+            return NextResponse.json({ error: "Email is too long" }, { status: 400 });
+        }
+        if (fullName.length > MAX_FULLNAME_LENGTH) {
+            return NextResponse.json({ error: "Full name is too long" }, { status: 400 });
+        }
+        if (password.length > MAX_PASSWORD_LENGTH) {
+            return NextResponse.json({ error: "Password is too long" }, { status: 400 });
+        }
+
+        // Validate formats
+        if (!EMAIL_REGEX.test(email)) {
+            return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+        }
+
+        if (username) {
+            if (username.length > MAX_USERNAME_LENGTH) {
+                return NextResponse.json({ error: "Username is too long" }, { status: 400 });
+            }
+            if (!USERNAME_REGEX.test(username)) {
+                return NextResponse.json({ error: "Username can only contain letters, numbers, underscores, and hyphens" }, { status: 400 });
+            }
         }
 
         if (password !== confirmPassword) {
