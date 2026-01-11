@@ -40,13 +40,10 @@ export const ChatList = memo(({ messages, currentUserId, username }: ChatListPro
           }
 
           return (
-            <div
+            <SystemMessage
               key={message.id}
-              className="animate-in fade-in slide-in-from-bottom-4 duration-300"
-            >
-              {/* SystemMessage component */}
-              <SystemMessage content={message.content} />
-            </div>
+              content={message.content}
+            />
           )
         }
 
@@ -58,16 +55,12 @@ export const ChatList = memo(({ messages, currentUserId, username }: ChatListPro
           : message.user.name === username;
 
         return (
-          <div
+          <ChatMessageItem
             key={message.id}
-            className="animate-in fade-in slide-in-from-bottom-4 duration-300"
-          >
-            <ChatMessageItem
-              message={message}
-              isOwnMessage={isOwnMessage}
-              showHeader={showHeader}
-            />
-          </div>
+            message={message}
+            isOwnMessage={isOwnMessage}
+            showHeader={showHeader}
+          />
         )
       })}
     </div>

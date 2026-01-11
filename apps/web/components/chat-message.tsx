@@ -17,7 +17,10 @@ export const ChatMessageItem = memo(({ message, isOwnMessage, showHeader }: Chat
   }
 
   return (
-    <div className={`flex mt-2 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+    <div className={cn(
+      "flex mt-2 animate-in fade-in slide-in-from-bottom-4 duration-300",
+      isOwnMessage ? 'justify-end' : 'justify-start'
+    )}>
       <div
         className={cn('max-w-[75%] w-fit flex flex-col gap-1', {
           'items-end': isOwnMessage,
