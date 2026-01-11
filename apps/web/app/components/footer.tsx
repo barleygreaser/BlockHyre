@@ -143,9 +143,6 @@ export function Footer() {
                         <Link href="/liability" className="hover:text-white transition-colors">
                             Liability
                         </Link>
-                        <Link href="/privacy" className="hover:text-white transition-colors">
-                            Privacy
-                        </Link>
                     </div>
                 </div>
             </div>
