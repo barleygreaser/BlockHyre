@@ -10,8 +10,46 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-2">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-900 shadow-lg shadow-white/10">
-                                <span className="font-serif font-bold text-xl">B</span>
+                            <div className="h-10 w-10">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="1930 0 1781.89 1783.63"
+                                    className="w-full h-full"
+                                >
+                                    <g id="Layer_4" data-name="Layer 4">
+                                        <rect
+                                            fill="#fff"
+                                            strokeWidth="0"
+                                            x="1930"
+                                            y="0"
+                                            width="1781.89"
+                                            height="1783.63"
+                                            rx="229.58"
+                                            ry="229.58"
+                                        />
+                                    </g>
+                                    <g id="Layer_3" data-name="Layer 3">
+                                        <g>
+                                            <path
+                                                fill="#0d1526"
+                                                strokeWidth="0"
+                                                d="M3050.31,904.33c151.81,51.62,165.69,194.17,145.74,275.54-17.24,70.32-92.61,177.62-257.32,179.53h-454.68v-98.77l80.46-19.28v-630.78l-80.46-17.52v-100.13h432.67s199.63,0,249.73,173.07c19.87,68.64-4.55,191.28-116.14,238.35Z"
+                                            />
+                                            <g>
+                                                <path
+                                                    fill="#fff"
+                                                    strokeWidth="0"
+                                                    d="M2889.38,850.35l-155.61.09.76-230.76h154.85c54.65,0,110.06,35.68,110.06,115.38,0,69.08-38.71,112.34-110.06,115.29Z"
+                                                />
+                                                <path
+                                                    fill="#fff"
+                                                    strokeWidth="0"
+                                                    d="M2887.87,1231.49h-154.09l.76-260.36h156.37c95.64,0,138.91,51.62,138.91,131.32,0,72.87-25.81,129.04-141.95,129.04Z"
+                                                />
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
                             </div>
                             <span className="text-2xl font-bold font-serif tracking-tight text-white">
                                 BlockHyre
