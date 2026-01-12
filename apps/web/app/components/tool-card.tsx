@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
@@ -30,11 +31,12 @@ export function ToolCard({ tool }: ToolCardProps) {
     return (
         <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-200 flex flex-col h-full">
             <div className="aspect-video w-full bg-slate-100 relative group">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                     src={tool.image}
                     alt={tool.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
                     {tool.instantBook && (
