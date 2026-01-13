@@ -77,7 +77,8 @@ export async function POST(request: Request) {
 
             if (updateError) {
                 console.error("Failed to save stripe account ID:", updateError);
-                throw new Error("Database Sync Failed");
+                // Security: Don't leak DB error
+                return NextResponse.json({ error: "Failed to update account status." }, { status: 500 });
             }
         }
 
@@ -92,8 +93,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ url: accountLink.url });
 
-    } catch (error: any) {
+    } catch (error: any) { // Keep any for catch block
         console.error("Stripe Connect Error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        // Security: Generic error message
+        return NextResponse.json({ error: "Failed to initialize payment setup." }, { status: 500 });
     }
 }

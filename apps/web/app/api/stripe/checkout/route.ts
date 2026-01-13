@@ -19,6 +19,34 @@ function getSupabaseAdmin() {
     return createClient(supabaseUrl, supabaseServiceKey);
 }
 
+// Define Cart Item Interface
+interface CartItem {
+    id: string;
+    title: string;
+    days: number;
+    dates: {
+        from: string;
+        to: string;
+    };
+    price: {
+        day: number;
+        deposit?: number;
+    };
+}
+
+// Define Listing Interface partial
+interface Listing {
+    id: string;
+    daily_price: number;
+    owner_id: string;
+    categories: {
+        risk_tier: number;
+    } | null;
+    users: {
+        stripe_account_id: string | null;
+    } | null;
+}
+
 export async function POST(request: Request) {
     try {
         const { cartItems } = await request.json();
@@ -46,43 +74,48 @@ export async function POST(request: Request) {
         // If there are multiple owners, we would normally use Separate Charges and Transfers.
         // We'll group items by listing ID to verify prices.
 
-        const listingIds = cartItems.map((item: any) => item.id);
+        const listingIds = cartItems.map((item: CartItem) => item.id);
         const { data: listings, error: listingError } = await supabaseAdmin
             .from("listings")
             .select("id, daily_price, owner_id, categories(risk_tier), users:owner_id(stripe_account_id)")
-            .in("id", listingIds);
+            .in("id", listingIds)
+            .returns<Listing[]>(); // Explicitly type the return
 
         if (listingError || !listings) {
             console.error("Listing Fetch Error:", listingError);
-            throw new Error("Failed to verify listings");
+            // Security: Don't reveal database error details
+            return NextResponse.json({ error: "Failed to verify listings. Please try again." }, { status: 500 });
         }
 
         // 3. Prepare Line Items and verify prices server-side
-        let totalAmount = 0;
+        // Removed unused totalAmount
         let totalPlatformFee = 0;
         const lineItems = [];
 
         // For simplicity in this step, we take the first owner's stripe account for destination charges
         // Note: Real production apps with multi-seller carts use a different flow.
-        const firstOwnerStripeId = (listings[0] as any).users?.stripe_account_id;
+        const firstOwnerStripeId = listings[0]?.users?.stripe_account_id;
 
         if (!firstOwnerStripeId) {
-            throw new Error("Owner has not connected their Stripe account");
+            // Security: Notify user but don't leak owner details
+            return NextResponse.json({ error: "One or more items are currently unavailable for checkout." }, { status: 400 });
         }
 
         if (!firstOwnerStripeId.startsWith("acct_")) {
             console.error(`Invalid Stripe Account ID found: ${firstOwnerStripeId}`);
-            throw new Error("Owner has an invalid Stripe configuration. Please contact support.");
+             // Security: Notify user generic error
+            return NextResponse.json({ error: "Configuration error with listing owner. Please contact support." }, { status: 500 });
         }
 
         for (const item of cartItems) {
-            const dbListing = listings.find(l => l.id === item.id) as any;
+            const dbListing = listings.find(l => l.id === item.id);
             if (!dbListing) continue;
 
             const riskTier = dbListing.categories?.risk_tier || 1;
 
             // Re-calculate price on server
-            const { subtotal, peaceFundTotal, finalTotal } = calculateRentalPrice(
+            // Removed unused subtotal
+            const { peaceFundTotal, finalTotal } = calculateRentalPrice(
                 dbListing.daily_price,
                 item.days,
                 riskTier as 1 | 2 | 3
@@ -104,7 +137,7 @@ export async function POST(request: Request) {
                 quantity: 1,
             });
 
-            totalAmount += itemTotal;
+            // totalAmount += itemTotal; // Unused
             // Platform Fee = Peace Fund + Platform Commission (let's say we take the peace fund as our fee)
             totalPlatformFee += peaceFundTotal;
         }
@@ -122,7 +155,7 @@ export async function POST(request: Request) {
             client_reference_id: user.id,
             metadata: {
                 renter_id: user.id,
-                cart_items: JSON.stringify(cartItems.map((i: any) => ({
+                cart_items: JSON.stringify(cartItems.map((i: CartItem) => ({
                     listing_id: i.id,
                     days: i.days,
                     start_date: i.dates.from,
@@ -139,8 +172,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ url: session.url });
 
-    } catch (error: any) {
+    } catch (error: any) { // Keep any for catch block as error can be anything
         console.error("Checkout Session Error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        // Security: Generic error message to prevent information leakage
+        return NextResponse.json({ error: "An unexpected error occurred during checkout initialization." }, { status: 500 });
     }
 }
