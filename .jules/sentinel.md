@@ -12,3 +12,10 @@
 **Prevention:**
 1. Always enforce maximum length limits on string inputs.
 2. Catch backend errors and return generic "Something went wrong" messages to clients while logging details server-side.
+
+## 2025-10-28 - [Information Leakage in Payment APIs]
+**Vulnerability:** The Stripe Checkout and Connect APIs were returning raw exception messages to the client. This could expose internal configuration details (e.g., "Owner has not connected their Stripe account") or database errors.
+**Learning:** When using third-party integrations (Stripe, Supabase), exceptions often contain sensitive context. Simply catching and returning `error.message` is a common but dangerous pattern.
+**Prevention:**
+1. Implement a pattern of "Log specific, return generic".
+2. Use specific error handling for expected logic failures (e.g., "Cart empty") but default to "Internal Error" for anything else.
