@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ToolCard, Tool } from "@/app/components/tool-card";
@@ -477,7 +478,13 @@ export default function InventoryPage() {
                                         <Link key={tool.id} href={`/listings/${tool.id}/${generateSlug(tool.title)}`}>
                                             <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32">
                                                 <div className="w-[35%] relative">
-                                                    <img src={tool.image} alt={tool.title} className="absolute inset-0 w-full h-full object-cover" />
+                                                    <Image
+                                                        src={tool.image}
+                                                        alt={tool.title}
+                                                        fill
+                                                        sizes="(max-width: 768px) 35vw, 200px"
+                                                        className="object-cover"
+                                                    />
                                                 </div>
                                                 <div className="flex-1 p-3 flex flex-col justify-between">
                                                     <div>
