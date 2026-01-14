@@ -19,3 +19,10 @@
 **Prevention:**
 1. Implement a pattern of "Log specific, return generic".
 2. Use specific error handling for expected logic failures (e.g., "Cart empty") but default to "Internal Error" for anything else.
+
+## 2025-10-29 - [Weak Password Policy & Auth Error Leakage]
+**Vulnerability:** The signup endpoint (`apps/web/app/api/signup/route.ts`) only checked password length and returned raw Supabase Auth error messages to the client.
+**Learning:** Returning raw auth errors (e.g., from third-party providers like Supabase) can leak implementation details or sensitive user states (like "User already registered"). Also, basic length checks are insufficient for password security.
+**Prevention:**
+1. Enforce password complexity (uppercase, lowercase, number, special char).
+2. Catch and sanitize auth errors, mapping only safe, known errors (like duplicates) to user-friendly messages and hiding the rest.

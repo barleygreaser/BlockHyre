@@ -7,6 +7,8 @@ const MAX_FULLNAME_LENGTH = 100;
 const MAX_USERNAME_LENGTH = 30;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/;
+// Security: Strong password policy (8+ chars, uppercase, lowercase, number, special char)
+const PASSWORD_COMPLEXITY_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
 export async function POST(request: Request) {
     try {
@@ -53,9 +55,10 @@ export async function POST(request: Request) {
             );
         }
 
-        if (password.length < 8) {
+        // Security: Enforce strong password complexity
+        if (!PASSWORD_COMPLEXITY_REGEX.test(password)) {
             return NextResponse.json(
-                { error: "Password must be at least 8 characters long" },
+                { error: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character." },
                 { status: 400 }
             );
         }
@@ -97,8 +100,13 @@ export async function POST(request: Request) {
         });
 
         if (authError) {
+            console.error("Supabase Auth Signup Error:", authError.message);
+            // Security: Don't leak raw auth error messages. Handle specific known errors if needed.
+            if (authError.message === "User already registered") {
+                return NextResponse.json({ error: "User already exists" }, { status: 409 });
+            }
             return NextResponse.json(
-                { error: authError.message },
+                { error: "Account creation failed" },
                 { status: 400 }
             );
         }
@@ -119,7 +127,7 @@ export async function POST(request: Request) {
             { status: 201 }
         );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Signup error:", error);
         return NextResponse.json(
             { error: "Internal server error" },
