@@ -26,3 +26,11 @@
 **Prevention:**
 1. Enforce password complexity (uppercase, lowercase, number, special char).
 2. Catch and sanitize auth errors, mapping only safe, known errors (like duplicates) to user-friendly messages and hiding the rest.
+
+## 2025-10-30 - [Open Redirect in Stripe Connect]
+**Vulnerability:** The Stripe Connect API (`apps/web/app/api/stripe/connect/route.ts`) used the unvalidated `Origin` header to construct redirect URLs.
+**Learning:** Relying on `req.headers.get('origin')` for redirects is a classic Open Redirect vulnerability. Attackers can spoof this header to phish users after a trusted workflow (like Stripe onboarding).
+**Prevention:**
+1. Never trust the `Origin` or `Referer` headers for critical redirects.
+2. Use a trusted environment variable (`NEXT_PUBLIC_APP_URL`) or a strict allowlist.
+3. Implement fail-secure defaults (e.g., hardcoded production URL) if configuration is missing.
