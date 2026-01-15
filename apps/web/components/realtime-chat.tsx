@@ -70,7 +70,10 @@ export const RealtimeChat = ({
     const uniqueMessages = Array.from(uniqueMessagesMap.values())
 
     // Sort by creation date
-    const sortedMessages = uniqueMessages.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+    // Optimization: Use direct string comparison instead of localeCompare for ISO dates
+    const sortedMessages = uniqueMessages.sort((a, b) =>
+      a.createdAt > b.createdAt ? 1 : a.createdAt < b.createdAt ? -1 : 0
+    )
 
     return sortedMessages
   }, [initialMessages, realtimeMessages])
