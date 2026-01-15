@@ -83,7 +83,26 @@ export async function POST(request: Request) {
         }
 
         // 5. Create Account Link (Onboarding)
-        const origin = request.headers.get("origin") || "http://localhost:3000";
+        // Security: Prevent Open Redirect by validating origin or using trusted env var
+        const getOrigin = () => {
+            const configuredOrigin = process.env.NEXT_PUBLIC_APP_URL;
+            if (configuredOrigin) return configuredOrigin;
+
+            if (process.env.NODE_ENV === 'development') {
+                return request.headers.get("origin") || "http://localhost:3000";
+            }
+
+            // Support Vercel Preview URLs
+            if (process.env.VERCEL_URL) {
+                return `https://${process.env.VERCEL_URL}`;
+            }
+
+            // Fallback for production if env var missing
+            return "https://blockhyre.com";
+        };
+
+        const origin = getOrigin();
+
         const accountLink = await stripe.accountLinks.create({
             account: accountId,
             refresh_url: `${origin}/profile?stripe_refresh=true`,
