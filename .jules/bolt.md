@@ -11,3 +11,7 @@
 ## 2024-05-26 - Date Sorting Performance
 **Learning:** Using `String.prototype.localeCompare` to sort ISO 8601 date strings is significantly slower than direct comparison. In frequently re-rendered components or large lists, this adds unnecessary overhead.
 **Action:** Use standard relational operators (`>`, `<`) for ISO date strings, ensuring 0 is returned for equality to maintain sort stability.
+
+## 2024-05-27 - Date Formatting Performance
+**Learning:** `toLocaleTimeString` and `toLocaleDateString` instantiate a new `Intl.DateTimeFormat` object on every call, which is expensive in lists (like chat messages).
+**Action:** Extract `Intl.DateTimeFormat` to a static constant outside the component when formatting options are static.

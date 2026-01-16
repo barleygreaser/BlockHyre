@@ -9,6 +9,12 @@ interface ChatMessageItemProps {
   showHeader: boolean
 }
 
+const timeFormatter = new Intl.DateTimeFormat('en-US', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+})
+
 export const ChatMessageItem = memo(({ message, isOwnMessage, showHeader }: ChatMessageItemProps) => {
   // SAFETY: System messages should never be rendered as chat bubbles
   // They should be centered and rendered by SystemMessage component
@@ -38,11 +44,7 @@ export const ChatMessageItem = memo(({ message, isOwnMessage, showHeader }: Chat
             </Avatar>
             <span className={'font-medium'}>{message.user.name}</span>
             <span className="text-foreground/50 text-xs">
-              {new Date(message.createdAt).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-              })}
+              {timeFormatter.format(new Date(message.createdAt))}
             </span>
           </div>
         )}
