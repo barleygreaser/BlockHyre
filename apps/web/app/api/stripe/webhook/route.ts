@@ -38,6 +38,10 @@ export async function POST(req: Request) {
         const renterId = metadata.renter_id;
         const cartItems = JSON.parse(metadata.cart_items);
 
+        const paymentIntentId = typeof session.payment_intent === 'string'
+            ? session.payment_intent
+            : session.payment_intent?.id;
+
         try {
             // 2. Insert Rental Records for each item
             for (const item of cartItems) {
@@ -65,7 +69,8 @@ export async function POST(req: Request) {
                         peace_fund_fee: riskTier * item.days,
                         total_paid: session.amount_total ? session.amount_total / 100 : 0,
                         daily_price_snapshot: listing.daily_price,
-                        risk_fee_snapshot: riskTier
+                        risk_fee_snapshot: riskTier,
+                        payment_intent_id: paymentIntentId
                     });
 
                 if (rentalError) {
