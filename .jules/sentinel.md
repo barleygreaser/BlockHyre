@@ -34,3 +34,11 @@
 1. Never trust the `Origin` or `Referer` headers for critical redirects.
 2. Use a trusted environment variable (`NEXT_PUBLIC_APP_URL`) or a strict allowlist.
 3. Implement fail-secure defaults (e.g., hardcoded production URL) if configuration is missing.
+
+## 2025-10-31 - [Rate Limiting in Serverless]
+**Vulnerability:** The `/api/signup` endpoint was unprotected against brute-force attacks.
+**Learning:** Implementing robust rate limiting in a serverless/monorepo environment without adding external dependencies (like Redis) is challenging due to the ephemeral nature of functions.
+**Prevention:**
+1. Implemented an in-memory "token bucket" style limiter as a first line of defense.
+2. Accepted that in-memory state is per-instance, which is imperfect but better than nothing.
+3. Added strict cleanup logic (Map size check) to prevent memory leaks in case the process is long-lived (like in dev or containerized environments).

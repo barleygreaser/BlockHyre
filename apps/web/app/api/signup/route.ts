@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
+import { rateLimit } from '@/lib/rate-limit';
 
 const MAX_EMAIL_LENGTH = 255;
 const MAX_PASSWORD_LENGTH = 100;
@@ -11,6 +13,17 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/;
 const PASSWORD_COMPLEXITY_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
 export async function POST(request: Request) {
+    // Security: Rate limiting to prevent brute force/spam
+    const ip = (await headers()).get("x-forwarded-for") ?? "unknown";
+    const limitResult = rateLimit(ip, 5, 60 * 1000); // 5 requests per minute
+
+    if (!limitResult.success) {
+        return NextResponse.json(
+            { error: "Too many requests. Please try again later." },
+            { status: 429 }
+        );
+    }
+
     try {
         const body = await request.json();
         const { email, password, confirmPassword, fullName, username } = body;
