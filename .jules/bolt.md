@@ -15,3 +15,7 @@
 ## 2024-05-27 - Date Formatting Performance
 **Learning:** `toLocaleTimeString` and `toLocaleDateString` instantiate a new `Intl.DateTimeFormat` object on every call, which is expensive in lists (like chat messages).
 **Action:** Extract `Intl.DateTimeFormat` to a static constant outside the component when formatting options are static.
+
+## 2024-05-28 - React Hook Re-subscriptions
+**Learning:** Initializing the Supabase client directly inside a component body (e.g., `const supabase = createClient()`) creates a new reference on every render. If used in a `useEffect` dependency array, this causes infinite re-subscription loops.
+**Action:** Always wrap client initialization in `useState` lazy initializer or `useMemo` to ensure stability.
