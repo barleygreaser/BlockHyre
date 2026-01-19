@@ -34,3 +34,10 @@
 1. Never trust the `Origin` or `Referer` headers for critical redirects.
 2. Use a trusted environment variable (`NEXT_PUBLIC_APP_URL`) or a strict allowlist.
 3. Implement fail-secure defaults (e.g., hardcoded production URL) if configuration is missing.
+
+## 2025-10-31 - [Missing Rate Limiting on Signup]
+**Vulnerability:** The signup endpoint (`apps/web/app/api/signup/route.ts`) allowed unlimited account creation requests, vulnerable to brute-force and spam attacks.
+**Learning:** Next.js Serverless functions are stateless, making traditional rate limiting harder. But neglecting it entirely is dangerous. Simple in-memory counters per container provide "good enough" defense against single-source flooding.
+**Prevention:**
+1. Implement a lightweight in-memory rate limiter for serverless routes if a global store (Redis) is unavailable.
+2. Always apply rate limits to unauthenticated "write" endpoints.
