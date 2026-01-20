@@ -19,3 +19,7 @@
 ## 2024-05-28 - React Hook Re-subscriptions
 **Learning:** Initializing the Supabase client directly inside a component body (e.g., `const supabase = createClient()`) creates a new reference on every render. If used in a `useEffect` dependency array, this causes infinite re-subscription loops.
 **Action:** Always wrap client initialization in `useState` lazy initializer or `useMemo` to ensure stability.
+
+## 2024-05-29 - Optimistic Prefix Search
+**Learning:** Supabase/Postgres `ilike` with leading wildcards (`%query%`) forces full table scans. For autocomplete features, users typically type the start of the word.
+**Action:** Implement "optimistic prefix search": try `ilike query%` first (index-friendly). If it yields sufficient results, return them. Only fallback to expensive `%query%` if necessary.
