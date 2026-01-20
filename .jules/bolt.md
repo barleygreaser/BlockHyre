@@ -23,3 +23,7 @@
 ## 2024-05-29 - Optimistic Prefix Search
 **Learning:** Supabase/Postgres `ilike` with leading wildcards (`%query%`) forces full table scans. For autocomplete features, users typically type the start of the word.
 **Action:** Implement "optimistic prefix search": try `ilike query%` first (index-friendly). If it yields sufficient results, return them. Only fallback to expensive `%query%` if necessary.
+
+## 2024-05-30 - Memoization of Heavy Props
+**Learning:** Components like `RealtimeChat` often perform expensive merging/sorting in `useMemo`. If the parent component passes a derived array (e.g. `messages.map(...)`) without `useMemo`, the child's optimization is defeated, leading to O(N log N) operations on every render.
+**Action:** Always memoize derived arrays passed to heavy UI components, especially those involving lists or charts.
