@@ -41,3 +41,11 @@
 **Prevention:**
 1. Implement a lightweight in-memory rate limiter for serverless routes if a global store (Redis) is unavailable.
 2. Always apply rate limits to unauthenticated "write" endpoints.
+
+## 2025-11-01 - [Missing Middleware & Broken Route Protection]
+**Vulnerability:** The Next.js application lacked a root `middleware.ts` file, meaning the authentication checks in `apps/web/lib/middleware.ts` were never executed. Additionally, the helper logic used an insecure/deprecated method (`getClaims`) and would have blocked public pages if enabled.
+**Learning:** Having a file named `middleware.ts` in a `lib` folder does nothing in Next.js. It must be in the root or `src` directory to function as an edge middleware. Without it, server-side session refreshing and edge-level route protection are completely absent.
+**Prevention:**
+1. Always verify the existence of the entry point `middleware.ts` in the project root.
+2. Use `supabase.auth.getUser()` for secure server-side session validation.
+3. Explicitly define protected routes instead of blocking everything by default in public-facing apps.
