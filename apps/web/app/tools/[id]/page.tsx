@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
@@ -145,11 +146,13 @@ export default function ToolDetailsPage() {
                         {/* Hero Section */}
                         <div className="space-y-4">
                             <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden relative">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
+                                <Image
                                     src={images[selectedImage]}
                                     alt={listing.title}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    priority
+                                    sizes="(max-width: 1024px) 100vw, 66vw"
+                                    className="object-cover"
                                 />
                                 {listing.is_high_powered && (
                                     <div className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-md font-bold flex items-center gap-2 shadow-md">
@@ -166,12 +169,17 @@ export default function ToolDetailsPage() {
                                             key={idx}
                                             onClick={() => setSelectedImage(idx)}
                                             className={cn(
-                                                "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 transition-all",
+                                                "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 relative transition-all",
                                                 selectedImage === idx ? "border-safety-orange ring-2 ring-safety-orange/20" : "border-transparent hover:border-slate-300"
                                             )}
                                         >
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+                                            <Image
+                                                src={img}
+                                                alt={`View ${idx + 1}`}
+                                                fill
+                                                sizes="(max-width: 768px) 25vw, 15vw"
+                                                className="object-cover"
+                                            />
                                         </button>
                                     ))}
                                 </div>
@@ -385,7 +393,7 @@ export default function ToolDetailsPage() {
                                 </div>
 
                                 <p className="text-xs text-center text-slate-400">
-                                    You won't be charged until the owner approves.
+                                    You won&apos;t be charged until the owner approves.
                                 </p>
 
                             </CardContent>
