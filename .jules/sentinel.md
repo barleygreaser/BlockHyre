@@ -41,3 +41,10 @@
 **Prevention:**
 1. Implement a lightweight in-memory rate limiter for serverless routes if a global store (Redis) is unavailable.
 2. Always apply rate limits to unauthenticated "write" endpoints.
+
+## 2025-11-01 - [Missing Middleware Protection]
+**Vulnerability:** The root `middleware.ts` was missing, leaving sensitive routes like `/dashboard`, `/owner`, and `/profile` potentially unprotected server-side, relying only on client-side checks or obscure protections.
+**Learning:** `apps/web/lib/middleware.ts` contained logic but was unused because the entry point (`apps/web/middleware.ts`) was absent. Code that exists but isn't wired up provides a false sense of security.
+**Prevention:**
+1. Always verify that security middleware is active and correctly configured in the framework's entry point.
+2. Use integration tests or manual verification to ensure protected routes actually redirect unauthenticated users.
