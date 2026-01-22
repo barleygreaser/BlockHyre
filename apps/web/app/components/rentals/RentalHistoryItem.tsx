@@ -3,6 +3,7 @@
 import { Button } from "@/app/components/ui/button";
 import { Star, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { format } from "date-fns";
 
 interface RentalHistoryItemProps {
@@ -29,10 +30,12 @@ export function RentalHistoryItem({
             {/* Image */}
             {listingImageUrl ? (
                 <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
-                    <img
+                    <Image
                         src={listingImageUrl}
                         alt={listingTitle}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="48px"
                     />
                 </div>
             ) : (

@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { Calendar, Clock } from "lucide-react";
 import Link from "next/link";
-import { formatDistanceToNow, format } from "date-fns";
+import Image from "next/image";
+import { format } from "date-fns";
 
 interface UpcomingBookingCardProps {
     rentalId: string;
@@ -37,10 +38,12 @@ export function UpcomingBookingCard({
                     {/* Image */}
                     {listingImageUrl ? (
                         <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
-                            <img
+                            <Image
                                 src={listingImageUrl}
                                 alt={listingTitle}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="64px"
                             />
                         </div>
                     ) : (

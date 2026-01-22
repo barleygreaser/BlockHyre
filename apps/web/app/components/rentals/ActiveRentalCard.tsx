@@ -3,8 +3,9 @@
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
-import { MessageSquare, Calendar, Clock } from "lucide-react";
+import { MessageSquare, Calendar } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 
 interface ActiveRentalCardProps {
@@ -60,10 +61,12 @@ export function ActiveRentalCard({
                     {/* Image */}
                     {listingImageUrl ? (
                         <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
-                            <img
+                            <Image
                                 src={listingImageUrl}
                                 alt={listingTitle}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="96px"
                             />
                         </div>
                     ) : (
