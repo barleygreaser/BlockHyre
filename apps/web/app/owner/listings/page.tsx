@@ -66,6 +66,17 @@ interface InventoryItem {
     image_url?: string;
 }
 
+// Extract formatters to prevent recreation on every render
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+});
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+});
+
 export default function ManageListingsPage() {
     const { user } = useAuth();
     const searchParams = useSearchParams();
@@ -148,14 +159,11 @@ export default function ManageListingsPage() {
     });
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
+        return currencyFormatter.format(amount);
     };
 
     const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return dateFormatter.format(new Date(dateStr));
     };
 
     return (
