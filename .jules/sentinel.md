@@ -48,3 +48,9 @@
 **Prevention:**
 1. Always verify that security middleware is active and correctly configured in the framework's entry point.
 2. Use integration tests or manual verification to ensure protected routes actually redirect unauthenticated users.
+
+## 2025-11-01 - [Insecure Session Verification Method]
+**Vulnerability:** The unused middleware logic relied on `supabase.auth.getClaims()`, which only decodes the JWT without validating it against the auth server.
+**Learning:** `getClaims()` (or simply decoding a JWT) is fast but doesn't check for revocation or recent security changes (like password resets). `getUser()` ensures the session is valid and active.
+**Prevention:**
+1. Always use `supabase.auth.getUser()` for server-side route protection to ensure the token is valid and not revoked.
