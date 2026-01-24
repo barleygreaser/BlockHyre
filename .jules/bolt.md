@@ -27,3 +27,11 @@
 ## 2024-05-30 - Memoization of Heavy Props
 **Learning:** Components like `RealtimeChat` often perform expensive merging/sorting in `useMemo`. If the parent component passes a derived array (e.g. `messages.map(...)`) without `useMemo`, the child's optimization is defeated, leading to O(N log N) operations on every render.
 **Action:** Always memoize derived arrays passed to heavy UI components, especially those involving lists or charts.
+
+## 2024-05-31 - Middleware Auth Optimization
+**Learning:** Optimizing middleware to skip `supabase.auth.getUser()` on public routes improves performance but breaks session maintenance (cookie refreshing) if using Server-Side Rendering or if the client session expires while browsing public pages.
+**Action:** Do not remove `getUser()` calls from middleware unless you have a robust alternative mechanism for server-side session maintenance.
+
+## 2024-05-31 - Global Hook State Management
+**Learning:** Global hooks (like `useUnreadCount`) that depend on the user object can cause cascading renders if they synchronously update state when the user changes. Also, they can display stale data if the user switches accounts.
+**Action:** Track the `userId` alongside the data in the hook's local state and verify it matches the current `user.id` during render to avoid stale data flashes and unnecessary effect updates.
