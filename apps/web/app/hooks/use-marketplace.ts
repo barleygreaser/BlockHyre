@@ -7,6 +7,22 @@ import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc);
 
+type Category = {
+    id: string;
+    name: string;
+    risk_daily_fee: number;
+    risk_tier: number;
+    deductible_amount: number;
+};
+
+// Module-level cache for static data
+let cachedCategories: Category[] | null = null;
+let cachedPlatformSettings: {
+    seller_fee_percent: number;
+    buyer_fee_percent: number;
+    maintenance_mode: boolean;
+} | null = null;
+
 export type Listing = {
     id: string;
     title: string;
@@ -49,7 +65,16 @@ export type Listing = {
 export const useMarketplace = () => {
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
-    const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+    // Initialize with cached data if available
+    const [categories, setCategories] = useState<Category[]>(cachedCategories || []);
+    const [categoriesLoading, setCategoriesLoading] = useState(!cachedCategories);
+    const [platformSettings, setPlatformSettings] = useState<{
+        seller_fee_percent: number;
+        buyer_fee_percent: number;
+        maintenance_mode: boolean;
+    } | null>(cachedPlatformSettings);
+
     const [error, setError] = useState<any>(null);
 
     const fetchListings = async () => {
@@ -236,9 +261,13 @@ export const useMarketplace = () => {
         }
     };
 
-    const [categories, setCategories] = useState<{ id: string; name: string; risk_daily_fee: number; risk_tier: number; deductible_amount: number }[]>([]);
-
     const fetchCategories = async () => {
+        if (cachedCategories) {
+            setCategories(cachedCategories);
+            setCategoriesLoading(false);
+            return;
+        }
+
         try {
             setCategoriesLoading(true);
             const { data, error } = await supabase
@@ -246,7 +275,8 @@ export const useMarketplace = () => {
                 .select('id, name, risk_daily_fee, risk_tier, deductible_amount');
 
             if (error) throw error;
-            setCategories(data || []);
+            cachedCategories = data || [];
+            setCategories(cachedCategories);
         } catch (e) {
             console.error("Error fetching categories:", e);
         } finally {
@@ -301,13 +331,12 @@ export const useMarketplace = () => {
     }, []);
     */
 
-    const [platformSettings, setPlatformSettings] = useState<{
-        seller_fee_percent: number;
-        buyer_fee_percent: number;
-        maintenance_mode: boolean;
-    } | null>(null);
-
     const fetchPlatformSettings = async () => {
+        if (cachedPlatformSettings) {
+            setPlatformSettings(cachedPlatformSettings);
+            return;
+        }
+
         try {
             const { data, error } = await supabase
                 .from('platform_settings')
@@ -317,14 +346,17 @@ export const useMarketplace = () => {
             if (error) {
                 // If table doesn't exist or is empty, use defaults gracefully
                 console.warn("Could not fetch platform settings, using defaults:", error.message);
-                setPlatformSettings({
+                const defaults = {
                     seller_fee_percent: 7,
                     buyer_fee_percent: 6.5,
                     maintenance_mode: false
-                });
+                };
+                setPlatformSettings(defaults);
+                // Not caching defaults on error to retry next time
                 return;
             }
 
+            cachedPlatformSettings = data;
             setPlatformSettings(data);
         } catch (e) {
             console.error("Error fetching platform settings:", e);
@@ -475,4 +507,3 @@ export const useMarketplace = () => {
         setAutoCategorizationTitle
     };
 };
-
