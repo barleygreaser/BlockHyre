@@ -54,3 +54,10 @@
 **Learning:** `getClaims()` (or simply decoding a JWT) is fast but doesn't check for revocation or recent security changes (like password resets). `getUser()` ensures the session is valid and active.
 **Prevention:**
 1. Always use `supabase.auth.getUser()` for server-side route protection to ensure the token is valid and not revoked.
+
+## 2025-11-03 - [Client-Side Trust in Pricing Logic]
+**Vulnerability:** The Stripe Checkout API (`apps/web/app/api/stripe/checkout/route.ts`) accepted the security `deposit` amount directly from the client's cart payload instead of fetching it from the database.
+**Learning:** In e-commerce flows, it's easy to accidentally trust the "cart" object passed from the client, especially when it mimics the database structure. Never trust price or fee data sent by the frontend.
+**Prevention:**
+1. Always re-fetch pricing, deposits, and fees from the database (Source of Truth) during the checkout initialization.
+2. Use the client payload ONLY for IDs and quantities, never for monetary values.
