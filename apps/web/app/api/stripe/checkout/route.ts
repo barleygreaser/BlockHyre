@@ -38,6 +38,7 @@ interface CartItem {
 interface Listing {
     id: string;
     daily_price: number;
+    deposit_amount: number;
     owner_id: string;
     categories: {
         risk_tier: number;
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
         const listingIds = cartItems.map((item: CartItem) => item.id);
         const { data: listings, error: listingError } = await supabaseAdmin
             .from("listings")
-            .select("id, daily_price, owner_id, categories(risk_tier), users:owner_id(stripe_account_id)")
+            .select("id, daily_price, deposit_amount, owner_id, categories(risk_tier), users:owner_id(stripe_account_id)")
             .in("id", listingIds)
             .returns<Listing[]>(); // Explicitly type the return
 
@@ -122,7 +123,8 @@ export async function POST(request: Request) {
             );
 
             // Add Security Deposit if Tier 3 (or if exists)
-            const deposit = item.price.deposit || 0;
+            // Security: Use server-side deposit amount instead of client-provided amount
+            const deposit = dbListing.deposit_amount || 0;
             const itemTotal = finalTotal + deposit;
 
             lineItems.push({
@@ -190,7 +192,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ url: session.url });
 
-    } catch (error: any) { // Keep any for catch block as error can be anything
+    } catch (error: unknown) {
         console.error("Checkout Session Error:", error);
         // Security: Generic error message to prevent information leakage
         return NextResponse.json({ error: "An unexpected error occurred during checkout initialization." }, { status: 500 });
