@@ -39,11 +39,13 @@ serve(async (req) => {
             throw new Error("User not authenticated");
         }
 
-        // 3. Get Request Body (expecting redirect URLs)
-        const { returnUrl, refreshUrl } = await req.json();
-
-        if (!returnUrl || !refreshUrl) {
-            throw new Error("Missing returnUrl or refreshUrl");
+        // 3. Get Request Body
+        // Security: Ignore client-provided return/refresh URLs to prevent Open Redirects.
+        // We verify intent via authentication.
+        try {
+            await req.json(); // Consume body if present, but ignore content
+        } catch {
+            // Ignore JSON parse errors, as we don't need the body
         }
 
         // 4. Check for existing Stripe Account ID
@@ -84,10 +86,28 @@ serve(async (req) => {
         }
 
         // 6. Create Account Link
+        // Security: Securely determine application URL to prevent Open Redirects
+        const getAppUrl = (request: Request) => {
+            // Priority 1: Environment variable
+            const configuredUrl = Deno.env.get("APP_URL");
+            if (configuredUrl) return configuredUrl;
+
+            // Priority 2: Origin header (Localhost only)
+            const origin = request.headers.get("origin");
+            if (origin && (origin.includes("localhost") || origin.includes("127.0.0.1"))) {
+                return origin;
+            }
+
+            // Priority 3: Production default
+            return "https://blockhyre.com";
+        };
+
+        const appUrl = getAppUrl(req);
+
         const accountLink = await stripe.accountLinks.create({
             account: stripeAccountId,
-            refresh_url: refreshUrl,
-            return_url: returnUrl,
+            refresh_url: `${appUrl}/profile?stripe_refresh=true`,
+            return_url: `${appUrl}/profile?stripe_return=true`,
             type: "account_onboarding",
         });
 
