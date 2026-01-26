@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Button } from "@/app/components/ui/button";
@@ -262,12 +263,15 @@ export default function ListingDetailsPage() {
 
                         {/* Hero Section */}
                         <div className="space-y-4">
+                            {/* Optimized main image with priority for LCP */}
                             <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden relative">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
+                                <Image
                                     src={listing.images?.[selectedImage] || `https://placehold.co/800x600?text=${encodeURIComponent(listing.title)}`}
                                     alt={listing.title}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 66vw"
                                 />
                                 {listing.is_high_powered && (
                                     <div className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-md font-bold flex items-center gap-2 shadow-md">
@@ -284,12 +288,17 @@ export default function ListingDetailsPage() {
                                             key={idx}
                                             onClick={() => setSelectedImage(idx)}
                                             className={cn(
-                                                "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 transition-all",
+                                                "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 transition-all relative",
                                                 selectedImage === idx ? "border-safety-orange ring-2 ring-safety-orange/20" : "border-transparent hover:border-slate-300"
                                             )}
                                         >
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+                                            <Image
+                                                src={img}
+                                                alt={`View ${idx + 1}`}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 25vw, 15vw"
+                                            />
                                         </button>
                                     ))}
                                 </div>
@@ -328,11 +337,12 @@ export default function ListingDetailsPage() {
 
                             <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
                                 {listing.owner?.profile_photo_url ? (
-                                    /* eslint-disable-next-line @next/next/no-img-element */
-                                    <img
+                                    <Image
                                         src={listing.owner.profile_photo_url}
                                         alt={listing.owner.full_name || "Owner"}
-                                        className="h-10 w-10 rounded-full object-cover bg-slate-100"
+                                        width={40}
+                                        height={40}
+                                        className="rounded-full object-cover bg-slate-100"
                                     />
                                 ) : (
                                     <div className="h-10 w-10 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center font-bold text-slate-500">
