@@ -61,3 +61,11 @@
 **Prevention:**
 1. Always re-fetch pricing, deposits, and fees from the database (Source of Truth) during the checkout initialization.
 2. Use the client payload ONLY for IDs and quantities, never for monetary values.
+
+## 2025-11-04 - [Open Redirect in Edge Function]
+**Vulnerability:** The Deno Edge Function `connect-stripe` accepted `returnUrl` and `refreshUrl` directly from the request body without validation, allowing attackers to construct malicious redirect links.
+**Learning:** Legacy or auxiliary endpoints (like Edge Functions) often miss the security updates applied to the main application. "Check everywhere" is crucial.
+**Prevention:**
+1. Never accept full URLs from the client for redirects.
+2. Construct redirect URLs server-side using a trusted base URL.
+3. Audit all entry points, not just the main API.
