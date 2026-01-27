@@ -12,10 +12,23 @@ Deno.serve(async (req) => {
     }
 
     try {
+        // Security: Ensure only Service Role (Admin/Cron) can call this function
+        const authHeader = req.headers.get('Authorization');
+        const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+        if (!serviceRoleKey || authHeader !== `Bearer ${serviceRoleKey}`) {
+            return new Response(
+                JSON.stringify({ error: 'Unauthorized' }),
+                {
+                    status: 401,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                }
+            );
+        }
+
         // Create Supabase client with service role key for admin access
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        const supabase = createClient(supabaseUrl, serviceRoleKey);
 
         // Step 1: Send expiring warnings (< 2 hours remaining)
         const { data: warningsData, error: warningsError } = await supabase.rpc('send_expiring_rental_warnings');

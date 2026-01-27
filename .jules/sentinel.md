@@ -69,3 +69,10 @@
 1. Never accept full URLs from the client for redirects.
 2. Construct redirect URLs server-side using a trusted base URL.
 3. Audit all entry points, not just the main API.
+
+## 2025-11-05 - [Unprotected Admin Edge Function]
+**Vulnerability:** The `auto-deny-rentals` Edge Function was exposed to the public internet without any authentication checks. Since it initialized the Supabase client with the Service Role Key internally, any anonymous caller could trigger administrative database operations (denying rentals).
+**Learning:** Edge Functions are public by default (if `verify_jwt` is not strictly enforced or if the function ignores the token). Internal admin scripts must explicitly verify the caller's identity (e.g., checking for the Service Role Key).
+**Prevention:**
+1. Always check `Authorization` headers in Edge Functions.
+2. For admin-only functions, strictly require the Service Role Key and reject Anon Keys.
