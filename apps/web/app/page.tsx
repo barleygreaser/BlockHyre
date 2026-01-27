@@ -12,10 +12,10 @@ import { useMarketplace } from "./hooks/use-marketplace";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { listings, fetchListings } = useMarketplace();
+  const { listings, fetchFeaturedListings } = useMarketplace();
 
   useEffect(() => {
-    fetchListings();
+    fetchFeaturedListings();
   }, []);
 
   const openModal = () => setIsModalOpen(true);
