@@ -110,6 +110,52 @@ export const useMarketplace = () => {
         }
     };
 
+    const fetchFeaturedListings = async () => {
+        try {
+            setLoading(true);
+            // Optimized query for featured items: limited fields, filtered, sorted, and limited count
+            const { data, error } = await supabase
+                .from('listings')
+                .select(`
+                    id,
+                    title,
+                    description,
+                    daily_price,
+                    images,
+                    is_high_powered,
+                    accepts_barter,
+                    booking_type,
+                    deposit,
+                    status,
+                    categories (
+                        name,
+                        risk_daily_fee,
+                        risk_tier,
+                        deductible_amount
+                    )
+                `)
+                .eq('status', 'active')
+                .or('daily_price.gt.50,is_high_powered.eq.true')
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            if (error) throw error;
+
+            // Map 'categories' (DB relation) to 'category' (UI interface)
+            const mappedListings = (data || []).map((item: any) => ({
+                ...item,
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1, deductible_amount: 0 }
+            }));
+
+            setListings(mappedListings as Listing[]);
+        } catch (e) {
+            setError(e);
+            console.error("Error fetching featured listings:", e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const fetchListing = async (id: string): Promise<Listing | null> => {
         try {
             setLoading(true);
@@ -487,6 +533,7 @@ export const useMarketplace = () => {
         categoriesLoading,
         error,
         fetchListings,
+        fetchFeaturedListings,
         fetchListing,
         fetchCategories,
         fetchPlatformSettings,
