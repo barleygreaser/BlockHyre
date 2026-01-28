@@ -69,3 +69,11 @@
 1. Never accept full URLs from the client for redirects.
 2. Construct redirect URLs server-side using a trusted base URL.
 3. Audit all entry points, not just the main API.
+
+## 2025-11-05 - [Unprotected Admin Edge Functions]
+**Vulnerability:** The `auto-deny-rentals` Deno Edge Function was publicly accessible without authentication. Although it used the Service Role Key internally, it did not verify the caller's authority.
+**Learning:** Initializing a Supabase client with admin privileges inside a function does NOT automatically protect the function itself. You must explicitly check the request's `Authorization` header against the Service Role Key (or another secret) to prevent unauthorized execution.
+**Prevention:**
+1. Always add an explicit authorization check at the start of admin-only Edge Functions.
+2. Verify that `req.headers.get('Authorization')` matches `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` (or verify a JWT).
+3. Do not assume obscurity (function URL) provides security.
