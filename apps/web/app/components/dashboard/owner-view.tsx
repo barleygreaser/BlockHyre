@@ -29,6 +29,15 @@ import {
 } from "@/app/components/ui/empty";
 import { sendSystemMessage } from "@/app/lib/chat-helpers";
 
+// Static formatters to avoid re-creation on every render
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+});
+
 export function OwnerDashboardView() {
     const { user } = useAuth();
     const [isInspectionOpen, setIsInspectionOpen] = useState(false);
@@ -102,12 +111,7 @@ export function OwnerDashboardView() {
 
     // Format currency
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount);
+        return currencyFormatter.format(amount);
     };
     // State for Lists
     const [actionItems, setActionItems] = useState<any[]>([]);
@@ -517,7 +521,7 @@ export function OwnerDashboardView() {
     // Helper for date formatting
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
-        return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return dateFormatter.format(new Date(dateStr));
     };
 
     // Calculate owner's revenue after platform fee
