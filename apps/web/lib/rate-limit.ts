@@ -15,7 +15,12 @@ export function checkRateLimit(identifier: string, limit: number = 5, windowMs: 
 
     // Cleanup if map gets too large (simple protection against memory leaks)
     if (trackers.size > 10000) {
-        trackers.clear();
+        // Smart cleanup: Remove the oldest entry (LRU-ish eviction) to make space
+        // Map iterates in insertion order, so the first key is the oldest
+        const oldestKey = trackers.keys().next().value;
+        if (oldestKey) {
+            trackers.delete(oldestKey);
+        }
     }
 
     if (!record || now > record.expiresAt) {
