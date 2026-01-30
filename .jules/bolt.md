@@ -35,3 +35,7 @@
 ## 2024-05-31 - Global Hook State Management
 **Learning:** Global hooks (like `useUnreadCount`) that depend on the user object can cause cascading renders if they synchronously update state when the user changes. Also, they can display stale data if the user switches accounts.
 **Action:** Track the `userId` alongside the data in the hook's local state and verify it matches the current `user.id` during render to avoid stale data flashes and unnecessary effect updates.
+
+## 2024-06-01 - Radix UI Avatar Optimization
+**Learning:** The `@radix-ui/react-avatar` primitive renders a standard `<img>` tag via `AvatarImage`, bypassing Next.js image optimization. This leads to large image payloads in list views (like conversation lists).
+**Action:** When using avatars in high-frequency lists, replace `AvatarImage` with `next/image` (wrapped in a relative container) to ensure proper resizing and format optimization.

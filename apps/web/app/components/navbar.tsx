@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "./ui/button";
@@ -134,10 +135,12 @@ export function Navbar() {
                                     >
                                         <div className="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-safety-orange/50 transition-all relative">
                                             {avatarUrl ? (
-                                                <img
+                                                <Image
                                                     src={avatarUrl}
                                                     alt="User Avatar"
-                                                    className="h-full w-full object-cover"
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="36px"
                                                 />
                                             ) : (
                                                 <span className="font-bold text-slate-600">
@@ -296,7 +299,13 @@ export function Navbar() {
                                     <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                                         <div className="h-12 w-12 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center relative">
                                             {avatarUrl ? (
-                                                <img src={avatarUrl} alt="User" className="h-full w-full object-cover" />
+                                                <Image
+                                                    src={avatarUrl}
+                                                    alt="User"
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="48px"
+                                                />
                                             ) : (
                                                 <span className="font-bold text-xl text-slate-600">
                                                     {getUserDisplayName(user, fullName).charAt(0).toUpperCase()}
