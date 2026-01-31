@@ -76,3 +76,10 @@
 **Prevention:**
 1. Always check `Authorization` headers in Edge Functions.
 2. For admin-only functions, strictly require the Service Role Key and reject Anon Keys.
+
+## 2025-11-06 - [Rate Limit Bypass via Map Flooding]
+**Vulnerability:** The in-memory rate limiter (`apps/web/lib/rate-limit.ts`) used a `trackers.clear()` strategy when the map size exceeded 10,000 entries. An attacker could flood the limiter with unique IPs to trigger this clear, effectively unblocking themselves and everyone else.
+**Learning:** Simple "safety valves" like clearing a cache to prevent memory leaks can become Denial of Service (DoS) vectors or security bypasses. Security mechanisms must degrade gracefully (e.g., LRU eviction) rather than failing open.
+**Prevention:**
+1. Use Least Recently Used (LRU) or Time-to-Live (TTL) eviction policies for security caches.
+2. Avoid "reset all" logic in security-critical state.
