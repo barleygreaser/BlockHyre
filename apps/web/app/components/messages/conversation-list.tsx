@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { useMessages, type Chat } from "@/app/hooks/use-messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -121,11 +122,15 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                             {/* Avatar */}
                             <div className="flex-shrink-0">
                                 {chat.other_user_photo ? (
-                                    <img
-                                        src={chat.other_user_photo}
-                                        alt={chat.other_user_name}
-                                        className="w-12 h-12 rounded-full object-cover"
-                                    />
+                                    <div className="relative w-12 h-12 rounded-full overflow-hidden">
+                                        <Image
+                                            src={chat.other_user_photo}
+                                            alt={chat.other_user_name || "User"}
+                                            fill
+                                            className="object-cover"
+                                            sizes="48px"
+                                        />
+                                    </div>
                                 ) : (
                                     <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-medium">
                                         {chat.other_user_name?.charAt(0).toUpperCase()}
