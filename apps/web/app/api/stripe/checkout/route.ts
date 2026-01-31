@@ -1,7 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
 import { calculateRentalPrice } from "@/lib/pricing";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Initialize Supabase Admin for secure listing verification
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -50,10 +52,26 @@ interface Listing {
 
 export async function POST(request: Request) {
     try {
+        // Security: Rate Limit (5 requests per minute)
+        const forwardedFor = (await headers()).get("x-forwarded-for");
+        const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : "unknown";
+
+        if (!checkRateLimit(ip)) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again later." },
+                { status: 429 }
+            );
+        }
+
         const { cartItems } = await request.json();
 
-        if (!cartItems || cartItems.length === 0) {
-            return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+        // Security: Input Validation
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            return NextResponse.json({ error: "Invalid cart data" }, { status: 400 });
+        }
+
+        if (cartItems.length > 50) {
+            return NextResponse.json({ error: "Too many items in cart" }, { status: 400 });
         }
 
         // 1. Authenticate Renter
@@ -109,6 +127,11 @@ export async function POST(request: Request) {
         }
 
         for (const item of cartItems) {
+            // Security: Sanitize rental duration
+            if (!item.days || typeof item.days !== 'number' || item.days <= 0 || item.days > 365) {
+                return NextResponse.json({ error: "Invalid rental duration" }, { status: 400 });
+            }
+
             const dbListing = listings.find(l => l.id === item.id);
             if (!dbListing) continue;
 

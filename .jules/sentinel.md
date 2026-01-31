@@ -76,3 +76,8 @@
 **Prevention:**
 1. Always check `Authorization` headers in Edge Functions.
 2. For admin-only functions, strictly require the Service Role Key and reject Anon Keys.
+
+## 2025-11-06 - [Robust IP Extraction for Rate Limiting]
+**Vulnerability:** Naively using the full `x-forwarded-for` header for rate limiting can be ineffective if the header contains a chain of IPs (client, proxy1, proxy2).
+**Learning:** Rate limiters need a stable identifier. `x-forwarded-for` is often a comma-separated list.
+**Prevention:** Parse the first IP from the header: `header.split(',')[0].trim()`.
