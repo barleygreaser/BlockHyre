@@ -1,7 +1,8 @@
 import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/hooks/use-realtime-chat'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { memo } from 'react'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { memo, useState } from 'react'
+import Image from 'next/image'
 
 interface ChatMessageItemProps {
   message: ChatMessage
@@ -16,6 +17,8 @@ const timeFormatter = new Intl.DateTimeFormat('en-US', {
 })
 
 export const ChatMessageItem = memo(({ message, isOwnMessage, showHeader }: ChatMessageItemProps) => {
+  const [imageError, setImageError] = useState(false)
+
   // SAFETY: System messages should never be rendered as chat bubbles
   // They should be centered and rendered by SystemMessage component
   if (message.messageType === 'system') {
@@ -39,8 +42,17 @@ export const ChatMessageItem = memo(({ message, isOwnMessage, showHeader }: Chat
             })}
           >
             <Avatar className="h-6 w-6">
-              <AvatarImage src={message.user.avatarUrl} alt={message.user.name} />
               <AvatarFallback>{message.user.name[0]?.toUpperCase()}</AvatarFallback>
+              {!imageError && message.user.avatarUrl && (
+                <Image
+                  src={message.user.avatarUrl}
+                  alt={message.user.name}
+                  fill
+                  className="object-cover"
+                  sizes="24px"
+                  onError={() => setImageError(true)}
+                />
+              )}
             </Avatar>
             <span className={'font-medium'}>{message.user.name}</span>
             <span className="text-foreground/50 text-xs">
