@@ -88,6 +88,13 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Failed to verify listings. Please try again." }, { status: 500 });
         }
 
+        // Security: Ensure all items belong to the same owner (MVP Limitation)
+        // This prevents funds from being routed to the wrong owner if a mixed cart is submitted.
+        const uniqueOwnerIds = new Set(listings.map(l => l.owner_id));
+        if (uniqueOwnerIds.size > 1) {
+            return NextResponse.json({ error: "Checkout cannot contain items from multiple owners. Please purchase them separately." }, { status: 400 });
+        }
+
         // 3. Prepare Line Items and verify prices server-side
         // Removed unused totalAmount
         let totalPlatformFee = 0;
