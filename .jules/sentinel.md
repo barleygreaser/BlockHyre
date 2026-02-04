@@ -83,3 +83,10 @@
 **Prevention:**
 1. Use Least Recently Used (LRU) or Time-to-Live (TTL) eviction policies for security caches.
 2. Avoid "reset all" logic in security-critical state.
+
+## 2025-11-07 - [Phantom Security Controls]
+**Vulnerability:** The `fetch-suggestions` API was documented (and remembered) as having rate limiting, but the actual code lacked any implementation.
+**Learning:** Documentation and agent memories can drift from the codebase state. Security controls are only real if they exist in the executable code.
+**Prevention:**
+1. Verify "known" security controls by reading the source code, not just documentation.
+2. Use automated tests to assert the presence of rate limiting headers or behavior.
