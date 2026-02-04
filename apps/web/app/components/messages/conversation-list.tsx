@@ -7,9 +7,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
+import { formatShortRelativeTime } from "@/lib/date-utils";
 import { MessageSquare } from "lucide-react";
-import ReactMarkdown from 'react-markdown';
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/auth-context";
 
@@ -161,14 +160,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                                         </p>
                                         {chat.last_message_time && (
                                             <span className="text-xs text-slate-400 flex-shrink-0 whitespace-nowrap ml-auto">
-                                                {formatDistanceToNow(new Date(chat.last_message_time), { addSuffix: false })
-                                                    .replace('about ', '')
-                                                    .replace('less than a minute', 'now')
-                                                    .replace(' minute', 'm').replace(' minutes', 'm')
-                                                    .replace(' hour', 'h').replace(' hours', 'h')
-                                                    .replace(' day', 'd').replace(' days', 'd')
-                                                    .replace(' month', 'mo').replace(' months', 'mo')
-                                                    .replace(' year', 'y').replace(' years', 'y')}
+                                                {formatShortRelativeTime(chat.last_message_time)}
                                             </span>
                                         )}
                                     </div>
