@@ -1,7 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET(request: Request) {
+    // Security: Rate Limit (60 requests per minute)
+    const ip = (await headers()).get("x-forwarded-for") || "unknown";
+    if (!checkRateLimit(`suggestions_${ip}`, 60, 60000)) {
+        return NextResponse.json(
+            { error: "Too many requests. Please try again later." },
+            { status: 429 }
+        );
+    }
+
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("query");
     const type = searchParams.get("type"); // 'brand' or 'tool'
