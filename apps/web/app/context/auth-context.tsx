@@ -42,31 +42,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const signUp = async (email: string, password: string, fullName: string) => {
-        // A. Create the Auth User
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
+        // Use the API endpoint to enforce rate limiting and password complexity
+        const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email,
+                password,
+                confirmPassword: password, // Frontend validation should handle mismatch, API requires this field
+                fullName,
+            })
         });
 
-        if (error) throw error;
+        const data = await response.json();
 
-        // B. Create the Public Profile (linked to the Auth User)
-        // We use 'users' table as per our schema, not 'profiles'
-        if (data.user) {
-            const { error: profileError } = await supabase
-                .from('users')
-                .insert([
-                    {
-                        id: data.user.id,
-                        email: email,
-                        full_name: fullName,
-                        profile_photo_url: ''
-                    }
-                ]);
-
-            if (profileError) {
-                console.error("Error creating user profile:", profileError);
-            }
+        if (!response.ok) {
+            throw new Error(data.error || 'Signup failed');
         }
 
         return data;
