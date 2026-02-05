@@ -32,6 +32,7 @@ import { Slider } from "@/app/components/ui/slider";
 
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
+import { useMediaQuery } from "@/app/hooks/use-media-query";
 
 // Default Fallback (Woodstock, GA - Neighborhood f295b7bf-1a7e-427e-9527-5bb621851b4b)
 const DEFAULT_LOCATION: Coordinates = {
@@ -41,6 +42,7 @@ const DEFAULT_LOCATION: Coordinates = {
 
 export default function InventoryPage() {
     const { user } = useAuth();
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     // Filters State
     const [searchQuery, setSearchQuery] = useState("");
@@ -473,40 +475,44 @@ export default function InventoryPage() {
                         ) : filteredTools.length > 0 ? (
                             <>
                                 {/* Mobile List View */}
-                                <div className="md:hidden space-y-6">
-                                    {filteredTools.map(tool => (
-                                        <Link key={tool.id} href={`/listings/${tool.id}/${generateSlug(tool.title)}`}>
-                                            <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32">
-                                                <div className="w-[35%] relative">
-                                                    <Image
-                                                        src={tool.image}
-                                                        alt={tool.title}
-                                                        fill
-                                                        sizes="(max-width: 768px) 35vw, 200px"
-                                                        className="object-cover"
-                                                    />
-                                                </div>
-                                                <div className="flex-1 p-3 flex flex-col justify-between">
-                                                    <div>
-                                                        <h3 className="font-bold text-slate-900 line-clamp-2 text-sm leading-tight mb-1">{tool.title}</h3>
-                                                        <div className="text-xs text-slate-500">{tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}</div>
+                                {!isDesktop && (
+                                    <div className="space-y-6">
+                                        {filteredTools.map(tool => (
+                                            <Link key={tool.id} href={`/listings/${tool.id}/${generateSlug(tool.title)}`}>
+                                                <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32">
+                                                    <div className="w-[35%] relative">
+                                                        <Image
+                                                            src={tool.image}
+                                                            alt={tool.title}
+                                                            fill
+                                                            sizes="(max-width: 768px) 35vw, 200px"
+                                                            className="object-cover"
+                                                        />
                                                     </div>
-                                                    <div className="mt-1">
-                                                        <span className="font-bold text-lg text-safety-orange">${tool.price}</span>
-                                                        <span className="text-xs text-slate-500">/day</span>
+                                                    <div className="flex-1 p-3 flex flex-col justify-between">
+                                                        <div>
+                                                            <h3 className="font-bold text-slate-900 line-clamp-2 text-sm leading-tight mb-1">{tool.title}</h3>
+                                                            <div className="text-xs text-slate-500">{tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}</div>
+                                                        </div>
+                                                        <div className="mt-1">
+                                                            <span className="font-bold text-lg text-safety-orange">${tool.price}</span>
+                                                            <span className="text-xs text-slate-500">/day</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
 
                                 {/* Desktop Grid View */}
-                                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredTools.map(tool => (
-                                        <ToolCard key={tool.id} tool={tool} />
-                                    ))}
-                                </div>
+                                {isDesktop && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {filteredTools.map(tool => (
+                                            <ToolCard key={tool.id} tool={tool} />
+                                        ))}
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">
