@@ -39,6 +39,24 @@ export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryPr
             .slice(0, 6); // Limit to 6 items
     }, [listings, selectedCategory]);
 
+    // Optimize: Pre-calculate tool props to maintain referential stability
+    // This allows React.memo on FeaturedToolCard to work effectively
+    const cardProps = useMemo(() => {
+        return filteredListings.map(tool => ({
+            id: tool.id,
+            title: tool.title || tool.description || "Untitled Tool", // Fallback title
+            image: tool.images?.[0] || "",
+            price: tool.daily_price,
+            deposit: tool.deposit || 100, // Fallback if not calc'd
+            category: tool.category?.name || "General",
+            isHeavyMachinery: tool.is_high_powered,
+            coordinates: { latitude: 0, longitude: 0 }, // Not needed for display
+            distance: tool.distance,
+            acceptsBarter: tool.accepts_barter,
+            instantBook: tool.booking_type === 'instant'
+        }));
+    }, [filteredListings]);
+
     return (
         <section className="pt-12 pb-20 bg-slate-50 relative" id="inventory">
             {/* Background enhancement */}
@@ -64,26 +82,12 @@ export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryPr
                     />
                 </div>
 
-                {filteredListings.length > 0 ? (
+                {cardProps.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredListings.map((tool) => (
-                            // transform Listing to Tool interface for the card
-                            // The hooked Listing has snake_case (mostly) but ToolCard expects camelCase/specifics
+                        {cardProps.map((tool) => (
                             <FeaturedToolCard
                                 key={tool.id}
-                                tool={{
-                                    id: tool.id,
-                                    title: tool.title || tool.description || "Untitled Tool", // Fallback title
-                                    image: tool.images?.[0] || "",
-                                    price: tool.daily_price,
-                                    deposit: tool.deposit || 100, // Fallback if not calc'd
-                                    category: tool.category?.name || "General",
-                                    isHeavyMachinery: tool.is_high_powered,
-                                    coordinates: { latitude: 0, longitude: 0 }, // Not needed for display
-                                    distance: tool.distance,
-                                    acceptsBarter: tool.accepts_barter,
-                                    instantBook: tool.booking_type === 'instant'
-                                }}
+                                tool={tool}
                             />
                         ))}
                     </div>

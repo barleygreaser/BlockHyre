@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { memo } from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
@@ -11,7 +12,7 @@ interface FeaturedToolCardProps {
     tool: Tool;
 }
 
-export function FeaturedToolCard({ tool }: FeaturedToolCardProps) {
+export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
     // Determine Tier based on simple logic for now
     // Tier 3: Heavy Machinery or Price > $200
     // Tier 2: Price > $50
@@ -87,4 +88,6 @@ export function FeaturedToolCard({ tool }: FeaturedToolCardProps) {
             </CardContent>
         </Card>
     );
-}
+});
+
+FeaturedToolCard.displayName = "FeaturedToolCard";

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { memo } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
@@ -27,7 +28,7 @@ interface ToolCardProps {
     tool: Tool;
 }
 
-export function ToolCard({ tool }: ToolCardProps) {
+export const ToolCard = memo(({ tool }: ToolCardProps) => {
     return (
         <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-200 flex flex-col h-full">
             <div className="aspect-video w-full bg-slate-100 relative group">
@@ -92,4 +93,6 @@ export function ToolCard({ tool }: ToolCardProps) {
             </CardFooter>
         </Card>
     );
-}
+});
+
+ToolCard.displayName = "ToolCard";
