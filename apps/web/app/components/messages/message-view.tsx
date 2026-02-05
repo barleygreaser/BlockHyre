@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useMessages, type Message } from "@/app/hooks/use-messages";
 import { type ChatMessage } from "@/hooks/use-realtime-chat";
+import { useStableTransform } from "@/hooks/use-stable-transform";
 import { RealtimeChat } from "@/components/realtime-chat";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
@@ -69,9 +70,10 @@ export function MessageView({ chatId }: MessageViewProps) {
     }, [chatId, sendMessage]);
 
     // Map DB messages to ChatMessage format
-    // Optimization: Memoize mappedMessages to prevent RealtimeChat from re-calculating/re-sorting
-    // all messages on every parent render.
-    const mappedMessages = useMemo(() => messages.map(msg => ({
+    // Optimization: Use useStableTransform to preserve object identity for existing messages
+    // This prevents RealtimeChat -> ChatList -> ChatMessageItem from re-rendering
+    // all previous messages when a new one is added.
+    const transformMessage = useCallback((msg: Message) => ({
         id: msg.id,
         content: msg.content,
         createdAt: msg.created_at,
@@ -82,7 +84,9 @@ export function MessageView({ chatId }: MessageViewProps) {
             name: msg.sender?.full_name || 'Unknown',
             avatarUrl: msg.sender?.profile_photo_url
         }
-    })), [messages]);
+    }), []);
+
+    const mappedMessages = useStableTransform(messages, transformMessage);
 
     // Get user details
     const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
