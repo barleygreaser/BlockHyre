@@ -7,7 +7,7 @@ import { Button } from "@/app/components/ui/button";
 import { Trash2, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
-import dayjs from "dayjs";
+import { format } from "date-fns";
 
 export default function CartPage() {
     const { cart, removeFromCart, clearCart } = useCart();
@@ -57,7 +57,7 @@ export default function CartPage() {
                                             <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
                                                 <CalendarIcon className="h-4 w-4" />
                                                 <span>
-                                                    {dayjs(item.dates.from).format("MMM D")} - {dayjs(item.dates.to).format("MMM D")} ({item.days} days)
+                                                    {format(item.dates.from, "MMM d")} - {format(item.dates.to, "MMM d")} ({item.days} days)
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">

@@ -9,7 +9,7 @@ import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Loader2, Calendar, CheckCircle } from "lucide-react";
-import dayjs from "dayjs";
+import { format, differenceInCalendarDays, parseISO } from "date-fns";
 import { toast } from "sonner";
 
 export default function RequestBookingPage() {
@@ -86,9 +86,9 @@ export default function RequestBookingPage() {
 
         try {
             // Calculate rental details
-            const start = dayjs(fromDate);
-            const end = dayjs(toDate);
-            const totalDays = end.diff(start, 'day') + 1;
+            const start = parseISO(fromDate);
+            const end = parseISO(toDate);
+            const totalDays = differenceInCalendarDays(end, start) + 1;
             const dailyPrice = listing.daily_price || 0;
 
             // Fetch category for risk fee calculation
@@ -177,8 +177,8 @@ export default function RequestBookingPage() {
                 tool_name: listing.title,
                 renter_name: currentUser?.user_metadata?.full_name || 'Unknown',
                 owner_name: ownerData?.full_name || 'Owner',
-                start_date: start.format("MM/DD/YYYY"),
-                end_date: end.format("MM/DD/YYYY"),
+                start_date: format(start, "MM/dd/yyyy"),
+                end_date: format(end, "MM/dd/yyyy"),
                 total_paid: totalPaid.toFixed(2),
                 seller_fee_percent: sellerFee
             };
@@ -186,7 +186,7 @@ export default function RequestBookingPage() {
             // Send owner's version (recipient = owner)
             const { error: ownerMsgError } = await supabase.rpc('send_system_message', {
                 p_chat_id: chatId,
-                p_content: `🔔 **Action Required:** New Rental Request for ${listing.title}!\n\n${currentUser?.user_metadata?.full_name || 'A user'} has requested to rent your tool from ${start.format("MMM D, YYYY")} to ${end.format("MMM D, YYYY")}.\n\n**Total Price:** $${totalPaid.toFixed(2)}\n**Your Potential Earnings:** $${(totalPaid * (1 - sellerFee / 100)).toFixed(2)}\n\nPlease accept or decline this request within 24 hours.`,
+                p_content: `🔔 **Action Required:** New Rental Request for ${listing.title}!\n\n${currentUser?.user_metadata?.full_name || 'A user'} has requested to rent your tool from ${format(start, "MMM d, yyyy")} to ${format(end, "MMM d, yyyy")}.\n\n**Total Price:** $${totalPaid.toFixed(2)}\n**Your Potential Earnings:** $${(totalPaid * (1 - sellerFee / 100)).toFixed(2)}\n\nPlease accept or decline this request within 24 hours.`,
                 p_sender_id: listing.owner_id,
                 p_recipient_id: listing.owner_id
             });
@@ -278,7 +278,7 @@ export default function RequestBookingPage() {
                                 <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
                                     <Calendar className="h-4 w-4" />
                                     <span>
-                                        {dayjs(fromDate).format("MMM D")} - {dayjs(toDate).format("MMM D")}
+                                        {format(parseISO(fromDate!), "MMM d")} - {format(parseISO(toDate!), "MMM d")}
                                     </span>
                                 </div>
 

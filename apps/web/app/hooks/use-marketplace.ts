@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
+import { addDays, isBefore, isSameDay, differenceInCalendarDays, parseISO, format } from 'date-fns';
 
 type Category = {
     id: string;
@@ -221,9 +218,7 @@ export const useMarketplace = () => {
         isBarter: boolean
     ) => {
         try {
-            const start = dayjs(startDate);
-            const end = dayjs(endDate);
-            const totalDays = end.diff(start, 'day') + 1; // Inclusive
+            const totalDays = differenceInCalendarDays(endDate, startDate) + 1; // Inclusive
 
             const { data, error } = await supabase
                 .from('rentals')
@@ -340,26 +335,26 @@ export const useMarketplace = () => {
 
             const dates: Date[] = [];
             data?.forEach((rental: any) => {
-                // Parse as UTC to avoid local timezone shifts from 00:00:00 timestamps
-                let current = dayjs.utc(rental.start_date);
-                const end = dayjs.utc(rental.end_date);
+                // Helper to handle both ISO timestamps (UTC) and date-only strings (YYYY-MM-DD)
+                // mimicking dayjs.utc(str) behavior where we want the nominal date components to form a local date.
+                const getLocalDateFromUTC = (dateStr: string) => {
+                    if (!dateStr) return new Date();
+                    // If date-only string (e.g. "2023-01-01"), parseISO treats it as Local Midnight, which is exactly what we want.
+                    if (dateStr.length <= 10) {
+                        return parseISO(dateStr);
+                    }
+                    // If timestamp (e.g. "2023-01-01T00:00:00Z"), parseISO creates a Date object (timestamp).
+                    // We extract UTC components to avoid timezone shifts (e.g. 00:00 UTC -> previous day Local).
+                    const d = parseISO(dateStr);
+                    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+                };
 
-                while (current.isBefore(end) || current.isSame(end, 'day')) {
-                    // Convert to JS Date. Note: This creates a date derived from the UTC components.
-                    // However, we want the matched DATE to be the same string representation.
-                    // The simplest way for the Calendar component to match is if we store the string "YYYY-MM-DD" or 
-                    // ensure the Date object resolves to the same day in local time.
-                    // If we use .toDate() on a UTC dayjs object, it converts to local time. 
-                    // e.g. 2023-01-01T00:00Z -> 2022-12-31T19:00 EST. This SHIFTS the day.
+                let current = getLocalDateFromUTC(rental.start_date);
+                const end = getLocalDateFromUTC(rental.end_date);
 
-                    // FIX: We strictly want the calendar date components.
-                    // We will return dates constructed from the Year/Month/Day values match the string.
-                    const dateStr = current.format('YYYY-MM-DD');
-                    // Create a local date from the string components to match Calendar's local inputs
-                    const [y, m, d] = dateStr.split('-').map(Number);
-                    dates.push(new Date(y, m - 1, d));
-
-                    current = current.add(1, 'day');
+                while (isBefore(current, end) || isSameDay(current, end)) {
+                    dates.push(new Date(current));
+                    current = addDays(current, 1);
                 }
             });
 
@@ -421,8 +416,8 @@ export const useMarketplace = () => {
             .insert({
                 listing_id: listingId,
                 owner_id: (await supabase.auth.getUser()).data.user?.id,
-                start_date: dayjs(startDate).format('YYYY-MM-DD'),
-                end_date: dayjs(endDate).format('YYYY-MM-DD'),
+                start_date: format(startDate, 'yyyy-MM-dd'),
+                end_date: format(endDate, 'yyyy-MM-dd'),
                 reason
             });
 
