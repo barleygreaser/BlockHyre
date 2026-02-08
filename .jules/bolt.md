@@ -39,3 +39,7 @@
 ## 2024-06-01 - Radix UI Avatar Optimization
 **Learning:** The `@radix-ui/react-avatar` primitive renders a standard `<img>` tag via `AvatarImage`, bypassing Next.js image optimization. This leads to large image payloads in list views (like conversation lists).
 **Action:** When using avatars in high-frequency lists, replace `AvatarImage` with `next/image` (wrapped in a relative container) to ensure proper resizing and format optimization.
+
+## 2024-05-31 - Conversation List Optimization
+**Learning:** Extracting list items into memoized components and stabilizing event handlers in the parent is crucial for performance when the list is long or when the parent re-renders frequently (e.g. on selection change).
+**Action:** When working with lists where items have complex rendering logic or interactivity, always extract the item into a separate memoized component and ensure callback props are stable.

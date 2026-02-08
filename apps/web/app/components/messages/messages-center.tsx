@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useQueryState, parseAsString } from "nuqs";
 import { ConversationList } from "./conversation-list";
 import { MessageView } from "./message-view";
@@ -15,6 +15,10 @@ export function MessagesCenter() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const [chatId, setChatId] = useQueryState("id", parseAsString);
+
+    const handleSelectChat = useCallback((id: string) => {
+        setChatId(id);
+    }, [setChatId]);
 
     useEffect(() => {
         document.title = chatId ? "Chat - BlockHyre" : "Messages - BlockHyre";
@@ -79,7 +83,7 @@ export function MessagesCenter() {
                             </div>
                             <ConversationList
                                 selectedChatId={chatId}
-                                onSelectChat={(id) => setChatId(id)}
+                                onSelectChat={handleSelectChat}
                             />
                         </div>
 
