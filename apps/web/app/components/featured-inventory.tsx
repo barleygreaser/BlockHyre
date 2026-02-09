@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { FeaturedToolCard } from "./featured-tool-card";
 import { CategoryFilter } from "./category-filter";
 import { Listing } from "@/app/hooks/use-marketplace";
@@ -13,10 +13,9 @@ interface FeaturedInventoryProps {
 
 const CATEGORIES = ["All", "Harvest", "Heavy Machinery", "Small Power Tools", "Hand Tools", "Gardening", "Camping & Outdoor"];
 
-// Helper to normalize category strings for comparison
-const normalize = (s: string) => s.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-');
+const normalize = (str: string) => str.toLowerCase().trim();
 
-export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryProps) {
+export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInventoryProps) => {
     const [selectedCategory, setSelectedCategory] = useState("All");
 
     // Filter Logic:
@@ -33,8 +32,8 @@ export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryPr
                 if (selectedCategory === "All") return true;
 
                 // Match category name exactly as they now align with DB
-                const categoryName = tool.category?.name || "";
-                return categoryName === selectedCategory;
+                const categoryName = normalize(tool.category?.name || "");
+                return categoryName === normalize(selectedCategory);
             })
             .slice(0, 6); // Limit to 6 items
     }, [listings, selectedCategory]);
@@ -102,4 +101,6 @@ export function FeaturedInventory({ onRentClick, listings }: FeaturedInventoryPr
             </div>
         </section>
     );
-}
+});
+
+FeaturedInventory.displayName = "FeaturedInventory";
