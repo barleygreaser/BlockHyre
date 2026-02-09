@@ -1,18 +1,17 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ToolCard, Tool } from "@/app/components/tool-card";
+import { MobileToolCard } from "@/app/components/mobile-tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
-import { calculateDistance, Coordinates } from "@/lib/location";
+import { Coordinates } from "@/lib/location";
 import { InventoryFiltersModal } from "@/app/components/inventory/inventory-filters-modal";
 import { SortDrawer } from "@/app/components/inventory/sort-drawer";
-import { Search, Filter, MapPin, X, Loader2, Zap, Shield, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { cn, generateSlug } from "@/lib/utils";
+import { Search, Filter, X, Zap, Shield, ArrowUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
 import { Skeleton } from "@/app/components/ui/skeleton";
@@ -478,29 +477,7 @@ export default function InventoryPage() {
                                 {!isDesktop && (
                                     <div className="space-y-6">
                                         {filteredTools.map(tool => (
-                                            <Link key={tool.id} href={`/listings/${tool.id}/${generateSlug(tool.title)}`}>
-                                                <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32">
-                                                    <div className="w-[35%] relative">
-                                                        <Image
-                                                            src={tool.image}
-                                                            alt={tool.title}
-                                                            fill
-                                                            sizes="(max-width: 768px) 35vw, 200px"
-                                                            className="object-cover"
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 p-3 flex flex-col justify-between">
-                                                        <div>
-                                                            <h3 className="font-bold text-slate-900 line-clamp-2 text-sm leading-tight mb-1">{tool.title}</h3>
-                                                            <div className="text-xs text-slate-500">{tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}</div>
-                                                        </div>
-                                                        <div className="mt-1">
-                                                            <span className="font-bold text-lg text-safety-orange">${tool.price}</span>
-                                                            <span className="text-xs text-slate-500">/day</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </Link>
+                                            <MobileToolCard key={tool.id} tool={tool} />
                                         ))}
                                     </div>
                                 )}
