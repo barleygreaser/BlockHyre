@@ -5,6 +5,7 @@ import { FeaturedToolCard } from "./featured-tool-card";
 import { CategoryFilter } from "./category-filter";
 import { Listing } from "@/app/hooks/use-marketplace";
 import { MapPin } from "lucide-react";
+import { Tool } from "@/app/components/tool-card";
 
 interface FeaturedInventoryProps {
     onRentClick: () => void; // Kept for interface compatibility, though CTA handles navigation now
@@ -18,34 +19,15 @@ const normalize = (str: string) => str.toLowerCase().trim();
 export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInventoryProps) => {
     const [selectedCategory, setSelectedCategory] = useState("All");
 
-    // Filter Logic:
-    // 1. Must be "High Value" (Tier 2 or 3) -> Price > $50 OR Heavy Machinery
-    // 2. Must match selected category (if not "All")
-    const filteredListings = useMemo(() => {
-        return listings
-            .filter(tool => {
-                // Tier 2+ check (Change logic here if "Tier 2" definition changes)
-                const price = Number(tool.daily_price);
-                const isHighValue = price > 50 || tool.is_high_powered;
-                if (!isHighValue) return false;
-
-                if (selectedCategory === "All") return true;
-
-                // Match category name exactly as they now align with DB
-                const categoryName = normalize(tool.category?.name || "");
-                return categoryName === normalize(selectedCategory);
-            })
-            .slice(0, 6); // Limit to 6 items
-    }, [listings, selectedCategory]);
-
-    // Optimize: Pre-calculate tool props to maintain referential stability
-    // This allows React.memo on FeaturedToolCard to work effectively
-    const cardProps = useMemo(() => {
-        return filteredListings.map(tool => ({
+    // Optimize: Pre-calculate ALL tool props first to maintain referential stability.
+    // This ensures that when we filter, the resulting objects are the SAME references
+    // as before, allowing React.memo on FeaturedToolCard to prevent re-renders.
+    const allTools = useMemo<Tool[]>(() => {
+        return listings.map(tool => ({
             id: tool.id,
             title: tool.title || tool.description || "Untitled Tool", // Fallback title
             image: tool.images?.[0] || "",
-            price: tool.daily_price,
+            price: Number(tool.daily_price),
             deposit: tool.deposit || 100, // Fallback if not calc'd
             category: tool.category?.name || "General",
             isHeavyMachinery: tool.is_high_powered,
@@ -54,7 +36,28 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
             acceptsBarter: tool.accepts_barter,
             instantBook: tool.booking_type === 'instant'
         }));
-    }, [filteredListings]);
+    }, [listings]);
+
+    // Filter Logic:
+    // 1. Must be "High Value" (Tier 2 or 3) -> Price > $50 OR Heavy Machinery
+    // 2. Must match selected category (if not "All")
+    const filteredTools = useMemo(() => {
+        const normalizedSelectedCategory = normalize(selectedCategory);
+
+        return allTools
+            .filter(tool => {
+                // Tier 2+ check (Change logic here if "Tier 2" definition changes)
+                const isHighValue = tool.price > 50 || tool.isHeavyMachinery;
+                if (!isHighValue) return false;
+
+                if (selectedCategory === "All") return true;
+
+                // Match category name exactly
+                const categoryName = normalize(tool.category || "");
+                return categoryName === normalizedSelectedCategory;
+            })
+            .slice(0, 6); // Limit to 6 items
+    }, [allTools, selectedCategory]);
 
     return (
         <section className="pt-12 pb-20 bg-slate-50 relative" id="inventory">
@@ -81,9 +84,9 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                     />
                 </div>
 
-                {cardProps.length > 0 ? (
+                {filteredTools.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {cardProps.map((tool) => (
+                        {filteredTools.map((tool) => (
                             <FeaturedToolCard
                                 key={tool.id}
                                 tool={tool}
