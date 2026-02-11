@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface CategoryFilterProps {
@@ -9,7 +9,7 @@ interface CategoryFilterProps {
     onSelectCategory: (category: string) => void;
 }
 
-export function CategoryFilter({ categories, selectedCategory, onSelectCategory }: CategoryFilterProps) {
+export const CategoryFilter = memo(({ categories, selectedCategory, onSelectCategory }: CategoryFilterProps) => {
     return (
         <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
             <div className="flex gap-2 min-w-max px-1">
@@ -30,4 +30,6 @@ export function CategoryFilter({ categories, selectedCategory, onSelectCategory 
             </div>
         </div>
     );
-}
+});
+
+CategoryFilter.displayName = "CategoryFilter";
