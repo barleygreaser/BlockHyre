@@ -43,3 +43,7 @@
 ## 2024-05-31 - Conversation List Optimization
 **Learning:** Extracting list items into memoized components and stabilizing event handlers in the parent is crucial for performance when the list is long or when the parent re-renders frequently (e.g. on selection change).
 **Action:** When working with lists where items have complex rendering logic or interactivity, always extract the item into a separate memoized component and ensure callback props are stable.
+
+## 2024-06-02 - List Filtering Optimization
+**Learning:** In components like `FeaturedInventory` that filter a list based on user selection, transforming raw data into component props *inside* the filter pipeline creates new object references on every filter change. This defeats `React.memo` on child components even if the item itself hasn't changed.
+**Action:** Transform raw data into stable "view model" objects using `useMemo` *before* filtering. Then filter this stable array. This ensures that if an item survives the filter, its object reference is identical to the previous render, allowing `React.memo` to skip re-rendering.
