@@ -163,9 +163,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 16,
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        borderColor: '#F1F5F9',
         marginBottom: 24,
     },
     ownerLeft: {
