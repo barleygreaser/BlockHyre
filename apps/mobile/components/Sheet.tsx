@@ -17,13 +17,20 @@ const Sheet = forwardRef<SheetRef, SheetProps>(({ children, snapPoint }, ref) =>
 
     useImperativeHandle(ref, () => ({
         show: () => sheetRef.current?.present(),
-        hide: () => sheetRef.current?.forceClose(),
+        hide: () => sheetRef.current?.dismiss(),
     }));
 
-    const snapPoints = useMemo(() => [`${snapPoint}%`], [snapPoint]);
+    // If snapPoint is provided, use it. Otherwise rely on dynamic sizing.
+    const snapPoints = useMemo(() => (snapPoint ? [`${snapPoint}%`] : []), [snapPoint]);
+
     const renderBackdrop = useCallback(
         (props: BottomSheetBackdropProps) => (
-            <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior="close"
+            />
         ),
         []
     );
@@ -31,11 +38,16 @@ const Sheet = forwardRef<SheetRef, SheetProps>(({ children, snapPoint }, ref) =>
     return (
         <BottomSheetModal
             ref={sheetRef}
-            snapPoints={snapPoints}
+            snapPoints={snapPoints.length > 0 ? snapPoints : undefined}
+            enableDynamicSizing={snapPoints.length === 0}
             backdropComponent={renderBackdrop}
             handleStyle={styles.handle}
             handleIndicatorStyle={styles.handleIndicator}
             style={styles.sheet}
+            // Standard Keyboard Handling
+            keyboardBehavior="interactive"
+            keyboardBlurBehavior="restore"
+            android_keyboardInputMode="adjustResize"
         >
             <BottomSheetView style={styles.content}>{children}</BottomSheetView>
         </BottomSheetModal>
@@ -55,9 +67,15 @@ const styles = StyleSheet.create({
     sheet: {
         backgroundColor: "#FFFFFF",
         borderRadius: 16,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5,
     },
     content: {
         flex: 1,
+        paddingBottom: 20, // Safety padding
     },
 });
 
