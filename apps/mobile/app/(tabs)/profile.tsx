@@ -34,6 +34,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { supabase } from '@/lib/supabase';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 import ProfileFlipCard from '../../components/ProfileFlipCard';
 import ProfileModeToggle from '../../components/ProfileModeToggle';
@@ -69,6 +70,7 @@ export default function ProfileScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isOwner, setIsOwner] = useState(true);
+    const { user: authUser, profile, loading } = useUserProfile();
 
     const scrollY = useSharedValue(0);
 
@@ -131,26 +133,39 @@ export default function ProfileScreen() {
         };
     });
 
-    // Mock user data
+    // Dynamic user data
     const user = {
-        name: 'Christopher R.',
-        verified: true,
-        totalRentals: 8,
-        rating: 5.0,
+        name: profile?.full_name || authUser?.email || 'Guest User',
+        verified: true, // Placeholder until verification logic exists
+        totalRentals: 0, // Placeholder
+        rating: 5.0, // Placeholder
     };
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
+        console.warn("Logout button pressed"); // Warn for visibility
         Alert.alert(
             "Log Out",
             "Are you sure you want to log out?",
             [
-                { text: "Cancel", style: "cancel" },
+                { text: "Cancel", style: "cancel", onPress: () => console.log("Logout cancelled") },
                 {
                     text: "Log Out",
                     style: "destructive",
                     onPress: async () => {
-                        await supabase.auth.signOut();
-                        router.replace('/onboarding/login');
+                        console.log("Logout confirmed, attempting sign out...");
+                        try {
+                            const { error } = await supabase.auth.signOut();
+                            if (error) {
+                                console.error("Error signing out:", error);
+                                Alert.alert("Error", "Failed to log out. Please try again.");
+                                return;
+                            }
+                            console.log("Sign out successful, navigating to /onboarding");
+                            // Reset navigation to the onboarding stack
+                            router.replace('/onboarding');
+                        } catch (err) {
+                            console.error("Unexpected error during logout:", err);
+                        }
                     }
                 }
             ]
@@ -404,6 +419,8 @@ const styles = StyleSheet.create({
     logoutSection: {
         marginTop: 32,
         paddingHorizontal: 16,
+        zIndex: 100, // Ensure button is clickable
+        marginBottom: 40, // Extra padding at bottom
     },
     logoutButton: {
         flexDirection: 'row',

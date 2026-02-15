@@ -27,8 +27,11 @@ export default function OnboardingWelcome() {
   };
 
   const handleBrowse = () => {
-    // Navigate to main app (explore) directly, or reset stack
-    router.replace('/(tabs)/');
+    // Prevent infinite navigation loop by clearing stack before replacing
+    if (router.canDismiss()) {
+      router.dismissAll();
+    }
+    router.replace('/(tabs)');
   };
 
   return (
@@ -91,6 +94,14 @@ export default function OnboardingWelcome() {
               activeOpacity={0.7}
             >
               <Text style={styles.secondaryButtonText}>BROWSE LOCAL TOOLS</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => router.push('/onboarding/login')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.loginButtonText}>Already have an account? Log In</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -257,5 +268,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: 2,
     textTransform: 'uppercase',
+  },
+  loginButton: {
+    width: '100%',
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loginButtonText: {
+    color: COLORS.primary,
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

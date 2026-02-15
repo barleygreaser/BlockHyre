@@ -157,7 +157,13 @@ export default function FavoritesScreen() {
             <Text style={styles.emptyText}>Items you heart will appear here.</Text>
             <TouchableOpacity
                 style={styles.exploreButton}
-                onPress={() => router.push('/(tabs)')}
+                onPress={() => {
+                    // Navigate to the root of the tabs (index.tsx)
+                    if (router.canGoBack()) {
+                        router.dismiss();
+                    }
+                    router.replace('/(tabs)/');
+                }}
             >
                 <Text style={styles.exploreButtonText}>Explore Tools</Text>
             </TouchableOpacity>

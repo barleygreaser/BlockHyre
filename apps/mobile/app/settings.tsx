@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -19,12 +19,41 @@ import {
     User,
     Mail
 } from 'lucide-react-native';
+import { supabase } from '@/lib/supabase';
 
 export default function SettingsScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isDarkMode, setIsDarkMode] = React.useState(false);
     const [pushEnabled, setPushEnabled] = React.useState(true);
+
+    const handleLogout = () => {
+        Alert.alert(
+            "Log Out",
+            "Are you sure you want to log out?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Log Out",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            const { error } = await supabase.auth.signOut();
+                            if (error) {
+                                console.error("Error signing out:", error);
+                                Alert.alert("Error", "Failed to log out. Please try again.");
+                                return;
+                            }
+                            // Reset navigation to the onboarding stack
+                            router.replace('/onboarding');
+                        } catch (err) {
+                            console.error("Unexpected error during logout:", err);
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     const SettingsSection = ({ title, children }: { title: string, children: React.ReactNode }) => (
         <View style={styles.section}>
@@ -195,7 +224,11 @@ export default function SettingsScreen() {
                 </SettingsSection>
 
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.logoutButton}>
+                    <TouchableOpacity
+                        style={styles.logoutButton}
+                        onPress={handleLogout}
+                        activeOpacity={0.7}
+                    >
                         <LogOut size={20} color="#EF4444" />
                         <Text style={styles.logoutText}>Log Out</Text>
                     </TouchableOpacity>
