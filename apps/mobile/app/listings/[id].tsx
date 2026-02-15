@@ -546,7 +546,7 @@ export default function ListingDetailScreen() {
                                 source={listing.owner.avatarUrl}
                                 style={styles.ownerAvatar}
                                 contentFit="cover"
-                                transition={1000}
+                                transition={200}
                             />
                             <View>
                                 <Text style={[styles.ownerTitle, isDark && styles.ownerTitleDark]}>

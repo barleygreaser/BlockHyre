@@ -336,7 +336,12 @@ export default function ExploreScreen() {
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#FF6700" />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#FF6700"
+            progressViewOffset={insets.top + HEADER_HEIGHT + 20}
+          />
         }
       >
         {/* Large Header Title */}

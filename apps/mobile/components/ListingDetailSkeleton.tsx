@@ -31,7 +31,7 @@ const Bone = ({ style }: { style: any }) => {
         opacity: opacity.value,
     }));
 
-    return <Animated.View style={[style, styles.bone, animatedStyle]} />;
+    return <Animated.View style={[styles.bone, style, animatedStyle]} />;
 };
 
 export const ListingDetailSkeleton = () => {
