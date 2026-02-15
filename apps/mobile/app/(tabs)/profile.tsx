@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     StatusBar,
     Platform,
+    Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -31,6 +32,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
+import { supabase } from '@/lib/supabase';
 
 import ProfileFlipCard from '../../components/ProfileFlipCard';
 import ProfileModeToggle from '../../components/ProfileModeToggle';
@@ -136,6 +138,24 @@ export default function ProfileScreen() {
         rating: 5.0,
     };
 
+    const handleLogout = async () => {
+        Alert.alert(
+            "Log Out",
+            "Are you sure you want to log out?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Log Out",
+                    style: "destructive",
+                    onPress: async () => {
+                        await supabase.auth.signOut();
+                        router.replace('/onboarding/login');
+                    }
+                }
+            ]
+        );
+    };
+
     // Menu items
     const renterMenuItems = [
         { icon: UserCircle, title: 'Personal Info', destination: '/profile/personal-info' },
@@ -219,6 +239,7 @@ export default function ProfileScreen() {
                     <TouchableOpacity
                         style={styles.logoutButton}
                         activeOpacity={0.7}
+                        onPress={handleLogout}
                     >
                         <LogOut size={20} color="#DC2626" />
                         <Text style={styles.logoutText}>Log Out</Text>

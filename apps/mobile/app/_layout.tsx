@@ -87,6 +87,7 @@ function RootLayoutNav() {
       <Stack.Screen name="listings/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       <Stack.Screen name="request-rental" options={{ presentation: 'fullScreenModal', headerShown: false }} />
+      <Stack.Screen name="favorites" options={{ presentation: 'card', headerTitle: 'Favorites' }} />
       <Stack.Screen name="settings" options={{ presentation: 'fullScreenModal', headerShown: false }} />
     </Stack>
   );

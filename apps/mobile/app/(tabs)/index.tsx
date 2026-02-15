@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
+import { Image } from 'expo-image';
 import {
   View,
   Text,
@@ -8,6 +9,7 @@ import {
   TouchableOpacity,
   StatusBar,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -21,6 +23,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { Search, SlidersHorizontal, Star, MapPin } from 'lucide-react-native';
 import { SortDrawer, SortDrawerRef } from '../../components/SortDrawer';
+import { supabase } from '@/lib/supabase';
+import { ExploreCardSkeletonGrid } from '@/components/ExploreCardSkeleton';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -112,6 +116,64 @@ export default function ExploreScreen() {
   const sortDrawerRef = useRef<SortDrawerRef>(null);
   const [sortOption, setSortOption] = useState<SortOption>(null);
 
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchTools = async () => {
+    try {
+      if (!refreshing) setLoading(true);
+
+      const { data, error } = await supabase
+        .from('listings')
+        .select(`
+          id, 
+          title, 
+          daily_price, 
+          images, 
+          category:categories(name)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching listings:', error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const formattedTools: Tool[] = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          pricePerDay: item.daily_price,
+          image: item.images && item.images.length > 0 ? item.images[0] : 'https://placehold.co/600x400',
+          category: item.category?.name || 'Uncategorized',
+          distance: '2.3 mi away', // Placeholder until Geo location implemented
+          rating: 5.0, // Placeholder
+        }));
+        setTools(formattedTools);
+      } else {
+        // Fallback to MOCK_TOOLS if DB is empty (Development convenience)
+        setTools(MOCK_TOOLS);
+      }
+    } catch (e) {
+      console.error('Fetch error:', e);
+      // Fallback on error
+      setTools(MOCK_TOOLS);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchTools();
+  }, []);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchTools();
+  };
+
   // Scroll animation
   const scrollY = useSharedValue(0);
 
@@ -168,7 +230,7 @@ export default function ExploreScreen() {
 
   // --- Filtering & Sorting ---
   const filteredTools = useMemo(() => {
-    return MOCK_TOOLS.filter(tool => {
+    return tools.filter(tool => {
       const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = activeCategory === 'All' ? true : tool.category === activeCategory;
       return matchesSearch && matchesCategory;
@@ -177,7 +239,7 @@ export default function ExploreScreen() {
       if (sortOption === 'price-desc') return b.pricePerDay - a.pricePerDay;
       return 0;
     });
-  }, [searchQuery, activeCategory, sortOption]);
+  }, [tools, searchQuery, activeCategory, sortOption]);
 
   const handleCardPress = (id: string) => {
     router.push({
@@ -218,9 +280,11 @@ export default function ExploreScreen() {
     >
       {/* Image Container */}
       <View style={styles.imageContainer}>
-        <Animated.Image
-          source={{ uri: item.image }}
+        <Image
+          source={item.image}
           style={styles.cardImage}
+          contentFit="cover"
+          transition={1000}
         />
         {/* Rating Badge */}
         {item.rating && (
@@ -249,10 +313,13 @@ export default function ExploreScreen() {
   );
 
   // Create rows of 2 cards each for the grid layout
-  const toolRows = [];
-  for (let i = 0; i < filteredTools.length; i += 2) {
-    toolRows.push(filteredTools.slice(i, i + 2));
-  }
+  const toolRows = useMemo(() => {
+    const rows = [];
+    for (let i = 0; i < filteredTools.length; i += 2) {
+      rows.push(filteredTools.slice(i, i + 2));
+    }
+    return rows;
+  }, [filteredTools]);
 
   return (
     <View style={styles.container}>
@@ -268,6 +335,14 @@ export default function ExploreScreen() {
         onScroll={scrollHandler}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#FF6700"
+            progressViewOffset={insets.top + HEADER_HEIGHT + 20}
+          />
+        }
       >
         {/* Large Header Title */}
         <Animated.View style={[styles.largeHeaderContainer, largeTitleStyle]}>
@@ -308,13 +383,17 @@ export default function ExploreScreen() {
 
         {/* Tool Cards Grid */}
         <View style={styles.gridContainer}>
-          {toolRows.map((row, rowIndex) => (
-            <View key={rowIndex} style={styles.gridRow}>
-              {row.map(renderToolCard)}
-              {/* If odd number of items, add empty spacer */}
-              {row.length === 1 && <View style={styles.cardSpacer} />}
-            </View>
-          ))}
+          {loading && !refreshing ? (
+            <ExploreCardSkeletonGrid />
+          ) : (
+            toolRows.map((row, rowIndex) => (
+              <View key={rowIndex} style={styles.gridRow}>
+                {row.map(renderToolCard)}
+                {/* If odd number of items, add empty spacer */}
+                {row.length === 1 && <View style={styles.cardSpacer} />}
+              </View>
+            ))
+          )}
         </View>
 
         {/* Empty State */}
