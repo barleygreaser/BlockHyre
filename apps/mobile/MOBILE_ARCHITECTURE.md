@@ -57,6 +57,7 @@ apps/mobile/
   - **Explore Page**: Fetches live listings from `public.listings`. Falls back to `MOCK_TOOLS` if the database is empty.
   - **Listing Details**: Fetches details by ID. Handles both real UUIDs (DB) and legacy Mock IDs (preventing crashes during transition).
   - **Favorites**: Joins `favorites` with `listings` to display user saved items.
+  - **Image Prefetching**: `listing/[id].tsx` prefetches critical images (Hero & Avatar) via `expo-image` before dismissing the skeleton loader to ensure instant, pop-in free rendering.
 
 ### C. Authentication
 - **Flow**:
