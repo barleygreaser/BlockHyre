@@ -10,7 +10,7 @@ import {
     Alert,
     Dimensions,
 } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '@/lib/supabase';
 import { MapPin, Star, Heart } from 'lucide-react-native';
@@ -171,6 +171,7 @@ export default function FavoritesScreen() {
                 headerLargeTitle: true,
                 headerShadowVisible: false,
                 headerStyle: { backgroundColor: '#F9F9F9' },
+                headerBackTitle: 'Profile',
             }} />
 
             {loading && !refreshing ? (
@@ -190,13 +191,7 @@ export default function FavoritesScreen() {
                     ]}
                     ListEmptyComponent={renderEmpty}
                     showsVerticalScrollIndicator={false}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={handleRefresh}
-                            tintColor="#FF6700"
-                        />
-                    }
+                    contentInsetAdjustmentBehavior="automatic"
                 />
             )}
         </View>
@@ -216,6 +211,7 @@ const styles = StyleSheet.create({
     listContentEmpty: {
         flexGrow: 1,
         justifyContent: 'center',
+        paddingBottom: 220, // Raised visually higher
     },
     row: {
         justifyContent: 'space-between',

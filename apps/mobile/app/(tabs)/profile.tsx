@@ -21,6 +21,7 @@ import {
     ChevronRight,
     LogOut,
     Settings,
+    Heart,
 } from 'lucide-react-native';
 import Animated, {
     useSharedValue,
@@ -269,18 +270,29 @@ export default function ProfileScreen() {
                 </View>
             </Animated.View>
 
-            {/* Settings Button - Always Visible, always on top */}
-            <TouchableOpacity
+            {/* Header Actions - Favorites & Settings */}
+            <View
                 style={[
-                    styles.settingsButton,
-                    { top: insets.top + (HEADER_HEIGHT - 40) / 2 } // Center vertically in the 44px header space
+                    styles.headerRightContainer,
+                    { top: insets.top + (HEADER_HEIGHT - 40) / 2 }
                 ]}
-                activeOpacity={0.7}
-                onPress={() => router.push('/settings')}
-                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
             >
-                <Settings size={24} color="#111827" />
-            </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => router.push('/favorites')}
+                    activeOpacity={0.7}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <Heart size={24} color="#111827" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => router.push('/settings')}
+                    activeOpacity={0.7}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <Settings size={24} color="#111827" />
+                </TouchableOpacity>
+            </View>
 
         </View>
     );
@@ -330,14 +342,14 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: 'rgba(0,0,0,0.1)',
     },
-    settingsButton: {
+    headerRightContainer: {
         position: 'absolute',
         right: 20,
         zIndex: 20,
-        width: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
         height: 40,
-        justifyContent: 'center',
-        alignItems: 'flex-end',
     },
 
     // ... existing content styles
