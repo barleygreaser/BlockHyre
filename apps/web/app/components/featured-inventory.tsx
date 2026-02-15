@@ -4,7 +4,8 @@ import { useState, useMemo, memo } from "react";
 import { FeaturedToolCard } from "./featured-tool-card";
 import { CategoryFilter } from "./category-filter";
 import { Listing } from "@/app/hooks/use-marketplace";
-import { MapPin } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
+import { Input } from "@/app/components/ui/input";
 
 interface FeaturedInventoryProps {
     onRentClick: () => void; // Kept for interface compatibility, though CTA handles navigation now
@@ -17,10 +18,12 @@ const normalize = (str: string) => str.toLowerCase().trim();
 
 export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInventoryProps) => {
     const [selectedCategory, setSelectedCategory] = useState("All");
+    const [searchTerm, setSearchTerm] = useState("");
 
     // Filter Logic:
     // 1. Must be "High Value" (Tier 2 or 3) -> Price > $50 OR Heavy Machinery
     // 2. Must match selected category (if not "All")
+    // 3. Must match search term (if not empty)
     const filteredListings = useMemo(() => {
         return listings
             .filter(tool => {
@@ -29,14 +32,24 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                 const isHighValue = price > 50 || tool.is_high_powered;
                 if (!isHighValue) return false;
 
-                if (selectedCategory === "All") return true;
+                // Category filter
+                if (selectedCategory !== "All") {
+                    const categoryName = normalize(tool.category?.name || "");
+                    if (categoryName !== normalize(selectedCategory)) return false;
+                }
 
-                // Match category name exactly as they now align with DB
-                const categoryName = normalize(tool.category?.name || "");
-                return categoryName === normalize(selectedCategory);
+                // Search filter
+                if (searchTerm) {
+                    const title = normalize(tool.title || "");
+                    const desc = normalize(tool.description || "");
+                    const query = normalize(searchTerm);
+                    if (!title.includes(query) && !desc.includes(query)) return false;
+                }
+
+                return true;
             })
             .slice(0, 6); // Limit to 6 items
-    }, [listings, selectedCategory]);
+    }, [listings, selectedCategory, searchTerm]);
 
     // Optimize: Pre-calculate tool props to maintain referential stability
     // This allows React.memo on FeaturedToolCard to work effectively
@@ -62,8 +75,8 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
             <div className="container mx-auto px-4">
-                <div className="flex flex-col mb-8 gap-6">
-                    <div className="max-w-3xl">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                    <div className="max-w-xl">
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 font-serif tracking-tight">
                             Tools Near You
                         </h2>
@@ -73,7 +86,22 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                         </div>
                     </div>
 
-                    {/* Filter Bar */}
+                    <div className="w-full md:w-80 relative group">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10 group-focus-within:text-safety-orange transition-colors">
+                            <Search className="h-4 w-4" />
+                        </div>
+                        <Input
+                            type="text"
+                            placeholder="Find a specific tool..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="bg-white border-slate-200 pl-10 h-11 focus-visible:ring-safety-orange/20 focus-visible:border-safety-orange transition-all shadow-sm"
+                        />
+                    </div>
+                </div>
+
+                {/* Filter Bar */}
+                <div className="mb-8">
                     <CategoryFilter
                         categories={CATEGORIES}
                         selectedCategory={selectedCategory}
@@ -92,9 +120,15 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                     </div>
                 ) : (
                     <div className="bg-white rounded-lg p-12 text-center border border-dashed border-slate-300">
-                        <p className="text-slate-500 mb-4">No high-value tools found in this category nearby.</p>
-                        <button onClick={() => setSelectedCategory("All")} className="text-safety-orange font-medium hover:underline">
-                            View all categories
+                        <p className="text-slate-500 mb-4">No high-value tools found matching your criteria nearby.</p>
+                        <button
+                            onClick={() => {
+                                setSelectedCategory("All");
+                                setSearchTerm("");
+                            }}
+                            className="text-safety-orange font-medium hover:underline"
+                        >
+                            Reset filters
                         </button>
                     </div>
                 )}

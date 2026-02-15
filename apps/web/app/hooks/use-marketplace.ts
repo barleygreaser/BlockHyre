@@ -252,18 +252,20 @@ export const useMarketplace = () => {
         radius: number,
         minPrice: number,
         maxPrice: number,
-        category?: string
+        category?: string,
+        searchQuery?: string
     ) => {
         try {
             setLoading(true);
-            console.log("Searching listings with params:", { userLat, userLong, radius, minPrice, maxPrice, category });
+            console.log("Searching listings with params:", { userLat, userLong, radius, minPrice, maxPrice, category, searchQuery });
             const { data, error } = await supabase.rpc('search_nearby_listings', {
                 user_lat: userLat,
                 user_long: userLong,
                 radius_miles: radius,
                 min_price: minPrice,
                 max_price: maxPrice,
-                category_filter: category || null
+                category_filter: category || null,
+                search_query: searchQuery || null
             });
 
             if (error) {
