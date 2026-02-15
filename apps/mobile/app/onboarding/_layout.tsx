@@ -7,7 +7,15 @@ export default function OnboardingLayout() {
             <Stack.Screen name="how-it-works" />
             <Stack.Screen name="slides" />
             <Stack.Screen name="permissions" />
-            <Stack.Screen name="login" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="signup" />
+            <Stack.Screen
+                name="login"
+                options={{
+                    presentation: 'transparentModal',
+                    animation: 'none',
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 }

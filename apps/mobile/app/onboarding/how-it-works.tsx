@@ -66,8 +66,8 @@ export default function HowItWorksScreen() {
         if (currentIndex < TOTAL_STEPS - 1) {
             flatListRef.current?.scrollToIndex({ index: currentIndex + 1, animated: true });
         } else {
-            // Complete onboarding and go to main app
-            router.replace('/(tabs)/');
+            // Complete onboarding and go to signup
+            router.push('/onboarding/signup');
         }
     }, [currentIndex, router]);
 

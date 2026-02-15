@@ -14,6 +14,7 @@ import {
     FlatList,
     ViewToken,
     ActivityIndicator,
+    Alert,
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -63,6 +64,7 @@ export default function ListingDetailScreen() {
     const isDark = colorScheme === 'dark';
 
     const [isLiked, setIsLiked] = useState(false);
+    const [user, setUser] = useState<any>(null);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -109,8 +111,83 @@ export default function ListingDetailScreen() {
         },
     }, [calendarY, isScrolled, isCalendarInView]);
 
-    const toggleLike = () => {
+    // Check for user session and favorite status on mount
+    React.useEffect(() => {
+        const checkFavoriteStatus = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                setUser(user);
+
+                if (user) {
+                    const listingId = Array.isArray(id) ? id[0] : id;
+                    // Skip check for mock IDs
+                    if (!listingId || listingId.length < 20) return;
+
+                    const { data, error } = await supabase
+                        .from('favorites')
+                        .select('id')
+                        .eq('user_id', user.id)
+                        .eq('listing_id', listingId)
+                        .maybeSingle(); // Use maybeSingle to avoid error if not found
+
+                    if (!error && data) {
+                        setIsLiked(true);
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking favorite status:', e);
+            }
+        };
+        checkFavoriteStatus();
+    }, [id]);
+
+    const toggleLike = async () => {
+        if (!user) {
+            Alert.alert(
+                'Sign In Required',
+                'Please sign in to save favorites.',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Sign In', onPress: () => router.push('/onboarding') }
+                ]
+            );
+            return;
+        }
+
+        const listingId = Array.isArray(id) ? id[0] : id;
+        if (!listingId || listingId.length < 20) return;
+
+        // Optimistic update
+        const previousState = isLiked;
         setIsLiked(!isLiked);
+
+        try {
+            if (previousState) {
+                // Remove favorite
+                const { error } = await supabase
+                    .from('favorites')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('listing_id', listingId);
+
+                if (error) throw error;
+            } else {
+                // Add favorite
+                const { error } = await supabase
+                    .from('favorites')
+                    .insert({
+                        user_id: user.id,
+                        listing_id: listingId
+                    });
+
+                if (error) throw error;
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+            // Revert on error
+            setIsLiked(previousState);
+            Alert.alert('Error', 'Failed to update favorite. Please try again.');
+        }
     };
 
     const handleShare = () => {

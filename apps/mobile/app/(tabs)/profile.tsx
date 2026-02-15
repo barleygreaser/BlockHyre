@@ -21,6 +21,7 @@ import {
     ChevronRight,
     LogOut,
     Settings,
+    Heart,
 } from 'lucide-react-native';
 import Animated, {
     useSharedValue,
@@ -33,6 +34,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { supabase } from '@/lib/supabase';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 import ProfileFlipCard from '../../components/ProfileFlipCard';
 import ProfileModeToggle from '../../components/ProfileModeToggle';
@@ -68,6 +70,7 @@ export default function ProfileScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isOwner, setIsOwner] = useState(true);
+    const { user: authUser, profile, loading } = useUserProfile();
 
     const scrollY = useSharedValue(0);
 
@@ -130,26 +133,39 @@ export default function ProfileScreen() {
         };
     });
 
-    // Mock user data
+    // Dynamic user data
     const user = {
-        name: 'Christopher R.',
-        verified: true,
-        totalRentals: 8,
-        rating: 5.0,
+        name: profile?.full_name || authUser?.email || 'Guest User',
+        verified: true, // Placeholder until verification logic exists
+        totalRentals: 0, // Placeholder
+        rating: 5.0, // Placeholder
     };
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
+        console.warn("Logout button pressed"); // Warn for visibility
         Alert.alert(
             "Log Out",
             "Are you sure you want to log out?",
             [
-                { text: "Cancel", style: "cancel" },
+                { text: "Cancel", style: "cancel", onPress: () => console.log("Logout cancelled") },
                 {
                     text: "Log Out",
                     style: "destructive",
                     onPress: async () => {
-                        await supabase.auth.signOut();
-                        router.replace('/onboarding/login');
+                        console.log("Logout confirmed, attempting sign out...");
+                        try {
+                            const { error } = await supabase.auth.signOut();
+                            if (error) {
+                                console.error("Error signing out:", error);
+                                Alert.alert("Error", "Failed to log out. Please try again.");
+                                return;
+                            }
+                            console.log("Sign out successful, navigating to /onboarding");
+                            // Reset navigation to the onboarding stack
+                            router.replace('/onboarding');
+                        } catch (err) {
+                            console.error("Unexpected error during logout:", err);
+                        }
                     }
                 }
             ]
@@ -269,18 +285,29 @@ export default function ProfileScreen() {
                 </View>
             </Animated.View>
 
-            {/* Settings Button - Always Visible, always on top */}
-            <TouchableOpacity
+            {/* Header Actions - Favorites & Settings */}
+            <View
                 style={[
-                    styles.settingsButton,
-                    { top: insets.top + (HEADER_HEIGHT - 40) / 2 } // Center vertically in the 44px header space
+                    styles.headerRightContainer,
+                    { top: insets.top + (HEADER_HEIGHT - 40) / 2 }
                 ]}
-                activeOpacity={0.7}
-                onPress={() => router.push('/settings')}
-                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
             >
-                <Settings size={24} color="#111827" />
-            </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => router.push('/favorites')}
+                    activeOpacity={0.7}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <Heart size={24} color="#111827" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => router.push('/settings')}
+                    activeOpacity={0.7}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <Settings size={24} color="#111827" />
+                </TouchableOpacity>
+            </View>
 
         </View>
     );
@@ -330,14 +357,14 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: 'rgba(0,0,0,0.1)',
     },
-    settingsButton: {
+    headerRightContainer: {
         position: 'absolute',
         right: 20,
         zIndex: 20,
-        width: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
         height: 40,
-        justifyContent: 'center',
-        alignItems: 'flex-end',
     },
 
     // ... existing content styles
@@ -392,6 +419,8 @@ const styles = StyleSheet.create({
     logoutSection: {
         marginTop: 32,
         paddingHorizontal: 16,
+        zIndex: 100, // Ensure button is clickable
+        marginBottom: 40, // Extra padding at bottom
     },
     logoutButton: {
         flexDirection: 'row',
