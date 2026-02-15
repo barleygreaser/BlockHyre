@@ -8,6 +8,7 @@ import { Trash2, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { format } from "date-fns";
+import Image from "next/image";
 
 export default function CartPage() {
     const { cart, removeFromCart, clearCart } = useCart();
@@ -45,8 +46,15 @@ export default function CartPage() {
                                 const { finalTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
                                 return (
                                     <div key={item.id} className="bg-white p-4 rounded-lg border border-slate-200 flex gap-4">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={item.image} alt={item.title} className="w-24 h-24 object-cover rounded-md bg-slate-100" />
+                                        <div className="relative w-24 h-24 shrink-0 bg-slate-100 rounded-md overflow-hidden">
+                                            <Image
+                                                src={item.image || `https://placehold.co/200.png?text=${encodeURIComponent(item.title)}`}
+                                                alt={item.title}
+                                                fill
+                                                className="object-cover"
+                                                sizes="96px"
+                                            />
+                                        </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <h3 className="font-bold text-lg text-slate-900">{item.title}</h3>
