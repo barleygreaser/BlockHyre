@@ -8,8 +8,17 @@ import { MobileToolCard } from "@/app/components/mobile-tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { Coordinates } from "@/lib/location";
-import { InventoryFiltersModal } from "@/app/components/inventory/inventory-filters-modal";
-import { SortDrawer } from "@/app/components/inventory/sort-drawer";
+import dynamic from 'next/dynamic';
+
+// Optimization: Lazy load heavy filter modal to reduce initial bundle size and avoid hydration mismatch on mobile/desktop logic
+const InventoryFiltersModal = dynamic(() => import('@/app/components/inventory/inventory-filters-modal').then(mod => mod.InventoryFiltersModal), {
+  ssr: false,
+});
+
+// Optimization: Lazy load sort drawer to reduce initial bundle size
+const SortDrawer = dynamic(() => import('@/app/components/inventory/sort-drawer').then(mod => mod.SortDrawer), {
+  ssr: false,
+});
 import { Search, Filter, X, Zap, Shield, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
