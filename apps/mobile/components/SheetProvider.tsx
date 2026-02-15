@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useRef, useState, useCallback, ReactNode } from 'react';
-import { PremiumSheet, PremiumSheetRef } from './PremiumSheet';
+import Sheet, { SheetRef } from './Sheet';
 
 type SheetContent = ReactNode | null;
 
@@ -23,7 +23,7 @@ interface SheetProviderProps {
 }
 
 export function SheetProvider({ children }: SheetProviderProps) {
-    const sheetRef = useRef<PremiumSheetRef>(null);
+    const sheetRef = useRef<SheetRef>(null);
     const [content, setContent] = useState<SheetContent>(null);
     const [snapPoints, setSnapPoints] = useState<Array<number | string>>(['45%']);
 
@@ -45,9 +45,9 @@ export function SheetProvider({ children }: SheetProviderProps) {
     return (
         <SheetContext.Provider value={{ showSheet, hideSheet }}>
             {children}
-            <PremiumSheet ref={sheetRef} snapPoints={snapPoints}>
+            <Sheet ref={sheetRef} snapPoints={snapPoints}>
                 {content}
-            </PremiumSheet>
+            </Sheet>
         </SheetContext.Provider>
     );
 }
