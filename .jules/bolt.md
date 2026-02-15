@@ -43,3 +43,7 @@
 ## 2024-05-31 - Conversation List Optimization
 **Learning:** Extracting list items into memoized components and stabilizing event handlers in the parent is crucial for performance when the list is long or when the parent re-renders frequently (e.g. on selection change).
 **Action:** When working with lists where items have complex rendering logic or interactivity, always extract the item into a separate memoized component and ensure callback props are stable.
+
+## 2024-06-03 - Responsive Image Optimization
+**Learning:** Using CSS classes like `md:hidden` to toggle between two `next/image` components (e.g., portrait vs landscape) still results in both images being downloaded if `priority` is set, significantly impacting LCP.
+**Action:** Use the `sizes` attribute to instruct the browser to download a minimal placeholder (e.g., `1px` or `1vw`) for the hidden variant based on media queries (e.g., `sizes="(max-width: 767px) 1px, 100vw"` for a desktop-only image).
