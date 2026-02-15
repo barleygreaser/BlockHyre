@@ -12,12 +12,12 @@ import dynamic from 'next/dynamic';
 
 // Optimization: Lazy load heavy filter modal to reduce initial bundle size and avoid hydration mismatch on mobile/desktop logic
 const InventoryFiltersModal = dynamic(() => import('@/app/components/inventory/inventory-filters-modal').then(mod => mod.InventoryFiltersModal), {
-  ssr: false,
+    ssr: false,
 });
 
 // Optimization: Lazy load sort drawer to reduce initial bundle size
 const SortDrawer = dynamic(() => import('@/app/components/inventory/sort-drawer').then(mod => mod.SortDrawer), {
-  ssr: false,
+    ssr: false,
 });
 import { Search, Filter, X, Zap, Shield, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -149,7 +149,6 @@ export default function InventoryPage() {
         // PREVENT SEARCH IF LOCATION ISN'T READY
         if (!locationLoaded) return;
 
-        // Debounce could be added here
         const timer = setTimeout(() => {
             searchListings(
                 userLocation.latitude,
@@ -157,12 +156,13 @@ export default function InventoryPage() {
                 maxDistance,
                 priceRange[0],
                 priceRange[1],
-                undefined // Don't pass category filter to backend - handle all category filtering client-side for instant response
+                undefined, // Don't pass category filter to backend - handle all category filtering client-side for instant response
+                searchQuery
             );
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [maxDistance, priceRange, userLocation, locationLoaded]); // Category filtering is handled client-side, so selectedCategories removed from deps
+    }, [maxDistance, priceRange, userLocation, locationLoaded, searchQuery]); // Added searchQuery to dependencies
 
     // Map Supabase listings to Tool format
     const inventoryTools: (Tool & { tier: number, ownerVerified: boolean })[] = useMemo(() => {
@@ -195,10 +195,6 @@ export default function InventoryPage() {
     // Client-side sorting/filtering
     const filteredTools = useMemo(() => {
         return inventoryTools.filter(tool => {
-            // 1. Search
-            if (searchQuery && !tool.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-                return false;
-            }
             // 2. Protection Tier
             if (selectedTier && tool.tier !== parseInt(selectedTier)) {
                 return false;
