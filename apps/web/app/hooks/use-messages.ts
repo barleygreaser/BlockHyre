@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
@@ -71,7 +71,26 @@ export function useMessages() {
                 throw chatsError;
             }
 
-            // Fetch last message and unread count for each chat
+            // Batch fetch unread counts to avoid N+1 queries
+            const chatIds = (chats || []).map(c => c.id);
+            const unreadCountsMap = new Map<string, number>();
+
+            if (chatIds.length > 0) {
+                const { data: unreadMessages } = await supabase
+                    .from('messages')
+                    .select('chat_id')
+                    .in('chat_id', chatIds)
+                    .eq('is_read', false)
+                    .neq('sender_id', user.id);
+
+                if (unreadMessages) {
+                    unreadMessages.forEach(msg => {
+                        unreadCountsMap.set(msg.chat_id, (unreadCountsMap.get(msg.chat_id) || 0) + 1);
+                    });
+                }
+            }
+
+            // Fetch last message for each chat
             const enrichedChats = await Promise.all(
                 (chats || []).map(async (chat) => {
                     // Get last message (filtered by recipient_id so users see their own system messages)
@@ -84,13 +103,8 @@ export function useMessages() {
                         .limit(1)
                         .single();
 
-                    // Get unread count
-                    const { count: unreadCount } = await supabase
-                        .from('messages')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('chat_id', chat.id)
-                        .eq('is_read', false)
-                        .neq('sender_id', user.id);
+                    // Get unread count from batched map
+                    const unreadCount = unreadCountsMap.get(chat.id) || 0;
 
                     // Determine the other user
                     const otherUser = chat.owner_id === user.id ? chat.renter : chat.owner;
@@ -105,7 +119,7 @@ export function useMessages() {
                         other_user_photo: otherUser?.profile_photo_url,
                         last_message_content: lastMessage?.content,
                         last_message_time: lastMessage?.created_at,
-                        unread_count: unreadCount || 0,
+                        unread_count: unreadCount,
                     };
                 })
             );
