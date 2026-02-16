@@ -49,6 +49,7 @@ import { CalendarView } from '@/components/calendar/CalendarView';
 import { DateRange } from '@/components/calendar/Calendar.props';
 import { lightTheme, darkTheme } from '@/components/calendar/constants';
 import moment from 'moment';
+import { MOCK_TOOLS } from '@/constants/MockData';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HERO_HEIGHT = 340;
@@ -342,18 +343,38 @@ export default function ListingDetailScreen() {
 
             // Handle mock IDs from development data to prevent crashes
             if (listingId.length < 20) {
-                setListing({
-                    id: listingId,
-                    title: 'Mock Tool (Dev Placeholder)',
-                    price: 45,
-                    description: 'This is a placeholder for development mock data. Real listings will load their actual details.',
-                    images: ['https://placehold.co/600x400'],
-                    specs: [{ label: 'Status', value: 'Mock Data' }],
-                    distance: 'N/A',
-                    rating: 5.0,
-                    isVerified: false,
-                    owner: { name: 'System', avatarUrl: 'https://placehold.co/100', responseTime: 'N/A' }
-                });
+                const mockTool = MOCK_TOOLS.find(t => t.id === listingId);
+
+                if (mockTool) {
+                    setListing({
+                        id: mockTool.id,
+                        title: mockTool.title,
+                        price: mockTool.pricePerDay,
+                        description: `This is a demonstration listing for the ${mockTool.title}. It includes all standard features and accessories required for operation.`,
+                        images: [mockTool.image],
+                        specs: [
+                            { label: 'Category', value: mockTool.category },
+                            { label: 'Condition', value: 'Excellent' }
+                        ],
+                        distance: mockTool.distance,
+                        rating: mockTool.rating || 5.0,
+                        isVerified: true,
+                        owner: { name: 'Demo Owner', avatarUrl: 'https://placehold.co/100', responseTime: '< 1hr' }
+                    });
+                } else {
+                    setListing({
+                        id: listingId,
+                        title: 'Mock Tool (Dev Placeholder)',
+                        price: 45,
+                        description: 'This is a placeholder for development mock data. Real listings will load their actual details.',
+                        images: ['https://placehold.co/600x400'],
+                        specs: [{ label: 'Status', value: 'Mock Data' }],
+                        distance: 'N/A',
+                        rating: 5.0,
+                        isVerified: false,
+                        owner: { name: 'System', avatarUrl: 'https://placehold.co/100', responseTime: 'N/A' }
+                    });
+                }
                 setLoading(false);
                 return;
             }
