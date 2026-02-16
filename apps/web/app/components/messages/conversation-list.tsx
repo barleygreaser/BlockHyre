@@ -46,9 +46,43 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                     schema: 'public',
                     table: 'messages',
                 },
-                () => {
-                    // Reload conversations when any message changes
-                    loadConversations(true); // Pass true for background update
+                (payload) => {
+                    // Optimistic update for new messages to avoid full reload storm
+                    if (payload.eventType === 'INSERT') {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const newMsg = payload.new as any;
+                        setConversations((prev) => {
+                            const index = prev.findIndex((c) => c.id === newMsg.chat_id);
+
+                            // If chat not found (new conversation), fallback to full reload
+                            if (index === -1) {
+                                loadConversations(true);
+                                return prev;
+                            }
+
+                            // Create a new array and object to maintain immutability
+                            const newConversations = [...prev];
+                            const updatedChat = { ...newConversations[index] };
+
+                            // Update last message details
+                            updatedChat.last_message_content = newMsg.content;
+                            updatedChat.last_message_time = newMsg.created_at;
+
+                            // Update unread count if message is from someone else
+                            if (newMsg.sender_id !== user.id) {
+                                updatedChat.unread_count = (updatedChat.unread_count || 0) + 1;
+                            }
+
+                            // Move updated chat to top
+                            newConversations.splice(index, 1);
+                            newConversations.unshift(updatedChat);
+
+                            return newConversations;
+                        });
+                    } else {
+                        // For UPDATE (read status) or DELETE, reload to be safe
+                        loadConversations(true);
+                    }
                 }
             )
             .on(
