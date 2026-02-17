@@ -4,6 +4,7 @@ import { memo } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
+import { FavoriteButton } from "@/app/components/favorite-button";
 import { MapPin, AlertTriangle, Zap } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 
@@ -38,6 +39,11 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <FavoriteButton
+                    listingId={tool.id}
+                    variant="overlay"
+                    className="top-3 left-3"
                 />
                 <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
                     {tool.instantBook && (
