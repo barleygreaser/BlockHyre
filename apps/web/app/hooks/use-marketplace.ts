@@ -122,7 +122,6 @@ export const useMarketplace = () => {
                     is_high_powered,
                     accepts_barter,
                     booking_type,
-                    deposit,
                     status,
                     categories (
                         name,
@@ -257,25 +256,43 @@ export const useMarketplace = () => {
     ) => {
         try {
             setLoading(true);
-            console.log("Searching listings with params:", { userLat, userLong, radius, minPrice, maxPrice, category, searchQuery });
-            const { data, error } = await supabase.rpc('search_nearby_listings', {
+
+            // Build RPC params — try with search_query first, fallback without it
+            const baseParams = {
                 user_lat: userLat,
                 user_long: userLong,
                 radius_miles: radius,
                 min_price: minPrice,
                 max_price: maxPrice,
                 category_filter: category || null,
+            };
+
+            let data: any[] | null = null;
+            let error: any = null;
+
+            // Attempt 1: Call with search_query parameter (requires enhanced migration)
+            const result = await supabase.rpc('search_nearby_listings', {
+                ...baseParams,
                 search_query: searchQuery || null
             });
+
+            if (result.error?.code === 'PGRST202') {
+                // Fallback: RPC doesn't have search_query param yet — call without it
+                const fallback = await supabase.rpc('search_nearby_listings', baseParams);
+                data = fallback.data;
+                error = fallback.error;
+            } else {
+                data = result.data;
+                error = result.error;
+            }
 
             if (error) {
                 console.error("Supabase RPC Error Details:", JSON.stringify(error, null, 2));
                 throw error;
             }
-            console.log("RPC Search Results:", data);
 
             // Map RPC result to Listing type
-            const mappedListings: Listing[] = (data as any[]).map(item => ({
+            let mappedListings: Listing[] = (data as any[]).map(item => ({
                 id: item.id,
                 title: item.title,
                 daily_price: item.daily_price,
@@ -294,6 +311,15 @@ export const useMarketplace = () => {
                 distance: item.distance_miles,
                 coordinates: { latitude: item.latitude, longitude: item.longitude }
             }));
+
+            // Client-side text filtering fallback (when RPC doesn't support search_query)
+            if (searchQuery && result.error?.code === 'PGRST202') {
+                const q = searchQuery.toLowerCase();
+                mappedListings = mappedListings.filter(l =>
+                    l.title?.toLowerCase().includes(q) ||
+                    l.description?.toLowerCase().includes(q)
+                );
+            }
 
             setListings(mappedListings);
         } catch (e: any) {

@@ -8,6 +8,15 @@ export function useAuthRedirect(redirectTo: string = "/dashboard") {
     const router = useRouter();
 
     useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                router.push(redirectTo);
+            }
+        };
+
+        checkUser();
+
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
