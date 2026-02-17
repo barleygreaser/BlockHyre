@@ -52,7 +52,7 @@ const GLOBAL_RADIUS_MILES = 20000;
 const DEFAULT_LOCAL_RADIUS = 5.0;
 
 export default function InventoryPage() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading, maybeAuthenticated } = useAuth();
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     // Filters State
@@ -247,21 +247,22 @@ export default function InventoryPage() {
                         {/* PHASE 1: CORE DISCOVERY */}
 
                         {/* Current Location Context */}
-                        {(authLoading || (user && (!locationLoaded || neighborhoodName))) && (
+                        {(maybeAuthenticated || (user && (!locationLoaded || neighborhoodName))) && (
                             <div className="pb-4 border-b border-slate-200">
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">My Neighborhood</h3>
-                                {(authLoading || !locationLoaded) ? (
+                                {(!user || !locationLoaded) ? (
                                     <div className="flex items-center">
                                         <Skeleton className="h-5 w-3/4 rounded-sm" />
                                     </div>
-                                ) : (
+                                ) : neighborhoodName ? (
                                     <div className="flex items-center text-slate-800 font-medium">
                                         <MapPin className="w-4 h-4 mr-1 text-safety-orange" />
                                         {neighborhoodName}
                                     </div>
-                                )}
+                                ) : null}
                             </div>
                         )}
+
 
                         {/* Search */}
                         <div>

@@ -8,6 +8,8 @@ type AuthContextType = {
     user: User | null;
     session: Session | null;
     loading: boolean;
+    /** Synchronous hint: true if a Supabase session token exists in storage. False means definitely a guest. */
+    maybeAuthenticated: boolean;
     signUp: (email: string, password: string, fullName: string) => Promise<any>;
     signIn: (email: string, password: string) => Promise<any>;
     signOut: () => Promise<void>;
@@ -15,10 +17,27 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Synchronously checks localStorage for a Supabase auth token.
+ * Returns true if a token exists (user might be logged in), false if definitely a guest.
+ * This runs before any async calls, eliminating skeleton flash for guests.
+ */
+const getInitialAuthHint = (): boolean => {
+    if (typeof window === 'undefined') return false;
+    try {
+        // Supabase stores session under a key like: sb-<project-ref>-auth-token
+        const keys = Object.keys(localStorage);
+        return keys.some(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
+    } catch {
+        return false;
+    }
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
+    const [maybeAuthenticated] = useState(getInitialAuthHint);
 
     useEffect(() => {
         // Check active session
@@ -78,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+        <AuthContext.Provider value={{ user, session, loading, maybeAuthenticated, signUp, signIn, signOut }}>
             {children}
         </AuthContext.Provider>
     );
