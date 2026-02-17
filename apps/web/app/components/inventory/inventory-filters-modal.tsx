@@ -40,8 +40,9 @@ interface InventoryFiltersModalProps {
     // Toggles
     acceptsBarterOnly: boolean;
     setAcceptsBarterOnly: (val: boolean) => void;
-    instantBookOnly: boolean;
     setInstantBookOnly: (val: boolean) => void;
+    // Config
+    showDistanceFilter?: boolean;
 }
 
 export function InventoryFiltersModal(props: InventoryFiltersModalProps) {
@@ -130,7 +131,8 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
         setAcceptsBarterOnly,
         instantBookOnly,
         setInstantBookOnly,
-        isDesktop
+        isDesktop,
+        showDistanceFilter = true
     } = props;
 
     // Sort categories
@@ -153,26 +155,28 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             </section>
 
             {/* Location / Radius */}
-            <section className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                    <Label className="font-bold text-slate-900">Search Radius</Label>
-                    <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
-                        {maxDistance} miles
-                    </span>
-                </div>
-                <Slider
-                    min={0.5}
-                    max={20}
-                    step={0.5}
-                    value={[maxDistance]}
-                    onValueChange={(val) => setMaxDistance(val[0])}
-                    className="w-full"
-                />
-                <div className="flex justify-between text-xs text-slate-400 mt-2">
-                    <span>0.5 mi</span>
-                    <span>20 mi</span>
-                </div>
-            </section>
+            {showDistanceFilter && (
+                <section className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <Label className="font-bold text-slate-900">Search Radius</Label>
+                        <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
+                            {maxDistance} miles
+                        </span>
+                    </div>
+                    <Slider
+                        min={0.5}
+                        max={20}
+                        step={0.5}
+                        value={[maxDistance]}
+                        onValueChange={(val) => setMaxDistance(val[0])}
+                        className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-slate-400 mt-2">
+                        <span>0.5 mi</span>
+                        <span>20 mi</span>
+                    </div>
+                </section>
+            )}
 
             {/* Categories */}
             <section className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
