@@ -54,9 +54,6 @@ export const ConversationListItem = memo(({ chat, isSelected, onSelect }: Conver
                             </Badge>
                         )}
                     </div>
-                    <p className="text-xs text-slate-500 mb-1 truncate">
-                        {chat.listing_title}
-                    </p>
                     {chat.last_message_content && (
                         <div className="flex items-center justify-between gap-2">
                             <p className="text-sm text-slate-600 flex-1 min-w-0 truncate">
