@@ -247,14 +247,14 @@ export default function InventoryPage() {
                         {/* PHASE 1: CORE DISCOVERY */}
 
                         {/* Current Location Context */}
-                        {user && (
+                        {(authLoading || (user && (!locationLoaded || neighborhoodName))) && (
                             <div className="pb-4 border-b border-slate-200">
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">My Neighborhood</h3>
-                                {!locationLoaded ? (
+                                {(authLoading || !locationLoaded) ? (
                                     <div className="flex items-center">
                                         <Skeleton className="h-5 w-3/4 rounded-sm" />
                                     </div>
-                                ) : neighborhoodName && (
+                                ) : (
                                     <div className="flex items-center text-slate-800 font-medium">
                                         <MapPin className="w-4 h-4 mr-1 text-safety-orange" />
                                         {neighborhoodName}
