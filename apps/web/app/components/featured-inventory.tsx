@@ -4,8 +4,9 @@ import { useState, useMemo, memo } from "react";
 import { FeaturedToolCard } from "./featured-tool-card";
 import { CategoryFilter } from "./category-filter";
 import { Listing } from "@/app/hooks/use-marketplace";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search, Globe } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
+import { useAuth } from "@/app/context/auth-context";
 
 interface FeaturedInventoryProps {
     onRentClick: () => void; // Kept for interface compatibility, though CTA handles navigation now
@@ -17,6 +18,7 @@ const CATEGORIES = ["All", "Harvest", "Heavy Machinery", "Small Power Tools", "H
 const normalize = (str: string) => str.toLowerCase().trim();
 
 export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInventoryProps) => {
+    const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -78,11 +80,20 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
                     <div className="max-w-xl">
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 font-serif tracking-tight">
-                            Tools Near You
+                            {user ? "Tools Near You" : "Recent Listings"}
                         </h2>
                         <div className="flex items-center gap-2 mt-3 text-slate-600 font-medium">
-                            <MapPin className="h-4 w-4 text-safety-orange" />
-                            <p>Showing tools within 2 miles of <span className="text-slate-900 underline decoration-dotted underline-offset-4 cursor-help" title="Based on your verified address">Verified Address</span></p>
+                            {user ? (
+                                <>
+                                    <MapPin className="h-4 w-4 text-safety-orange" />
+                                    <p>Showing tools within 2 miles of <span className="text-slate-900 underline decoration-dotted underline-offset-4 cursor-help" title="Based on your verified address">Verified Address</span></p>
+                                </>
+                            ) : (
+                                <>
+                                    <Globe className="h-4 w-4 text-safety-orange" />
+                                    <p className="flex items-center gap-1">Showing active listings from everywhere</p>
+                                </>
+                            )}
                         </div>
                     </div>
 
@@ -120,7 +131,11 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                     </div>
                 ) : (
                     <div className="bg-white rounded-lg p-12 text-center border border-dashed border-slate-300">
-                        <p className="text-slate-500 mb-4">No high-value tools found matching your criteria nearby.</p>
+                        <p className="text-slate-500 mb-4">
+                            {user
+                                ? "No high-value tools found matching your criteria nearby."
+                                : "No high-value tools found matching your criteria."}
+                        </p>
                         <button
                             onClick={() => {
                                 setSelectedCategory("All");
