@@ -22,36 +22,46 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
 
+    // Optimization: Pre-calculate normalized fields to avoid O(N*M) string ops during filtering
+    const normalizedListings = useMemo(() => {
+        return listings.map(tool => ({
+            ...tool,
+            normTitle: normalize(tool.title || ""),
+            normDesc: normalize(tool.description || ""),
+            normCategory: normalize(tool.category?.name || ""),
+            price: Number(tool.daily_price)
+        }));
+    }, [listings]);
+
     // Filter Logic:
     // 1. Must be "High Value" (Tier 2 or 3) -> Price > $50 OR Heavy Machinery
     // 2. Must match selected category (if not "All")
     // 3. Must match search term (if not empty)
     const filteredListings = useMemo(() => {
-        return listings
+        // Pre-calculate filter values once per render
+        const normSelectedCategory = selectedCategory !== "All" ? normalize(selectedCategory) : null;
+        const normSearchTerm = searchTerm ? normalize(searchTerm) : null;
+
+        return normalizedListings
             .filter(tool => {
                 // Tier 2+ check (Change logic here if "Tier 2" definition changes)
-                const price = Number(tool.daily_price);
-                const isHighValue = price > 50 || tool.is_high_powered;
+                const isHighValue = tool.price > 50 || tool.is_high_powered;
                 if (!isHighValue) return false;
 
                 // Category filter
-                if (selectedCategory !== "All") {
-                    const categoryName = normalize(tool.category?.name || "");
-                    if (categoryName !== normalize(selectedCategory)) return false;
+                if (normSelectedCategory) {
+                    if (tool.normCategory !== normSelectedCategory) return false;
                 }
 
                 // Search filter
-                if (searchTerm) {
-                    const title = normalize(tool.title || "");
-                    const desc = normalize(tool.description || "");
-                    const query = normalize(searchTerm);
-                    if (!title.includes(query) && !desc.includes(query)) return false;
+                if (normSearchTerm) {
+                    if (!tool.normTitle.includes(normSearchTerm) && !tool.normDesc.includes(normSearchTerm)) return false;
                 }
 
                 return true;
             })
             .slice(0, 6); // Limit to 6 items
-    }, [listings, selectedCategory, searchTerm]);
+    }, [normalizedListings, selectedCategory, searchTerm]);
 
     // Optimize: Pre-calculate tool props to maintain referential stability
     // This allows React.memo on FeaturedToolCard to work effectively
