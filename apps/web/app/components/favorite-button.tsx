@@ -63,7 +63,7 @@ export function FavoriteButton({
             <button
                 onClick={handleClick}
                 className={cn(
-                    "group/fav absolute z-10 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
+                    "group/fav absolute z-10 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
                     "bg-black/30 backdrop-blur-sm hover:bg-black/50",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80",
                     className
@@ -79,7 +79,7 @@ export function FavoriteButton({
             >
                 <Heart
                     className={cn(
-                        "h-5 w-5 transition-all duration-200",
+                        "h-4 w-4 transition-all duration-200",
                         favorited
                             ? "fill-red-500 text-red-500"
                             : "fill-transparent text-white group-hover/fav:text-red-300",
