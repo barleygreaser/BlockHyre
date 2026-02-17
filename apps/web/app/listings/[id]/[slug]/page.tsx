@@ -25,6 +25,7 @@ import {
     Pencil,
     BarChart2,
     Eye,
+    Heart,
     MessageSquare
 } from "lucide-react";
 import { addDays, differenceInDays } from "date-fns";
@@ -42,6 +43,7 @@ import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 import { upsertConversation } from "@/app/lib/chat-helpers";
+import { FavoriteButton } from "@/app/components/favorite-button";
 import { toast } from "sonner";
 
 export default function ListingDetailsPage() {
@@ -176,18 +178,11 @@ export default function ListingDetailsPage() {
 
         return {
             tool_name: listing.title,
+            owner_name: listing.owner?.full_name || 'the owner',
             renter_name: user.user_metadata?.full_name || user.email || 'A neighbor',
             start_date: dateRange?.from?.toLocaleDateString() || 'TBD',
             end_date: dateRange?.to?.toLocaleDateString() || 'TBD',
             total_cost: totalDue.toFixed(2),
-            // The link the owner clicks to view the request/chat. 
-            // Since we don't have the chat ID yet, we can't deep link to the specific chat easily 
-            // UNLESS we assume the link will be generated after chat creation? 
-            // In chat-helpers, we generate the message AFTER creating the chat.
-            // But we pass the context IN. 
-            // Let's pass a placeholder or base URL, and let the helper or the template handle it?
-            // Actually, currently `sendSystemMessage` uses the context as is.
-            // Let's use a generic link to the messages page for now, or the dashboard.
             owner_notes_link: `${window.location.origin}/messages`
         };
     };
@@ -279,6 +274,11 @@ export default function ListingDetailsPage() {
                                         Heavy Machinery
                                     </div>
                                 )}
+                                <FavoriteButton
+                                    listingId={listing.id}
+                                    variant="overlay"
+                                    className="top-4 right-4"
+                                />
                             </div>
 
                             {listing.images && listing.images.length > 1 && (

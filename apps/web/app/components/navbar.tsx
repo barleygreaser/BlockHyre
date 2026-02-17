@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "./ui/button";
-import { Shield, ShoppingCart, Menu, X, MessageSquare, User } from "lucide-react";
+import { Shield, ShoppingCart, Menu, X, MessageSquare, User, Heart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { getUserDisplayName } from "@/lib/utils";
@@ -194,6 +194,14 @@ export function Navbar() {
                                                 >
                                                     My Rentals
                                                 </Link>
+                                                <Link
+                                                    href="/favorites"
+                                                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                >
+                                                    <Heart className="h-4 w-4 text-red-400" />
+                                                    My Favorites
+                                                </Link>
                                                 <button
                                                     onClick={() => {
                                                         handleSignOut();
@@ -349,6 +357,10 @@ export function Navbar() {
                                         </Link>
                                         <Link href="/my-rentals" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             My Rentals
+                                        </Link>
+                                        <Link href="/favorites" className="flex items-center gap-2 py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Heart className="h-5 w-5 text-red-400" />
+                                            My Favorites
                                         </Link>
                                         <Link href="/profile" className="py-3 text-lg font-medium text-slate-700 hover:text-safety-orange border-b border-slate-50" onClick={() => setIsMobileMenuOpen(false)}>
                                             Profile
