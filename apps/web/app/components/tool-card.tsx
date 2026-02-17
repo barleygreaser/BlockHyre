@@ -1,9 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { memo } from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
 import { FavoriteButton } from "@/app/components/favorite-button";
 import { MapPin, AlertTriangle, Zap } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
@@ -31,8 +30,8 @@ interface ToolCardProps {
 
 export const ToolCard = memo(({ tool }: ToolCardProps) => {
     return (
-        <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-200 flex flex-col h-full">
-            <div className="aspect-video w-full bg-slate-100 relative group">
+        <Card className="relative overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-200 flex flex-col h-full group">
+            <div className="aspect-video w-full bg-slate-100 relative">
                 <Image
                     src={tool.image}
                     alt={tool.title}
@@ -43,29 +42,29 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                 <FavoriteButton
                     listingId={tool.id}
                     variant="overlay"
-                    className="top-3 left-3"
+                    className="top-3 left-3 z-20"
                 />
-                <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
+                <div className="absolute top-3 right-3 flex flex-col gap-1 items-end pointer-events-none">
                     {tool.instantBook && (
-                        <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white flex items-center gap-1 border-none animate-glow">
+                        <Badge className="bg-yellow-500 text-white flex items-center gap-1 border-none animate-glow pointer-events-auto">
                             <Zap className="h-3 w-3 fill-white" />
                             Instant Book
                         </Badge>
                     )}
                     {tool.isHeavyMachinery && (
-                        <Badge variant="destructive" className="flex items-center gap-1 shadow-sm">
+                        <Badge variant="destructive" className="flex items-center gap-1 shadow-sm pointer-events-auto">
                             <AlertTriangle className="h-3 w-3" />
                             Heavy Machinery
                         </Badge>
                     )}
                     {tool.acceptsBarter && (
-                        <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 shadow-sm border-none">
+                        <Badge className="bg-emerald-600 text-white flex items-center gap-1 shadow-sm border-none pointer-events-auto">
                             🍓 Accepts Barter
                         </Badge>
                     )}
                 </div>
 
-                <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-slate-900 flex items-center gap-1">
+                <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-slate-900 flex items-center gap-1 pointer-events-none">
                     <MapPin className="h-3 w-3 text-safety-orange" />
                     {tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}
                 </div>
@@ -80,7 +79,7 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                 </p>
             </CardHeader>
 
-            <CardContent className="p-4 pt-0 flex-grow">
+            <CardContent className="p-4 pt-0 pb-4 flex-grow">
                 <div className="flex items-baseline gap-1 mt-2">
                     <span className="text-2xl font-bold text-safety-orange">${tool.price}</span>
                     <span className="text-sm text-slate-500">/day</span>
@@ -90,13 +89,13 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                 </p>
             </CardContent>
 
-            <CardFooter className="p-4 pt-0">
-                <Link href={`/listings/${tool.id}/${generateSlug(tool.title)}`} className="w-full cursor-pointer">
-                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white">
-                        View Details
-                    </Button>
-                </Link>
-            </CardFooter>
+            <Link
+                href={`/listings/${tool.id}/${generateSlug(tool.title)}`}
+                className="absolute inset-0 z-10"
+                aria-label={`View details for ${tool.title}`}
+            >
+                <span className="sr-only">View Details</span>
+            </Link>
         </Card>
     );
 });
