@@ -477,7 +477,7 @@ export default function InventoryPage() {
                             <>
                                 {/* Mobile List View */}
                                 {!isDesktop && (
-                                    <div className="space-y-6">
+                                    <div className="space-y-3">
                                         {filteredTools.map(tool => (
                                             <MobileToolCard key={tool.id} tool={tool} />
                                         ))}
