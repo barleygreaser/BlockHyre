@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { memo } from "react";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Card } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { FavoriteButton } from "@/app/components/favorite-button";
 import { MapPin, AlertTriangle, Zap } from "lucide-react";
@@ -36,7 +36,7 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                     src={tool.image}
                     alt={tool.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, (max-width: 1600px) 33vw, 25vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <FavoriteButton
@@ -46,48 +46,48 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                 />
                 <div className="absolute top-3 right-3 flex flex-col gap-1 items-end pointer-events-none">
                     {tool.instantBook && (
-                        <Badge className="bg-yellow-500 text-white flex items-center gap-1 border-none animate-glow pointer-events-auto">
+                        <Badge className="bg-yellow-500 text-white flex items-center gap-1 border-none animate-glow pointer-events-auto px-1.5 py-0.5 text-[10px]">
                             <Zap className="h-3 w-3 fill-white" />
-                            Instant Book
-                        </Badge>
-                    )}
-                    {tool.isHeavyMachinery && (
-                        <Badge variant="destructive" className="flex items-center gap-1 shadow-sm pointer-events-auto">
-                            <AlertTriangle className="h-3 w-3" />
-                            Heavy Machinery
-                        </Badge>
-                    )}
-                    {tool.acceptsBarter && (
-                        <Badge className="bg-emerald-600 text-white flex items-center gap-1 shadow-sm border-none pointer-events-auto">
-                            🍓 Accepts Barter
+                            Instant
                         </Badge>
                     )}
                 </div>
 
-                <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-slate-900 flex items-center gap-1 pointer-events-none">
-                    <MapPin className="h-3 w-3 text-safety-orange" />
-                    {tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}
-                </div>
+                {tool.distance && (
+                    <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-medium text-white flex items-center gap-1 pointer-events-none">
+                        <MapPin className="h-3 w-3" />
+                        {tool.distance.toFixed(1)} mi
+                    </div>
+                )}
             </div>
 
-            <CardHeader className="p-4 pb-2">
-                <h3 className="font-bold text-lg text-slate-900 line-clamp-1" title={tool.title}>
-                    {tool.title}
-                </h3>
-                <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">
-                    {tool.category}
-                </p>
-            </CardHeader>
-
-            <CardContent className="p-4 pt-0 pb-4 flex-grow">
-                <div className="flex items-baseline gap-1 mt-2">
-                    <span className="text-2xl font-bold text-safety-orange">${tool.price}</span>
-                    <span className="text-sm text-slate-500">/day</span>
+            <div className="p-3 flex flex-col flex-grow gap-1">
+                <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-semibold text-base text-slate-900 line-clamp-2 leading-tight flex-1" title={tool.title}>
+                        {tool.title}
+                    </h3>
+                    <div className="flex flex-col items-end flex-shrink-0">
+                        <span className="font-bold text-lg text-slate-900">${tool.price}</span>
+                        <span className="text-[10px] text-slate-500 font-medium uppercase">/day</span>
+                    </div>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">
-                    + ${tool.deposit} refundable deposit
+
+                <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
+                    <span className="font-medium bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 truncate max-w-[120px]">
+                        {tool.category}
+                    </span>
+                    {(tool.isHeavyMachinery || tool.acceptsBarter) && (
+                        <div className="flex gap-1">
+                            {tool.isHeavyMachinery && <AlertTriangle className="h-3 w-3 text-amber-500" />}
+                            {tool.acceptsBarter && <span className="text-[10px]">🍓</span>}
+                        </div>
+                    )}
+                </div>
+
+                <p className="text-[10px] text-slate-400 mt-auto pt-2 border-t border-slate-100">
+                    + ${tool.deposit} deposit
                 </p>
-            </CardContent>
+            </div>
 
             <Link
                 href={`/listings/${tool.id}/${generateSlug(tool.title)}`}
