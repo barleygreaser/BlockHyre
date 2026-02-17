@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { DAY_SIZE, SCREEN_WIDTH } from "./constants";
 
 export const calenderStyles = StyleSheet.create({
   container: {
@@ -233,7 +232,6 @@ export const calenderStyles = StyleSheet.create({
     marginBottom: 16,
   },
   dayHeaderText: {
-    width: DAY_SIZE,
     textAlign: "center",
     fontSize: 14,
     fontWeight: "700",
@@ -245,8 +243,6 @@ export const calenderStyles = StyleSheet.create({
     gap: 2,
   },
   dayCell: {
-    width: DAY_SIZE - 2,
-    height: DAY_SIZE - 2,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 12,
@@ -309,8 +305,6 @@ export const calenderStyles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   yearCell: {
-    width: (SCREEN_WIDTH - 120) / 3,
-    height: 64,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 14,

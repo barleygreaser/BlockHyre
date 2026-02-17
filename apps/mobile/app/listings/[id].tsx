@@ -15,6 +15,7 @@ import {
     ViewToken,
     ActivityIndicator,
     Alert,
+    useWindowDimensions,
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -50,13 +51,13 @@ import { DateRange } from '@/components/calendar/Calendar.props';
 import { lightTheme, darkTheme } from '@/components/calendar/constants';
 import moment from 'moment';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HERO_HEIGHT = 340;
 const HEADER_TRANSITION_POINT = 280;
 
 // Mock data removed - fetching from DB
 
 export default function ListingDetailScreen() {
+    const { width, height } = useWindowDimensions();
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -103,13 +104,13 @@ export default function ListingDetailScreen() {
             if (calendarY > 0) {
                 // Adjust for hero height and overlap
                 const verticalOffset = HERO_HEIGHT - 24;
-                const isInView = (event.contentOffset.y + SCREEN_HEIGHT) > (calendarY + verticalOffset + 100);
+                const isInView = (event.contentOffset.y + height) > (calendarY + verticalOffset + 100);
                 if (isInView !== isCalendarInView) {
                     runOnJS(setIsCalendarInView)(isInView);
                 }
             }
         },
-    }, [calendarY, isScrolled, isCalendarInView]);
+    }, [calendarY, isScrolled, isCalendarInView, height]);
 
     // Check for user session and favorite status on mount
     React.useEffect(() => {
@@ -553,7 +554,7 @@ export default function ListingDetailScreen() {
                         onViewableItemsChanged={onViewableItemsChanged}
                         keyExtractor={(item, index) => `image-${index}`}
                         renderItem={({ item }) => (
-                            <View style={styles.imageSlide}>
+                            <View style={[styles.imageSlide, { width }]}>
                                 <Image
                                     source={item}
                                     style={styles.heroImage}
@@ -589,7 +590,7 @@ export default function ListingDetailScreen() {
                 </Animated.View>
 
                 {/* Content Body - Scrolls over the static image */}
-                <View style={[styles.contentBody, isDark && styles.contentBodyDark]}>
+                <View style={[styles.contentBody, isDark && styles.contentBodyDark, { minHeight: height }]}>
                     {/* Title & Stats */}
                     <View style={styles.titleSection}>
                         <View style={styles.titleRow}>
@@ -877,7 +878,6 @@ const styles = StyleSheet.create({
         marginBottom: -24, // Allow content to overlap by 24px
     },
     imageSlide: {
-        width: SCREEN_WIDTH,
         height: HERO_HEIGHT,
     },
     heroImage: {

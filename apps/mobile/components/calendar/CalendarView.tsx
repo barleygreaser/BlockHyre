@@ -17,6 +17,7 @@ import {
   ScrollView,
   FlatList,
   Modal,
+  useWindowDimensions,
 } from "react-native";
 import moment from "moment";
 import Animated, {
@@ -90,7 +91,8 @@ const CalendarDay = memo<{
   onPress: (date: string) => void;
   theme: typeof darkTheme;
   disabled: boolean;
-}>(({ item, onPress, theme, disabled }) => {
+  size: number;
+}>(({ item, onPress, theme, disabled, size }) => {
   const handlePress = useCallback(() => {
     if (!disabled) {
       onPress(item.date);
@@ -100,6 +102,7 @@ const CalendarDay = memo<{
   const dayStyle = useMemo(
     () => [
       styles.dayCell,
+      { width: size - 2, height: size - 2 },
       (!item.isCurrentMonth && !item.isSelected && !item.isInRange) && { opacity: 0.3 },
       item.isToday && {
         backgroundColor: theme.mutedForeground + "20",
@@ -208,12 +211,15 @@ const YearCell = memo<{
   isSelected: boolean;
   onPress: (year: number) => void;
   theme: typeof darkTheme;
-}>(({ year, isSelected, onPress, theme }) => {
+  width: number;
+  height: number;
+}>(({ year, isSelected, onPress, theme, width, height }) => {
   const handlePress = useCallback(() => onPress(year), [onPress, year]);
 
   const cellStyle = useMemo(
     () => [
       styles.yearCell,
+      { width, height },
       { backgroundColor: theme.muted, borderColor: theme.border },
       isSelected && {
         backgroundColor: theme.primary,
@@ -444,6 +450,12 @@ export const CalendarView = forwardRef<CalendarViewRef, CalendarViewProps>(
     },
     ref,
   ) => {
+    const { width: windowWidth } = useWindowDimensions();
+    // DAY_SIZE calculation from constants: (SCREEN_WIDTH - 90) / 7
+    // We recreate it here dynamically
+    const daySize = (windowWidth - 90) / 7;
+    const yearCellWidth = (windowWidth - 120) / 3;
+
     const theme = useMemo(
       () => ({ ...darkTheme, ...customTheme }),
       [customTheme],
@@ -856,7 +868,7 @@ export const CalendarView = forwardRef<CalendarViewRef, CalendarViewProps>(
             {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
               <Text
                 key={day}
-                style={[styles.dayHeaderText, { color: theme.mutedForeground }]}
+                style={[styles.dayHeaderText, { width: daySize, color: theme.mutedForeground }]}
               >
                 {day}
               </Text>
@@ -875,6 +887,7 @@ export const CalendarView = forwardRef<CalendarViewRef, CalendarViewProps>(
                   (calendarMode !== "date" && calendarMode !== "time") ||
                   isDateDisabled(item.date)
                 }
+                size={daySize}
               />
             ))}
           </View>
@@ -985,20 +998,16 @@ export const CalendarView = forwardRef<CalendarViewRef, CalendarViewProps>(
             isSelected={currentMonth.year() === item}
             onPress={handleYearSelect}
             theme={theme}
+            width={yearCellWidth}
+            height={64}
           />
         </ScrollView>
       ),
       [currentMonth, handleYearSelect, theme],
     );
 
-    const getYearItemLayout = useCallback(
-      (data: any, index: number) => ({
-        length: 76,
-        offset: 76 * index,
-        index,
-      }),
-      [],
-    );
+    // getItemLayout removed to support dynamic sizing
+    /* const getYearItemLayout = useCallback... */
 
     const renderYearView = useCallback(
       () => (
@@ -1072,7 +1081,7 @@ export const CalendarView = forwardRef<CalendarViewRef, CalendarViewProps>(
               maxToRenderPerBatch={15}
               windowSize={10}
               initialNumToRender={15}
-              getItemLayout={getYearItemLayout}
+            /* getItemLayout={getYearItemLayout} */
             />
           </View>
         </View>
@@ -1080,7 +1089,7 @@ export const CalendarView = forwardRef<CalendarViewRef, CalendarViewProps>(
       [
         filteredYears,
         renderYearItem,
-        getYearItemLayout,
+        /* getYearItemLayout, */
         theme,
         calendarMode,
         hideCalendar,

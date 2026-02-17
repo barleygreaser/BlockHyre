@@ -10,7 +10,8 @@ BlockHyre Mobile is a native iOS and Android application built using **React Nat
 - **Backend**: Supabase (PostgreSQL + Auth)
 - **State Management**: React Hooks (`useState`, `useEffect`, `useContext`)
 - **Styling**: Native `StyleSheet`, `react-native-safe-area-context`
-- **UI Components**: Custom components, `lucide-react-native` for icons
+- **UI Components**: Custom components, `lucide-react-native` for icons, `expo-symbols` for native iOS SF Symbols
+- **Navigation (Mobile)**: `@bottom-tabs/react-navigation` (Native System Tabs)
 - **Animations**: `react-native-reanimated`
 
 ## 2. Project Structure (`apps/mobile`)
@@ -47,7 +48,7 @@ apps/mobile/
 - **File-Based Routing**: The folder structure in `app/` directly maps to navigation routes.
 - **Stacks & Tabs**: 
   - The root `_layout.tsx` defines a Stack Navigator.
-  - The `(tabs)` folder defines the main Tab Navigator (Explore, Favorites, Profile).
+  - The `(tabs)` folder defines the main Tab Navigator using **Native System Tabs** on mobile and standard JS Tabs on web.
 - **Dynamic Routes**: `app/listings/[id].tsx` handles dynamic routing for individual listing pages.
 - **Navigation Loop Prevention**: When navigating from a Stack screen (like Favorites) back to a main Tab (like Explore), always use `router.dismiss()` followed by `router.replace('/(tabs)/')` to prevent building an infinite navigation stack.
 
@@ -86,12 +87,22 @@ apps/mobile/
       android_keyboardInputMode="adjustResize"
       ```
   - **Programmatic Control**: Use `ref.current?.close()` or `dismiss()` for navigation logic (e.g., after successful login) rather than conditionally unmounting the component, to ensure exit animations play correctly.
+
+### D. Premium Native Visuals (Liquid Glass)
+- **Native Tabs**: Uses `@bottom-tabs/react-navigation` to leverage platform-native navigation primitives (UITabBar on iOS).
+- **Translucency**: `translucent: true` is enabled in `(tabs)/_layout.tsx` to achieve the native iOS "Liquid Glass" material effect where content scrolls behind the tab bar.
+- **SF Symbols**: Integrates `expo-symbols` for high-fidelity native icons on iOS that respect system tinting and translucency.
   - **Conflict Resolution**: Since this is a monorepo, `react-native-gesture-handler` MUST be aliased in `metro.config.js` to point EXCLUSIVELY to the root `node_modules`.
 
 ## 5. Development Strategy
-- **Hybrid Data Approach**: The app currently supports both **Real DB Data** and **Mock Data (Fallback)**.
-  - This allows UI development to proceed even if the backend is empty or offline.
   - `listings/[id].tsx` includes a specific check for "Mock IDs" (short non-UUID strings) to render dummy data safely.
+
+### B. Development Environment (Windows vs Mac)
+- **Development Builds (NOT Expo Go)**: This project includes native dependencies (`@bottom-tabs/react-navigation`). You **MUST** use a Development Build; it will not run in the standard Expo Go app.
+- **Cross-Platform Strategy**:
+  - **Windows (Web)**: Run `npm run web` for rapid development of UI and logic. The tabs will fallback to standard JS components.
+  - **Mac (iOS)**: Run `npx expo run:ios` to verify native aesthetics, haptics, and SF Symbols.
+  - **Windows (iOS Device)**: Run `eas build --profile development --platform ios` to build in the cloud and test on a physical iPhone.
 
 ## 6. Monorepo & Configuration Gotchas
 - **Duplicate Native Modules**: 
