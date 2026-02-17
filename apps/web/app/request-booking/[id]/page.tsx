@@ -52,11 +52,10 @@ export default function RequestBookingPage() {
                 .maybeSingle();
 
             if (existingRental) {
-                // Find the chat to redirect to
+                // Find the chat to redirect to (match by user pair only)
                 const { data: chat } = await supabase
                     .from('chats')
                     .select('id')
-                    .eq('listing_id', listing.id)
                     .eq('renter_id', user.id)
                     .eq('owner_id', listing.owner_id)
                     .maybeSingle();
@@ -126,14 +125,13 @@ export default function RequestBookingPage() {
 
             if (rentalError) throw rentalError;
 
-            // Step 2: Create or get chat thread between renter and owner
+            // Step 2: Create or get chat thread between renter and owner (one chat per user pair)
             const { data: existingChat } = await supabase
                 .from('chats')
                 .select('id')
-                .eq('listing_id', listing.id)
                 .eq('owner_id', listing.owner_id)
                 .eq('renter_id', user.id)
-                .single();
+                .maybeSingle();
 
             let chatId = existingChat?.id;
 
