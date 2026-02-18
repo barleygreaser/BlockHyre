@@ -268,14 +268,13 @@ export function OwnerDashboardView() {
                     // Continue anyway, just use defaults
                 }
 
-                // Get or create chat for this rental
+                // Get or create chat for this user pair
                 const { data: existingChat } = await supabase
                     .from('chats')
                     .select('id')
-                    .eq('listing_id', rentalData.listing_id)
                     .eq('owner_id', rentalData.owner_id)
                     .eq('renter_id', rentalData.renter_id)
-                    .single();
+                    .maybeSingle();
 
                 let chatId = existingChat?.id;
 
@@ -381,14 +380,13 @@ export function OwnerDashboardView() {
                 .single();
 
             if (!rentalError && rentalData) {
-                // Get or create chat
+                // Get or create chat (match by user pair only)
                 const { data: existingChat } = await supabase
                     .from('chats')
                     .select('id')
-                    .eq('listing_id', rentalData.listing_id)
                     .eq('owner_id', rentalData.owner_id)
                     .eq('renter_id', rentalData.renter_id)
-                    .single();
+                    .maybeSingle();
 
                 let chatId = existingChat?.id;
 

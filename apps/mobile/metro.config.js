@@ -31,13 +31,10 @@ function escapeRegExp(string) {
 }
 
 const gestureHandlerPath = path.resolve(projectRoot, 'node_modules', 'react-native-gesture-handler');
-const safeAreaContextPath = path.resolve(projectRoot, 'node_modules', 'react-native-safe-area-context');
 
-// We can block them if they match the *project* node_modules path
-// Note: windows paths use backslashes, so we need to be careful with regex
+// Block the *local* node_modules path for gesture-handler so Metro only sees the root one.
 config.resolver.blockList = exclusionList([
     new RegExp(`${escapeRegExp(gestureHandlerPath)}.*`),
-    new RegExp(`${escapeRegExp(safeAreaContextPath)}.*`),
 ]);
 
 config.resolver.extraNodeModules = {
@@ -47,8 +44,8 @@ config.resolver.extraNodeModules = {
     '@supabase/supabase-js': path.resolve(workspaceRoot, 'node_modules/@supabase/supabase-js'),
     'react-native-gifted-chat': path.resolve(workspaceRoot, 'node_modules/react-native-gifted-chat'),
     'react-native-gesture-handler': path.resolve(workspaceRoot, 'node_modules/react-native-gesture-handler'),
-    'react-native-reanimated': path.resolve(workspaceRoot, 'node_modules/react-native-reanimated'),
-    'react-native-safe-area-context': path.resolve(workspaceRoot, 'node_modules/react-native-safe-area-context'),
+    // 'react-native-reanimated': path.resolve(workspaceRoot, 'node_modules/react-native-reanimated'),
+    // 'react-native-safe-area-context': path.resolve(workspaceRoot, 'node_modules/react-native-safe-area-context'),
 };
 
 module.exports = config;

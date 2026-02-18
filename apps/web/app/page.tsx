@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Navbar } from "./components/navbar";
 import { Hero } from "./components/hero";
 import { ValueProps } from "./components/value-props";
@@ -18,8 +18,8 @@ export default function Home() {
     fetchFeaturedListings();
   }, []);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = useCallback(() => setIsModalOpen(true), []);
+  const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   return (
     <main className="min-h-screen bg-white">

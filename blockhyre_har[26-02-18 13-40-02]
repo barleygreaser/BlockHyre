@@ -1,0 +1,1354 @@
+{
+  "log": {
+    "version": "1.2",
+    "creator": {
+      "name": "Firefox",
+      "version": "147.0.3"
+    },
+    "browser": {
+      "name": "Firefox",
+      "version": "147.0.3"
+    },
+    "pages": [
+      {
+        "id": "page_1",
+        "pageTimings": {
+          "onContentLoad": 909,
+          "onLoad": 1614
+        },
+        "startedDateTime": "2026-02-18T13:39:15.279+07:00",
+        "title": "http://localhost:3000/listings"
+      }
+    ],
+    "entries": [
+      {
+        "startedDateTime": "2026-02-18T13:39:15.279+07:00",
+        "request": {
+          "bodySize": 0,
+          "method": "GET",
+          "url": "https://uttbptpkekijlfzvauzu.supabase.co/rest/v1/categories?select=id%2Cname%2Crisk_daily_fee%2Crisk_tier%2Cdeductible_amount",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "uttbptpkekijlfzvauzu.supabase.co"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            },
+            {
+              "name": "accept-profile",
+              "value": "public"
+            },
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0dGJwdHBrZWtpamxmenZhdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMTQ5OTUsImV4cCI6MjA4MDY5MDk5NX0.Gfg48S06JbT2XK_-RsHRd-C58fxkPUMyaVQA7bXPdXY"
+            },
+            {
+              "name": "authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0dGJwdHBrZWtpamxmenZhdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMTQ5OTUsImV4cCI6MjA4MDY5MDk5NX0.Gfg48S06JbT2XK_-RsHRd-C58fxkPUMyaVQA7bXPdXY"
+            },
+            {
+              "name": "x-client-info",
+              "value": "supabase-ssr/0.8.0 createBrowserClient"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:3000/"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "cross-site"
+            }
+          ],
+          "cookies": [],
+          "queryString": [
+            {
+              "name": "select",
+              "value": "id,name,risk_daily_fee,risk_tier,deductible_amount"
+            }
+          ],
+          "headersSize": 0
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "date",
+              "value": "Wed, 18 Feb 2026 06:39:41 GMT"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "name": "server",
+              "value": "cloudflare"
+            },
+            {
+              "name": "content-range",
+              "value": "0-35/*"
+            },
+            {
+              "name": "cf-ray",
+              "value": "9cfb87575b0b8485-HKG"
+            },
+            {
+              "name": "cf-cache-status",
+              "value": "DYNAMIC"
+            },
+            {
+              "name": "access-control-allow-origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "content-encoding",
+              "value": "gzip"
+            },
+            {
+              "name": "content-location",
+              "value": "/categories?select=id%2Cname%2Crisk_daily_fee%2Crisk_tier%2Cdeductible_amount"
+            },
+            {
+              "name": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "name": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "name": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "name": "access-control-expose-headers",
+              "value": "Content-Encoding, Content-Location, Content-Range, Content-Type, Date, Location, Server, Transfer-Encoding, Range-Unit"
+            },
+            {
+              "name": "content-profile",
+              "value": "public"
+            },
+            {
+              "name": "sb-gateway-version",
+              "value": "1"
+            },
+            {
+              "name": "sb-project-ref",
+              "value": "uttbptpkekijlfzvauzu"
+            },
+            {
+              "name": "sb-request-id",
+              "value": "019c6f79-d2a2-7dae-a91e-8f1cece57312"
+            },
+            {
+              "name": "x-envoy-attempt-count",
+              "value": "1"
+            },
+            {
+              "name": "x-envoy-upstream-service-time",
+              "value": "86"
+            },
+            {
+              "name": "priority",
+              "value": "u=4,i=?0"
+            },
+            {
+              "name": "set-cookie",
+              "value": "__cf_bm=T9R2nK9hiaJkVyVjsGcrgbT592xzagF8sxjDa4lhnYI-1771396781-1.0.1.1-Tz2sX5XVHaDPzNq27TQ8G8cdQVOzZ4Ag.6YZnl4C21NTWcs_ps.AzhT0VPsPflyFDrW6pqWUZdqBovg.JFZENI6zPuCS0TViGSgZlvh0klo; path=/; expires=Wed, 18-Feb-26 07:09:41 GMT; domain=.supabase.co; HttpOnly; Secure; SameSite=None"
+            },
+            {
+              "name": "alt-svc",
+              "value": "h3=\":443\"; ma=86400"
+            },
+            {
+              "name": "server-timing",
+              "value": "cfExtPri"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__cf_bm",
+              "value": "T9R2nK9hiaJkVyVjsGcrgbT592xzagF8sxjDa4lhnYI-1771396781-1.0.1.1-Tz2sX5XVHaDPzNq27TQ8G8cdQVOzZ4Ag.6YZnl4C21NTWcs_ps.AzhT0VPsPflyFDrW6pqWUZdqBovg.JFZENI6zPuCS0TViGSgZlvh0klo"
+            }
+          ],
+          "content": {
+            "mimeType": "application/json; charset=utf-8",
+            "size": 5051,
+            "text": "[{\"id\":\"1ca2d7b7-d46b-43ed-af40-dedef8ab32ec\",\"name\":\"Hand Tools\",\"risk_daily_fee\":1.50,\"risk_tier\":1,\"deductible_amount\":25.00}, \n {\"id\":\"0dd76f1e-da96-4981-ac75-f5f3b7925df0\",\"name\":\"Small Power Tools\",\"risk_daily_fee\":1.50,\"risk_tier\":1,\"deductible_amount\":25.00}, \n {\"id\":\"4b5cdb13-cd20-413b-84ba-bee6984e5c72\",\"name\":\"Heavy Machinery\",\"risk_daily_fee\":9.00,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"b733c4e3-7705-4f4b-bcfb-74de71aa7f15\",\"name\":\"Harvest\",\"risk_daily_fee\":9.00,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"fd3b7ef5-2868-4a61-8e0e-c609b5cc2bb7\",\"name\":\"Drills & Drivers\",\"risk_daily_fee\":1.50,\"risk_tier\":1,\"deductible_amount\":25.00}, \n {\"id\":\"875bf0da-7e01-40f7-a816-ed4e93ff4c94\",\"name\":\"Saws (Power & Hand)\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"aae060ec-770b-4b8e-aaf6-42bdcdff9f84\",\"name\":\"Sanders & Planers\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"fa062b26-d905-427c-a7ab-f265b05f34c0\",\"name\":\"Air Compressors\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"685ccbbf-dbf0-4b94-b80f-e79e3951f462\",\"name\":\"Generators & Power\",\"risk_daily_fee\":9.00,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"748fa9e0-f43a-44a9-a97a-466828a469cb\",\"name\":\"Pressure Washers\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"6c4b33e7-d8c7-4500-a679-c0c4fa26d7c2\",\"name\":\"Welding & Metalwork\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"1294ae0d-14e4-4501-ac3f-bc0c643a2cb4\",\"name\":\"Concrete & Masonry\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"8c8fc01b-4696-4db8-b075-02df1d2409ce\",\"name\":\"Excavation & Earthmoving\",\"risk_daily_fee\":9.00,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"57c138f0-1504-4686-a3e8-04d8aa3ebca2\",\"name\":\"Scaffolding & Lifts\",\"risk_daily_fee\":9.00,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"4805019c-c320-4c24-a73a-f58b75b456bc\",\"name\":\"Lawn Mowers & Trimmers\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"4f8bd8e6-1d8c-43ab-8f05-9479e980fd6c\",\"name\":\"Landscaping & Tillage\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"af64a3d4-ba39-4012-b9b8-7bc3cd0ccaa4\",\"name\":\"Chainsaws & Log Splitters\",\"risk_daily_fee\":9.00,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"6793de13-8e57-47a7-b6d6-75fe663b4729\",\"name\":\"Ladders & Access\",\"risk_daily_fee\":1.50,\"risk_tier\":1,\"deductible_amount\":25.00}, \n {\"id\":\"af292b09-1058-47c5-948d-ca8a5eaac827\",\"name\":\"Hand Tools (Non-Powered)\",\"risk_daily_fee\":1.50,\"risk_tier\":1,\"deductible_amount\":25.00}, \n {\"id\":\"77703add-8033-46c7-a98f-8f762fe8c932\",\"name\":\"Plumbing & Pipe Tools\",\"risk_daily_fee\":1.50,\"risk_tier\":1,\"deductible_amount\":25.00}, \n {\"id\":\"f5735898-489a-41e3-8cd8-88ddc20a8577\",\"name\":\"Automotive & Jacks\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"a8007274-2cac-4de5-ac39-02cf9b734108\",\"name\":\"HVAC & Climate Control\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"d9d62331-ba0d-41b3-a229-1e03b95ac351\",\"name\":\"Moving & Hauling Equipment\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"62101412-6ae8-403d-b3b5-bec0660c08a8\",\"name\":\"Power Tools\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"c47ffa56-dd1c-4e3b-ba69-010b01720b0f\",\"name\":\"Floor Care & Restoration\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"adc94d98-983e-4ba2-9d42-46ebd2e01698\",\"name\":\"Painting & Texturing\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"3945b79c-00c4-4a02-bdcc-10f08dd1181d\",\"name\":\"Automotive Diagnostics\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"ea109e1d-4e2d-40cd-995f-0aa82632f1d3\",\"name\":\"Benchtop Woodworking\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"dde76e5f-bd3f-4f90-95ad-1b026c0fa383\",\"name\":\"Inspection & Testing\",\"risk_daily_fee\":4.00,\"risk_tier\":2,\"deductible_amount\":75.00}, \n {\"id\":\"efac1ce8-49cc-493b-9e4d-f133073fbd28\",\"name\":\"Trailers (Utility & Dump)\",\"risk_daily_fee\":9.00,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"a0708861-3f4c-4782-9667-5ecdf73aac35\",\"name\":\"Party & Events\",\"risk_daily_fee\":5.0,\"risk_tier\":2,\"deductible_amount\":100.00}, \n {\"id\":\"8d7bdc94-a7cf-4c84-8647-b97932bb2372\",\"name\":\"Audio Visual & Electronics\",\"risk_daily_fee\":10.0,\"risk_tier\":3,\"deductible_amount\":250.00}, \n {\"id\":\"ef070bfa-6e9d-45f3-812c-0aa3eba1aa3d\",\"name\":\"Kitchen & Catering\",\"risk_daily_fee\":5.0,\"risk_tier\":2,\"deductible_amount\":100.00}, \n {\"id\":\"8972c8f9-805b-4440-a6e2-40fb6bebdb01\",\"name\":\"Camping & Outdoors\",\"risk_daily_fee\":3.0,\"risk_tier\":1,\"deductible_amount\":50.00}, \n {\"id\":\"74c1246b-f851-45ab-86f0-575ff32d28fe\",\"name\":\"General & Events\",\"risk_daily_fee\":1.50,\"risk_tier\":1,\"deductible_amount\":25.00}, \n {\"id\":\"bcf33a2c-cfe2-4100-9f1f-80155118c690\",\"name\":\"Automotive Detailing & Cleaning\",\"risk_daily_fee\":4.00,\"risk_tier\":1,\"deductible_amount\":25.00}]"
+          },
+          "redirectURL": "",
+          "headersSize": 1217,
+          "bodySize": 2786
+        },
+        "cache": {},
+        "timings": {
+          "blocked": -1,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 368,
+          "receive": 0
+        },
+        "time": 368,
+        "_securityState": "secure",
+        "serverIPAddress": "172.64.149.246",
+        "connection": "443",
+        "pageref": "page_1"
+      },
+      {
+        "startedDateTime": "2026-02-18T13:39:15.437+07:00",
+        "request": {
+          "bodySize": 0,
+          "method": "GET",
+          "url": "https://uttbptpkekijlfzvauzu.supabase.co/rest/v1/platform_settings?select=*",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "uttbptpkekijlfzvauzu.supabase.co"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+            },
+            {
+              "name": "Accept",
+              "value": "application/vnd.pgrst.object+json"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            },
+            {
+              "name": "accept-profile",
+              "value": "public"
+            },
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0dGJwdHBrZWtpamxmenZhdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMTQ5OTUsImV4cCI6MjA4MDY5MDk5NX0.Gfg48S06JbT2XK_-RsHRd-C58fxkPUMyaVQA7bXPdXY"
+            },
+            {
+              "name": "authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0dGJwdHBrZWtpamxmenZhdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMTQ5OTUsImV4cCI6MjA4MDY5MDk5NX0.Gfg48S06JbT2XK_-RsHRd-C58fxkPUMyaVQA7bXPdXY"
+            },
+            {
+              "name": "x-client-info",
+              "value": "supabase-ssr/0.8.0 createBrowserClient"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:3000/"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "cross-site"
+            }
+          ],
+          "cookies": [],
+          "queryString": [
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ],
+          "headersSize": 0
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "date",
+              "value": "Wed, 18 Feb 2026 06:39:41 GMT"
+            },
+            {
+              "name": "content-type",
+              "value": "application/vnd.pgrst.object+json; charset=utf-8"
+            },
+            {
+              "name": "server",
+              "value": "cloudflare"
+            },
+            {
+              "name": "content-range",
+              "value": "0-0/*"
+            },
+            {
+              "name": "cf-ray",
+              "value": "9cfb87578b218485-HKG"
+            },
+            {
+              "name": "cf-cache-status",
+              "value": "DYNAMIC"
+            },
+            {
+              "name": "access-control-allow-origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "content-encoding",
+              "value": "gzip"
+            },
+            {
+              "name": "content-location",
+              "value": "/platform_settings?select=%2A"
+            },
+            {
+              "name": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "name": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "name": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "name": "access-control-expose-headers",
+              "value": "Content-Encoding, Content-Location, Content-Range, Content-Type, Date, Location, Server, Transfer-Encoding, Range-Unit"
+            },
+            {
+              "name": "content-profile",
+              "value": "public"
+            },
+            {
+              "name": "sb-gateway-version",
+              "value": "1"
+            },
+            {
+              "name": "sb-project-ref",
+              "value": "uttbptpkekijlfzvauzu"
+            },
+            {
+              "name": "sb-request-id",
+              "value": "019c6f79-d2ba-76d2-913d-bab7625e847f"
+            },
+            {
+              "name": "x-envoy-attempt-count",
+              "value": "1"
+            },
+            {
+              "name": "x-envoy-upstream-service-time",
+              "value": "65"
+            },
+            {
+              "name": "priority",
+              "value": "u=4,i=?0"
+            },
+            {
+              "name": "set-cookie",
+              "value": "__cf_bm=8sBBUSTyWn7lN_o272fk33PkBY9Zh6tGYF0KaDx20GE-1771396781-1.0.1.1-KH5LBo1sBZOJTkpva_3LgzaSVvQqrcP7u_OKDARpGJInc6cQepOhLq8Hen9rfPdV6cp3nSsKkFETNyM.X6s6DMDJBs0L.i_RlgDWFSlj0YU; path=/; expires=Wed, 18-Feb-26 07:09:41 GMT; domain=.supabase.co; HttpOnly; Secure; SameSite=None"
+            },
+            {
+              "name": "alt-svc",
+              "value": "h3=\":443\"; ma=86400"
+            },
+            {
+              "name": "server-timing",
+              "value": "cfExtPri"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__cf_bm",
+              "value": "8sBBUSTyWn7lN_o272fk33PkBY9Zh6tGYF0KaDx20GE-1771396781-1.0.1.1-KH5LBo1sBZOJTkpva_3LgzaSVvQqrcP7u_OKDARpGJInc6cQepOhLq8Hen9rfPdV6cp3nSsKkFETNyM.X6s6DMDJBs0L.i_RlgDWFSlj0YU"
+            }
+          ],
+          "content": {
+            "mimeType": "application/vnd.pgrst.object+json; charset=utf-8",
+            "size": 127,
+            "text": "{\"id\":1,\"seller_fee_percent\":7,\"buyer_fee_percent\":6.5,\"maintenance_mode\":false,\"updated_at\":\"2025-12-15T19:31:55.16043+00:00\"}"
+          },
+          "redirectURL": "",
+          "headersSize": 1185,
+          "bodySize": 1314
+        },
+        "cache": {},
+        "timings": {
+          "blocked": -1,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 328,
+          "receive": 1
+        },
+        "time": 329,
+        "_securityState": "secure",
+        "serverIPAddress": "172.64.149.246",
+        "connection": "443",
+        "pageref": "page_1"
+      },
+      {
+        "startedDateTime": "2026-02-18T13:39:15.439+07:00",
+        "request": {
+          "bodySize": 708,
+          "method": "POST",
+          "url": "http://localhost:3000/__nextjs_original-stack-frames",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "localhost:3000"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:3000/listings"
+            },
+            {
+              "name": "Content-Type",
+              "value": "text/plain;charset=UTF-8"
+            },
+            {
+              "name": "Content-Length",
+              "value": "708"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Cookie",
+              "value": "__next_hmr_refresh_hash__=2415"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "same-origin"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__next_hmr_refresh_hash__",
+              "value": "2415"
+            }
+          ],
+          "queryString": [],
+          "headersSize": 0,
+          "postData": {
+            "mimeType": "text/plain;charset=UTF-8",
+            "params": [],
+            "text": "{\"frames\":[{\"file\":\"moz-extension://ded20783-da8e-4a32-ae61-eb6d18c0f172/%20URL%20Shortener%20Unshortener.user.js#33\",\"line1\":63,\"column1\":31,\"methodName\":\"onload\",\"arguments\":[]},{\"file\":\"HttpRequested@moz-extension://ded20783-da8e-4a32-ae61-eb6d18c0f172/sandbox/injected-web.js\",\"line1\":1,\"column1\":7114,\"methodName\":\"<unknown>\",\"arguments\":[]},{\"file\":\"moz-extension://ded20783-da8e-4a32-ae61-eb6d18c0f172/sandbox/injected-web.js\",\"line1\":1,\"column1\":3313,\"methodName\":\"onHandle\",\"arguments\":[]},{\"file\":\"moz-extension://ded20783-da8e-4a32-ae61-eb6d18c0f172/sandbox/injected-web.js\",\"line1\":1,\"column1\":4151,\"methodName\":\"He/<\",\"arguments\":[]}],\"isServer\":false,\"isEdgeServer\":false,\"isAppDirectory\":true}"
+          }
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "name": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "name": "Date",
+              "value": "Wed, 18 Feb 2026 06:39:15 GMT"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Keep-Alive",
+              "value": "timeout=5"
+            },
+            {
+              "name": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "cookies": [],
+          "content": {
+            "mimeType": "application/json",
+            "size": 1205,
+            "text": "[{\"status\":\"rejected\",\"reason\":\"[Error: Unknown url scheme 'moz-extension'\\n\\nDebug info:\\n- Execution of project_trace_source_operation failed\\n- Execution of *SourceMap::new_from_rope_cached failed\\n- Execution of get_source_map_rope failed\\n- Unknown url scheme 'moz-extension'] {\\n  code: 'GenericFailure'\\n}\"},{\"status\":\"fulfilled\",\"value\":{\"originalStackFrame\":{\"arguments\":[],\"file\":\"HttpRequested@moz-extension://ded20783-da8e-4a32-ae61-eb6d18c0f172/sandbox/injected-web.js\",\"line1\":1,\"column1\":7114,\"ignored\":false,\"methodName\":\"<unknown>\"},\"originalCodeFrame\":null}},{\"status\":\"rejected\",\"reason\":\"[Error: Unknown url scheme 'moz-extension'\\n\\nDebug info:\\n- Execution of project_trace_source_operation failed\\n- Execution of *SourceMap::new_from_rope_cached failed\\n- Execution of get_source_map_rope failed\\n- Unknown url scheme 'moz-extension'] {\\n  code: 'GenericFailure'\\n}\"},{\"status\":\"rejected\",\"reason\":\"[Error: Unknown url scheme 'moz-extension'\\n\\nDebug info:\\n- Execution of project_trace_source_operation failed\\n- Execution of *SourceMap::new_from_rope_cached failed\\n- Execution of get_source_map_rope failed\\n- Unknown url scheme 'moz-extension'] {\\n  code: 'GenericFailure'\\n}\"}]"
+          },
+          "redirectURL": "",
+          "headersSize": 210,
+          "bodySize": 602
+        },
+        "cache": {},
+        "timings": {
+          "blocked": -1,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 9,
+          "receive": 0
+        },
+        "time": 9,
+        "_securityState": "insecure",
+        "serverIPAddress": "127.0.0.1",
+        "connection": "3000",
+        "pageref": "page_1"
+      },
+      {
+        "startedDateTime": "2026-02-18T13:39:15.639+07:00",
+        "request": {
+          "bodySize": 0,
+          "method": "OPTIONS",
+          "url": "https://uttbptpkekijlfzvauzu.supabase.co/rest/v1/categories?select=id%2Cname%2Crisk_daily_fee%2Crisk_tier%2Cdeductible_amount",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "uttbptpkekijlfzvauzu.supabase.co"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            },
+            {
+              "name": "Access-Control-Request-Method",
+              "value": "GET"
+            },
+            {
+              "name": "Access-Control-Request-Headers",
+              "value": "accept-profile,apikey,authorization,x-client-info"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:3000/"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "cross-site"
+            }
+          ],
+          "cookies": [],
+          "queryString": [
+            {
+              "name": "select",
+              "value": "id,name,risk_daily_fee,risk_tier,deductible_amount"
+            }
+          ],
+          "headersSize": 0
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "date",
+              "value": "Wed, 18 Feb 2026 06:39:40 GMT"
+            },
+            {
+              "name": "content-length",
+              "value": "0"
+            },
+            {
+              "name": "cf-ray",
+              "value": "9cfb8756aa918485-HKG"
+            },
+            {
+              "name": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "name": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "name": "access-control-allow-headers",
+              "value": "accept-profile,apikey,authorization,x-client-info"
+            },
+            {
+              "name": "access-control-allow-methods",
+              "value": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT"
+            },
+            {
+              "name": "access-control-max-age",
+              "value": "3600"
+            },
+            {
+              "name": "sb-gateway-version",
+              "value": "1"
+            },
+            {
+              "name": "sb-project-ref",
+              "value": "uttbptpkekijlfzvauzu"
+            },
+            {
+              "name": "sb-request-id",
+              "value": "019c6f79-d232-72b2-8afc-cf8154fa1c90"
+            },
+            {
+              "name": "priority",
+              "value": "u=4,i=?0"
+            },
+            {
+              "name": "set-cookie",
+              "value": "__cf_bm=yI4Zfno.7CHSJlhnqIEeLTW0eul8v3Mvq2e3klBjJqk-1771396780-1.0.1.1-EgeGGqqEEL5QMi3kn4CxIcqUvHEM1c2DlDcURNSjHAtlwqd4.SFvrN869IIJehJarUYeJ6OfkT8V.8gTaIj.qVpQ6FcTa0Oxsc.Ssmyiw.8; path=/; expires=Wed, 18-Feb-26 07:09:40 GMT; domain=.supabase.co; HttpOnly; Secure; SameSite=None"
+            },
+            {
+              "name": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "name": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "name": "server",
+              "value": "cloudflare"
+            },
+            {
+              "name": "alt-svc",
+              "value": "h3=\":443\"; ma=86400"
+            },
+            {
+              "name": "server-timing",
+              "value": "cfExtPri"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__cf_bm",
+              "value": "yI4Zfno.7CHSJlhnqIEeLTW0eul8v3Mvq2e3klBjJqk-1771396780-1.0.1.1-EgeGGqqEEL5QMi3kn4CxIcqUvHEM1c2DlDcURNSjHAtlwqd4.SFvrN869IIJehJarUYeJ6OfkT8V.8gTaIj.qVpQ6FcTa0Oxsc.Ssmyiw.8"
+            }
+          ],
+          "content": {
+            "mimeType": "text/plain",
+            "size": 0,
+            "text": ""
+          },
+          "redirectURL": "",
+          "headersSize": 957,
+          "bodySize": 957
+        },
+        "cache": {},
+        "timings": {
+          "blocked": -1,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 55,
+          "receive": 0
+        },
+        "time": 55,
+        "_securityState": "secure",
+        "serverIPAddress": "172.64.149.246",
+        "connection": "443",
+        "pageref": "page_1"
+      },
+      {
+        "startedDateTime": "2026-02-18T13:39:15.738+07:00",
+        "request": {
+          "bodySize": 0,
+          "method": "OPTIONS",
+          "url": "https://uttbptpkekijlfzvauzu.supabase.co/rest/v1/platform_settings?select=*",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "uttbptpkekijlfzvauzu.supabase.co"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            },
+            {
+              "name": "Access-Control-Request-Method",
+              "value": "GET"
+            },
+            {
+              "name": "Access-Control-Request-Headers",
+              "value": "accept-profile,apikey,authorization,x-client-info"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:3000/"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "cross-site"
+            },
+            {
+              "name": "Priority",
+              "value": "u=4"
+            },
+            {
+              "name": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "name": "TE",
+              "value": "trailers"
+            }
+          ],
+          "cookies": [],
+          "queryString": [
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ],
+          "headersSize": 616
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "date",
+              "value": "Wed, 18 Feb 2026 06:39:40 GMT"
+            },
+            {
+              "name": "content-length",
+              "value": "0"
+            },
+            {
+              "name": "cf-ray",
+              "value": "9cfb8756caa48485-HKG"
+            },
+            {
+              "name": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "name": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "name": "access-control-allow-headers",
+              "value": "accept-profile,apikey,authorization,x-client-info"
+            },
+            {
+              "name": "access-control-allow-methods",
+              "value": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT"
+            },
+            {
+              "name": "access-control-max-age",
+              "value": "3600"
+            },
+            {
+              "name": "sb-gateway-version",
+              "value": "1"
+            },
+            {
+              "name": "sb-project-ref",
+              "value": "uttbptpkekijlfzvauzu"
+            },
+            {
+              "name": "sb-request-id",
+              "value": "019c6f79-d248-7c8e-bb0f-3b296afb5e45"
+            },
+            {
+              "name": "priority",
+              "value": "u=4,i=?0"
+            },
+            {
+              "name": "set-cookie",
+              "value": "__cf_bm=hFEIiq_86jQ4FdLQZuSQ4GyZPX8gwqRdWIKepLKrHig-1771396780-1.0.1.1-zng96ZzOfqDC0zjDOthMMdslHMBxk4G2K71QXofMjYfeXklQsi0oyhqCtPtce7felpo.2lFGAIqG9tJQ6H9GtgktZbrdmthxXnw2nxuhTnI; path=/; expires=Wed, 18-Feb-26 07:09:40 GMT; domain=.supabase.co; HttpOnly; Secure; SameSite=None"
+            },
+            {
+              "name": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "name": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "name": "server",
+              "value": "cloudflare"
+            },
+            {
+              "name": "alt-svc",
+              "value": "h3=\":443\"; ma=86400"
+            },
+            {
+              "name": "server-timing",
+              "value": "cfExtPri"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__cf_bm",
+              "value": "hFEIiq_86jQ4FdLQZuSQ4GyZPX8gwqRdWIKepLKrHig-1771396780-1.0.1.1-zng96ZzOfqDC0zjDOthMMdslHMBxk4G2K71QXofMjYfeXklQsi0oyhqCtPtce7felpo.2lFGAIqG9tJQ6H9GtgktZbrdmthxXnw2nxuhTnI"
+            }
+          ],
+          "content": {
+            "mimeType": "text/plain",
+            "size": 0,
+            "text": ""
+          },
+          "redirectURL": "",
+          "headersSize": 957,
+          "bodySize": 957
+        },
+        "cache": {},
+        "timings": {
+          "blocked": 0,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 53,
+          "receive": 0
+        },
+        "time": 53,
+        "_securityState": "secure",
+        "serverIPAddress": "172.64.149.246",
+        "connection": "443",
+        "pageref": "page_1"
+      },
+      {
+        "startedDateTime": "2026-02-18T13:39:15.740+07:00",
+        "request": {
+          "bodySize": 135,
+          "method": "POST",
+          "url": "https://uttbptpkekijlfzvauzu.supabase.co/rest/v1/rpc/search_nearby_listings",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "uttbptpkekijlfzvauzu.supabase.co"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            },
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0dGJwdHBrZWtpamxmenZhdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMTQ5OTUsImV4cCI6MjA4MDY5MDk5NX0.Gfg48S06JbT2XK_-RsHRd-C58fxkPUMyaVQA7bXPdXY"
+            },
+            {
+              "name": "authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0dGJwdHBrZWtpamxmenZhdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMTQ5OTUsImV4cCI6MjA4MDY5MDk5NX0.Gfg48S06JbT2XK_-RsHRd-C58fxkPUMyaVQA7bXPdXY"
+            },
+            {
+              "name": "content-profile",
+              "value": "public"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-client-info",
+              "value": "supabase-ssr/0.8.0 createBrowserClient"
+            },
+            {
+              "name": "Content-Length",
+              "value": "135"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:3000/"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "cross-site"
+            }
+          ],
+          "cookies": [],
+          "queryString": [],
+          "headersSize": 0,
+          "postData": {
+            "mimeType": "application/json",
+            "params": [],
+            "text": "{\"user_lat\":34.0924,\"user_long\":-84.5097,\"radius_miles\":20000,\"min_price\":0,\"max_price\":300,\"category_filter\":null,\"search_query\":null}"
+          }
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "date",
+              "value": "Wed, 18 Feb 2026 06:39:41 GMT"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "name": "server",
+              "value": "cloudflare"
+            },
+            {
+              "name": "content-range",
+              "value": "0-7/*"
+            },
+            {
+              "name": "cf-ray",
+              "value": "9cfb8757dbcc8485-HKG"
+            },
+            {
+              "name": "cf-cache-status",
+              "value": "DYNAMIC"
+            },
+            {
+              "name": "access-control-allow-origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "content-encoding",
+              "value": "gzip"
+            },
+            {
+              "name": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "name": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "name": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "name": "access-control-expose-headers",
+              "value": "Content-Encoding, Content-Location, Content-Range, Content-Type, Date, Location, Server, Transfer-Encoding, Range-Unit"
+            },
+            {
+              "name": "content-profile",
+              "value": "public"
+            },
+            {
+              "name": "sb-gateway-version",
+              "value": "1"
+            },
+            {
+              "name": "sb-project-ref",
+              "value": "uttbptpkekijlfzvauzu"
+            },
+            {
+              "name": "sb-request-id",
+              "value": "019c6f79-d2f3-7d97-ad8a-13e2964e1478"
+            },
+            {
+              "name": "x-envoy-attempt-count",
+              "value": "1"
+            },
+            {
+              "name": "x-envoy-upstream-service-time",
+              "value": "54"
+            },
+            {
+              "name": "priority",
+              "value": "u=4,i=?0"
+            },
+            {
+              "name": "set-cookie",
+              "value": "__cf_bm=_IIXybIgb77lW72Q1p3PWwtevJHLK4pMKhxnLWPrBLc-1771396781-1.0.1.1-YwhZuhg4_.AxECas4np3ZKmwZHb6DC21z5BmxQelolkpX41_nsP0F9ggJ9cno9hifb4mvbKNFsmmN6tNNpyhBMpxDI_IAPHfxFhfoXwS6iU; path=/; expires=Wed, 18-Feb-26 07:09:41 GMT; domain=.supabase.co; HttpOnly; Secure; SameSite=None"
+            },
+            {
+              "name": "alt-svc",
+              "value": "h3=\":443\"; ma=86400"
+            },
+            {
+              "name": "server-timing",
+              "value": "cfExtPri"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__cf_bm",
+              "value": "_IIXybIgb77lW72Q1p3PWwtevJHLK4pMKhxnLWPrBLc-1771396781-1.0.1.1-YwhZuhg4_.AxECas4np3ZKmwZHb6DC21z5BmxQelolkpX41_nsP0F9ggJ9cno9hifb4mvbKNFsmmN6tNNpyhBMpxDI_IAPHfxFhfoXwS6iU"
+            }
+          ],
+          "content": {
+            "mimeType": "application/json; charset=utf-8",
+            "size": 4594,
+            "text": "[{\"id\":\"dfcd33b3-eb1f-499a-817f-3120e1ab2d1a\",\"title\":\"Skid Steer (Tracked)\",\"daily_price\":50,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/tools/1765961558301.jpg\",\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/tools/1765961566867.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5097,\"distance_miles\":0,\"category_name\":\"Heavy Machinery\",\"risk_daily_fee\":9.00,\"accepts_barter\":false,\"is_high_powered\":true,\"booking_type\":\"request\"}, \n {\"id\":\"b3b26ebe-6c1b-4a3c-93bf-c73fbd899af4\",\"title\":\"Asphalt Cutter\",\"daily_price\":25,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/392afe27-adb0-41ea-9704-c62173c7c052/listings/1767254767613.jpg\",\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/392afe27-adb0-41ea-9704-c62173c7c052/listings/1767254785519.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5097,\"distance_miles\":0,\"category_name\":\"Concrete & Masonry\",\"risk_daily_fee\":4.00,\"accepts_barter\":false,\"is_high_powered\":false,\"booking_type\":\"request\"}, \n {\"id\":\"4de8eb19-3ee8-45ec-a349-c475929ba2b6\",\"title\":\"Chainsaw (Electric)\",\"daily_price\":15,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/392afe27-adb0-41ea-9704-c62173c7c052/listings/1767269535419.jpg\",\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/392afe27-adb0-41ea-9704-c62173c7c052/listings/1767269553019.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5097,\"distance_miles\":0,\"category_name\":\"Chainsaws & Log Splitters\",\"risk_daily_fee\":9.00,\"accepts_barter\":false,\"is_high_powered\":true,\"booking_type\":\"request\"}, \n {\"id\":\"550f5689-c85a-46b2-b8e4-084e7bb8c219\",\"title\":\"Random Orbital Polisher\",\"daily_price\":15,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/listings/1767232623729.jpg\",\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/listings/1767232613912.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5097,\"distance_miles\":0,\"category_name\":\"Automotive Detailing & Cleaning\",\"risk_daily_fee\":4.00,\"accepts_barter\":false,\"is_high_powered\":false,\"booking_type\":\"request\"}, \n {\"id\":\"005b0fba-1bf0-481a-9951-dde04a2f3e78\",\"title\":\"Air Compressor (Towable 185CFM)\",\"daily_price\":30,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/392afe27-adb0-41ea-9704-c62173c7c052/listings/1766993523961.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5125,\"distance_miles\":0.160221896513477,\"category_name\":\"Air Compressors\",\"risk_daily_fee\":4.00,\"accepts_barter\":false,\"is_high_powered\":false,\"booking_type\":\"request\"}, \n {\"id\":\"f728d568-6a80-4e4c-9609-d8f2199af3b3\",\"title\":\"Makita Impact Drill Kit\",\"daily_price\":10,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/listings/1767251714679.jpg\",\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/listings/1767251705235.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5125,\"distance_miles\":0.160221896513477,\"category_name\":\"Heavy Machinery\",\"risk_daily_fee\":9.00,\"accepts_barter\":false,\"is_high_powered\":true,\"booking_type\":\"request\"}, \n {\"id\":\"0502426c-7d9e-4d7b-a0ae-438e7f81b6aa\",\"title\":\"Table Saw\",\"daily_price\":10,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/listings/1770290514209.jpg\",\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/057291df-d626-43c8-85a2-de78acbf6d5a/listings/1770290533145.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5125,\"distance_miles\":0.160221896513477,\"category_name\":\"Heavy Machinery\",\"risk_daily_fee\":9.00,\"accepts_barter\":false,\"is_high_powered\":false,\"booking_type\":\"request\"}, \n {\"id\":\"f028da25-a971-4b76-bfbe-e567f7be5ba9\",\"title\":\"Excavator (Mini)\",\"daily_price\":300,\"images\":[\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/392afe27-adb0-41ea-9704-c62173c7c052/tools/1765836245719.jpg\",\"https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/tool_images/392afe27-adb0-41ea-9704-c62173c7c052/listings/1767252230381.jpg\"],\"latitude\":34.0924,\"longitude\":-84.5125,\"distance_miles\":0.160221896513477,\"category_name\":\"Heavy Machinery\",\"risk_daily_fee\":9.00,\"accepts_barter\":false,\"is_high_powered\":true,\"booking_type\":\"request\"}]"
+          },
+          "redirectURL": "",
+          "headersSize": 1119,
+          "bodySize": 2082
+        },
+        "cache": {},
+        "timings": {
+          "blocked": -1,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 313,
+          "receive": 0
+        },
+        "time": 313,
+        "_securityState": "secure",
+        "serverIPAddress": "172.64.149.246",
+        "connection": "443",
+        "pageref": "page_1"
+      },
+      {
+        "startedDateTime": "2026-02-18T13:39:15.777+07:00",
+        "request": {
+          "bodySize": 0,
+          "method": "OPTIONS",
+          "url": "https://uttbptpkekijlfzvauzu.supabase.co/rest/v1/rpc/search_nearby_listings",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "uttbptpkekijlfzvauzu.supabase.co"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br, zstd"
+            },
+            {
+              "name": "Access-Control-Request-Method",
+              "value": "POST"
+            },
+            {
+              "name": "Access-Control-Request-Headers",
+              "value": "apikey,authorization,content-profile,content-type,x-client-info"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:3000/"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:3000"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "cross-site"
+            },
+            {
+              "name": "Priority",
+              "value": "u=4"
+            },
+            {
+              "name": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "name": "TE",
+              "value": "trailers"
+            }
+          ],
+          "cookies": [],
+          "queryString": [],
+          "headersSize": 631
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/3",
+          "headers": [
+            {
+              "name": "date",
+              "value": "Wed, 18 Feb 2026 06:39:40 GMT"
+            },
+            {
+              "name": "content-length",
+              "value": "0"
+            },
+            {
+              "name": "cf-ray",
+              "value": "9cfb87574aff8485-HKG"
+            },
+            {
+              "name": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "name": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "name": "access-control-allow-headers",
+              "value": "apikey,authorization,content-profile,content-type,x-client-info"
+            },
+            {
+              "name": "access-control-allow-methods",
+              "value": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT"
+            },
+            {
+              "name": "access-control-max-age",
+              "value": "3600"
+            },
+            {
+              "name": "sb-gateway-version",
+              "value": "1"
+            },
+            {
+              "name": "sb-project-ref",
+              "value": "uttbptpkekijlfzvauzu"
+            },
+            {
+              "name": "sb-request-id",
+              "value": "019c6f79-d29a-751f-b191-f62c80e4041a"
+            },
+            {
+              "name": "priority",
+              "value": "u=4,i=?0"
+            },
+            {
+              "name": "set-cookie",
+              "value": "__cf_bm=iFldwj0zwmy.Jx2KT8ifv1lIlPD0j5WQp41TyqN7AKI-1771396780-1.0.1.1-Npm9LjXBMJoWqU45UeIr2E6H7ZrTxWMc9QP.1DVpS7mQOimeGvYNq_q2Ht0gT96GIvTFbASWqcW8G6pc0tCvUeVqfI3dkStujX07S_9PmU8; path=/; expires=Wed, 18-Feb-26 07:09:40 GMT; domain=.supabase.co; HttpOnly; Secure; SameSite=None"
+            },
+            {
+              "name": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "name": "strict-transport-security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "name": "server",
+              "value": "cloudflare"
+            },
+            {
+              "name": "alt-svc",
+              "value": "h3=\":443\"; ma=86400"
+            },
+            {
+              "name": "server-timing",
+              "value": "cfExtPri"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__cf_bm",
+              "value": "iFldwj0zwmy.Jx2KT8ifv1lIlPD0j5WQp41TyqN7AKI-1771396780-1.0.1.1-Npm9LjXBMJoWqU45UeIr2E6H7ZrTxWMc9QP.1DVpS7mQOimeGvYNq_q2Ht0gT96GIvTFbASWqcW8G6pc0tCvUeVqfI3dkStujX07S_9PmU8"
+            }
+          ],
+          "content": {
+            "mimeType": "text/plain",
+            "size": 0,
+            "text": ""
+          },
+          "redirectURL": "",
+          "headersSize": 971,
+          "bodySize": 971
+        },
+        "cache": {},
+        "timings": {
+          "blocked": -1,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 60,
+          "receive": 1
+        },
+        "time": 61,
+        "_securityState": "secure",
+        "serverIPAddress": "172.64.149.246",
+        "connection": "443",
+        "pageref": "page_1"
+      }
+    ]
+  }
+}

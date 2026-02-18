@@ -7,7 +7,8 @@ import { Button } from "@/app/components/ui/button";
 import { Trash2, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
-import dayjs from "dayjs";
+import { format } from "date-fns";
+import Image from "next/image";
 
 export default function CartPage() {
     const { cart, removeFromCart, clearCart } = useCart();
@@ -45,8 +46,15 @@ export default function CartPage() {
                                 const { finalTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
                                 return (
                                     <div key={item.id} className="bg-white p-4 rounded-lg border border-slate-200 flex gap-4">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={item.image} alt={item.title} className="w-24 h-24 object-cover rounded-md bg-slate-100" />
+                                        <div className="relative w-24 h-24 shrink-0 bg-slate-100 rounded-md overflow-hidden">
+                                            <Image
+                                                src={item.image || `https://placehold.co/200.png?text=${encodeURIComponent(item.title)}`}
+                                                alt={item.title}
+                                                fill
+                                                className="object-cover"
+                                                sizes="96px"
+                                            />
+                                        </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <h3 className="font-bold text-lg text-slate-900">{item.title}</h3>
@@ -57,7 +65,7 @@ export default function CartPage() {
                                             <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
                                                 <CalendarIcon className="h-4 w-4" />
                                                 <span>
-                                                    {dayjs(item.dates.from).format("MMM D")} - {dayjs(item.dates.to).format("MMM D")} ({item.days} days)
+                                                    {format(item.dates.from, "MMM d")} - {format(item.dates.to, "MMM d")} ({item.days} days)
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">

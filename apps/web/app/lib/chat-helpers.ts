@@ -75,9 +75,10 @@ export async function sendSystemMessage(
 }
 
 /**
- * Find or create a conversation between a renter and tool owner
- * Uses the upsert_conversation RPC function to ensure proper linking
- * @param toolId - The listing/tool ID
+ * Find or create a conversation between a renter and tool owner.
+ * Lookup is by user pair (owner + renter) — one chat per pair regardless of tool.
+ * The listing_id is passed as optional context to the RPC but is NOT used for matching.
+ * @param toolId - The listing/tool ID (used as context, not for matching)
  * @param ownerId - The owner's User ID
  * @param context - The context variables for the system message
  * @returns The chat ID or null if failed
@@ -105,19 +106,24 @@ export async function upsertConversation(toolId: string, ownerId: string, contex
             throw error;
         }
 
-        // Check if new chat and send message
+        // Send a LISTING_INQUIRY system message unless the last message in the
+        // chat is already a system message about the same tool (prevents spam
+        // when the user clicks "Contact Owner", backs out, and clicks again).
         if (context && chatId) {
-            const { count, error: countError } = await supabase
+            const { data: lastMsg } = await supabase
                 .from('messages')
-                .select('*', { count: 'exact', head: true })
-                .eq('chat_id', chatId);
+                .select('content, message_type')
+                .eq('chat_id', chatId)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
 
-            if (count === 0) {
-                console.log('New chat detected, sending system messages...');
-                // Pass IDs to helper
+            const alreadyInquired =
+                lastMsg?.message_type === 'system' &&
+                lastMsg?.content?.includes(context.tool_name);
+
+            if (!alreadyInquired) {
                 await sendSystemMessage(chatId, 'LISTING_INQUIRY', context, ownerId, user.id);
-            } else {
-                console.log('Chat exists with history, skipping system message.');
             }
         }
 

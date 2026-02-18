@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { SheetProvider } from '@/components/SheetProvider';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -51,11 +52,13 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <ToastProvider>
-          <SheetProvider>
-            <RootLayoutNav />
-          </SheetProvider>
-        </ToastProvider>
+        <BottomSheetModalProvider>
+          <ToastProvider>
+            <SheetProvider>
+              <RootLayoutNav />
+            </SheetProvider>
+          </ToastProvider>
+        </BottomSheetModalProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
@@ -87,6 +90,7 @@ function RootLayoutNav() {
       <Stack.Screen name="listings/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       <Stack.Screen name="request-rental" options={{ presentation: 'fullScreenModal', headerShown: false }} />
+      <Stack.Screen name="favorites" options={{ presentation: 'card', headerTitle: 'Favorites' }} />
       <Stack.Screen name="settings" options={{ presentation: 'fullScreenModal', headerShown: false }} />
     </Stack>
   );

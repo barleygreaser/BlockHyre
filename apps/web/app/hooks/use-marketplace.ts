@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
+import { addDays, isBefore, isSameDay, differenceInCalendarDays, parseISO, format } from 'date-fns';
 
 type Category = {
     id: string;
@@ -125,7 +122,6 @@ export const useMarketplace = () => {
                     is_high_powered,
                     accepts_barter,
                     booking_type,
-                    deposit,
                     status,
                     categories (
                         name,
@@ -221,9 +217,7 @@ export const useMarketplace = () => {
         isBarter: boolean
     ) => {
         try {
-            const start = dayjs(startDate);
-            const end = dayjs(endDate);
-            const totalDays = end.diff(start, 'day') + 1; // Inclusive
+            const totalDays = differenceInCalendarDays(endDate, startDate) + 1; // Inclusive
 
             const { data, error } = await supabase
                 .from('rentals')
@@ -257,28 +251,48 @@ export const useMarketplace = () => {
         radius: number,
         minPrice: number,
         maxPrice: number,
-        category?: string
+        category?: string,
+        searchQuery?: string
     ) => {
         try {
             setLoading(true);
-            console.log("Searching listings with params:", { userLat, userLong, radius, minPrice, maxPrice, category });
-            const { data, error } = await supabase.rpc('search_nearby_listings', {
+
+            // Build RPC params — try with search_query first, fallback without it
+            const baseParams = {
                 user_lat: userLat,
                 user_long: userLong,
                 radius_miles: radius,
                 min_price: minPrice,
                 max_price: maxPrice,
-                category_filter: category || null
+                category_filter: category || null,
+            };
+
+            let data: any[] | null = null;
+            let error: any = null;
+
+            // Attempt 1: Call with search_query parameter (requires enhanced migration)
+            const result = await supabase.rpc('search_nearby_listings', {
+                ...baseParams,
+                search_query: searchQuery || null
             });
+
+            if (result.error?.code === 'PGRST202') {
+                // Fallback: RPC doesn't have search_query param yet — call without it
+                const fallback = await supabase.rpc('search_nearby_listings', baseParams);
+                data = fallback.data;
+                error = fallback.error;
+            } else {
+                data = result.data;
+                error = result.error;
+            }
 
             if (error) {
                 console.error("Supabase RPC Error Details:", JSON.stringify(error, null, 2));
                 throw error;
             }
-            console.log("RPC Search Results:", data);
 
             // Map RPC result to Listing type
-            const mappedListings: Listing[] = (data as any[]).map(item => ({
+            let mappedListings: Listing[] = (data as any[]).map(item => ({
                 id: item.id,
                 title: item.title,
                 daily_price: item.daily_price,
@@ -297,6 +311,15 @@ export const useMarketplace = () => {
                 distance: item.distance_miles,
                 coordinates: { latitude: item.latitude, longitude: item.longitude }
             }));
+
+            // Client-side text filtering fallback (when RPC doesn't support search_query)
+            if (searchQuery && result.error?.code === 'PGRST202') {
+                const q = searchQuery.toLowerCase();
+                mappedListings = mappedListings.filter(l =>
+                    l.title?.toLowerCase().includes(q) ||
+                    l.description?.toLowerCase().includes(q)
+                );
+            }
 
             setListings(mappedListings);
         } catch (e: any) {
@@ -340,26 +363,26 @@ export const useMarketplace = () => {
 
             const dates: Date[] = [];
             data?.forEach((rental: any) => {
-                // Parse as UTC to avoid local timezone shifts from 00:00:00 timestamps
-                let current = dayjs.utc(rental.start_date);
-                const end = dayjs.utc(rental.end_date);
+                // Helper to handle both ISO timestamps (UTC) and date-only strings (YYYY-MM-DD)
+                // mimicking dayjs.utc(str) behavior where we want the nominal date components to form a local date.
+                const getLocalDateFromUTC = (dateStr: string) => {
+                    if (!dateStr) return new Date();
+                    // If date-only string (e.g. "2023-01-01"), parseISO treats it as Local Midnight, which is exactly what we want.
+                    if (dateStr.length <= 10) {
+                        return parseISO(dateStr);
+                    }
+                    // If timestamp (e.g. "2023-01-01T00:00:00Z"), parseISO creates a Date object (timestamp).
+                    // We extract UTC components to avoid timezone shifts (e.g. 00:00 UTC -> previous day Local).
+                    const d = parseISO(dateStr);
+                    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+                };
 
-                while (current.isBefore(end) || current.isSame(end, 'day')) {
-                    // Convert to JS Date. Note: This creates a date derived from the UTC components.
-                    // However, we want the matched DATE to be the same string representation.
-                    // The simplest way for the Calendar component to match is if we store the string "YYYY-MM-DD" or 
-                    // ensure the Date object resolves to the same day in local time.
-                    // If we use .toDate() on a UTC dayjs object, it converts to local time. 
-                    // e.g. 2023-01-01T00:00Z -> 2022-12-31T19:00 EST. This SHIFTS the day.
+                let current = getLocalDateFromUTC(rental.start_date);
+                const end = getLocalDateFromUTC(rental.end_date);
 
-                    // FIX: We strictly want the calendar date components.
-                    // We will return dates constructed from the Year/Month/Day values match the string.
-                    const dateStr = current.format('YYYY-MM-DD');
-                    // Create a local date from the string components to match Calendar's local inputs
-                    const [y, m, d] = dateStr.split('-').map(Number);
-                    dates.push(new Date(y, m - 1, d));
-
-                    current = current.add(1, 'day');
+                while (isBefore(current, end) || isSameDay(current, end)) {
+                    dates.push(new Date(current));
+                    current = addDays(current, 1);
                 }
             });
 
@@ -421,8 +444,8 @@ export const useMarketplace = () => {
             .insert({
                 listing_id: listingId,
                 owner_id: (await supabase.auth.getUser()).data.user?.id,
-                start_date: dayjs(startDate).format('YYYY-MM-DD'),
-                end_date: dayjs(endDate).format('YYYY-MM-DD'),
+                start_date: format(startDate, 'yyyy-MM-dd'),
+                end_date: format(endDate, 'yyyy-MM-dd'),
                 reason
             });
 

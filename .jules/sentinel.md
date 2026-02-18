@@ -83,3 +83,10 @@
 **Prevention:**
 1. Use Least Recently Used (LRU) or Time-to-Live (TTL) eviction policies for security caches.
 2. Avoid "reset all" logic in security-critical state.
+
+## 2025-11-07 - [Multi-Owner Payment Logic Flaw]
+**Vulnerability:** The Stripe Checkout API (`apps/web/app/api/stripe/checkout/route.ts`) processed payments for carts containing items from multiple owners but only routed funds to the first owner found.
+**Learning:** In multi-vendor marketplaces, "MVP" shortcuts (like assuming single-vendor checkout) must be strictly enforced server-side. Frontend constraints are insufficient when financial routing is involved.
+**Prevention:**
+1. Explicitly validate business logic constraints (e.g., "all items must belong to X") on the server before initializing payments.
+2. Reject requests that violate these constraints with 400 errors rather than processing them partially or incorrectly.

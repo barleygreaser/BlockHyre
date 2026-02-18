@@ -1,18 +1,26 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ToolCard, Tool } from "@/app/components/tool-card";
+import { MobileToolCard } from "@/app/components/mobile-tool-card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
-import { calculateDistance, Coordinates } from "@/lib/location";
-import { InventoryFiltersModal } from "@/app/components/inventory/inventory-filters-modal";
-import { SortDrawer } from "@/app/components/inventory/sort-drawer";
-import { Search, Filter, MapPin, X, Loader2, Zap, Shield, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { cn, generateSlug } from "@/lib/utils";
+import { Coordinates } from "@/lib/location";
+import dynamic from 'next/dynamic';
+
+// Optimization: Lazy load heavy filter modal to reduce initial bundle size and avoid hydration mismatch on mobile/desktop logic
+const InventoryFiltersModal = dynamic(() => import('@/app/components/inventory/inventory-filters-modal').then(mod => mod.InventoryFiltersModal), {
+    ssr: false,
+});
+
+// Optimization: Lazy load sort drawer to reduce initial bundle size
+const SortDrawer = dynamic(() => import('@/app/components/inventory/sort-drawer').then(mod => mod.SortDrawer), {
+    ssr: false,
+});
+import { Search, Filter, X, Zap, Shield, ArrowUpDown, MapPin } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
 import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
 import { Skeleton } from "@/app/components/ui/skeleton";
@@ -31,16 +39,20 @@ import { Switch } from "@/app/components/ui/switch";
 import { Slider } from "@/app/components/ui/slider";
 
 import { useAuth } from "@/app/context/auth-context";
-import { supabase } from "@/lib/supabase";
+import { useMediaQuery } from "@/app/hooks/use-media-query";
 
-// Default Fallback (Woodstock, GA - Neighborhood f295b7bf-1a7e-427e-9527-5bb621851b4b)
+// Default Fallback (Woodstock, GA) - Used as center for global search
 const DEFAULT_LOCATION: Coordinates = {
     latitude: 34.0924,
     longitude: -84.5097,
 };
 
+const GLOBAL_RADIUS_MILES = 20000;
+const DEFAULT_LOCAL_RADIUS = 5.0;
+
 export default function InventoryPage() {
-    const { user } = useAuth();
+    const { user, userProfile, userProfileLoading, loading: authLoading, maybeAuthenticated } = useAuth();
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     // Filters State
     const [searchQuery, setSearchQuery] = useState("");
@@ -48,98 +60,53 @@ export default function InventoryPage() {
     const [selectedTier, setSelectedTier] = useState<string | null>(null);
     const [verifiedOwnersOnly, setVerifiedOwnersOnly] = useState(false);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
-    const [maxDistance, setMaxDistance] = useState(5.0);
+    const [maxDistance, setMaxDistance] = useState(DEFAULT_LOCAL_RADIUS);
     const [acceptsBarterOnly, setAcceptsBarterOnly] = useState(false);
     const [instantBookOnly, setInstantBookOnly] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
 
-    const [userZip, setUserZip] = useState("90012");
     const [userLocation, setUserLocation] = useState<Coordinates>(DEFAULT_LOCATION);
     const [locationLoaded, setLocationLoaded] = useState(false);
-    const [isEditingZip, setIsEditingZip] = useState(false);
     const [sortOption, setSortOption] = useState<"price-asc" | "price-desc" | null>(null);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+    const [neighborhoodName, setNeighborhoodName] = useState<string | null>(null);
 
-    // Fetch User Location Logic
+    // Initialize location from centralized user profile (no direct Supabase call)
     useEffect(() => {
-        const fetchLocation = async () => {
-            try {
-                // 1. If Logged In: Try fetching Neighborhood
-                if (user) {
-                    const { data, error } = await supabase
-                        .from('users')
-                        .select(`
-                            neighborhood_id,
-                            neighborhoods (
-                                center_lat,
-                                center_lon,
-                                name
-                            )
-                        `)
-                        .eq('id', user.id)
-                        .single();
+        // Wait for auth to resolve
+        if (authLoading) return;
 
-                    if (data?.neighborhoods) {
-                        // Cast to any because TS might not know strictly about foreign key expansion types
-                        const nb = data.neighborhoods as any;
-                        setUserLocation({
-                            latitude: nb.center_lat,
-                            longitude: nb.center_lon
-                        });
-                        setLocationLoaded(true);
-                        return;
-                    }
-                }
+        if (user) {
+            // Wait for profile to finish loading
+            if (userProfileLoading) return;
 
-                // 2. Fallback: IP Geolocation (if not logged in or no neighborhood)
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-
-                if (data.latitude && data.longitude) {
-                    setUserLocation({
-                        latitude: data.latitude,
-                        longitude: data.longitude
-                    });
-                    if (data.postal) setUserZip(data.postal);
-                }
-            } catch (error) {
-                console.error("Error determining user location:", error);
-            } finally {
-                setLocationLoaded(true);
+            if (userProfile?.neighborhood) {
+                setUserLocation({
+                    latitude: userProfile.neighborhood.centerLat,
+                    longitude: userProfile.neighborhood.centerLon,
+                });
+                setNeighborhoodName(userProfile.neighborhood.name);
+                setMaxDistance(DEFAULT_LOCAL_RADIUS);
+            } else {
+                // User logged in but no neighborhood — fallback to global
+                setMaxDistance(GLOBAL_RADIUS_MILES);
             }
-        };
-
-        fetchLocation();
-    }, [user]);
-
-    // Simple Zip to Coords map (Mocking a geocoding service)
-    const getCoordsFromZip = (zip: string): Coordinates | null => {
-        const zipMap: Record<string, Coordinates> = {
-            "90012": { latitude: 34.0522, longitude: -118.2437 }, // Downtown LA
-            "90028": { latitude: 34.1000, longitude: -118.3281 }, // Hollywood
-            "90401": { latitude: 34.0195, longitude: -118.4912 }, // Santa Monica
-            "91101": { latitude: 34.1478, longitude: -118.1445 }, // Pasadena
-        };
-        return zipMap[zip] || null;
-    };
-
-    const handleZipUpdate = (newZip: string) => {
-        setUserZip(newZip);
-        const coords = getCoordsFromZip(newZip);
-        if (coords) {
-            setUserLocation(coords);
-            setIsEditingZip(false);
+        } else {
+            // GUEST: Global View
+            setUserLocation(DEFAULT_LOCATION);
+            setMaxDistance(GLOBAL_RADIUS_MILES);
         }
-    };
+
+        setLocationLoaded(true);
+    }, [user, authLoading, userProfile, userProfileLoading]);
 
     const { listings, loading, categoriesLoading, error, searchListings, categories } = useMarketplace();
 
-    // Trigger search when filters change
+    // Trigger search when properties change
     useEffect(() => {
-        // PREVENT SEARCH IF LOCATION ISN'T READY
-        if (!locationLoaded) return;
+        // PREVENT SEARCH IF LOCATION/AUTH ISN'T READY
+        if (!locationLoaded || authLoading) return;
 
-        // Debounce could be added here
         const timer = setTimeout(() => {
             searchListings(
                 userLocation.latitude,
@@ -147,12 +114,13 @@ export default function InventoryPage() {
                 maxDistance,
                 priceRange[0],
                 priceRange[1],
-                undefined // Don't pass category filter to backend - handle all category filtering client-side for instant response
+                undefined, // Client-side category filtering
+                searchQuery
             );
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [maxDistance, priceRange, userLocation, locationLoaded]); // Category filtering is handled client-side, so selectedCategories removed from deps
+    }, [maxDistance, priceRange, userLocation, locationLoaded, searchQuery, authLoading]);
 
     // Map Supabase listings to Tool format
     const inventoryTools: (Tool & { tier: number, ownerVerified: boolean })[] = useMemo(() => {
@@ -185,10 +153,6 @@ export default function InventoryPage() {
     // Client-side sorting/filtering
     const filteredTools = useMemo(() => {
         return inventoryTools.filter(tool => {
-            // 1. Search
-            if (searchQuery && !tool.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-                return false;
-            }
             // 2. Protection Tier
             if (selectedTier && tool.tier !== parseInt(selectedTier)) {
                 return false;
@@ -246,9 +210,6 @@ export default function InventoryPage() {
                 </Button>
             </div>
 
-            {/* Header Section */}
-            {/* ... component placeholder if any ... */}
-
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col md:flex-row gap-8">
 
@@ -257,6 +218,24 @@ export default function InventoryPage() {
                         "w-full md:w-64 space-y-8 flex-shrink-0 hidden md:block"
                     )}>
                         {/* PHASE 1: CORE DISCOVERY */}
+
+                        {/* Current Location Context */}
+                        {(maybeAuthenticated || (user && (!locationLoaded || neighborhoodName))) && (
+                            <div className="pb-4 border-b border-slate-200">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">My Neighborhood</h3>
+                                {(!user || !locationLoaded) ? (
+                                    <div className="flex items-center">
+                                        <Skeleton className="h-5 w-3/4 rounded-sm" />
+                                    </div>
+                                ) : neighborhoodName ? (
+                                    <div className="flex items-center text-slate-800 font-medium">
+                                        <MapPin className="w-4 h-4 mr-1 text-safety-orange" />
+                                        {neighborhoodName}
+                                    </div>
+                                ) : null}
+                            </div>
+                        )}
+
 
                         {/* Search */}
                         <div>
@@ -353,27 +332,29 @@ export default function InventoryPage() {
                                 </div>
                             </div>
 
-                            {/* Distance */}
-                            <div>
-                                <div className="flex items-center justify-between mb-3">
-                                    <Label className="text-sm font-semibold text-slate-700">Distance from Home</Label>
-                                    <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
-                                        {maxDistance} mi
-                                    </span>
+                            {/* Distance (Only shown for logged-in users with defined neighborhood) */}
+                            {user && (
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <Label className="text-sm font-semibold text-slate-700">Distance from Neighborhood</Label>
+                                        <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
+                                            {maxDistance} mi
+                                        </span>
+                                    </div>
+                                    <Slider
+                                        min={0.5}
+                                        max={25}
+                                        step={0.5}
+                                        value={[maxDistance]}
+                                        onValueChange={(val) => setMaxDistance(val[0])}
+                                        className="w-full"
+                                    />
+                                    <div className="flex justify-between text-xs text-slate-400 mt-2">
+                                        <span>0.5 mi</span>
+                                        <span>25 mi</span>
+                                    </div>
                                 </div>
-                                <Slider
-                                    min={0.5}
-                                    max={5}
-                                    step={0.5}
-                                    value={[maxDistance]}
-                                    onValueChange={(val) => setMaxDistance(val[0])}
-                                    className="w-full"
-                                />
-                                <div className="flex justify-between text-xs text-slate-400 mt-2">
-                                    <span>0.5 mi</span>
-                                    <span>5 mi</span>
-                                </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* PHASE 3: FINANCIAL & OPTIONS */}
@@ -430,11 +411,13 @@ export default function InventoryPage() {
                     {/* Main Content (Grid) */}
                     <div className="flex-1">
                         <div className="flex items-center justify-between mb-6">
-                            {loading ? (
+                            {(loading || authLoading) ? (
                                 <Skeleton className="h-7 w-48" />
                             ) : (
                                 <h2 className="text-xl font-bold text-slate-900">
                                     {filteredTools.length} {filteredTools.length === 1 ? 'Tool' : 'Tools'} Found
+                                    {!user && <span className="text-sm font-normal text-slate-500 ml-2">(Everything)</span>}
+                                    {user && neighborhoodName && <span className="text-sm font-normal text-slate-500 ml-2">near {neighborhoodName}</span>}
                                 </h2>
                             )}
                             {/* Active Filters Summary */}
@@ -473,55 +456,37 @@ export default function InventoryPage() {
                         ) : filteredTools.length > 0 ? (
                             <>
                                 {/* Mobile List View */}
-                                <div className="md:hidden space-y-6">
-                                    {filteredTools.map(tool => (
-                                        <Link key={tool.id} href={`/listings/${tool.id}/${generateSlug(tool.title)}`}>
-                                            <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32">
-                                                <div className="w-[35%] relative">
-                                                    <Image
-                                                        src={tool.image}
-                                                        alt={tool.title}
-                                                        fill
-                                                        sizes="(max-width: 768px) 35vw, 200px"
-                                                        className="object-cover"
-                                                    />
-                                                </div>
-                                                <div className="flex-1 p-3 flex flex-col justify-between">
-                                                    <div>
-                                                        <h3 className="font-bold text-slate-900 line-clamp-2 text-sm leading-tight mb-1">{tool.title}</h3>
-                                                        <div className="text-xs text-slate-500">{tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}</div>
-                                                    </div>
-                                                    <div className="mt-1">
-                                                        <span className="font-bold text-lg text-safety-orange">${tool.price}</span>
-                                                        <span className="text-xs text-slate-500">/day</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
+                                {!isDesktop && (
+                                    <div className="space-y-3">
+                                        {filteredTools.map(tool => (
+                                            <MobileToolCard key={tool.id} tool={tool} />
+                                        ))}
+                                    </div>
+                                )}
 
                                 {/* Desktop Grid View */}
-                                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredTools.map(tool => (
-                                        <ToolCard key={tool.id} tool={tool} />
-                                    ))}
-                                </div>
+                                {isDesktop && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                        {filteredTools.map(tool => (
+                                            <ToolCard key={tool.id} tool={tool} />
+                                        ))}
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">
                                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Search className="h-8 w-8 text-slate-400" />
                                 </div>
-                                <h3 className="text-lg font-bold text-slate-900 mb-2">No tools found nearby</h3>
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">No tools found</h3>
                                 <p className="text-slate-500 max-w-md mx-auto mb-6">
-                                    We could not find any tools matching your criteria within {maxDistance} miles.
-                                    Try increasing your search radius or clearing some filters.
+                                    We could not find any tools matching your criteria.
+                                    Try clearing some filters.
                                 </p>
                                 <Button
                                     variant="outline"
                                     onClick={() => {
-                                        setMaxDistance(5);
+                                        setMaxDistance(25);
                                         setSelectedCategories([]);
                                         setSearchQuery("");
                                         setPriceRange([0, 300]);
@@ -531,7 +496,7 @@ export default function InventoryPage() {
                                         setInstantBookOnly(false);
                                     }}
                                 >
-                                    Expand Search Radius
+                                    Reset Filters
                                 </Button>
                             </div>
                         )}
@@ -559,6 +524,7 @@ export default function InventoryPage() {
                 setAcceptsBarterOnly={setAcceptsBarterOnly}
                 instantBookOnly={instantBookOnly}
                 setInstantBookOnly={setInstantBookOnly}
+                showDistanceFilter={!!user}
             />
 
             <SortDrawer

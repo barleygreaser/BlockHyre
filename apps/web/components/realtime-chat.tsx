@@ -133,22 +133,22 @@ export const RealtimeChat = ({
         />
       </div>
 
-      <form onSubmit={handleSendMessage} className="flex w-full gap-2 border-t border-border p-4">
+      <form onSubmit={handleSendMessage} className="flex w-full gap-2 border-t border-border p-4 flex-shrink-0">
         <Input
           ref={inputRef}
           className={cn(
             'rounded-full bg-background text-base transition-all duration-300',
-            isConnected && newMessage.trim() ? 'w-[calc(100%-36px)]' : 'w-full'
+            !isConnected && 'opacity-60',
+            newMessage.trim() ? 'w-[calc(100%-36px)]' : 'w-full'
           )}
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           enterKeyHint="send"
           autoCapitalize="sentences"
-          placeholder="Type a message..."
-          disabled={!isConnected}
+          placeholder={isConnected ? "Type a message..." : "Connecting..."}
         />
-        {isConnected && newMessage.trim() && (
+        {newMessage.trim() && (
           <Button
             className="aspect-square rounded-full animate-in fade-in slide-in-from-right-4 duration-300"
             type="submit"

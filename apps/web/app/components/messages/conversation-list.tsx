@@ -1,99 +1,19 @@
 "use client";
 
-import { useEffect, useState, useRef, memo } from "react";
-import Image from "next/image";
+import { useEffect, useState, useRef } from "react";
 import { useMessages, type Chat } from "@/app/hooks/use-messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/app/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
 import { MessageSquare } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/auth-context";
+import { ConversationListItem } from "./conversation-list-item";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface ConversationListProps {
     selectedChatId: string | null;
     onSelectChat: (chatId: string) => void;
 }
-
-interface ConversationItemProps {
-    chat: Chat;
-    isSelected: boolean;
-    onSelect: (chatId: string) => void;
-}
-
-const ConversationItem = memo(({ chat, isSelected, onSelect }: ConversationItemProps) => {
-    return (
-        <button
-            onClick={() => onSelect(chat.id)}
-            className={cn(
-                "w-full p-4 transition-colors text-left hover:bg-slate-50",
-                isSelected && "bg-slate-100"
-            )}
-        >
-            <div className="flex gap-3">
-                {/* Avatar */}
-                <div className="flex-shrink-0">
-                    {chat.other_user_photo ? (
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden">
-                            <Image
-                                src={chat.other_user_photo}
-                                alt={chat.other_user_name || "User"}
-                                fill
-                                className="object-cover"
-                                sizes="48px"
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-medium">
-                            {chat.other_user_name?.charAt(0).toUpperCase()}
-                        </div>
-                    )}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-1">
-                        <h3 className="font-semibold text-slate-900 truncate">
-                            {chat.other_user_name}
-                        </h3>
-                        {(chat.unread_count ?? 0) > 0 && (
-                            <Badge className="bg-safety-orange hover:bg-safety-orange text-white ml-2 flex-shrink-0">
-                                {chat.unread_count}
-                            </Badge>
-                        )}
-                    </div>
-                    <p className="text-xs text-slate-500 mb-1 truncate">
-                        {chat.listing_title}
-                    </p>
-                    {chat.last_message_content && (
-                        <div className="flex items-center justify-between gap-2">
-                            <p className="text-sm text-slate-600 flex-1 min-w-0 truncate">
-                                {chat.last_message_content?.replace(/\n/g, ' ').replace(/\*\*/g, '').substring(0, 60) || ''}
-                                {(chat.last_message_content?.length || 0) > 60 ? '...' : ''}
-                            </p>
-                            {chat.last_message_time && (
-                                <span className="text-xs text-slate-400 flex-shrink-0 whitespace-nowrap ml-auto">
-                                    {formatDistanceToNow(new Date(chat.last_message_time), { addSuffix: false })
-                                        .replace('about ', '')
-                                        .replace('less than a minute', 'now')
-                                        .replace(' minute', 'm').replace(' minutes', 'm')
-                                        .replace(' hour', 'h').replace(' hours', 'h')
-                                        .replace(' day', 'd').replace(' days', 'd')
-                                        .replace(' month', 'mo').replace(' months', 'mo')
-                                        .replace(' year', 'y').replace(' years', 'y')}
-                                </span>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </button>
-    );
-});
-ConversationItem.displayName = 'ConversationItem';
 
 export function ConversationList({ selectedChatId, onSelectChat }: ConversationListProps) {
     const { fetchConversations, loading } = useMessages();
@@ -102,7 +22,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
     const channelRef = useRef<RealtimeChannel | null>(null);
     const [initialLoad, setInitialLoad] = useState(true);
 
-    const loadConversations = async () => {
+    const loadConversations = async (isBackgroundUpdate = false) => {
         const data = await fetchConversations();
         setConversations(data);
         if (initialLoad) {
@@ -128,9 +48,43 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                     schema: 'public',
                     table: 'messages',
                 },
-                () => {
-                    // Reload conversations when any message changes
-                    loadConversations(); // Pass true for background update
+                (payload) => {
+                    // Optimistic update for new messages to avoid full reload storm
+                    if (payload.eventType === 'INSERT') {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const newMsg = payload.new as any;
+                        setConversations((prev) => {
+                            const index = prev.findIndex((c) => c.id === newMsg.chat_id);
+
+                            // If chat not found (new conversation), fallback to full reload
+                            if (index === -1) {
+                                loadConversations(true);
+                                return prev;
+                            }
+
+                            // Create a new array and object to maintain immutability
+                            const newConversations = [...prev];
+                            const updatedChat = { ...newConversations[index] };
+
+                            // Update last message details
+                            updatedChat.last_message_content = newMsg.content;
+                            updatedChat.last_message_time = newMsg.created_at;
+
+                            // Update unread count if message is from someone else
+                            if (newMsg.sender_id !== user.id) {
+                                updatedChat.unread_count = (updatedChat.unread_count || 0) + 1;
+                            }
+
+                            // Move updated chat to top
+                            newConversations.splice(index, 1);
+                            newConversations.unshift(updatedChat);
+
+                            return newConversations;
+                        });
+                    } else {
+                        // For UPDATE (read status) or DELETE, reload to be safe
+                        loadConversations(true);
+                    }
                 }
             )
             .on(
@@ -142,7 +96,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                 },
                 () => {
                     // Reload when new chat is created
-                    loadConversations(); // Pass true for background update
+                    loadConversations(true);
                 }
             )
             .subscribe();
@@ -189,7 +143,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
         <ScrollArea className="h-full">
             <div className="divide-y divide-slate-200">
                 {conversations.map((chat) => (
-                    <ConversationItem
+                    <ConversationListItem
                         key={chat.id}
                         chat={chat}
                         isSelected={selectedChatId === chat.id}

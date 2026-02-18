@@ -39,3 +39,15 @@
 ## 2024-06-01 - Radix UI Avatar Optimization
 **Learning:** The `@radix-ui/react-avatar` primitive renders a standard `<img>` tag via `AvatarImage`, bypassing Next.js image optimization. This leads to large image payloads in list views (like conversation lists).
 **Action:** When using avatars in high-frequency lists, replace `AvatarImage` with `next/image` (wrapped in a relative container) to ensure proper resizing and format optimization.
+
+## 2024-05-31 - Conversation List Optimization
+**Learning:** Extracting list items into memoized components and stabilizing event handlers in the parent is crucial for performance when the list is long or when the parent re-renders frequently (e.g. on selection change).
+**Action:** When working with lists where items have complex rendering logic or interactivity, always extract the item into a separate memoized component and ensure callback props are stable.
+
+## 2024-06-03 - Responsive Image Optimization
+**Learning:** Using CSS classes like `md:hidden` to toggle between two `next/image` components (e.g., portrait vs landscape) still results in both images being downloaded if `priority` is set, significantly impacting LCP.
+**Action:** Use the `sizes` attribute to instruct the browser to download a minimal placeholder (e.g., `1px` or `1vw`) for the hidden variant based on media queries (e.g., `sizes="(max-width: 767px) 1px, 100vw"` for a desktop-only image).
+
+## 2024-06-04 - Pre-calculating Derived Data for Filtering
+**Learning:** Performing string normalization (e.g. `toLowerCase().trim()`) inside a filter loop causes O(N*M) complexity on every keystroke.
+**Action:** Use `useMemo` to pre-calculate normalized fields (e.g. `normTitle`) for the entire dataset once when it changes, reducing filter complexity to O(N) comparisons.

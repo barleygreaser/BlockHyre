@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { calculateRentalPrice } from "@/lib/pricing";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Initialize Supabase Admin for secure listing verification
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -70,6 +71,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
         }
 
+        // Security: Rate Limit (5 requests per minute per user)
+        if (!checkRateLimit(`checkout_${user.id}`, 5, 60000)) {
+            return NextResponse.json(
+                { error: "Too many checkout attempts. Please try again later." },
+                { status: 429 }
+            );
+        }
+
         // 2. Fetch Listing Data and Owner Stripe Accounts
         // For this MVP, we handle one owner per checkout to keep destination charges simple.
         // If there are multiple owners, we would normally use Separate Charges and Transfers.
@@ -86,6 +95,13 @@ export async function POST(request: Request) {
             console.error("Listing Fetch Error:", listingError);
             // Security: Don't reveal database error details
             return NextResponse.json({ error: "Failed to verify listings. Please try again." }, { status: 500 });
+        }
+
+        // Security: Ensure all items belong to the same owner (MVP Limitation)
+        // This prevents funds from being routed to the wrong owner if a mixed cart is submitted.
+        const uniqueOwnerIds = new Set(listings.map(l => l.owner_id));
+        if (uniqueOwnerIds.size > 1) {
+            return NextResponse.json({ error: "Checkout cannot contain items from multiple owners. Please purchase them separately." }, { status: 400 });
         }
 
         // 3. Prepare Line Items and verify prices server-side
@@ -109,6 +125,11 @@ export async function POST(request: Request) {
         }
 
         for (const item of cartItems) {
+            // Security: Input Validation
+            if (!Number.isInteger(item.days) || item.days <= 0) {
+                return NextResponse.json({ error: "Invalid rental duration." }, { status: 400 });
+            }
+
             const dbListing = listings.find(l => l.id === item.id);
             if (!dbListing) continue;
 

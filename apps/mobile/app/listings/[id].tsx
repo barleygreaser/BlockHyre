@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Image } from 'expo-image';
 import {
     View,
     Text,
@@ -7,12 +8,14 @@ import {
     StatusBar,
     TouchableOpacity,
     Dimensions,
-    Image,
     Platform,
     NativeSyntheticEvent,
     NativeScrollEvent,
     FlatList,
     ViewToken,
+    ActivityIndicator,
+    Alert,
+    useWindowDimensions,
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -40,45 +43,22 @@ import {
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useColorScheme } from '@/components/useColorScheme';
+import { supabase } from '@/lib/supabase';
 import { SpecsGrid, StickyFooter, type Specification } from '@/components/listings';
+import { ListingDetailSkeleton } from '@/components/ListingDetailSkeleton';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { DateRange } from '@/components/calendar/Calendar.props';
 import { lightTheme, darkTheme } from '@/components/calendar/constants';
+import { MOCK_TOOLS } from '@/constants/MockData';
 import moment from 'moment';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HERO_HEIGHT = 340;
 const HEADER_TRANSITION_POINT = 280;
 
-// Mock data - in production, fetch based on id
-const TOOL_DATA = {
-    id: '1',
-    title: 'Kobalt 26-Gallon Air Compressor',
-    distance: '2.3 mi away',
-    rating: 4.9,
-    isVerified: true,
-    owner: {
-        name: 'Marcus',
-        avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAzgZWsqkVmIwTko2t53xcQhuNDcUHFTZgNq5kGXhmMouv6gdR2S7r0KG2W2ppqdeSJDavDV5WUPc55xKgWLQ7WpfUqR0Dqr5QnGBOoAzFT43L5SrLmm3LF-UjbvLqYtEkAH3nM0TgeTY0Pb-LEyAQbqBxapEGwPc2Drktn89_VGhK8byI3l-gb89PoFNXYfE3VASrOoki6tt0ITlfKE7RzsqpcLe9q883Es4-2waMZuDGUZ-oP8hQXlF94s7Z2UwWJPg4XnDd4sA',
-        responseTime: '< 1hr',
-    },
-    description: 'Heavy-duty 26-gallon air compressor perfect for professional and DIY projects. It features a powerful induction motor and long life oil-free pump. Includes quick-connect fittings and a durable 50ft air hose. The compressor is designed for high performance with minimal maintenance requirements.',
-    specs: [
-        { label: 'Tank Size', value: '26 Gallons' },
-        { label: 'Max Pressure', value: '150 PSI' },
-        { label: 'Power Source', value: 'Electric (Corded)' },
-        { label: 'Weight', value: '65 lbs' },
-    ] as Specification[],
-    price: 45,
-    images: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDMNLoNQPeIcDDQJ-f_YhETqmgca9ZoNIoUI6-KhN_wg6jyPB4vCqEKj7sPo-g45tRrqKXza-T4vQLxBUHo8lxaqVOqMTnESkF-TnO84SMDV0Vz_hFHVs8-n1XDOv4zUm_1JlebQA1jYuP_GZKgzIYZbJ6FmV2zL2BnTVPMveVsXBvAxr5o-0yBHQ7gmOVpJD2T6YjyWMwowNSTFeG89Benso5ZUDrEhQeO1mnsfpggWGsVV2JRf8A7RcCItQpVjymqjhN9GS6Czg',
-        'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800',
-        'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800',
-        'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=800',
-    ],
-};
+// Mock data removed - fetching from DB
 
 export default function ListingDetailScreen() {
+    const { width, height } = useWindowDimensions();
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -86,6 +66,7 @@ export default function ListingDetailScreen() {
     const isDark = colorScheme === 'dark';
 
     const [isLiked, setIsLiked] = useState(false);
+    const [user, setUser] = useState<any>(null);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -124,16 +105,91 @@ export default function ListingDetailScreen() {
             if (calendarY > 0) {
                 // Adjust for hero height and overlap
                 const verticalOffset = HERO_HEIGHT - 24;
-                const isInView = (event.contentOffset.y + SCREEN_HEIGHT) > (calendarY + verticalOffset + 100);
+                const isInView = (event.contentOffset.y + height) > (calendarY + verticalOffset + 100);
                 if (isInView !== isCalendarInView) {
                     runOnJS(setIsCalendarInView)(isInView);
                 }
             }
         },
-    }, [calendarY, isScrolled, isCalendarInView]);
+    }, [calendarY, isScrolled, isCalendarInView, height]);
 
-    const toggleLike = () => {
+    // Check for user session and favorite status on mount
+    React.useEffect(() => {
+        const checkFavoriteStatus = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                setUser(user);
+
+                if (user) {
+                    const listingId = Array.isArray(id) ? id[0] : id;
+                    // Skip check for mock IDs
+                    if (!listingId || listingId.length < 20) return;
+
+                    const { data, error } = await supabase
+                        .from('favorites')
+                        .select('id')
+                        .eq('user_id', user.id)
+                        .eq('listing_id', listingId)
+                        .maybeSingle(); // Use maybeSingle to avoid error if not found
+
+                    if (!error && data) {
+                        setIsLiked(true);
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking favorite status:', e);
+            }
+        };
+        checkFavoriteStatus();
+    }, [id]);
+
+    const toggleLike = async () => {
+        if (!user) {
+            Alert.alert(
+                'Sign In Required',
+                'Please sign in to save favorites.',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Sign In', onPress: () => router.push('/onboarding') }
+                ]
+            );
+            return;
+        }
+
+        const listingId = Array.isArray(id) ? id[0] : id;
+        if (!listingId || listingId.length < 20) return;
+
+        // Optimistic update
+        const previousState = isLiked;
         setIsLiked(!isLiked);
+
+        try {
+            if (previousState) {
+                // Remove favorite
+                const { error } = await supabase
+                    .from('favorites')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('listing_id', listingId);
+
+                if (error) throw error;
+            } else {
+                // Add favorite
+                const { error } = await supabase
+                    .from('favorites')
+                    .insert({
+                        user_id: user.id,
+                        listing_id: listingId
+                    });
+
+                if (error) throw error;
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+            // Revert on error
+            setIsLiked(previousState);
+            Alert.alert('Error', 'Failed to update favorite. Please try again.');
+        }
     };
 
     const handleShare = () => {
@@ -273,7 +329,137 @@ export default function ListingDetailScreen() {
         }
     }, [dateRange]);
 
-    const listing = { ...TOOL_DATA, id: id || TOOL_DATA.id };
+    // State for fetching
+    const [listing, setListing] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    React.useEffect(() => {
+        const fetchListing = async () => {
+            const listingId = Array.isArray(id) ? id[0] : id;
+
+            if (!listingId) {
+                setLoading(false);
+                return;
+            }
+
+            // Handle mock IDs from development data to prevent crashes
+            const mockTool = MOCK_TOOLS.find((t) => t.id === listingId);
+            if (mockTool) {
+                setListing({
+                    id: mockTool.id,
+                    title: mockTool.title,
+                    price: mockTool.pricePerDay,
+                    description: `This is a mock description for ${mockTool.title}. It is excellent for your project needs.`,
+                    images: [mockTool.image],
+                    specs: [{ label: 'Category', value: mockTool.category }, { label: 'Condition', value: 'Good' }],
+                    distance: mockTool.distance,
+                    rating: mockTool.rating || 5.0,
+                    isVerified: true,
+                    owner: { name: 'Mock Owner', avatarUrl: 'https://placehold.co/100', responseTime: '< 1hr' }
+                });
+                setLoading(false);
+                return;
+            }
+
+            if (listingId.length < 20) {
+                setListing({
+                    id: listingId,
+                    title: 'Mock Tool (Dev Placeholder)',
+                    price: 45,
+                    description: 'This is a placeholder for development mock data. Real listings will load their actual details.',
+                    images: ['https://placehold.co/600x400'],
+                    specs: [{ label: 'Status', value: 'Mock Data' }],
+                    distance: 'N/A',
+                    rating: 5.0,
+                    isVerified: false,
+                    owner: { name: 'System', avatarUrl: 'https://placehold.co/100', responseTime: 'N/A' }
+                });
+                setLoading(false);
+                return;
+            }
+
+            try {
+                // Fetch listing
+                const { data: listingData, error: listingError } = await supabase
+                    .from('listings')
+                    .select('id, title, daily_price, description, images, specifications, owner_id')
+                    .eq('id', listingId)
+                    .single();
+
+                if (listingError) throw listingError;
+
+                // Fetch owner manually if join fails/simple
+                let ownerProfile = { full_name: 'Unknown User', profile_photo_url: null };
+                if (listingData.owner_id) {
+                    const { data: userData } = await supabase
+                        .from('users')
+                        .select('full_name, profile_photo_url')
+                        .eq('id', listingData.owner_id)
+                        .single();
+                    if (userData) ownerProfile = userData;
+                }
+
+                // Format specs from JSONB
+                const specifications = listingData.specifications || {};
+                const specs = Object.entries(specifications).map(([key, value]) => ({
+                    label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    value: String(value)
+                }));
+
+                const formattedListing = {
+                    ...listingData,
+                    title: listingData.title,
+                    price: listingData.daily_price,
+                    description: listingData.description || 'No description provided.',
+                    images: listingData.images && listingData.images.length > 0 ? listingData.images : ['https://placehold.co/600x400'],
+                    specs: specs.length > 0 ? specs : [{ label: 'Condition', value: 'Used' }],
+                    distance: '2.5 mi away', // Mock
+                    rating: 5.0, // Mock
+                    isVerified: true, // Mock
+                    owner: {
+                        name: ownerProfile.full_name || 'User',
+                        avatarUrl: ownerProfile.profile_photo_url || 'https://placehold.co/100',
+                        responseTime: '< 1hr', // Mock
+                    }
+                };
+
+                // Prefetch critical images (Hero + Avatar) to ensure instant rendering after skeleton
+                const imagesToPrefetch = [
+                    formattedListing.images[0],
+                    formattedListing.owner.avatarUrl
+                ].filter(Boolean);
+
+                try {
+                    await Promise.all(imagesToPrefetch.map(url => Image.prefetch(url)));
+                } catch (err) {
+                    console.warn('Failed to prefetch images:', err);
+                }
+
+                setListing(formattedListing);
+            } catch (err) {
+                console.error('Error fetching listing details:', err);
+                setListing(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchListing();
+    }, [id]);
+
+    if (loading) {
+        return <ListingDetailSkeleton />;
+    }
+
+    if (!listing) {
+        return (
+            <View style={[styles.container, isDark && styles.containerDark, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+                <Text style={[styles.title, isDark && styles.titleDark, { textAlign: 'center' }]}>Listing Not Found</Text>
+                <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 20, padding: 10 }}>
+                    <Text style={{ color: '#FF6700', fontSize: 16 }}>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     return (
         <View style={[styles.container, isDark && styles.containerDark]}>
@@ -387,11 +573,12 @@ export default function ListingDetailScreen() {
                         onViewableItemsChanged={onViewableItemsChanged}
                         keyExtractor={(item, index) => `image-${index}`}
                         renderItem={({ item }) => (
-                            <View style={styles.imageSlide}>
+                            <View style={[styles.imageSlide, { width }]}>
                                 <Image
-                                    source={{ uri: item }}
+                                    source={item}
                                     style={styles.heroImage}
-                                    resizeMode="cover"
+                                    contentFit="cover"
+                                    transition={200}
                                 />
                             </View>
                         )}
@@ -406,7 +593,7 @@ export default function ListingDetailScreen() {
                     {/* Carousel Indicators */}
                     {listing.images.length > 1 && (
                         <Animated.View style={[styles.carouselIndicators, carouselIndicatorStyle]}>
-                            {listing.images.map((_, index) => (
+                            {listing.images.map((_: any, index: number) => (
                                 <View
                                     key={index}
                                     style={[
@@ -422,7 +609,7 @@ export default function ListingDetailScreen() {
                 </Animated.View>
 
                 {/* Content Body - Scrolls over the static image */}
-                <View style={[styles.contentBody, isDark && styles.contentBodyDark]}>
+                <View style={[styles.contentBody, isDark && styles.contentBodyDark, { minHeight: height }]}>
                     {/* Title & Stats */}
                     <View style={styles.titleSection}>
                         <View style={styles.titleRow}>
@@ -453,8 +640,10 @@ export default function ListingDetailScreen() {
                     <View style={styles.ownerSection}>
                         <View style={styles.ownerLeft}>
                             <Image
-                                source={{ uri: listing.owner.avatarUrl }}
+                                source={listing.owner.avatarUrl}
                                 style={styles.ownerAvatar}
+                                contentFit="cover"
+                                transition={200}
                             />
                             <View>
                                 <Text style={[styles.ownerTitle, isDark && styles.ownerTitleDark]}>
@@ -708,7 +897,6 @@ const styles = StyleSheet.create({
         marginBottom: -24, // Allow content to overlap by 24px
     },
     imageSlide: {
-        width: SCREEN_WIDTH,
         height: HERO_HEIGHT,
     },
     heroImage: {

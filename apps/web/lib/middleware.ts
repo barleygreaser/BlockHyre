@@ -39,6 +39,22 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Set a lightweight auth hint cookie for SSR skeleton rendering.
+  // This is NOT a security mechanism — purely a rendering optimization
+  // so the server render can include authenticated-only skeletons (e.g. "My Neighborhood")
+  // from the very first paint, eliminating CLS and skeleton pop-in.
+  if (user) {
+    supabaseResponse.cookies.set('bh-auth-hint', '1', {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 7,
+    })
+  } else {
+    supabaseResponse.cookies.delete('bh-auth-hint')
+  }
+
   const protectedPaths = [
     '/dashboard',
     '/profile',
@@ -57,7 +73,7 @@ export async function updateSession(request: NextRequest) {
   if (isProtectedPath && !user) {
     // no user, respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
+    url.pathname = '/auth'
     return NextResponse.redirect(url)
   }
 

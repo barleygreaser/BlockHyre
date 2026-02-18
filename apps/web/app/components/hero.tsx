@@ -14,6 +14,9 @@ export function Hero() {
                     src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_landscape_opt.jpg"
                     alt="BlockHyre Community Tools - Neighbors exchanging tools"
                     fill
+                    // Optimization: Use `sizes` to load a tiny placeholder (1px) on mobile
+                    // when the image is hidden via CSS, saving bandwidth and improving LCP.
+                    sizes="(max-width: 767px) 1px, 100vw"
                     className="hidden md:block object-cover object-right"
                     priority
                 />
@@ -21,6 +24,8 @@ export function Hero() {
                     src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_portrait_opt.jpg"
                     alt="BlockHyre Community Tools - Neighbors exchanging tools"
                     fill
+                    // Optimization: Use `sizes` to load a tiny placeholder on desktop
+                    sizes="(max-width: 767px) 100vw, 1px"
                     className="md:hidden object-cover object-center"
                     priority
                 />
