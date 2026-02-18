@@ -39,7 +39,6 @@ import { Switch } from "@/app/components/ui/switch";
 import { Slider } from "@/app/components/ui/slider";
 
 import { useAuth } from "@/app/context/auth-context";
-import { supabase } from "@/lib/supabase";
 import { useMediaQuery } from "@/app/hooks/use-media-query";
 
 // Default Fallback (Woodstock, GA) - Used as center for global search
@@ -52,7 +51,7 @@ const GLOBAL_RADIUS_MILES = 20000;
 const DEFAULT_LOCAL_RADIUS = 5.0;
 
 export default function InventoryPage() {
-    const { user, loading: authLoading, maybeAuthenticated } = useAuth();
+    const { user, userProfile, userProfileLoading, loading: authLoading, maybeAuthenticated } = useAuth();
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     // Filters State
@@ -72,60 +71,34 @@ export default function InventoryPage() {
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
     const [neighborhoodName, setNeighborhoodName] = useState<string | null>(null);
 
-    // Initial Setup: Determine Mode (User Neighborhood vs Global Guest)
+    // Initialize location from centralized user profile (no direct Supabase call)
     useEffect(() => {
-        const initializeLocation = async () => {
-            // Wait for auth to resolve entirely
-            if (authLoading) return;
+        // Wait for auth to resolve
+        if (authLoading) return;
 
-            if (user) {
-                // LOGGED IN: Fetch Neighborhood
-                try {
-                    const { data, error } = await supabase
-                        .from('users')
-                        .select(`
-                            neighborhood_id,
-                            neighborhoods (
-                                center_lat,
-                                center_lon,
-                                name
-                            )
-                        `)
-                        .eq('id', user.id)
-                        .single();
+        if (user) {
+            // Wait for profile to finish loading
+            if (userProfileLoading) return;
 
-                    if (data?.neighborhoods) {
-                        const nb = data.neighborhoods as any;
-                        setUserLocation({
-                            latitude: nb.center_lat,
-                            longitude: nb.center_lon
-                        });
-                        setNeighborhoodName(nb.name);
-                        setMaxDistance(DEFAULT_LOCAL_RADIUS);
-                        setLocationLoaded(true);
-                    } else {
-                        // User logged in but no neighborhood? Fallback to Global for now
-                        console.warn("User has no neighborhood assigned. Defaulting to global view.");
-                        setMaxDistance(GLOBAL_RADIUS_MILES);
-                        setLocationLoaded(true);
-                    }
-                } catch (error) {
-                    console.error("Error fetching neighborhood:", error);
-                    // Error state - fallback to standard
-                    setMaxDistance(DEFAULT_LOCAL_RADIUS);
-                    setLocationLoaded(true);
-                }
+            if (userProfile?.neighborhood) {
+                setUserLocation({
+                    latitude: userProfile.neighborhood.centerLat,
+                    longitude: userProfile.neighborhood.centerLon,
+                });
+                setNeighborhoodName(userProfile.neighborhood.name);
+                setMaxDistance(DEFAULT_LOCAL_RADIUS);
             } else {
-                // GUEST: Global View (No IP Tracking)
-                // We use DEFAULT_LOCATION as center but with a huge radius to encompass everything
-                setUserLocation(DEFAULT_LOCATION);
+                // User logged in but no neighborhood — fallback to global
                 setMaxDistance(GLOBAL_RADIUS_MILES);
-                setLocationLoaded(true);
             }
-        };
+        } else {
+            // GUEST: Global View
+            setUserLocation(DEFAULT_LOCATION);
+            setMaxDistance(GLOBAL_RADIUS_MILES);
+        }
 
-        initializeLocation();
-    }, [user, authLoading]);
+        setLocationLoaded(true);
+    }, [user, authLoading, userProfile, userProfileLoading]);
 
     const { listings, loading, categoriesLoading, error, searchListings, categories } = useMarketplace();
 
