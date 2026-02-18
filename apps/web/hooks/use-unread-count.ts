@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/auth-context";
 
@@ -9,6 +9,9 @@ export function useUnreadCount() {
     const userId = user?.id;
     // Optimization: Track userId with count to avoid stale data on user switch
     const [state, setState] = useState<{ userId: string | null; count: number }>({ userId: null, count: 0 });
+
+    // Use a ref to store the timeout ID so we can clear it on unmount or re-render
+    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (!userId) {
@@ -31,8 +34,10 @@ export function useUnreadCount() {
         fetchInitialCount();
 
         // 2. Subscribe to new messages
+        // Use a unique channel per hook instance to prevent collisions if used multiple times
+        const channelName = `unread_count:${userId}:${Math.random().toString(36).substring(7)}`;
         const channel = supabase
-            .channel("global_unread_count")
+            .channel(channelName)
             .on(
                 "postgres_changes",
                 {
@@ -60,24 +65,25 @@ export function useUnreadCount() {
                     const newMessage = payload.new as any;
 
                     // If message was unread and became read
-                    // Note: payload.old might handle checking previous state if using full replica identity, 
-                    // but often only ID is sent. 
-                    // However, we can check if new state is read=true.
-                    // We assume the user reading it triggered the update.
-
                     // Logic: If is_read changed from false to true
                     if (newMessage.is_read === true && newMessage.sender_id !== userId) {
-                        // We can't strictly know if it was ALREADY read without 'old' context containing is_read
-                        // securely, but typically we decrement if we see an update to 'true'.
-                        // To be safe, we might re-fetch or optimistically decrement.
-                        // Let's re-fetch to be accurate.
-                        fetchInitialCount();
+                        // Debounce the re-fetch to avoid N+1 queries when marking multiple messages as read
+                        if (debounceTimeoutRef.current) {
+                            clearTimeout(debounceTimeoutRef.current);
+                        }
+
+                        debounceTimeoutRef.current = setTimeout(() => {
+                            fetchInitialCount();
+                        }, 1000);
                     }
                 }
             )
             .subscribe();
 
         return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
             supabase.removeChannel(channel);
         };
     }, [userId]);
