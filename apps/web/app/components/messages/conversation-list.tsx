@@ -8,6 +8,7 @@ import { MessageSquare } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/auth-context";
 import { ConversationListItem } from "./conversation-list-item";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface ConversationListProps {
     selectedChatId: string | null;
@@ -18,7 +19,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
     const { fetchConversations, loading } = useMessages();
     const [conversations, setConversations] = useState<Chat[]>([]);
     const { user } = useAuth();
-    const channelRef = useRef<any>(null);
+    const channelRef = useRef<RealtimeChannel | null>(null);
     const [initialLoad, setInitialLoad] = useState(true);
 
     const loadConversations = async (isBackgroundUpdate = false) => {
@@ -31,6 +32,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
 
     useEffect(() => {
         loadConversations();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -94,7 +96,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                 },
                 () => {
                     // Reload when new chat is created
-                    loadConversations(true); // Pass true for background update
+                    loadConversations(true);
                 }
             )
             .subscribe();
@@ -106,6 +108,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                 supabase.removeChannel(channelRef.current);
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     if (loading && initialLoad) {
