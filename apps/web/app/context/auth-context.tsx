@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -37,7 +37,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
-    const [maybeAuthenticated] = useState(getInitialAuthHint);
+    const [maybeAuthenticated, setMaybeAuthenticated] = useState(false);
+
+    // useLayoutEffect fires synchronously BEFORE the browser paints.
+    // This ensures logged-in users see the skeleton on the very first visual frame,
+    // while guests never see it at all (localStorage has no token).
+    useLayoutEffect(() => {
+        setMaybeAuthenticated(getInitialAuthHint());
+    }, []);
 
     useEffect(() => {
         // Check active session
