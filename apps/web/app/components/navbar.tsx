@@ -2,61 +2,34 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "./ui/button";
 import { Shield, ShoppingCart, Menu, X, MessageSquare, User, Heart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
-import { supabase } from "@/lib/supabase";
 import { getUserDisplayName } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useUnreadCount } from "@/hooks/use-unread-count";
 
 export function Navbar() {
-    const { user, signOut, loading } = useAuth();
+    const { user, userProfile, signOut, loading } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false); // Dropdown for desktop user menu
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile drawer toggle
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-    const [fullName, setFullName] = useState<string | null>(null);
     const router = useRouter();
 
     // Global unread count hook
     const unreadCount = useUnreadCount();
 
-    interface UserProfile {
-        profile_photo_url: string | null;
-        full_name: string | null;
-    }
-
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            if (!user) return;
-
-            const { data } = await supabase
-                .from('users')
-                .select('profile_photo_url, full_name')
-                .eq('id', user.id)
-                .single();
-
-            const profile = data as UserProfile | null;
-
-            if (profile) {
-                if (profile.profile_photo_url) setAvatarUrl(profile.profile_photo_url);
-                if (profile.full_name) setFullName(profile.full_name);
-            }
-        };
-
-        fetchUserProfile();
-    }, [user]);
+    // Derive avatar and name from centralized user profile
+    const avatarUrl = userProfile?.profilePhotoUrl ?? null;
+    const fullName = userProfile?.fullName ?? null;
 
     const handleSignOut = async () => {
         try {
             await signOut();
             router.push('/');
             setIsMobileMenuOpen(false);
-            setAvatarUrl(null);
-            setFullName(null);
         } catch (error) {
             console.error("Error signing out:", error);
         }

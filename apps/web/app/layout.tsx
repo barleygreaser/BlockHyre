@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Slab } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,31 +25,40 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from "./context/auth-context";
 import { CartProvider } from "./context/cart-context";
+import { FavoritesProvider } from "./context/favorites-context";
 
-// ... imports
 import { LocationOnboardingModal } from "./components/location-onboarding-modal";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { MessageNotificationProvider } from "./components/message-notification-provider";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read the auth hint cookie set by middleware.
+  // This tells the SSR render whether the user is likely authenticated,
+  // allowing authenticated-only skeletons (e.g. "My Neighborhood") to be
+  // included in the initial HTML — eliminating CLS and pop-in.
+  const cookieStore = await cookies();
+  const authHint = cookieStore.get("bh-auth-hint")?.value === "1";
+
   return (
     <html lang="en">
       <body
         className={`${inter.variable} ${robotoSlab.variable} antialiased bg-white text-slate-900 font-sans`}
       >
         <NuqsAdapter>
-          <AuthProvider>
-            <CartProvider>
-              <MessageNotificationProvider />
-              <LocationOnboardingModal />
-              {children}
-              <Toaster richColors theme="light" />
-            </CartProvider>
+          <AuthProvider initialAuthHint={authHint}>
+            <FavoritesProvider>
+              <CartProvider>
+                <MessageNotificationProvider />
+                <LocationOnboardingModal />
+                {children}
+                <Toaster richColors theme="light" />
+              </CartProvider>
+            </FavoritesProvider>
           </AuthProvider>
         </NuqsAdapter>
       </body>
