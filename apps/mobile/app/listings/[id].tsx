@@ -49,6 +49,7 @@ import { ListingDetailSkeleton } from '@/components/ListingDetailSkeleton';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { DateRange } from '@/components/calendar/Calendar.props';
 import { lightTheme, darkTheme } from '@/components/calendar/constants';
+import { MOCK_TOOLS } from '@/constants/MockData';
 import moment from 'moment';
 
 const HERO_HEIGHT = 340;
@@ -342,6 +343,24 @@ export default function ListingDetailScreen() {
             }
 
             // Handle mock IDs from development data to prevent crashes
+            const mockTool = MOCK_TOOLS.find((t) => t.id === listingId);
+            if (mockTool) {
+                setListing({
+                    id: mockTool.id,
+                    title: mockTool.title,
+                    price: mockTool.pricePerDay,
+                    description: `This is a mock description for ${mockTool.title}. It is excellent for your project needs.`,
+                    images: [mockTool.image],
+                    specs: [{ label: 'Category', value: mockTool.category }, { label: 'Condition', value: 'Good' }],
+                    distance: mockTool.distance,
+                    rating: mockTool.rating || 5.0,
+                    isVerified: true,
+                    owner: { name: 'Mock Owner', avatarUrl: 'https://placehold.co/100', responseTime: '< 1hr' }
+                });
+                setLoading(false);
+                return;
+            }
+
             if (listingId.length < 20) {
                 setListing({
                     id: listingId,
@@ -363,7 +382,7 @@ export default function ListingDetailScreen() {
                 // Fetch listing
                 const { data: listingData, error: listingError } = await supabase
                     .from('listings')
-                    .select('*')
+                    .select('id, title, daily_price, description, images, specifications, owner_id')
                     .eq('id', listingId)
                     .single();
 
