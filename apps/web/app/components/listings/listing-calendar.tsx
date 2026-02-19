@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Calendar } from "@/app/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
@@ -16,7 +17,7 @@ interface ListingCalendarProps {
     className?: string;
 }
 
-export function ListingCalendar({
+export const ListingCalendar = memo(function ListingCalendar({
     unavailableDates,
     dateRange,
     onDateRangeChange,
@@ -34,4 +35,4 @@ export function ListingCalendar({
             className={cn("w-full mx-auto", className)}
         />
     );
-}
+});
