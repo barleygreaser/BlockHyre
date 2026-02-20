@@ -121,18 +121,8 @@ export default function ChatScreen() {
     useEffect(() => {
         if (!chatId || !currentUser) return;
 
-<<<<<<< HEAD
         const loadData = async () => {
             setIsLoading(true);
-=======
-        // Load initial messages
-        const fetchMessages = async () => {
-            const { data, error } = await supabase
-                .from('messages')
-                .select('id, content, created_at, sender_id')
-                .eq('conversation_id', conversationId)
-                .order('created_at', { ascending: false });
->>>>>>> main
 
             // Mark as read immediately when opening
             markMessagesAsRead(chatId);
