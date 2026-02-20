@@ -117,7 +117,7 @@ export default function MessagesScreen() {
 
         const { data, error } = await supabase
             .from('conversations')
-            .select('*')
+            .select('id, last_message, updated_at')
             .order('updated_at', { ascending: false });
 
         if (error || !data || data.length === 0) {
