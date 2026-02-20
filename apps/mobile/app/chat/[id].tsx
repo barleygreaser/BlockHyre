@@ -75,7 +75,7 @@ export default function ChatScreen() {
         const fetchMessages = async () => {
             const { data, error } = await supabase
                 .from('messages')
-                .select('*')
+                .select('id, content, created_at, sender_id')
                 .eq('conversation_id', conversationId)
                 .order('created_at', { ascending: false });
 
