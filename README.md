@@ -57,12 +57,10 @@ pnpm dev
 To run only a specific app:
 
 ```bash
-# Run only Web
 pnpm dev --filter web
 ```
 
 ```bash
-# Run only Mobile
 pnpm dev --filter mobile
 ```
 
