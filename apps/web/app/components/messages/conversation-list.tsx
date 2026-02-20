@@ -25,6 +25,12 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
     const hasLoadedRef = useRef(false);
     // P4: Debounce timer for UPDATE events to prevent cascading reloads
     const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Optimization: Use ref to access latest selectedChatId in subscription callback without re-subscribing
+    const selectedChatIdRef = useRef(selectedChatId);
+
+    useEffect(() => {
+        selectedChatIdRef.current = selectedChatId;
+    }, [selectedChatId]);
 
     const loadConversations = useCallback(async () => {
         const data = await fetchConversations();
@@ -92,7 +98,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
 
                         // If the message was marked as read and belongs to the selected chat,
                         // just reset unread count for that chat (no network call needed).
-                        if (updatedMsg.is_read === true && updatedMsg.chat_id === selectedChatId) {
+                        if (updatedMsg.is_read === true && updatedMsg.chat_id === selectedChatIdRef.current) {
                             setConversations((prev) =>
                                 prev.map((c) =>
                                     c.id === updatedMsg.chat_id
@@ -123,12 +129,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                     table: 'chats',
                 },
                 () => {
-<<<<<<< HEAD
                     loadConversations();
-=======
-                    // Reload when new chat is created
-                    loadConversations(true);
->>>>>>> main
                 }
             )
             .subscribe();
@@ -144,11 +145,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-<<<<<<< HEAD
-    }, [user, selectedChatId]);
-=======
-    }, [user]);
->>>>>>> main
+    }, [user]); // Removed selectedChatId to prevent resubscription on selection change
 
     if (loading && initialLoad) {
         return (
