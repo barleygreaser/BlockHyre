@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useCallback, useState } from "react";
+import { createContext, useContext, useEffect, useCallback, useState, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -45,8 +45,15 @@ export function AuthProvider({ children, initialAuthHint = false }: AuthProvider
     const [maybeAuthenticated, setMaybeAuthenticated] = useState(initialAuthHint);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [userProfileLoading, setUserProfileLoading] = useState(false);
+    // P2: Guard to prevent double-fetching user profile when checkSession + onAuthStateChange
+    // both fire for the same user on initial mount
+    const lastFetchedUserIdRef = useRef<string | null>(null);
 
     const fetchUserProfile = useCallback(async (userId: string) => {
+        // P2: Skip if we've already fetched for this user
+        if (lastFetchedUserIdRef.current === userId) return;
+        lastFetchedUserIdRef.current = userId;
+
         setUserProfileLoading(true);
         try {
             const { data, error } = await supabase
@@ -59,7 +66,6 @@ export function AuthProvider({ children, initialAuthHint = false }: AuthProvider
 
             if (data) {
                 const nbRaw = data.neighborhoods as unknown;
-                // Supabase returns the join as an object for single relations or array for multi
                 const nb = Array.isArray(nbRaw) ? nbRaw[0] : nbRaw as { name: string; center_lat: number; center_lon: number } | null;
                 setUserProfile({
                     fullName: data.full_name,
@@ -108,6 +114,8 @@ export function AuthProvider({ children, initialAuthHint = false }: AuthProvider
             } else {
                 setMaybeAuthenticated(false);
                 setUserProfile(null);
+                // Reset the guard on logout so re-login fetches fresh
+                lastFetchedUserIdRef.current = null;
             }
         });
 
@@ -136,6 +144,8 @@ export function AuthProvider({ children, initialAuthHint = false }: AuthProvider
     };
 
     const signIn = async (email: string, password: string) => {
+        // Reset the profile guard so a fresh login always fetches the profile
+        lastFetchedUserIdRef.current = null;
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,

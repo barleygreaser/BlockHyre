@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useMessages, type Chat } from "@/app/hooks/use-messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/app/components/ui/skeleton";
@@ -21,16 +21,23 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
     const { user } = useAuth();
     const channelRef = useRef<RealtimeChannel | null>(null);
     const [initialLoad, setInitialLoad] = useState(true);
+    // P1: Guard against double-mount
+    const hasLoadedRef = useRef(false);
+    // P4: Debounce timer for UPDATE events to prevent cascading reloads
+    const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const loadConversations = async (isBackgroundUpdate = false) => {
+    const loadConversations = useCallback(async () => {
         const data = await fetchConversations();
         setConversations(data);
         if (initialLoad) {
             setInitialLoad(false);
         }
-    };
+    }, [fetchConversations, initialLoad]);
 
+    // P1: Guarded initial load — only fires once
     useEffect(() => {
+        if (hasLoadedRef.current) return;
+        hasLoadedRef.current = true;
         loadConversations();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -49,24 +56,20 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                     table: 'messages',
                 },
                 (payload) => {
-                    // Optimistic update for new messages to avoid full reload storm
                     if (payload.eventType === 'INSERT') {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const newMsg = payload.new as any;
                         setConversations((prev) => {
                             const index = prev.findIndex((c) => c.id === newMsg.chat_id);
 
                             // If chat not found (new conversation), fallback to full reload
                             if (index === -1) {
-                                loadConversations(true);
+                                loadConversations();
                                 return prev;
                             }
 
-                            // Create a new array and object to maintain immutability
                             const newConversations = [...prev];
                             const updatedChat = { ...newConversations[index] };
 
-                            // Update last message details
                             updatedChat.last_message_content = newMsg.content;
                             updatedChat.last_message_time = newMsg.created_at;
 
@@ -81,10 +84,35 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
 
                             return newConversations;
                         });
-                    } else {
-                        // For UPDATE (read status) or DELETE, reload to be safe
-                        loadConversations(true);
+                    } else if (payload.eventType === 'UPDATE') {
+                        // P4: For UPDATE events (e.g. is_read changes), optimistically
+                        // update the unread count if the chat is currently selected,
+                        // instead of doing a full reload every time.
+                        const updatedMsg = payload.new as any;
+
+                        // If the message was marked as read and belongs to the selected chat,
+                        // just reset unread count for that chat (no network call needed).
+                        if (updatedMsg.is_read === true && updatedMsg.chat_id === selectedChatId) {
+                            setConversations((prev) =>
+                                prev.map((c) =>
+                                    c.id === updatedMsg.chat_id
+                                        ? { ...c, unread_count: 0 }
+                                        : c
+                                )
+                            );
+                            return;
+                        }
+
+                        // P4: Debounce full reload for UPDATE events to batch rapid changes
+                        // (e.g. marking multiple messages read fires many UPDATEs in quick succession)
+                        if (reloadTimerRef.current) {
+                            clearTimeout(reloadTimerRef.current);
+                        }
+                        reloadTimerRef.current = setTimeout(() => {
+                            loadConversations();
+                        }, 1000);
                     }
+                    // DELETE events are rare; ignore them or handle as needed
                 }
             )
             .on(
@@ -95,8 +123,12 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                     table: 'chats',
                 },
                 () => {
+<<<<<<< HEAD
+                    loadConversations();
+=======
                     // Reload when new chat is created
                     loadConversations(true);
+>>>>>>> main
                 }
             )
             .subscribe();
@@ -107,9 +139,16 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
             if (channelRef.current) {
                 supabase.removeChannel(channelRef.current);
             }
+            if (reloadTimerRef.current) {
+                clearTimeout(reloadTimerRef.current);
+            }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
+<<<<<<< HEAD
+    }, [user, selectedChatId]);
+=======
     }, [user]);
+>>>>>>> main
 
     if (loading && initialLoad) {
         return (

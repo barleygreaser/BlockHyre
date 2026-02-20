@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useAuth, type UserProfile } from "@/app/context/auth-context";
 
 export interface Chat {
     id: string;
@@ -34,17 +35,21 @@ export interface Message {
 }
 
 export function useMessages() {
+    const { user, userProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchConversations = async (): Promise<Chat[]> => {
+    const fetchConversations = useCallback(async (): Promise<Chat[]> => {
+        if (!user) {
+            setError("Not authenticated");
+            return [];
+        }
+
         setLoading(true);
         setError(null);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error("Not authenticated");
+            const userId = user.id;
 
-            // Fetch chats with related data
             const { data: chats, error: chatsError } = await supabase
                 .from('chats')
                 .select(`
@@ -53,20 +58,10 @@ export function useMessages() {
                     owner:owner_id(id, full_name, profile_photo_url),
                     renter:renter_id(id, full_name, profile_photo_url)
                 `)
-                .or(`owner_id.eq.${user.id},renter_id.eq.${user.id}`)
+                .or(`owner_id.eq.${userId},renter_id.eq.${userId}`)
                 .order('last_message_at', { ascending: false, nullsFirst: false });
 
-            console.log('Fetch conversations result:', {
-                chatsCount: chats?.length,
-                error: chatsError,
-                userId: user.id
-            });
-
             if (chatsError) {
-                console.log('Raw chats error:', chatsError);
-                console.log('Error.message:', chatsError.message);
-                console.log('Error.code:', chatsError.code);
-                console.log('Error.details:', chatsError.details);
                 console.error('Chats error details:', chatsError);
                 throw chatsError;
             }
@@ -81,7 +76,7 @@ export function useMessages() {
                     .select('chat_id')
                     .in('chat_id', chatIds)
                     .eq('is_read', false)
-                    .neq('sender_id', user.id);
+                    .neq('sender_id', userId);
 
                 if (unreadMessages) {
                     unreadMessages.forEach(msg => {
@@ -93,21 +88,17 @@ export function useMessages() {
             // Fetch last message for each chat
             const enrichedChats = await Promise.all(
                 (chats || []).map(async (chat) => {
-                    // Get last message (filtered by recipient_id so users see their own system messages)
                     const { data: lastMessage } = await supabase
                         .from('messages')
                         .select('content, created_at')
                         .eq('chat_id', chat.id)
-                        .or(`recipient_id.is.null,recipient_id.eq.${user.id}`)
+                        .or(`recipient_id.is.null,recipient_id.eq.${userId}`)
                         .order('created_at', { ascending: false })
                         .limit(1)
                         .single();
 
-                    // Get unread count from batched map
                     const unreadCount = unreadCountsMap.get(chat.id) || 0;
-
-                    // Determine the other user
-                    const otherUser = chat.owner_id === user.id ? chat.renter : chat.owner;
+                    const otherUser = chat.owner_id === userId ? chat.renter : chat.owner;
 
                     return {
                         id: chat.id,
@@ -131,9 +122,14 @@ export function useMessages() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
 
-    const fetchMessages = async (chatId: string): Promise<Message[]> => {
+    const fetchMessages = useCallback(async (chatId: string): Promise<Message[]> => {
+        if (!user) {
+            setError("Not authenticated");
+            return [];
+        }
+
         setLoading(true);
         setError(null);
         try {
@@ -144,7 +140,7 @@ export function useMessages() {
                     sender:sender_id(id, full_name, profile_photo_url)
                 `)
                 .eq('chat_id', chatId)
-                .or(`recipient_id.is.null,recipient_id.eq.${(await supabase.auth.getUser()).data.user?.id}`)
+                .or(`recipient_id.is.null,recipient_id.eq.${user.id}`)
                 .order('created_at', { ascending: true })
                 .limit(100);
 
@@ -156,19 +152,21 @@ export function useMessages() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
 
-    const sendMessage = async (chatId: string, content: string, id?: string): Promise<Message | null> => {
+    const sendMessage = useCallback(async (chatId: string, content: string, id?: string): Promise<Message | null> => {
+        if (!user) {
+            setError("Not authenticated");
+            return null;
+        }
+
         setLoading(true);
         setError(null);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error("Not authenticated");
-
             const { data, error: sendError } = await supabase
                 .from('messages')
                 .insert({
-                    id: id, // Optional ID from client
+                    id,
                     chat_id: chatId,
                     sender_id: user.id,
                     content: content.trim(),
@@ -182,17 +180,19 @@ export function useMessages() {
             setError(err.message);
             return null;
         }
-    };
+    }, [user]);
 
-    const markMessagesAsRead = async (chatId: string) => {
+    const markMessagesAsRead = useCallback(async (chatId: string) => {
         try {
             await supabase.rpc('mark_messages_read', { p_chat_id: chatId });
         } catch (err: any) {
             console.error('Error marking messages as read:', err);
         }
-    };
+    }, []);
 
-    const subscribeToChat = (chatId: string, onMessage: (message: Message) => void): RealtimeChannel => {
+    const subscribeToChat = useCallback((chatId: string, onMessage: (message: Message) => void): RealtimeChannel => {
+        const userId = user?.id;
+
         const channel = supabase
             .channel(`chat:${chatId}`)
             .on(
@@ -204,29 +204,41 @@ export function useMessages() {
                     filter: `chat_id=eq.${chatId}`,
                 },
                 async (payload) => {
-                    // Fetch sender details
-                    const { data: sender } = await supabase
-                        .from('users')
-                        .select('id, full_name, profile_photo_url')
-                        .eq('id', payload.new.sender_id)
-                        .single();
+                    const senderId = payload.new.sender_id;
 
-                    // Filter out messages not meant for us
-                    const currentUser = (await supabase.auth.getUser()).data.user;
-                    if (payload.new.recipient_id && payload.new.recipient_id !== currentUser?.id) {
+                    // P5: Skip sender profile fetch for own messages — use AuthContext data
+                    let senderData: Message['sender'];
+                    const currentUserId = userId;
+                    if (currentUserId && senderId === currentUserId && userProfile) {
+                        senderData = {
+                            id: currentUserId,
+                            full_name: userProfile.fullName || 'You',
+                            profile_photo_url: userProfile.profilePhotoUrl || undefined,
+                        };
+                    } else {
+                        const { data: sender } = await supabase
+                            .from('users')
+                            .select('id, full_name, profile_photo_url')
+                            .eq('id', senderId)
+                            .single();
+                        senderData = sender || undefined;
+                    }
+
+                    // Filter out messages not meant for us (no getUser() call needed)
+                    if (payload.new.recipient_id && payload.new.recipient_id !== userId) {
                         return;
                     }
 
                     onMessage({
                         ...payload.new as Message,
-                        sender: sender || undefined,
+                        sender: senderData,
                     });
                 }
             )
             .subscribe();
 
         return channel;
-    };
+    }, [user?.id, userProfile]);
 
     return {
         loading,

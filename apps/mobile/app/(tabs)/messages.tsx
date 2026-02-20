@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     View,
     Text,
@@ -21,7 +21,13 @@ import { BlurView } from 'expo-blur';
 import { Settings } from 'lucide-react-native';
 
 // Simple custom relative time formatter
-const formatTime = (dateString: string) => {
+import { useMessages, Chat } from '../../hooks/use-messages';
+import { formatDistanceToNowStrict } from 'date-fns';
+import { Image } from 'expo-image';
+import { useFocusEffect } from '@react-navigation/native';
+
+const formatTime = (dateString?: string) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -31,15 +37,11 @@ const formatTime = (dateString: string) => {
     return date.toLocaleDateString();
 };
 
-type Conversation = {
-    id: string;
-    last_message: string;
-    updated_at: string;
-};
-
 export default function MessagesScreen() {
-    const [conversations, setConversations] = useState<Conversation[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { fetchConversations, loading, error } = useMessages();
+    const [conversations, setConversations] = useState<Chat[]>([]);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
@@ -98,57 +100,91 @@ export default function MessagesScreen() {
         };
     });
 
-    useEffect(() => {
-        fetchConversations();
-    }, []);
-
-    const fetchConversations = async () => {
-        setLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            setConversations([
-                { id: '1', last_message: 'Hey, is the drill available?', updated_at: new Date().toISOString() },
-                { id: '2', last_message: 'Thanks for the rental!', updated_at: new Date(Date.now() - 86400000).toISOString() },
-            ]);
-            setLoading(false);
-            return;
+    const loadConversations = useCallback(async () => {
+        try {
+            await fetchConversations();
+        } catch (e) {
+            console.error(e);
         }
+    }, [fetchConversations]);
 
-        const { data, error } = await supabase
-            .from('conversations')
-            .select('id, last_message, updated_at')
-            .order('updated_at', { ascending: false });
-
-        if (error || !data || data.length === 0) {
-            setConversations([
-                { id: '1', last_message: 'Hey, is the drill available? (Demo)', updated_at: new Date().toISOString() },
-                { id: '2', last_message: 'Thanks for the rental! (Demo)', updated_at: new Date(Date.now() - 86400000).toISOString() },
-            ]);
-        } else {
-            setConversations(data);
-        }
-
-        setLoading(false);
-    };
-
-    const renderItem = ({ item }: { item: Conversation }) => (
-        <TouchableOpacity
-            style={styles.itemContainer}
-            onPress={() => router.push(`/chat/${item.id}`)}
-        >
-            <View style={styles.avatar}>
-                <Text style={styles.avatarText}>U</Text>
-            </View>
-            <View style={styles.textContainer}>
-                <View style={styles.header}>
-                    <Text style={styles.name}>User {item.id}</Text>
-                    <Text style={styles.time}>{formatTime(item.updated_at)}</Text>
-                </View>
-                <Text style={styles.lastMessage} numberOfLines={1}>{item.last_message}</Text>
-            </View>
-        </TouchableOpacity>
+    // Fetch on mount and when screen comes into focus
+    useFocusEffect(
+        useCallback(() => {
+            loadConversations();
+        }, [loadConversations])
     );
+
+    const renderItem = ({ item }: { item: Chat }) => {
+        const hasUnread = (item.unread_count || 0) > 0;
+
+        return (
+            <TouchableOpacity
+                style={styles.itemContainer}
+                onPress={() => router.push(`/chat/${item.id}`)}
+                activeOpacity={0.7}
+            >
+                {/* Avatar */}
+                <View style={styles.avatarContainer}>
+                    {item.other_user_photo ? (
+                        <Image
+                            source={item.other_user_photo}
+                            style={styles.avatarImage}
+                            contentFit="cover"
+                            transition={200}
+                        />
+                    ) : (
+                        <View style={styles.avatarPlaceholder}>
+                            <Text style={styles.avatarPlaceholderText}>
+                                {item.other_user_name?.charAt(0).toUpperCase() || '?'}
+                            </Text>
+                        </View>
+                    )}
+                </View>
+
+                {/* Content */}
+                <View style={styles.contentContainer}>
+                    <View style={styles.headerRow}>
+                        <Text style={[styles.userName, hasUnread && styles.userNameUnread]} numberOfLines={1}>
+                            {item.other_user_name}
+                        </Text>
+                        <Text style={[styles.timeText, hasUnread && styles.timeTextUnread]}>
+                            {formatTime(item.last_message_time || item.updated_at)}
+                        </Text>
+                    </View>
+
+                    {/* Listing Context (optional but good for context) */}
+                    {item.listing_title && (
+                        <Text style={styles.listingContext} numberOfLines={1}>
+                            Re: {item.listing_title}
+                        </Text>
+                    )}
+
+                    <View style={styles.messageRow}>
+                        <Text
+                            style={[
+                                styles.lastMessage,
+                                hasUnread && styles.lastMessageUnread,
+                                item.listing_title ? { marginTop: 2 } : {} // spacing if listing title exists
+                            ]}
+                            numberOfLines={1}
+                        >
+                            {item.last_message_content || 'Started a conversation'}
+                        </Text>
+
+                        {/* Unread Badge */}
+                        {hasUnread && (
+                            <View style={styles.unreadBadge}>
+                                <Text style={styles.unreadBadgeText}>
+                                    {item.unread_count && item.unread_count > 99 ? '99+' : item.unread_count}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -259,47 +295,98 @@ const styles = StyleSheet.create({
     },
     itemContainer: {
         flexDirection: 'row',
-        paddingVertical: 15,
+        paddingVertical: 16,
         paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
-        alignItems: 'center',
         backgroundColor: '#FFFFFF',
     },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#e1e1e1',
+    avatarContainer: {
+        marginRight: 16,
+        justifyContent: 'center',
+    },
+    avatarImage: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: '#F3F4F6', // optional placeholder color
+    },
+    avatarPlaceholder: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: '#E5E7EB',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 15,
     },
-    avatarText: {
-        fontSize: 20,
+    avatarPlaceholderText: {
+        fontSize: 22,
         fontWeight: '600',
-        color: '#555',
+        color: '#6B7280',
     },
-    textContainer: {
+    contentContainer: {
         flex: 1,
+        justifyContent: 'center',
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: '#E5E7EB',
+        paddingBottom: 16,
     },
-    header: {
+    headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 5,
+        alignItems: 'center',
+        marginBottom: 4,
     },
-    name: {
-        fontSize: 16,
-        fontWeight: '600',
+    userName: {
+        fontSize: 17,
+        fontWeight: '500',
         color: '#111827',
+        flex: 1,
+        marginRight: 8,
     },
-    time: {
-        fontSize: 12,
-        color: '#999',
+    userNameUnread: {
+        fontWeight: '700',
+    },
+    timeText: {
+        fontSize: 13,
+        color: '#6B7280',
+    },
+    timeTextUnread: {
+        color: '#FF6700',
+        fontWeight: '600',
+    },
+    listingContext: {
+        fontSize: 13,
+        color: '#6B7280',
+        marginBottom: 2,
+    },
+    messageRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     lastMessage: {
-        fontSize: 14,
-        color: '#666',
+        fontSize: 15,
+        color: '#6B7280',
+        flex: 1,
+        marginRight: 12,
+        lineHeight: 20,
+    },
+    lastMessageUnread: {
+        color: '#111827',
+        fontWeight: '500',
+    },
+    unreadBadge: {
+        backgroundColor: '#FF6700',
+        borderRadius: 12,
+        minWidth: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+    },
+    unreadBadgeText: {
+        color: '#FFFFFF',
+        fontSize: 12,
+        fontWeight: '700',
     },
     emptyText: {
         textAlign: 'center',

@@ -1,8 +1,9 @@
 "use client";
 
-import { createContext, useState, useEffect, useCallback, useMemo } from "react";
+import { createContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/auth-context";
+import { usePathname } from "next/navigation";
 
 interface FavoritesContextType {
     favoriteIds: Set<string>;
@@ -15,10 +16,17 @@ interface FavoritesContextType {
 
 export const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
+// P3: Pages where favorites data is actually needed. Only fetch on these routes.
+const FAVORITES_PAGES = ['/', '/listings', '/favorites'];
+
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
     const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(true);
+    const pathname = usePathname();
+    // Track if we've already fetched for this user session to avoid re-fetching
+    // when navigating between pages that need favorites
+    const hasFetchedRef = useRef(false);
 
     const fetchFavoriteIds = useCallback(async () => {
         if (!user) {
@@ -37,6 +45,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 
             const ids = new Set((data || []).map((row: { listing_id: string }) => row.listing_id));
             setFavoriteIds(ids);
+            hasFetchedRef.current = true;
         } catch (error) {
             console.error("Error fetching favorites:", error);
         } finally {
@@ -45,8 +54,26 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     }, [user]);
 
     useEffect(() => {
-        fetchFavoriteIds();
-    }, [fetchFavoriteIds]);
+        // Reset fetch state when user changes (logout/login)
+        if (!user) {
+            hasFetchedRef.current = false;
+            setFavoriteIds(new Set());
+            setLoading(false);
+            return;
+        }
+
+        // P3: Only fetch favorites on pages that need them
+        const needsFavorites = FAVORITES_PAGES.some(
+            (page) => pathname === page || pathname?.startsWith('/listings/')
+        );
+
+        if (needsFavorites && !hasFetchedRef.current) {
+            fetchFavoriteIds();
+        } else if (!needsFavorites) {
+            // Don't block rendering on non-favorites pages
+            setLoading(false);
+        }
+    }, [fetchFavoriteIds, pathname, user]);
 
     const isFavorite = useCallback(
         (listingId: string) => favoriteIds.has(listingId),
@@ -57,6 +84,11 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         async (listingId: string): Promise<boolean> => {
             if (!user) {
                 throw new Error("AUTH_REQUIRED");
+            }
+
+            // Ensure favorites are loaded before toggling
+            if (!hasFetchedRef.current) {
+                await fetchFavoriteIds();
             }
 
             const wasFavorited = favoriteIds.has(listingId);
@@ -107,7 +139,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
                 throw error;
             }
         },
-        [user, favoriteIds]
+        [user, favoriteIds, fetchFavoriteIds]
     );
 
     const favoriteCount = useMemo(() => favoriteIds.size, [favoriteIds]);

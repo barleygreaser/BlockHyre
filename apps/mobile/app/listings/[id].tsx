@@ -49,6 +49,7 @@ import { ListingDetailSkeleton } from '@/components/ListingDetailSkeleton';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { DateRange } from '@/components/calendar/Calendar.props';
 import { lightTheme, darkTheme } from '@/components/calendar/constants';
+import { useMessages } from '@/hooks/use-messages';
 import { MOCK_TOOLS } from '@/constants/MockData';
 import moment from 'moment';
 
@@ -196,27 +197,44 @@ export default function ListingDetailScreen() {
         // Implement share functionality
     };
 
-    const handleRent = () => {
-        // Navigate to rental request flow
-        if (!dateRange.start || !dateRange.end) {
-            // If no date selected, maybe show toast or just go to selection flow (optional)
-            // For now, let's just go to request-rental and let it handle defaults or emptiness
-            // But ideally we want to pass the selection if made.
+    // Message / Rent Flow Handler using upsert_conversation RPC
+    const { upsertConversation } = useMessages();
+
+    const handleRent = async () => {
+        if (!user) {
+            Alert.alert(
+                'Sign In Required',
+                'Please sign in to message the owner.',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Sign In', onPress: () => router.push('/onboarding') }
+                ]
+            );
+            return;
         }
 
-        router.push({
-            pathname: '/request-rental',
-            params: {
-                id: listing.id,
-                title: listing.title,
-                price: String(listing.price),
-                image: listing.images[0],
-                // Pass selected dates if available
-                startDate: dateRange.start,
-                endDate: dateRange.end,
-                step: (dateRange.start && dateRange.end) ? 'summary' : 'selection',
-            },
-        });
+        if (!listing || !listing.owner) {
+            Alert.alert('Error', 'Listing details not fully loaded.');
+            return;
+        }
+
+        // Use true owner ID if dealing with real data, else fallback to a mock ID
+        const ownerId = listing.owner_id || 'mock-owner-id';
+        const listingId = listing.id;
+
+        try {
+            const chatId = await upsertConversation(listingId, ownerId);
+
+            if (chatId) {
+                // Push directly to the chat thread
+                router.push(`/chat/${chatId}` as any);
+            } else {
+                Alert.alert('Error', 'Could not open conversation. Please try again.');
+            }
+        } catch (e: any) {
+            Alert.alert('Notice', e.message || 'Could not start conversation.');
+        }
+
     };
 
     // Animated header background style
