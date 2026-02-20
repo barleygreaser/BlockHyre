@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Hammer, MapPin } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ const COLORS = {
 
 export default function OnboardingWelcome() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleStart = () => {
     router.push('/onboarding/how-it-works');
@@ -29,9 +31,9 @@ export default function OnboardingWelcome() {
   const handleBrowse = () => {
     // Prevent infinite navigation loop by clearing stack before replacing
     if (router.canDismiss()) {
-      router.dismissAll();
+      router.dismiss();
     }
-    router.replace('/(tabs)');
+    router.replace('/(tabs)/');
   };
 
   return (
@@ -39,7 +41,7 @@ export default function OnboardingWelcome() {
       <StatusBar style="dark" />
 
       {/* Header */}
-      <SafeAreaView style={styles.safeArea}>
+      <View style={[styles.safeArea, { paddingTop: insets.top }]}>
         <View style={styles.header}>
           <View style={styles.brandContainer}>
             <Hammer size={32} color={COLORS.primary} strokeWidth={2.5} />
@@ -105,7 +107,7 @@ export default function OnboardingWelcome() {
             </TouchableOpacity>
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
@@ -117,7 +119,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? 30 : 0,
   },
   header: {
     paddingHorizontal: 24,

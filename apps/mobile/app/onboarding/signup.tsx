@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, TextInput, Alert, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Alert, ActivityIndicator, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '@/lib/supabase';
 import { Hammer } from 'lucide-react-native';
@@ -10,6 +11,7 @@ const { width } = Dimensions.get('window');
 
 export default function OnboardingSignup() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,7 +19,10 @@ export default function OnboardingSignup() {
     const [showEmailForm, setShowEmailForm] = useState(false);
 
     const handleSkip = () => {
-        router.replace('/(tabs)');
+        if (router.canDismiss()) {
+            router.dismiss();
+        }
+        router.replace('/(tabs)/');
     };
 
     const handleLoginNavigation = () => {
@@ -66,7 +71,7 @@ export default function OnboardingSignup() {
     return (
         <View style={styles.container}>
             <StatusBar style="dark" />
-            <SafeAreaView style={styles.safeArea}>
+            <View style={[styles.safeArea, { paddingTop: insets.top }]}>
                 <View style={styles.content}>
 
                     <View style={styles.header}>
@@ -168,7 +173,7 @@ export default function OnboardingSignup() {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </SafeAreaView>
+            </View>
         </View>
     );
 }
@@ -184,7 +189,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         paddingHorizontal: 24,
-        paddingTop: 40,
+        paddingTop: 20,
         paddingBottom: 24,
     },
     header: {
