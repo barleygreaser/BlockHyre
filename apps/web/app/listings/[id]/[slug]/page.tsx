@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
@@ -62,6 +62,9 @@ export default function ListingDetailsPage() {
         from: new Date(),
         to: addDays(new Date(), 2),
     });
+
+    // Stable date reference to prevent Calendar re-renders
+    const minDate = useMemo(() => new Date(), []);
 
     useEffect(() => {
         if (id) {
@@ -522,7 +525,7 @@ export default function ListingDetailsPage() {
                                                 unavailableDates={unavailableDates}
                                                 dateRange={dateRange}
                                                 onDateRangeChange={setDateRange}
-                                                minDate={new Date()}
+                                                minDate={minDate}
                                             />
                                         </div>
                                     </div>
