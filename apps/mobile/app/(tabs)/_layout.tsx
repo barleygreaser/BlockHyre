@@ -39,7 +39,7 @@ export default function TabLayout() {
   if (!NativeTabs) return <View />;
 
   return (
-    <Tabs
+    <NativeTabs
       screenOptions={{
         tabBarActiveTintColor: '#FF6700',
       }}
@@ -51,7 +51,7 @@ export default function TabLayout() {
         },
       }}
     >
-      <Tabs.Screen
+      <NativeTabs.Screen
         name="index"
         options={{
           title: 'Explore',
@@ -67,7 +67,7 @@ export default function TabLayout() {
             ),
         }}
       />
-      <Tabs.Screen
+      <NativeTabs.Screen
         name="rentals"
         options={{
           title: 'Dashboard',
@@ -83,7 +83,7 @@ export default function TabLayout() {
             ),
         }}
       />
-      <Tabs.Screen
+      <NativeTabs.Screen
         name="messages"
         options={{
           title: 'Inbox',
@@ -99,7 +99,7 @@ export default function TabLayout() {
             ),
         }}
       />
-      <Tabs.Screen
+      <NativeTabs.Screen
         name="profile"
         options={{
           title: 'Profile',
@@ -115,6 +115,6 @@ export default function TabLayout() {
             ),
         }}
       />
-    </Tabs>
+    </NativeTabs>
   );
 }
