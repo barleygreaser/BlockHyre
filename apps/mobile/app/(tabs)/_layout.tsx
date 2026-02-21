@@ -5,14 +5,14 @@ import { Platform, View } from 'react-native';
 import { Search, Wrench, MessageCircle, User } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-// Use standard Tabs for Web (fallback) and NativeTabs for Mobile
-const NativeTabs = Platform.OS !== 'web'
+// Use standard Tabs for Web (fallback/server) and NativeTabs for Mobile
+const NativeTabs = Platform.OS === 'ios' || Platform.OS === 'android'
   ? withLayoutContext(createNativeBottomTabNavigator().Navigator)
   : null;
 
 export default function TabLayout() {
-  // --- WEB FALLBACK ---
-  if (Platform.OS === 'web') {
+  // --- WEB FALLBACK / Node.js Server SSR ---
+  if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
     return (
       <Tabs screenOptions={{ tabBarActiveTintColor: '#FF6700', headerShown: false }}>
         <Tabs.Screen
