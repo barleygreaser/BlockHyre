@@ -26,6 +26,14 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
     // P4: Debounce timer for UPDATE events to prevent cascading reloads
     const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // Track selectedChatId in a ref to use in subscription callback without re-subscribing
+    const selectedChatIdRef = useRef(selectedChatId);
+
+    // Update ref when prop changes
+    useEffect(() => {
+        selectedChatIdRef.current = selectedChatId;
+    }, [selectedChatId]);
+
     const loadConversations = useCallback(async () => {
         const data = await fetchConversations();
         setConversations(data);
@@ -90,9 +98,12 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                         // instead of doing a full reload every time.
                         const updatedMsg = payload.new as any;
 
+                        // Use ref to check selected chat ID without triggering re-subscription
+                        const currentSelectedChatId = selectedChatIdRef.current;
+
                         // If the message was marked as read and belongs to the selected chat,
                         // just reset unread count for that chat (no network call needed).
-                        if (updatedMsg.is_read === true && updatedMsg.chat_id === selectedChatId) {
+                        if (updatedMsg.is_read === true && updatedMsg.chat_id === currentSelectedChatId) {
                             setConversations((prev) =>
                                 prev.map((c) =>
                                     c.id === updatedMsg.chat_id
@@ -123,12 +134,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                     table: 'chats',
                 },
                 () => {
-<<<<<<< HEAD
                     loadConversations();
-=======
-                    // Reload when new chat is created
-                    loadConversations(true);
->>>>>>> main
                 }
             )
             .subscribe();
@@ -144,11 +150,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-<<<<<<< HEAD
-    }, [user, selectedChatId]);
-=======
     }, [user]);
->>>>>>> main
 
     if (loading && initialLoad) {
         return (
