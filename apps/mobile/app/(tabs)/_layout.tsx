@@ -1,6 +1,5 @@
 import { Tabs, withLayoutContext } from 'expo-router';
 import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation';
-import { SymbolView } from 'expo-symbols';
 import { Platform, View } from 'react-native';
 import { Search, Wrench, MessageCircle, User } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -55,64 +54,40 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) =>
-            Platform.OS === 'ios' ? (
-              <SymbolView
-                name={focused ? 'house.fill' : 'house'}
-                size={24}
-                tintColor={color}
-              />
-            ) : (
-              <Search size={24} color={color} />
-            ),
+          tabBarIcon: ({ focused }: { focused: boolean }) =>
+            Platform.OS === 'ios' ? ({
+              sfSymbol: focused ? 'house.fill' : 'house',
+            } as any) : undefined,
         }}
       />
       <NativeTabs.Screen
         name="rentals"
         options={{
           title: 'Dashboard',
-          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) =>
-            Platform.OS === 'ios' ? (
-              <SymbolView
-                name={focused ? 'square.grid.2x2.fill' : 'square.grid.2x2'}
-                size={24}
-                tintColor={color}
-              />
-            ) : (
-              <Wrench size={24} color={color} />
-            ),
+          tabBarIcon: ({ focused }: { focused: boolean }) =>
+            Platform.OS === 'ios' ? ({
+              sfSymbol: focused ? 'square.grid.2x2.fill' : 'square.grid.2x2',
+            } as any) : undefined,
         }}
       />
       <NativeTabs.Screen
         name="messages"
         options={{
           title: 'Inbox',
-          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) =>
-            Platform.OS === 'ios' ? (
-              <SymbolView
-                name={focused ? 'message.fill' : 'message'}
-                size={24}
-                tintColor={color}
-              />
-            ) : (
-              <MessageCircle size={24} color={color} />
-            ),
+          tabBarIcon: ({ focused }: { focused: boolean }) =>
+            Platform.OS === 'ios' ? ({
+              sfSymbol: focused ? 'message.fill' : 'message',
+            } as any) : undefined,
         }}
       />
       <NativeTabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) =>
-            Platform.OS === 'ios' ? (
-              <SymbolView
-                name={focused ? 'person.fill' : 'person'}
-                size={24}
-                tintColor={color}
-              />
-            ) : (
-              <User size={24} color={color} />
-            ),
+          tabBarIcon: ({ focused }: { focused: boolean }) =>
+            Platform.OS === 'ios' ? ({
+              sfSymbol: focused ? 'person.fill' : 'person',
+            } as any) : undefined,
         }}
       />
     </NativeTabs>

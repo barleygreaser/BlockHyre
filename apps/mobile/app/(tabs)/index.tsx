@@ -22,7 +22,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { Search, SlidersHorizontal, Star, MapPin } from 'lucide-react-native';
-import { SortDrawer, SortDrawerRef } from '../../components/SortDrawer';
+import { SortDrawer, SortDrawerRef } from '@/components/SortDrawer';
 import { supabase } from '@/lib/supabase';
 import { ExploreCardSkeletonGrid } from '@/components/ExploreCardSkeleton';
 import { MOCK_TOOLS, Tool } from '@/constants/MockData';
