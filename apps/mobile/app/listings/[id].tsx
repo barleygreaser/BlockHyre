@@ -222,6 +222,17 @@ export default function ListingDetailScreen() {
         const ownerId = listing.owner_id || 'mock-owner-id';
         const listingId = listing.id;
 
+        // Velocity Fix: Intercept mock interactions to prevent Supabase errors
+        const isMockListing = listingId.length < 20 || ownerId === 'mock-owner-id';
+        if (isMockListing) {
+            Alert.alert(
+                'Demo Mode',
+                'This is a mock listing for demonstration purposes. Messaging and renting are disabled.',
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
         try {
             const chatId = await upsertConversation(listingId, ownerId);
 
