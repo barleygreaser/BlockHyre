@@ -30,11 +30,11 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
 }
 
-const gestureHandlerPath = path.resolve(projectRoot, 'node_modules', 'react-native-gesture-handler');
+const gestureHandlerRegex = new RegExp(`apps[\\\\/]+mobile[\\\\/]+node_modules[\\\\/]+react-native-gesture-handler`);
 
 // Block the *local* node_modules path for gesture-handler so Metro only sees the root one.
 config.resolver.blockList = exclusionList([
-    new RegExp(`${escapeRegExp(gestureHandlerPath)}.*`),
+    gestureHandlerRegex,
 ]);
 
 config.resolver.extraNodeModules = {
