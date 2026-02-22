@@ -5,6 +5,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     StatusBar,
+    Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Settings, Activity, History, AlertTriangle, ChevronRight, Plus, Heart } from 'lucide-react-native';
@@ -112,7 +113,7 @@ export default function RentalsScreen() {
                 style={styles.scrollView}
                 contentContainerStyle={{
                     paddingTop: insets.top + HEADER_HEIGHT + 20,
-                    paddingBottom: 40,
+                    paddingBottom: Platform.OS === 'ios' ? 130 : 100,
                 }}
                 onScroll={scrollHandler}
                 scrollEventThrottle={16}
@@ -236,7 +237,7 @@ export default function RentalsScreen() {
             {/* FAB - Add Tool (Visible only in Listings mode) */}
             {isOwner && (
                 <TouchableOpacity
-                    style={styles.fab}
+                    style={[styles.fab, { bottom: Platform.OS === 'ios' ? 110 : 90 }]}
                     activeOpacity={0.8}
                     onPress={() => {
                         // Action for adding a tool

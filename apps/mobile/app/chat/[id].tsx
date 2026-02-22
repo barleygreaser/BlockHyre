@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, Platform, KeyboardAvoidingView } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { useMessages, Message as DBMessage, Chat } from '../../hooks/use-messages';
 import { supabase } from '../../lib/supabase';
 
@@ -34,8 +36,9 @@ const convertMessage = (msg: DBMessage): IMessage => {
     };
 };
 
-function GiftedChatWrapper({ messages, onSend, user }: any) {
+function GiftedChatWrapper({ messages, onSend, user, headerHeight }: any) {
     const { GiftedChat, Bubble, SystemMessage } = require('react-native-gifted-chat');
+    const insets = useSafeAreaInsets();
 
     // Custom bubble to brand with BlockHyre colors
     const renderBubble = (props: any) => {
@@ -86,7 +89,11 @@ function GiftedChatWrapper({ messages, onSend, user }: any) {
             renderBubble={renderBubble}
             renderSystemMessage={renderSystemMessage}
             alwaysShowSend
-            bottomOffset={0} // adjusts for safe area inside gifted chat
+            bottomOffset={Platform.OS === 'ios' ? insets.bottom : 0} // adjusts for safe area inside gifted chat
+            keyboardAvoidingViewProps={{
+                keyboardVerticalOffset: headerHeight,
+                behavior: Platform.OS === 'ios' ? 'padding' : undefined,
+            }}
         />
     );
 }
@@ -99,6 +106,7 @@ export default function ChatScreen() {
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
+    const headerHeight = useHeaderHeight();
 
     const { fetchMessages, sendMessage, markMessagesAsRead, subscribeToChat } = useMessages();
 
@@ -114,7 +122,8 @@ export default function ChatScreen() {
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Loading Chat...', // Updated below
-            headerBackTitleVisible: false,
+            headerBackTitle: 'Inbox',
+            headerBackTitleVisible: true,
         });
     }, [navigation]);
 
@@ -156,7 +165,7 @@ export default function ChatScreen() {
         });
 
         // Set title context (Optional: if we had the other user's name passed in params. For now static)
-        navigation.setOptions({ title: 'Chat' });
+        navigation.setOptions({ title: 'Chat', headerBackTitle: 'Inbox', headerBackTitleVisible: true });
 
         return () => {
             if (unsubscribe) unsubscribe();
@@ -180,7 +189,7 @@ export default function ChatScreen() {
 
     }, [currentUser, chatId, sendMessage]);
 
-    if (isLoading && !currentUser) {
+    if (isLoading || !currentUser) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#FF6700" />
@@ -188,7 +197,7 @@ export default function ChatScreen() {
         );
     }
 
-    const userId = currentUser?.id || 'demo-user-id';
+    const userId = currentUser.id;
 
     return (
         <View style={styles.container}>
@@ -201,6 +210,7 @@ export default function ChatScreen() {
                     messages={messages}
                     onSend={(msgs: IMessage[]) => onSend(msgs)}
                     user={{ _id: userId }}
+                    headerHeight={headerHeight}
                 />
             </Suspense>
         </View>

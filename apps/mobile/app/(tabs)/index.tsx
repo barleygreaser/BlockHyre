@@ -10,6 +10,7 @@ import {
   StatusBar,
   Dimensions,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -262,7 +263,7 @@ export default function ExploreScreen() {
         style={styles.scrollView}
         contentContainerStyle={{
           paddingTop: insets.top + HEADER_HEIGHT + 20,
-          paddingBottom: 100,
+          paddingBottom: Platform.OS === 'ios' ? 130 : 100,
         }}
         onScroll={scrollHandler}
         scrollEventThrottle={16}

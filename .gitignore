@@ -80,3 +80,6 @@ temp_*.json
 **/supabase/backups/
 **/supabase/schema.sql
 **/supabase/schema_dump.sql
+
+# Reference Clones
+gifted-chat-reference/

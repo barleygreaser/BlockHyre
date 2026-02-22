@@ -6,6 +6,7 @@ import {
     FlatList,
     TouchableOpacity,
     StatusBar,
+    Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../lib/supabase';
@@ -102,7 +103,10 @@ export default function MessagesScreen() {
 
     const loadConversations = useCallback(async () => {
         try {
-            await fetchConversations();
+            const data = await fetchConversations();
+            if (data) {
+                setConversations(data);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -197,7 +201,7 @@ export default function MessagesScreen() {
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{
                     paddingTop: insets.top + HEADER_HEIGHT + 20,
-                    paddingBottom: 40,
+                    paddingBottom: Platform.OS === 'ios' ? 130 : 100,
                 }}
                 onScroll={scrollHandler}
                 scrollEventThrottle={16}

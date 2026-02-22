@@ -26,6 +26,8 @@ SplashScreen.preventAutoHideAsync();
 
 import { ToastProvider } from '@/components/toast';
 
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
@@ -49,17 +51,19 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <BottomSheetModalProvider>
-          <ToastProvider>
-            <SheetProvider>
-              <RootLayoutNav />
-            </SheetProvider>
-          </ToastProvider>
-        </BottomSheetModalProvider>
-      </ThemeProvider>
-    </GestureHandlerRootView>
+    <KeyboardProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <BottomSheetModalProvider>
+            <ToastProvider>
+              <SheetProvider>
+                <RootLayoutNav />
+              </SheetProvider>
+            </ToastProvider>
+          </BottomSheetModalProvider>
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    </KeyboardProvider>
   );
 }
 

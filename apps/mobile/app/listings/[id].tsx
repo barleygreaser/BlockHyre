@@ -222,6 +222,13 @@ export default function ListingDetailScreen() {
         const ownerId = listing.owner_id || 'mock-owner-id';
         const listingId = listing.id;
 
+        // UUID strict validation to prevent mock data from crashing the DB
+        const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+        if (!isUuid(ownerId) || !isUuid(listingId)) {
+            Alert.alert('Notice', 'Cannot start chat with mock data in development mode.');
+            return;
+        }
+
         try {
             const chatId = await upsertConversation(listingId, ownerId);
 
