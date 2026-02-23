@@ -183,7 +183,7 @@ export default function InventoryPage() {
                 }
                 return 0;
             });
-    }, [inventoryTools, searchQuery, selectedTier, verifiedOwnersOnly, acceptsBarterOnly, instantBookOnly, selectedCategories, sortOption]);
+    }, [inventoryTools, selectedTier, verifiedOwnersOnly, acceptsBarterOnly, instantBookOnly, selectedCategories, sortOption]);
 
     const toggleCategory = (category: string) => {
         setSelectedCategories(prev =>
@@ -193,8 +193,10 @@ export default function InventoryPage() {
         );
     };
 
-    // Sort categories alphabetically
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    // Sort categories alphabetically (Memoized to prevent re-sort on every render)
+    const sortedCategories = useMemo(() => {
+        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    }, [categories]);
 
     return (
         <main className="min-h-screen bg-slate-50">
@@ -509,7 +511,7 @@ export default function InventoryPage() {
                 onClose={() => setIsFiltersOpen(false)}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
-                categories={categories}
+                categories={sortedCategories}
                 selectedCategories={selectedCategories}
                 toggleCategory={toggleCategory}
                 selectedTier={selectedTier}
