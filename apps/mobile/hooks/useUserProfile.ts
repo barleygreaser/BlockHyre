@@ -31,7 +31,7 @@ export function useUserProfile() {
                     // Fetch profile from 'users' table
                     const { data: profileData, error: profileError } = await supabase
                         .from('users')
-                        .select('*')
+                        .select('id, full_name, profile_photo_url')
                         .eq('id', session.user.id)
                         .single();
 
@@ -62,7 +62,7 @@ export function useUserProfile() {
                 if (mounted) {
                     const { data: profileData } = await supabase
                         .from('users')
-                        .select('*')
+                        .select('id, full_name, profile_photo_url')
                         .eq('id', session.user.id)
                         .single();
                     if (profileData) setProfile(profileData as UserProfile);

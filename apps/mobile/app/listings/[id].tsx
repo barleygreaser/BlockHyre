@@ -222,6 +222,12 @@ export default function ListingDetailScreen() {
         const ownerId = listing.owner_id || 'mock-owner-id';
         const listingId = listing.id;
 
+        // Prevent mock interactions to avoid crashes
+        if (listingId.length < 20 || ownerId === 'mock-owner-id') {
+            Alert.alert('Demo Listing', 'This is a demo listing. Messaging is disabled.');
+            return;
+        }
+
         try {
             const chatId = await upsertConversation(listingId, ownerId);
 
