@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Twitter, Instagram, Linkedin } from "lucide-react";
+import { Twitter, Instagram, Linkedin, ShieldCheck } from "lucide-react";
 
 export function Footer() {
     return (
-        <footer className="bg-charcoal text-concrete/60 pt-20 pb-8 border-t border-white/5 relative">
-            {/* Grain overlay */}
+        <footer className="bg-charcoal text-concrete/60 pt-20 pb-8 border-t border-workshop-gray relative overflow-hidden">
+            {/* Workshop Grit Overlay */}
             <div
                 className="absolute inset-0 opacity-[0.04] pointer-events-none"
                 style={{
@@ -15,131 +15,125 @@ export function Footer() {
             />
 
             <div className="container mx-auto px-4 md:px-8 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-                    {/* Brand */}
-                    <div className="flex flex-col gap-6">
-                        <div className="flex items-center gap-2.5">
-                            <div className="h-10 w-10 rounded-xl bg-safety-orange flex items-center justify-center">
-                                <span className="font-serif font-bold text-white text-lg">B</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-16">
+                    {/* Brand & Systems Status */}
+                    <div className="flex flex-col gap-8 lg:col-span-4">
+                        <div className="flex flex-col gap-6">
+                            <div className="flex items-center gap-2.5">
+                                <div className="h-10 w-10 rounded-[10px] bg-safety-orange flex items-center justify-center border-b-[3px] border-orange-700">
+                                    <span className="font-serif font-bold text-white text-lg">B</span>
+                                </div>
+                                <span className="text-2xl font-bold font-serif tracking-tight text-white">
+                                    BlockHyre
+                                </span>
                             </div>
-                            <span className="text-2xl font-bold font-serif tracking-tight text-white">
-                                BlockHyre
-                            </span>
+                            <p className="text-sm font-sans tracking-wide text-concrete/60 leading-relaxed max-w-sm">
+                                The Neighborhood Factory. Rent high-value tools from verified neighbors. Heavy machinery, precision tools, no compromises.
+                            </p>
                         </div>
-                        <p className="text-sm text-concrete/40 leading-relaxed max-w-xs">
-                            Turn your neighborhood into a factory. Rent high-value tools from
-                            verified neighbors. Every rental insured by The Peace Fund.
-                        </p>
-                        <div className="flex gap-3">
-                            <Link
-                                href="#"
-                                className="text-concrete/30 hover:text-safety-orange transition-colors p-2 hover:bg-white/5 rounded-xl"
-                                aria-label="Twitter"
-                            >
-                                <Twitter className="h-5 w-5" />
-                            </Link>
-                            <Link
-                                href="#"
-                                className="text-concrete/30 hover:text-safety-orange transition-colors p-2 hover:bg-white/5 rounded-xl"
-                                aria-label="Instagram"
-                            >
-                                <Instagram className="h-5 w-5" />
-                            </Link>
-                            <Link
-                                href="#"
-                                className="text-concrete/30 hover:text-safety-orange transition-colors p-2 hover:bg-white/5 rounded-xl"
-                                aria-label="LinkedIn"
-                            >
-                                <Linkedin className="h-5 w-5" />
-                            </Link>
+
+                        {/* The Peace Fund UI Element */}
+                        <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl group hover:border-emerald-500/30 transition-colors w-fit">
+                            <div className="relative flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-mono text-concrete/50 uppercase tracking-widest">Protection Protocol</span>
+                                <span className="text-sm font-sans font-medium text-emerald-400 flex items-center gap-1">
+                                    <ShieldCheck size={14} /> The Peace Fund Operational
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                            {[Twitter, Instagram, Linkedin].map((Icon, i) => (
+                                <Link
+                                    key={i}
+                                    href="#"
+                                    className="text-concrete/40 p-2.5 bg-workshop-gray/40 rounded-xl border border-white/5 hover:border-safety-orange/50 hover:text-safety-orange transition-all hover:-translate-y-[2px] active:translate-y-[1px]"
+                                >
+                                    <Icon className="h-4 w-4" />
+                                </Link>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Platform */}
-                    <div>
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-concrete/30 mb-6">Platform</h3>
-                        <ul className="space-y-4 text-sm">
-                            <li>
-                                <Link href="/listings" className="text-concrete/50 hover:text-safety-orange transition-colors">
-                                    Browse Tools
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/add-tool" className="text-concrete/50 hover:text-safety-orange transition-colors">
-                                    List Your Tools
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/how-it-works" className="text-concrete/50 hover:text-safety-orange transition-colors">
-                                    How it Works
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                    {/* Navigation Columns */}
+                    <div className="grid grid-cols-2 gap-8 lg:col-span-4">
+                        {/* Platform */}
+                        <div>
+                            <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-concrete/40 mb-6">Platform</h3>
+                            <ul className="space-y-4 text-sm font-sans">
+                                {['Browse Tools', 'List Your Tools', 'How it Works'].map((text) => (
+                                    <li key={text}>
+                                        <Link href="#" className="group text-concrete/60 hover:text-white transition-colors relative flex items-center w-fit">
+                                            <span className="text-safety-orange opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 mr-1 font-mono">[</span>
+                                            {text}
+                                            <span className="text-safety-orange opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 ml-1 font-mono">]</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                    {/* Community */}
-                    <div>
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-concrete/30 mb-6">Community</h3>
-                        <ul className="space-y-4 text-sm">
-                            <li>
-                                <Link href="/about" className="text-concrete/50 hover:text-safety-orange transition-colors">
-                                    About Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/community-guidelines" className="text-concrete/50 hover:text-safety-orange transition-colors">
-                                    Guidelines
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/peace-fund" className="text-concrete/50 hover:text-safety-orange transition-colors">
-                                    Peace Fund
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/disputes" className="text-concrete/50 hover:text-safety-orange transition-colors">
-                                    Dispute Tribunal
-                                </Link>
-                            </li>
-                        </ul>
+                        {/* Community */}
+                        <div>
+                            <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-concrete/40 mb-6">Community</h3>
+                            <ul className="space-y-4 text-sm font-sans">
+                                {['About Us', 'Guidelines', 'Dispute Tribunal'].map((text) => (
+                                    <li key={text}>
+                                        <Link href="#" className="group text-concrete/60 hover:text-white transition-colors relative flex items-center w-fit">
+                                            <span className="text-safety-orange opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 mr-1 font-mono">[</span>
+                                            {text}
+                                            <span className="text-safety-orange opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 ml-1 font-mono">]</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
 
                     {/* Newsletter */}
-                    <div className="flex flex-col gap-5">
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-concrete/30">Stay Operational</h3>
-                        <p className="text-sm text-concrete/40">
-                            Get weekly updates on new tools in your neighborhood.
+                    <div className="flex flex-col gap-5 lg:col-span-4 bg-workshop-gray/20 p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                        {/* Scanner Bar effect */}
+                        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-safety-orange/50 h-full opacity-0 hover:animate-pulse hover:opacity-100 transition-opacity" />
+
+                        <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-white">System Updates</h3>
+                        <p className="text-sm font-sans text-concrete/50">
+                            Get weekly telemetry on new tools initialized in your sector.
                         </p>
-                        <div className="flex gap-2">
+                        <form className="flex gap-2.5 mt-2" onSubmit={(e) => e.preventDefault()}>
                             <Input
                                 type="email"
-                                placeholder="your@email.com"
-                                className="bg-white/5 border-white/10 text-white placeholder:text-concrete/30 focus-visible:ring-safety-orange/30 focus-visible:border-safety-orange/40 rounded-xl h-10 text-sm"
-                                aria-label="Email for newsletter"
+                                placeholder="sys_admin@email.com"
+                                className="bg-charcoal border-white/10 text-white font-mono placeholder:text-concrete/30 focus-visible:ring-1 focus-visible:ring-safety-orange focus-visible:border-safety-orange rounded-xl h-11 text-[13px] tracking-wide"
+                                aria-label="Email for updates"
                             />
                             <Button
-                                className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold rounded-xl px-5 h-10 text-xs uppercase tracking-wider shrink-0 transition-all hover:shadow-lg hover:shadow-safety-orange/20"
+                                type="submit"
+                                className="bg-safety-orange hover:bg-[#E56000] text-white font-bold rounded-xl px-5 h-11 text-[11px] font-mono uppercase tracking-[0.1em] shrink-0 transition-all border-b-[3px] border-orange-900 active:border-b-0 active:translate-y-[3px] hover:-translate-y-[1px] shadow-lg hover:shadow-safety-orange/20"
                             >
-                                Join
+                                Init
                             </Button>
-                        </div>
+                        </form>
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex items-center gap-3">
-                        <div className="h-1.5 w-1.5 rounded-full bg-safety-orange animate-pulse-operational" />
-                        <p className="text-[10px] text-concrete/30 font-mono uppercase tracking-wider">
-                            &copy; {new Date().getFullYear()} BlockHyre Inc. All systems operational.
+                {/* Telemetry Bottom Bar */}
+                <div className="pt-6 border-t border-workshop-gray/50 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-4 bg-black/40 px-3 py-1.5 rounded-md border border-white/5">
+                        <div className="h-2 w-2 rounded-sm bg-safety-orange animate-pulse" />
+                        <p className="text-[10px] text-concrete/40 font-mono uppercase tracking-[0.15em]">
+                            SYS.OP &copy; {new Date().getFullYear()} BLOCKHYRE INC.
                         </p>
                     </div>
-                    <div className="flex flex-wrap justify-center gap-6 text-xs text-concrete/30">
-                        <Link href="/terms" className="hover:text-safety-orange transition-colors">
-                            Terms
+                    <div className="flex flex-wrap justify-center gap-8 text-[11px] font-mono text-concrete/40 tracking-widest uppercase">
+                        <Link href="/terms" className="hover:text-white transition-colors hover:underline decoration-safety-orange underline-offset-4">
+                            Terms //
                         </Link>
-                        <Link href="/liability" className="hover:text-safety-orange transition-colors">
-                            Liability
+                        <Link href="/liability" className="hover:text-white transition-colors hover:underline decoration-safety-orange underline-offset-4">
+                            Liability //
                         </Link>
                     </div>
                 </div>
