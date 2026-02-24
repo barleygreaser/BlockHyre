@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
+
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
 import { Button, buttonVariants } from "./ui/button";
 import { ShoppingCart, Menu, X, User, Heart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
@@ -13,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { useUnreadCount } from "@/hooks/use-unread-count";
 
 export function Navbar() {
-    const { user, userProfile, signOut, loading } = useAuth();
+    const { user, userProfile, signOut, loading, maybeAuthenticated } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const router = useRouter();
@@ -24,13 +27,17 @@ export function Navbar() {
     // On non-homepage routes, always show the pill state.
     // On homepage, transition from transparent → pill on scroll.
     const [isScrolled, setIsScrolled] = useState(!isHomepage);
+    const [isMounted, setIsMounted] = useState(false);
 
     const unreadCount = useUnreadCount();
 
     const avatarUrl = userProfile?.profilePhotoUrl ?? null;
     const fullName = userProfile?.fullName ?? null;
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
+        // Delay enabling CSS transitions by 1 macrotask so the initial render state doesn't jump
+        setTimeout(() => setIsMounted(true), 50);
+
         if (!isHomepage) {
             setIsScrolled(true);
             return;
@@ -39,8 +46,10 @@ export function Navbar() {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 60);
         };
-        window.addEventListener("scroll", handleScroll, { passive: true });
+        // Check scroll immediately to sync state before browser paints
         handleScroll();
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, [isHomepage]);
 
@@ -57,13 +66,13 @@ export function Navbar() {
     return (
         <>
             <nav
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isScrolled
+                className={`fixed top-0 left-0 right-0 z-50 ${isMounted ? "transition-all duration-500 ease-out" : ""} ${isScrolled
                     ? `py-2 px-4 md:px-8 ${!isHomepage ? "bg-gradient-to-b from-black/40 via-black/5 to-transparent" : ""}`
                     : "py-3 px-4 md:px-8"
                     }`}
             >
                 <div
-                    className={`mx-auto transition-all duration-300 ease-in-out border rounded-full ${isScrolled
+                    className={`mx-auto border rounded-full ${isMounted ? "transition-all duration-300 ease-in-out" : ""} ${isScrolled
                         ? "max-w-6xl bg-charcoal/80 backdrop-blur-xl border-safety-orange/20 shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6 py-1"
                         : "max-w-[1440px] bg-transparent border-transparent shadow-none px-2 md:px-6 py-1"
                         }`}
@@ -155,10 +164,18 @@ export function Navbar() {
                             {/* Desktop Auth/User Actions */}
                             <div className="hidden lg:flex items-center gap-2 xl:gap-3 transition-all duration-300 min-w-[170px] justify-end">
                                 {loading ? (
-                                    <div className="flex items-center gap-2 xl:gap-3 opacity-60">
-                                        <Skeleton className="h-9 w-[65px] rounded-full bg-white/5" />
-                                        <Skeleton className="h-9 w-[90px] rounded-full bg-safety-orange/40" />
-                                    </div>
+                                    maybeAuthenticated ? (
+                                        <div className="flex items-center gap-2 xl:gap-3 opacity-60">
+                                            <Skeleton className="h-9 w-[110px] rounded-full bg-safety-orange/40" />
+                                            <Skeleton className="h-9 w-[90px] rounded-full bg-white/10" />
+                                            <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2 xl:gap-3 opacity-60">
+                                            <Skeleton className="h-9 w-[65px] rounded-full bg-white/5" />
+                                            <Skeleton className="h-9 w-[90px] rounded-full bg-safety-orange/40" />
+                                        </div>
+                                    )
                                 ) : user ? (
                                     <div className="flex items-center gap-2 xl:gap-3">
                                         <Link href="/add-tool">
@@ -348,15 +365,33 @@ export function Navbar() {
                             <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
                                 {loading ? (
                                     <div className="space-y-6 opacity-60">
-                                        <div className="space-y-4 pb-6 border-b border-white/10">
-                                            <Skeleton className="h-12 w-full rounded-xl bg-safety-orange/40" />
-                                            <Skeleton className="h-12 w-full rounded-xl bg-white/5" />
-                                        </div>
-                                        <div className="flex flex-col gap-4 pt-2">
-                                            <Skeleton className="h-5 w-24 bg-white/5 rounded" />
-                                            <Skeleton className="h-5 w-32 bg-white/5 rounded" />
-                                            <Skeleton className="h-5 w-28 bg-white/5 rounded" />
-                                        </div>
+                                        {maybeAuthenticated ? (
+                                            <>
+                                                <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+                                                    <Skeleton className="h-12 w-12 rounded-full bg-white/10" />
+                                                    <div className="flex-1 space-y-2">
+                                                        <Skeleton className="h-5 w-3/4 bg-white/10" />
+                                                        <Skeleton className="h-4 w-1/2 bg-white/10" />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <Skeleton className="h-12 w-full rounded-xl bg-safety-orange/40" />
+                                                    <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="space-y-4 pb-6 border-b border-white/10">
+                                                    <Skeleton className="h-12 w-full rounded-xl bg-safety-orange/40" />
+                                                    <Skeleton className="h-12 w-full rounded-xl bg-white/5" />
+                                                </div>
+                                                <div className="flex flex-col gap-4 pt-2">
+                                                    <Skeleton className="h-5 w-24 bg-white/5 rounded" />
+                                                    <Skeleton className="h-5 w-32 bg-white/5 rounded" />
+                                                    <Skeleton className="h-5 w-28 bg-white/5 rounded" />
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 ) : user ? (
                                     <>
