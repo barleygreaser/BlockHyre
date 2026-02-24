@@ -12,6 +12,9 @@ export function Hero() {
     const headlineRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        let tl: any = null;
+        let ctx: any = null;
+
         const loadGsap = async () => {
             try {
                 const gsapModule = await import("gsap");
@@ -22,36 +25,67 @@ export function Hero() {
 
                 if (!headlineRef.current) return;
 
-                const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+                // Create a GSAP context scoped to the hero — auto-cleans everything on revert
+                ctx = gsap.context(() => {
+                    const targets = [".hero-line-1", ".hero-line-2", ".hero-subtitle", ".hero-cta"];
 
-                tl.from(headlineRef.current.querySelectorAll(".hero-line-1"), {
-                    y: 60,
-                    opacity: 0,
-                    duration: 1,
-                    delay: 0.2,
-                });
-                tl.from(headlineRef.current.querySelectorAll(".hero-line-2"), {
-                    y: 80,
-                    opacity: 0,
-                    duration: 1.2,
-                    skewY: 2,
-                }, "-=0.6");
-                tl.from(headlineRef.current.querySelectorAll(".hero-subtitle"), {
-                    y: 30,
-                    opacity: 0,
-                    duration: 0.8,
-                }, "-=0.6");
-                tl.from(headlineRef.current.querySelectorAll(".hero-cta"), {
-                    y: 20,
-                    opacity: 0,
-                    duration: 0.6,
-                    stagger: 0.15,
-                }, "-=0.4");
+                    // Reset all animated elements to hidden state first
+                    // This ensures clean re-entry on client-side navigation
+                    gsap.set(".hero-line-1", { y: 60, opacity: 0 });
+                    gsap.set(".hero-line-2", { y: 80, opacity: 0, skewY: 2 });
+                    gsap.set(".hero-subtitle", { y: 30, opacity: 0 });
+                    gsap.set(".hero-cta", { y: 20, opacity: 0 });
+
+                    // Build the entrance timeline
+                    tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+                    tl.to(".hero-line-1", {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        delay: 0.2,
+                    });
+                    tl.to(".hero-line-2", {
+                        y: 0,
+                        opacity: 1,
+                        skewY: 0,
+                        duration: 1.2,
+                    }, "-=0.6");
+                    tl.to(".hero-subtitle", {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.8,
+                    }, "-=0.6");
+                    tl.to(".hero-cta", {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.6,
+                        stagger: 0.15,
+                    }, "-=0.4");
+                }, headlineRef);
             } catch {
                 // GSAP not critical — animations degrade gracefully
+                // On failure, make sure elements are visible
+                if (headlineRef.current) {
+                    headlineRef.current.querySelectorAll(".hero-line-1, .hero-line-2, .hero-subtitle, .hero-cta")
+                        .forEach((el) => {
+                            (el as HTMLElement).style.opacity = "1";
+                            (el as HTMLElement).style.transform = "none";
+                        });
+                }
             }
         };
-        loadGsap();
+
+        // Small RAF delay ensures DOM is fully painted before animation starts
+        requestAnimationFrame(() => {
+            loadGsap();
+        });
+
+        return () => {
+            // Clean up: kill timeline and revert GSAP context on unmount
+            if (tl) tl.kill();
+            if (ctx) ctx.revert();
+        };
     }, []);
 
     return (

@@ -57,8 +57,8 @@ function AvailabilityHeatmap() {
                             <div
                                 key={colIdx}
                                 className={`h-8 rounded-lg transition-all duration-300 ${available
-                                        ? "bg-safety-orange/10 border border-safety-orange/20 group-hover:bg-safety-orange/25 group-hover:border-safety-orange/40"
-                                        : "bg-slate-50 border border-slate-100"
+                                    ? "bg-safety-orange/10 border border-safety-orange/20 group-hover:bg-safety-orange/25 group-hover:border-safety-orange/40"
+                                    : "bg-slate-50 border border-slate-100"
                                     }`}
                                 style={{
                                     transitionDelay: `${(rowIdx * 7 + colIdx) * 30}ms`,
@@ -275,6 +275,8 @@ export function IndustrialArtifacts() {
     const sectionRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
+        let ctx: any = null;
+
         const loadGsap = async () => {
             try {
                 const gsapModule = await import("gsap");
@@ -285,26 +287,34 @@ export function IndustrialArtifacts() {
 
                 if (!sectionRef.current) return;
 
-                const cards = sectionRef.current.querySelectorAll(".artifact-card");
+                ctx = gsap.context(() => {
+                    const cards = sectionRef.current!.querySelectorAll(".artifact-card");
 
-                cards.forEach((card, idx) => {
-                    gsap.from(card, {
-                        x: idx % 2 === 0 ? -80 : 80,
-                        opacity: 0,
-                        duration: 0.9,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 85%",
-                            toggleActions: "play none none none",
-                        },
+                    cards.forEach((card, idx) => {
+                        gsap.set(card, { x: idx % 2 === 0 ? -80 : 80, opacity: 0 });
+
+                        gsap.to(card, {
+                            x: 0,
+                            opacity: 1,
+                            duration: 0.9,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 85%",
+                                toggleActions: "play none none none",
+                            },
+                        });
                     });
-                });
+                }, sectionRef);
             } catch {
                 // Graceful degradation
             }
         };
         loadGsap();
+
+        return () => {
+            if (ctx) ctx.revert();
+        };
     }, []);
 
     return (

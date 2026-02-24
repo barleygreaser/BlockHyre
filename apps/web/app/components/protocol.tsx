@@ -43,6 +43,8 @@ export function Protocol() {
     const sectionRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
+        let ctx: any = null;
+
         const loadGsap = async () => {
             try {
                 const gsapModule = await import("gsap");
@@ -53,39 +55,47 @@ export function Protocol() {
 
                 if (!sectionRef.current) return;
 
-                const cards = sectionRef.current.querySelectorAll(".protocol-card");
+                ctx = gsap.context(() => {
+                    const cards = sectionRef.current!.querySelectorAll(".protocol-card");
 
-                cards.forEach((card, idx) => {
-                    gsap.from(card, {
-                        y: 100,
-                        opacity: 0,
-                        scale: 0.95,
-                        duration: 0.8,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 85%",
-                            toggleActions: "play none none none",
-                        },
-                        delay: idx * 0.1,
-                    });
-                });
+                    cards.forEach((card, idx) => {
+                        gsap.set(card, { y: 100, opacity: 0, scale: 0.95 });
 
-                /* Icon spin animation for the gear */
-                const gearIcon = sectionRef.current.querySelector(".protocol-gear");
-                if (gearIcon) {
-                    gsap.to(gearIcon, {
-                        rotation: 360,
-                        duration: 8,
-                        repeat: -1,
-                        ease: "none",
+                        gsap.to(card, {
+                            y: 0,
+                            opacity: 1,
+                            scale: 1,
+                            duration: 0.8,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 85%",
+                                toggleActions: "play none none none",
+                            },
+                            delay: idx * 0.1,
+                        });
                     });
-                }
+
+                    /* Icon spin animation for the gear */
+                    const gearIcon = sectionRef.current!.querySelector(".protocol-gear");
+                    if (gearIcon) {
+                        gsap.to(gearIcon, {
+                            rotation: 360,
+                            duration: 8,
+                            repeat: -1,
+                            ease: "none",
+                        });
+                    }
+                }, sectionRef);
             } catch {
                 // Graceful degradation
             }
         };
         loadGsap();
+
+        return () => {
+            if (ctx) ctx.revert();
+        };
     }, []);
 
     return (

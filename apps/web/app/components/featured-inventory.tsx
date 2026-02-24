@@ -72,6 +72,8 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
     }, [filteredListings]);
 
     useEffect(() => {
+        let ctx: any = null;
+
         const loadGsap = async () => {
             try {
                 const gsapModule = await import("gsap");
@@ -82,26 +84,34 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
 
                 if (!sectionRef.current) return;
 
-                const cards = sectionRef.current.querySelectorAll(".inventory-card");
+                ctx = gsap.context(() => {
+                    const cards = sectionRef.current!.querySelectorAll(".inventory-card");
 
-                cards.forEach((card, idx) => {
-                    gsap.from(card, {
-                        x: idx % 2 === 0 ? -60 : 60,
-                        opacity: 0,
-                        duration: 0.7,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 90%",
-                            toggleActions: "play none none none",
-                        },
+                    cards.forEach((card, idx) => {
+                        gsap.set(card, { x: idx % 2 === 0 ? -60 : 60, opacity: 0 });
+
+                        gsap.to(card, {
+                            x: 0,
+                            opacity: 1,
+                            duration: 0.7,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 90%",
+                                toggleActions: "play none none none",
+                            },
+                        });
                     });
-                });
+                }, sectionRef);
             } catch {
                 // Graceful degradation
             }
         };
         loadGsap();
+
+        return () => {
+            if (ctx) ctx.revert();
+        };
     }, [cardProps]);
 
     return (

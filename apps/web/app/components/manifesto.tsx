@@ -6,6 +6,8 @@ export function Manifesto() {
     const sectionRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
+        let ctx: any = null;
+
         const loadGsap = async () => {
             try {
                 const gsapModule = await import("gsap");
@@ -16,35 +18,44 @@ export function Manifesto() {
 
                 if (!sectionRef.current) return;
 
-                gsap.from(sectionRef.current.querySelector(".manifesto-dim"), {
-                    opacity: 0,
-                    y: 30,
-                    duration: 0.8,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top 70%",
-                        toggleActions: "play none none none",
-                    },
-                });
+                ctx = gsap.context(() => {
+                    gsap.set(".manifesto-dim", { opacity: 0, y: 30 });
+                    gsap.set(".manifesto-bold", { opacity: 0, y: 60, scale: 0.95 });
 
-                gsap.from(sectionRef.current.querySelector(".manifesto-bold"), {
-                    opacity: 0,
-                    y: 60,
-                    scale: 0.95,
-                    duration: 1.2,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top 60%",
-                        toggleActions: "play none none none",
-                    },
-                });
+                    gsap.to(".manifesto-dim", {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start: "top 70%",
+                            toggleActions: "play none none none",
+                        },
+                    });
+
+                    gsap.to(".manifesto-bold", {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 1.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start: "top 60%",
+                            toggleActions: "play none none none",
+                        },
+                    });
+                }, sectionRef);
             } catch {
                 // Graceful degradation
             }
         };
         loadGsap();
+
+        return () => {
+            if (ctx) ctx.revert();
+        };
     }, []);
 
     return (
