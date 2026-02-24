@@ -220,51 +220,54 @@ export function Navbar() {
                                                         className="fixed inset-0 z-40"
                                                         onClick={() => setIsMenuOpen(false)}
                                                     />
-                                                    <div className="absolute right-0 mt-3 w-56 bg-charcoal/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 py-1 border border-safety-orange/20 z-50 overflow-hidden">
-                                                        <div className="px-4 py-3 border-b border-white/10">
-                                                            <p className="text-sm font-semibold text-white truncate">
+                                                    <div className="absolute right-0 top-[calc(100%+20px)] w-56 bg-charcoal/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 p-1.5 border border-safety-orange/20 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
+                                                        <div className="px-3 py-2.5 mb-1.5 border-b border-white/10">
+                                                            <p className="text-[10px] font-mono font-bold text-concrete/40 uppercase tracking-[0.2em] mb-1">
+                                                                Sys_User
+                                                            </p>
+                                                            <p className="text-sm font-bold text-white truncate">
                                                                 {getUserDisplayName(user, fullName)}
                                                             </p>
                                                         </div>
                                                         <Link
                                                             href="/profile"
-                                                            className="block px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             Profile
                                                         </Link>
                                                         <Link
                                                             href="/messages"
-                                                            className="flex items-center justify-between px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             <span>Messages</span>
                                                             {unreadCount > 0 && (
-                                                                <Badge className="bg-safety-orange hover:bg-safety-orange text-[10px]">{unreadCount}</Badge>
+                                                                <Badge className="bg-safety-orange hover:bg-safety-orange text-white border-0 text-[10px] w-5 h-5 flex items-center justify-center p-0 rounded-full">{unreadCount}</Badge>
                                                             )}
                                                         </Link>
                                                         <Link
                                                             href="/my-rentals"
-                                                            className="block px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             My Rentals
                                                         </Link>
                                                         <Link
                                                             href="/favorites"
-                                                            className="flex items-center gap-2 px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
-                                                            <Heart className="h-3.5 w-3.5 text-red-400" />
+                                                            <Heart className="h-4 w-4" />
                                                             My Favorites
                                                         </Link>
-                                                        <div className="border-t border-white/10 mt-1">
+                                                        <div className="border-t border-white/10 mt-1.5 pt-1.5">
                                                             <button
                                                                 onClick={() => {
                                                                     handleSignOut();
                                                                     setIsMenuOpen(false);
                                                                 }}
-                                                                className="block w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                                                                className="flex w-full items-center px-3 py-2.5 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors"
                                                                 tabIndex={0}
                                                                 onKeyDown={(e) => { if (e.key === "Enter") { handleSignOut(); setIsMenuOpen(false); } }}
                                                             >
