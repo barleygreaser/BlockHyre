@@ -456,7 +456,7 @@ export default function InventoryPage() {
                             <>
                                 {/* Mobile List View */}
                                 {!isDesktop && (
-                                    <div className="space-y-3 pb-24">
+                                    <div className="space-y-3">
                                         {filteredTools.map(tool => (
                                             <MobileToolCard key={tool.id} tool={tool} />
                                         ))}
@@ -535,7 +535,7 @@ export default function InventoryPage() {
 
             {/* Mobile Floating Bottom Action Bar */}
             {!isDesktop && (
-                <div className="fixed bottom-6 left-4 right-4 z-40 md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+                <div className="fixed top-[70px] left-4 right-4 z-40 md:hidden">
                     <div className="bg-charcoal/85 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/30 px-3 py-2 flex items-center gap-2">
                         <button
                             onClick={() => setIsFiltersOpen(true)}
