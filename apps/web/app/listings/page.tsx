@@ -207,7 +207,7 @@ export default function InventoryPage() {
     return (
         <main className="min-h-screen bg-signal-white">
             <Navbar />
-            <div className="container mx-auto px-4 pt-36 pb-8 md:py-8">
+            <div className="container mx-auto px-4 pt-20 pb-8 md:py-8">
                 <div className="flex flex-col md:flex-row gap-8">
 
                     {/* Sidebar (Filters) */}
