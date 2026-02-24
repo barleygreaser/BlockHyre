@@ -58,14 +58,14 @@ export function Navbar() {
         <>
             <nav
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isScrolled
-                    ? `py-2 px-4 md:px-8 ${!isHomepage ? "bg-gradient-to-b from-black/40 via-black/5 to-transparent pointer-events-none" : ""}`
+                    ? `py-2 px-4 md:px-8 ${!isHomepage ? "bg-gradient-to-b from-black/40 via-black/5 to-transparent" : ""}`
                     : "py-3 px-4 md:px-8"
                     }`}
             >
                 <div
-                    className={`mx-auto transition-all duration-500 ease-out ${isScrolled
-                        ? "max-w-6xl bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6"
-                        : "max-w-[1440px] bg-transparent px-2 md:px-6"
+                    className={`mx-auto transition-all duration-300 ease-in-out border rounded-full ${isScrolled
+                        ? "max-w-6xl bg-charcoal/80 backdrop-blur-xl border-safety-orange/20 shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6 py-1"
+                        : "max-w-[1440px] bg-transparent border-transparent shadow-none px-2 md:px-6 py-1"
                         }`}
                 >
                     <div className="flex h-14 items-center justify-between">
@@ -220,7 +220,7 @@ export function Navbar() {
                                                         className="fixed inset-0 z-40"
                                                         onClick={() => setIsMenuOpen(false)}
                                                     />
-                                                    <div className="absolute right-0 mt-3 w-56 bg-charcoal rounded-2xl shadow-2xl shadow-black/40 py-1 border border-white/10 z-50 overflow-hidden">
+                                                    <div className="absolute right-0 mt-3 w-56 bg-charcoal/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 py-1 border border-safety-orange/20 z-50 overflow-hidden">
                                                         <div className="px-4 py-3 border-b border-white/10">
                                                             <p className="text-sm font-semibold text-white truncate">
                                                                 {getUserDisplayName(user, fullName)}

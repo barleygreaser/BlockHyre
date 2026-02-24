@@ -196,10 +196,14 @@ export function Hero() {
             </div>
 
             {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-bounce">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Scroll</span>
-                <ChevronDown className="h-4 w-4 text-white/40" />
-            </div>
+            <button
+                onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-bounce cursor-pointer group focus:outline-none"
+                aria-label="Scroll down"
+            >
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-charcoal/60 group-hover:text-safety-orange transition-colors">Scroll</span>
+                <ChevronDown className="h-4 w-4 text-safety-orange" />
+            </button>
         </section>
     );
 }
