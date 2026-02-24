@@ -12,24 +12,30 @@ const STEPS = [
         color: "text-safety-orange",
         bgColor: "bg-safety-orange/10",
         borderColor: "border-safety-orange/20",
+        ghostColor: "text-safety-orange/[0.06]",
+        accentVia: "via-safety-orange/15",
     },
     {
         number: "02",
         title: "Secure",
         description: "Lock in your rental with The Peace Fund insurance. ID-verified neighbors, $1M liability coverage, refundable deposit.",
         icon: Lock,
-        color: "text-emerald-400",
-        bgColor: "bg-emerald-400/10",
-        borderColor: "border-emerald-400/20",
+        color: "text-emerald-500",
+        bgColor: "bg-emerald-50",
+        borderColor: "border-emerald-200",
+        ghostColor: "text-emerald-500/[0.06]",
+        accentVia: "via-emerald-400/15",
     },
     {
         number: "03",
         title: "Build",
         description: "Pick up your tool and get to work. Return it when you're done. Your neighborhood is your factory floor.",
         icon: Settings,
-        color: "text-sky-400",
-        bgColor: "bg-sky-400/10",
-        borderColor: "border-sky-400/20",
+        color: "text-sky-500",
+        bgColor: "bg-sky-50",
+        borderColor: "border-sky-200",
+        ghostColor: "text-sky-500/[0.06]",
+        accentVia: "via-sky-400/15",
     },
 ];
 
@@ -83,7 +89,7 @@ export function Protocol() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-20 md:py-32 bg-charcoal relative" id="protocol">
+        <section ref={sectionRef} className="py-20 md:py-32 bg-concrete/30 relative" id="protocol">
             {/* Section Header */}
             <div className="container mx-auto px-4 md:px-8 mb-16">
                 <div className="flex items-center gap-3 mb-4">
@@ -92,10 +98,10 @@ export function Protocol() {
                         The Protocol
                     </span>
                 </div>
-                <h2 className="text-3xl md:text-5xl font-bold text-white font-serif tracking-tight max-w-lg">
+                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 font-serif tracking-tight max-w-lg">
                     Three steps. Zero friction.
                 </h2>
-                <p className="mt-4 text-concrete/50 max-w-md text-sm leading-relaxed">
+                <p className="mt-4 text-slate-500 max-w-md text-sm leading-relaxed">
                     From discovery to production in under 5 minutes. Every step backed by The Peace Fund.
                 </p>
             </div>
@@ -110,10 +116,10 @@ export function Protocol() {
                         return (
                             <div
                                 key={step.number}
-                                className={`protocol-card group relative bg-charcoal-light rounded-[2.5rem] p-8 md:p-10 border ${step.borderColor} overflow-hidden transition-all duration-500 hover:border-safety-orange/40`}
+                                className={`protocol-card group relative bg-white rounded-[2.5rem] p-8 md:p-10 border ${step.borderColor} overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm`}
                             >
                                 {/* Step Number */}
-                                <span className="absolute top-8 right-8 text-[5rem] font-display text-white/[0.03] leading-none select-none">
+                                <span className={`absolute top-8 right-8 text-[5rem] font-display ${step.ghostColor} leading-none select-none`}>
                                     {step.number}
                                 </span>
 
@@ -127,20 +133,20 @@ export function Protocol() {
                                 {/* Content */}
                                 <div className="relative z-10">
                                     <div className="flex items-baseline gap-3 mb-3">
-                                        <span className="text-[10px] font-mono font-bold text-concrete/30 uppercase tracking-wider">
+                                        <span className="text-[10px] font-mono font-bold text-slate-300 uppercase tracking-wider">
                                             Step {step.number}
                                         </span>
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white tracking-tight mb-3 font-serif">
+                                    <h3 className="text-2xl font-bold text-slate-900 tracking-tight mb-3 font-serif">
                                         {step.title}
                                     </h3>
-                                    <p className="text-sm text-concrete/50 leading-relaxed">
+                                    <p className="text-sm text-slate-500 leading-relaxed">
                                         {step.description}
                                     </p>
                                 </div>
 
                                 {/* Bottom accent line */}
-                                <div className={`absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent ${step.color === "text-safety-orange" ? "via-safety-orange/20" : step.color === "text-emerald-400" ? "via-emerald-400/20" : "via-sky-400/20"} to-transparent`} />
+                                <div className={`absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent ${step.accentVia} to-transparent`} />
                             </div>
                         );
                     })}

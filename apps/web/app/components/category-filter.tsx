@@ -21,7 +21,7 @@ export const CategoryFilter = memo(({ categories, selectedCategory, onSelectCate
                             "px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                             selectedCategory === category
                                 ? "bg-safety-orange text-white shadow-lg shadow-safety-orange/20"
-                                : "bg-white/5 text-concrete/50 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:text-white"
+                                : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700"
                         )}
                         aria-label={`Filter by ${category}`}
                         tabIndex={0}

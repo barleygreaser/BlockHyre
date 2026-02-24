@@ -9,7 +9,6 @@ import { useAuth } from "@/app/context/auth-context";
 
 export function Hero() {
     const { user } = useAuth();
-    const heroRef = useRef<HTMLElement>(null);
     const headlineRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -57,28 +56,35 @@ export function Hero() {
 
     return (
         <section
-            ref={heroRef}
             className="relative h-[100vh] min-h-[700px] w-full overflow-hidden flex items-center"
             id="hero"
         >
-            {/* Background Image — Cinematic Industrial */}
+            {/* Background Images — Original BlockHyre Community Photos */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2070&auto=format&fit=crop"
-                    alt="Industrial workshop with heavy tools and machinery"
+                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_landscape_opt.jpg"
+                    alt="BlockHyre Community Tools - Neighbors exchanging tools"
                     fill
-                    sizes="100vw"
-                    className="object-cover object-center"
+                    sizes="(max-width: 767px) 1px, 100vw"
+                    className="hidden md:block object-cover object-right"
+                    priority
+                />
+                <Image
+                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_portrait_opt.jpg"
+                    alt="BlockHyre Community Tools - Neighbors exchanging tools"
+                    fill
+                    sizes="(max-width: 767px) 100vw, 1px"
+                    className="md:hidden object-cover object-center"
                     priority
                 />
 
-                {/* Heavy Bottom Fade — Industrial Boutique */}
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/60 to-charcoal/30" />
-                <div className="absolute inset-0 bg-gradient-to-r from-charcoal/80 via-transparent to-transparent" />
+                {/* Gradient overlays for readability */}
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-signal-white via-transparent to-transparent" />
 
-                {/* Subtle noise overlay on hero */}
+                {/* Subtle noise overlay */}
                 <div
-                    className="absolute inset-0 opacity-[0.06]"
+                    className="absolute inset-0 opacity-[0.04]"
                     style={{
                         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
                     }}
@@ -103,7 +109,7 @@ export function Hero() {
                     </div>
 
                     {/* Subtitle */}
-                    <p className="hero-subtitle text-lg md:text-xl text-concrete/80 leading-relaxed max-w-xl font-light">
+                    <p className="hero-subtitle text-lg md:text-xl text-white/80 leading-relaxed max-w-xl font-light">
                         Rent woodworking tools, power tools, and gardening equipment from
                         verified neighbors within 2 miles. Every rental insured by{" "}
                         <span className="text-safety-orange font-medium">The Peace Fund</span>.
@@ -142,13 +148,13 @@ export function Hero() {
                             {[1, 2, 3, 4].map((i) => (
                                 <div
                                     key={i}
-                                    className="h-8 w-8 rounded-full bg-workshop-gray border-2 border-charcoal flex items-center justify-center text-[10px] font-bold text-concrete"
+                                    className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center text-[10px] font-bold text-white"
                                 >
                                     {String.fromCharCode(64 + i)}
                                 </div>
                             ))}
                         </div>
-                        <p className="text-sm text-concrete/60 font-medium">
+                        <p className="text-sm text-white/60 font-medium">
                             Trusted by <span className="text-white font-bold">2,000+</span> homes in your neighborhood
                         </p>
                     </div>
@@ -157,8 +163,8 @@ export function Hero() {
 
             {/* Scroll Indicator */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-bounce">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-concrete/40">Scroll</span>
-                <ChevronDown className="h-4 w-4 text-concrete/40" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Scroll</span>
+                <ChevronDown className="h-4 w-4 text-white/40" />
             </div>
         </section>
     );

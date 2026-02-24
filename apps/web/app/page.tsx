@@ -24,7 +24,7 @@ export default function Home() {
   const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   return (
-    <main className="min-h-screen bg-charcoal">
+    <main className="min-h-screen bg-signal-white">
       <Navbar />
       <Hero />
       <IndustrialArtifacts />

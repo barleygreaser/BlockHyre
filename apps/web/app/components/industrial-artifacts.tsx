@@ -15,7 +15,7 @@ function AvailabilityHeatmap() {
 
     return (
         <div
-            className="group relative bg-charcoal rounded-[2.5rem] p-8 md:p-10 border border-white/5 overflow-hidden cursor-pointer transition-all duration-500 hover:border-safety-orange/30"
+            className="group relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden cursor-pointer transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             role="article"
@@ -28,7 +28,7 @@ function AvailabilityHeatmap() {
             {isHovered && (
                 <div
                     className="absolute top-0 w-[2px] h-full bg-gradient-to-b from-transparent via-safety-orange to-transparent z-20 animate-scanner"
-                    style={{ boxShadow: "0 0 20px 4px rgba(255, 107, 0, 0.3)" }}
+                    style={{ boxShadow: "0 0 20px 4px rgba(255, 107, 0, 0.2)" }}
                 />
             )}
 
@@ -37,8 +37,8 @@ function AvailabilityHeatmap() {
                     <Activity className="h-5 w-5 text-safety-orange" />
                 </div>
                 <div>
-                    <h3 className="text-lg font-bold text-white tracking-tight">Availability Heatmap</h3>
-                    <p className="text-xs text-concrete/50 uppercase tracking-wider font-medium">7-Day Overview</p>
+                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">Availability Heatmap</h3>
+                    <p className="text-xs text-slate-400 uppercase tracking-wider font-medium">7-Day Overview</p>
                 </div>
             </div>
 
@@ -46,7 +46,7 @@ function AvailabilityHeatmap() {
             <div className="space-y-2">
                 <div className="grid grid-cols-7 gap-1 mb-2">
                     {days.map((day) => (
-                        <span key={day} className="text-[10px] text-concrete/40 text-center font-mono uppercase">
+                        <span key={day} className="text-[10px] text-slate-400 text-center font-mono uppercase">
                             {day}
                         </span>
                     ))}
@@ -57,8 +57,8 @@ function AvailabilityHeatmap() {
                             <div
                                 key={colIdx}
                                 className={`h-8 rounded-lg transition-all duration-300 ${available
-                                        ? "bg-safety-orange/20 border border-safety-orange/30 group-hover:bg-safety-orange/40 group-hover:border-safety-orange/60"
-                                        : "bg-white/5 border border-white/5"
+                                        ? "bg-safety-orange/10 border border-safety-orange/20 group-hover:bg-safety-orange/25 group-hover:border-safety-orange/40"
+                                        : "bg-slate-50 border border-slate-100"
                                     }`}
                                 style={{
                                     transitionDelay: `${(rowIdx * 7 + colIdx) * 30}ms`,
@@ -69,13 +69,13 @@ function AvailabilityHeatmap() {
                 ))}
             </div>
 
-            <div className="flex items-center gap-4 mt-5 text-[10px] text-concrete/40 font-mono uppercase tracking-wider">
+            <div className="flex items-center gap-4 mt-5 text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 <div className="flex items-center gap-1.5">
-                    <div className="h-2.5 w-2.5 rounded bg-safety-orange/30 border border-safety-orange/50" />
+                    <div className="h-2.5 w-2.5 rounded bg-safety-orange/20 border border-safety-orange/30" />
                     Available
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <div className="h-2.5 w-2.5 rounded bg-white/5 border border-white/10" />
+                    <div className="h-2.5 w-2.5 rounded bg-slate-50 border border-slate-200" />
                     Booked
                 </div>
             </div>
@@ -110,7 +110,7 @@ function ListingShuffler() {
 
     return (
         <div
-            className="relative bg-charcoal rounded-[2.5rem] p-8 md:p-10 border border-white/5 overflow-hidden transition-all duration-500 hover:border-safety-orange/30"
+            className="relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
             role="article"
             aria-label="Tool Listing Shuffler"
             tabIndex={0}
@@ -120,8 +120,8 @@ function ListingShuffler() {
                     <Layers className="h-5 w-5 text-safety-orange" />
                 </div>
                 <div>
-                    <h3 className="text-lg font-bold text-white tracking-tight">Listing Shuffler</h3>
-                    <p className="text-xs text-concrete/50 uppercase tracking-wider font-medium">Live Inventory</p>
+                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">Listing Shuffler</h3>
+                    <p className="text-xs text-slate-400 uppercase tracking-wider font-medium">Live Inventory</p>
                 </div>
             </div>
 
@@ -134,18 +134,18 @@ function ListingShuffler() {
                     return (
                         <div
                             key={idx}
-                            className={`absolute inset-x-0 transition-all duration-700 ease-out ${isActive ? "opacity-100" : offset === 1 ? "opacity-40" : offset === 2 ? "opacity-15" : "opacity-0"
+                            className={`absolute inset-x-0 transition-all duration-700 ease-out ${isActive ? "opacity-100" : offset === 1 ? "opacity-50" : offset === 2 ? "opacity-20" : "opacity-0"
                                 }`}
                             style={{
                                 transform: `translateY(${offset * 16}px) scale(${1 - offset * 0.04})`,
                                 zIndex: tools.length - offset,
                             }}
                         >
-                            <div className="bg-charcoal-light rounded-2xl border border-white/10 p-5">
+                            <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
                                 <div className="flex justify-between items-start mb-3">
                                     <div>
-                                        <p className="text-sm font-bold text-white leading-tight">{tool.name}</p>
-                                        <p className="text-[10px] text-concrete/40 uppercase tracking-wider mt-1 font-mono">{tool.category}</p>
+                                        <p className="text-sm font-bold text-slate-900 leading-tight">{tool.name}</p>
+                                        <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-1 font-mono">{tool.category}</p>
                                     </div>
                                     <span className="text-[10px] font-mono font-bold text-safety-orange bg-safety-orange/10 px-2.5 py-1 rounded-full border border-safety-orange/20">
                                         {tool.tier}
@@ -155,7 +155,7 @@ function ListingShuffler() {
                                     <span className="text-xl font-bold text-safety-orange font-mono">{tool.price}</span>
                                     <div className="flex items-center gap-1.5">
                                         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                        <span className="text-[10px] text-emerald-400 font-mono uppercase">Available</span>
+                                        <span className="text-[10px] text-emerald-600 font-mono uppercase">Available</span>
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +173,7 @@ function ListingShuffler() {
                             setCurrentIndex(idx);
                             startCycle();
                         }}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-6 bg-safety-orange" : "w-1.5 bg-white/20 hover:bg-white/40"
+                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-6 bg-safety-orange" : "w-1.5 bg-slate-200 hover:bg-slate-300"
                             }`}
                         aria-label={`View tool ${idx + 1}`}
                         tabIndex={0}
@@ -228,7 +228,7 @@ function PeaceFundTelemetry() {
 
     return (
         <div
-            className="relative bg-charcoal rounded-[2.5rem] p-8 md:p-10 border border-white/5 overflow-hidden transition-all duration-500 hover:border-safety-orange/30"
+            className="relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
             role="article"
             aria-label="Peace Fund Telemetry Feed"
             tabIndex={0}
@@ -238,12 +238,12 @@ function PeaceFundTelemetry() {
                     <Shield className="h-5 w-5 text-safety-orange" />
                 </div>
                 <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white tracking-tight">Peace Fund Telemetry</h3>
-                    <p className="text-xs text-concrete/50 uppercase tracking-wider font-medium">Live Trust Feed</p>
+                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">Peace Fund Telemetry</h3>
+                    <p className="text-xs text-slate-400 uppercase tracking-wider font-medium">Live Trust Feed</p>
                 </div>
                 <div className="flex items-center gap-1.5">
                     <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">Live</span>
+                    <span className="text-[10px] text-emerald-600 font-mono uppercase tracking-wider">Live</span>
                 </div>
             </div>
 
@@ -255,8 +255,8 @@ function PeaceFundTelemetry() {
                         className="flex items-start gap-2 text-[11px] font-mono animate-float-up"
                         style={{ animationDelay: `${idx * 50}ms` }}
                     >
-                        <span className="text-concrete/30 shrink-0 tabular-nums">{log.time}</span>
-                        <span className={`leading-relaxed ${log.type === "success" ? "text-emerald-400/80" : "text-concrete/50"
+                        <span className="text-slate-300 shrink-0 tabular-nums">{log.time}</span>
+                        <span className={`leading-relaxed ${log.type === "success" ? "text-emerald-600" : "text-slate-500"
                             }`}>
                             {log.text}
                         </span>
@@ -265,7 +265,7 @@ function PeaceFundTelemetry() {
             </div>
 
             {/* Gradient fade at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-charcoal to-transparent pointer-events-none rounded-b-[2.5rem]" />
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none rounded-b-[2.5rem]" />
         </div>
     );
 }
@@ -308,7 +308,7 @@ export function IndustrialArtifacts() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-20 md:py-32 bg-charcoal relative" id="features">
+        <section ref={sectionRef} className="py-20 md:py-32 bg-signal-white relative" id="features">
             {/* Section Header */}
             <div className="container mx-auto px-4 md:px-8 mb-14">
                 <div className="flex items-center gap-3 mb-4">
@@ -317,7 +317,7 @@ export function IndustrialArtifacts() {
                         Industrial Artifacts
                     </span>
                 </div>
-                <h2 className="text-3xl md:text-5xl font-bold text-white font-serif tracking-tight max-w-lg">
+                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 font-serif tracking-tight max-w-lg">
                     Every tool, tracked. Every rental, insured.
                 </h2>
             </div>
