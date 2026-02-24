@@ -64,7 +64,7 @@ export function Navbar() {
             >
                 <div
                     className={`mx-auto transition-all duration-500 ease-out ${isScrolled
-                        ? "max-w-5xl bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-4 md:px-6"
+                        ? "max-w-6xl bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6"
                         : "max-w-[1440px] bg-transparent px-2 md:px-6"
                         }`}
                 >
@@ -84,10 +84,10 @@ export function Navbar() {
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center gap-6">
+                        <div className="hidden lg:flex items-center gap-3 xl:gap-5">
                             <Link
                                 href="/listings"
-                                className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
                                 Listings
@@ -95,7 +95,7 @@ export function Navbar() {
                             </Link>
                             <Link
                                 href="/how-it-works"
-                                className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
                                 How it Works
@@ -103,7 +103,7 @@ export function Navbar() {
                             </Link>
                             <Link
                                 href="/peace-fund"
-                                className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
                                 Peace Fund
@@ -112,21 +112,21 @@ export function Navbar() {
                         </div>
 
                         {/* Right Side Actions */}
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 lg:gap-2 xl:gap-3">
                             {/* Operational Indicator */}
-                            <div className="hidden md:flex items-center gap-2 mr-2">
+                            <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 mr-1 xl:mr-2">
                                 <div className="relative">
                                     <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
                                     <div className="absolute inset-0 h-2 w-2 rounded-full bg-safety-orange/40 animate-ping" />
                                 </div>
-                                <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-safety-orange" : "text-safety-orange"
+                                <span className={`hidden xl:inline text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-safety-orange" : "text-safety-orange"
                                     }`}>
                                     Operational
                                 </span>
                             </div>
 
                             {/* Mobile User Button */}
-                            <Link href={user ? "/dashboard" : "/auth"} className="md:hidden">
+                            <Link href={user ? "/dashboard" : "/auth"} className="lg:hidden">
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -150,7 +150,7 @@ export function Navbar() {
                             </Link>
 
                             {/* Desktop Auth/User Actions */}
-                            <div className="hidden md:flex items-center gap-3">
+                            <div className="hidden lg:flex items-center gap-2 xl:gap-3">
                                 {loading ? (
                                     <div className="flex items-center gap-3">
                                         <Skeleton className="h-9 w-[110px] rounded-full bg-white/10" />
@@ -158,15 +158,15 @@ export function Navbar() {
                                         <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
                                     </div>
                                 ) : user ? (
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2 xl:gap-3">
                                         <Link href="/add-tool">
-                                            <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
+                                            <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
                                                 + List a Tool
                                             </Button>
                                         </Link>
 
                                         <Link href="/dashboard">
-                                            <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 transition-all ${isScrolled
+                                            <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 transition-all ${isScrolled
                                                 ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
                                                 : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
                                                 }`}>
@@ -297,7 +297,7 @@ export function Navbar() {
 
                             {/* Mobile Hamburger */}
                             <button
-                                className={`md:hidden p-2 relative transition-colors ${isScrolled ? "text-concrete hover:text-white" : "text-white/80 hover:text-white"
+                                className={`lg:hidden p-2 relative transition-colors ${isScrolled ? "text-concrete hover:text-white" : "text-white/80 hover:text-white"
                                     }`}
                                 onClick={() => setIsMobileMenuOpen(true)}
                                 aria-label="Open menu"
