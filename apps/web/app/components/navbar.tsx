@@ -55,425 +55,430 @@ export function Navbar() {
     }, [signOut, router]);
 
     return (
-        <nav
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isScrolled
-                ? "py-2 px-4 md:px-8"
-                : "py-3 px-4 md:px-8"
-                }`}
-        >
-            <div
-                className={`mx-auto transition-all duration-500 ease-out ${isScrolled
-                    ? "max-w-5xl bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-4 md:px-6"
-                    : "max-w-[1440px] bg-transparent px-2 md:px-6"
+        <>
+            <nav
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isScrolled
+                    ? "py-2 px-4 md:px-8"
+                    : "py-3 px-4 md:px-8"
                     }`}
             >
-                <div className="flex h-14 items-center justify-between">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2.5 group" aria-label="BlockHyre Home">
-                        <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${isScrolled
-                            ? "bg-safety-orange text-white"
-                            : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
-                            }`}>
-                            <span className="font-serif font-bold text-sm">B</span>
-                        </div>
-                        <span className={`text-lg font-bold font-serif tracking-tight transition-colors duration-300 ${isScrolled ? "text-white" : "text-white"
-                            }`}>
-                            BlockHyre
-                        </span>
-                    </Link>
-
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-6">
-                        <Link
-                            href="/listings"
-                            className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
-                                }`}
-                        >
-                            Listings
-                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
-                        </Link>
-                        <Link
-                            href="/how-it-works"
-                            className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
-                                }`}
-                        >
-                            How it Works
-                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
-                        </Link>
-                        <Link
-                            href="/peace-fund"
-                            className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
-                                }`}
-                        >
-                            Peace Fund
-                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
-                        </Link>
-                    </div>
-
-                    {/* Right Side Actions */}
-                    <div className="flex items-center gap-3">
-                        {/* Operational Indicator */}
-                        <div className="hidden md:flex items-center gap-2 mr-2">
-                            <div className="relative">
-                                <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
-                                <div className="absolute inset-0 h-2 w-2 rounded-full bg-safety-orange/40 animate-ping" />
-                            </div>
-                            <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-safety-orange" : "text-safety-orange"
+                <div
+                    className={`mx-auto transition-all duration-500 ease-out ${isScrolled
+                        ? "max-w-5xl bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-4 md:px-6"
+                        : "max-w-[1440px] bg-transparent px-2 md:px-6"
+                        }`}
+                >
+                    <div className="flex h-14 items-center justify-between">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-2.5 group" aria-label="BlockHyre Home">
+                            <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${isScrolled
+                                ? "bg-safety-orange text-white"
+                                : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
                                 }`}>
-                                Operational
+                                <span className="font-serif font-bold text-sm">B</span>
+                            </div>
+                            <span className={`text-lg font-bold font-serif tracking-tight transition-colors duration-300 ${isScrolled ? "text-white" : "text-white"
+                                }`}>
+                                BlockHyre
                             </span>
+                        </Link>
+
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center gap-6">
+                            <Link
+                                href="/listings"
+                                className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                    }`}
+                            >
+                                Listings
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
+                            </Link>
+                            <Link
+                                href="/how-it-works"
+                                className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                    }`}
+                            >
+                                How it Works
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
+                            </Link>
+                            <Link
+                                href="/peace-fund"
+                                className={`text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                    }`}
+                            >
+                                Peace Fund
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
+                            </Link>
                         </div>
 
-                        {/* Mobile User Button */}
-                        <Link href={user ? "/dashboard" : "/auth"} className="md:hidden">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
-                                aria-label="User Account"
-                            >
-                                <User className="h-5 w-5" />
-                            </Button>
-                        </Link>
-
-                        {/* Cart */}
-                        <Link href="/cart">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`relative ${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
-                                aria-label="Shopping Cart"
-                            >
-                                <ShoppingCart className="h-5 w-5" />
-                            </Button>
-                        </Link>
-
-                        {/* Desktop Auth/User Actions */}
-                        <div className="hidden md:flex items-center gap-3">
-                            {loading ? (
-                                <div className="flex items-center gap-3">
-                                    <Skeleton className="h-9 w-[110px] rounded-full bg-white/10" />
-                                    <Skeleton className="h-9 w-[90px] rounded-full bg-white/10" />
-                                    <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                        {/* Right Side Actions */}
+                        <div className="flex items-center gap-3">
+                            {/* Operational Indicator */}
+                            <div className="hidden md:flex items-center gap-2 mr-2">
+                                <div className="relative">
+                                    <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
+                                    <div className="absolute inset-0 h-2 w-2 rounded-full bg-safety-orange/40 animate-ping" />
                                 </div>
-                            ) : user ? (
-                                <div className="flex items-center gap-3">
-                                    <Link href="/add-tool">
-                                        <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
-                                            + List a Tool
-                                        </Button>
-                                    </Link>
+                                <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-safety-orange" : "text-safety-orange"
+                                    }`}>
+                                    Operational
+                                </span>
+                            </div>
 
-                                    <Link href="/dashboard">
-                                        <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 transition-all ${isScrolled
-                                            ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                                            : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                                            }`}>
-                                            Dashboard
-                                        </Button>
-                                    </Link>
+                            {/* Mobile User Button */}
+                            <Link href={user ? "/dashboard" : "/auth"} className="md:hidden">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={`${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                                    aria-label="User Account"
+                                >
+                                    <User className="h-5 w-5" />
+                                </Button>
+                            </Link>
 
-                                    {/* User Menu Dropdown */}
-                                    <div className="relative">
-                                        <button
-                                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                            className="flex items-center gap-2 focus:outline-none relative"
-                                            aria-label="User Menu"
-                                            aria-expanded={isMenuOpen}
-                                            tabIndex={0}
-                                            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsMenuOpen(!isMenuOpen); }}
-                                        >
-                                            <div className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all relative ${isScrolled
-                                                ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
-                                                : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
+                            {/* Cart */}
+                            <Link href="/cart">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={`relative ${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                                    aria-label="Shopping Cart"
+                                >
+                                    <ShoppingCart className="h-5 w-5" />
+                                </Button>
+                            </Link>
+
+                            {/* Desktop Auth/User Actions */}
+                            <div className="hidden md:flex items-center gap-3">
+                                {loading ? (
+                                    <div className="flex items-center gap-3">
+                                        <Skeleton className="h-9 w-[110px] rounded-full bg-white/10" />
+                                        <Skeleton className="h-9 w-[90px] rounded-full bg-white/10" />
+                                        <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                                    </div>
+                                ) : user ? (
+                                    <div className="flex items-center gap-3">
+                                        <Link href="/add-tool">
+                                            <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
+                                                + List a Tool
+                                            </Button>
+                                        </Link>
+
+                                        <Link href="/dashboard">
+                                            <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 transition-all ${isScrolled
+                                                ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                                                : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
                                                 }`}>
+                                                Dashboard
+                                            </Button>
+                                        </Link>
+
+                                        {/* User Menu Dropdown */}
+                                        <div className="relative">
+                                            <button
+                                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                                className="flex items-center gap-2 focus:outline-none relative"
+                                                aria-label="User Menu"
+                                                aria-expanded={isMenuOpen}
+                                                tabIndex={0}
+                                                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsMenuOpen(!isMenuOpen); }}
+                                            >
+                                                <div className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all relative ${isScrolled
+                                                    ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
+                                                    : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
+                                                    }`}>
+                                                    {avatarUrl ? (
+                                                        <Image
+                                                            src={avatarUrl}
+                                                            alt="User Avatar"
+                                                            fill
+                                                            className="object-cover"
+                                                            sizes="32px"
+                                                        />
+                                                    ) : (
+                                                        <span className="font-bold text-sm text-white">
+                                                            {getUserDisplayName(user, fullName).charAt(0).toUpperCase()}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {unreadCount > 0 && (
+                                                    <Badge
+                                                        className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-safety-orange hover:bg-safety-orange text-white border-charcoal border-2 text-[10px]"
+                                                    >
+                                                        {unreadCount}
+                                                    </Badge>
+                                                )}
+                                            </button>
+
+                                            {isMenuOpen && (
+                                                <>
+                                                    <div
+                                                        className="fixed inset-0 z-40"
+                                                        onClick={() => setIsMenuOpen(false)}
+                                                    />
+                                                    <div className="absolute right-0 mt-3 w-56 bg-charcoal rounded-2xl shadow-2xl shadow-black/40 py-1 border border-white/10 z-50 overflow-hidden">
+                                                        <div className="px-4 py-3 border-b border-white/10">
+                                                            <p className="text-sm font-semibold text-white truncate">
+                                                                {getUserDisplayName(user, fullName)}
+                                                            </p>
+                                                        </div>
+                                                        <Link
+                                                            href="/profile"
+                                                            className="block px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                        >
+                                                            Profile
+                                                        </Link>
+                                                        <Link
+                                                            href="/messages"
+                                                            className="flex items-center justify-between px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                        >
+                                                            <span>Messages</span>
+                                                            {unreadCount > 0 && (
+                                                                <Badge className="bg-safety-orange hover:bg-safety-orange text-[10px]">{unreadCount}</Badge>
+                                                            )}
+                                                        </Link>
+                                                        <Link
+                                                            href="/my-rentals"
+                                                            className="block px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                        >
+                                                            My Rentals
+                                                        </Link>
+                                                        <Link
+                                                            href="/favorites"
+                                                            className="flex items-center gap-2 px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                        >
+                                                            <Heart className="h-3.5 w-3.5 text-red-400" />
+                                                            My Favorites
+                                                        </Link>
+                                                        <div className="border-t border-white/10 mt-1">
+                                                            <button
+                                                                onClick={() => {
+                                                                    handleSignOut();
+                                                                    setIsMenuOpen(false);
+                                                                }}
+                                                                className="block w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                                                                tabIndex={0}
+                                                                onKeyDown={(e) => { if (e.key === "Enter") { handleSignOut(); setIsMenuOpen(false); } }}
+                                                            >
+                                                                Log Out
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <Link href="/auth">
+                                            <Button
+                                                variant="ghost"
+                                                className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 ${isScrolled
+                                                    ? "text-concrete hover:text-white hover:bg-white/10"
+                                                    : "text-white/80 hover:text-white hover:bg-white/10"
+                                                    }`}
+                                            >
+                                                Log In
+                                            </Button>
+                                        </Link>
+                                        <Link href="/signup">
+                                            <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
+                                                Sign Up
+                                            </Button>
+                                        </Link>
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Mobile Hamburger */}
+                            <button
+                                className={`md:hidden p-2 relative transition-colors ${isScrolled ? "text-concrete hover:text-white" : "text-white/80 hover:text-white"
+                                    }`}
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                aria-label="Open menu"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === "Enter") setIsMobileMenuOpen(true); }}
+                            >
+                                <Menu className="h-5 w-5" />
+                                {user && unreadCount > 0 && (
+                                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-safety-orange" />
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* MOBILE DRAWER */}
+                {isMobileMenuOpen && (
+                    <>
+                        <div
+                            className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        />
+
+                        <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-charcoal shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col h-full animate-in slide-in-from-right">
+                            {/* Drawer Header */}
+                            <div className="flex items-center justify-between p-4 border-b border-white/10">
+                                <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
+                                    <span className="text-sm font-bold uppercase tracking-wider text-concrete">Menu</span>
+                                </div>
+                                <button
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="p-2 text-concrete/60 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                                    aria-label="Close menu"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => { if (e.key === "Enter") setIsMobileMenuOpen(false); }}
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+                            </div>
+
+                            {/* Drawer Content */}
+                            <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
+                                {loading ? (
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+                                            <Skeleton className="h-12 w-12 rounded-full bg-white/10" />
+                                            <div className="flex-1 space-y-2">
+                                                <Skeleton className="h-5 w-3/4 bg-white/10" />
+                                                <Skeleton className="h-4 w-1/2 bg-white/10" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
+                                            <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
+                                        </div>
+                                    </div>
+                                ) : user ? (
+                                    <>
+                                        {/* User Info */}
+                                        <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+                                            <div className="h-12 w-12 rounded-full bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center relative">
                                                 {avatarUrl ? (
                                                     <Image
                                                         src={avatarUrl}
-                                                        alt="User Avatar"
+                                                        alt="User"
                                                         fill
                                                         className="object-cover"
-                                                        sizes="32px"
+                                                        sizes="48px"
                                                     />
                                                 ) : (
-                                                    <span className="font-bold text-sm text-white">
+                                                    <span className="font-bold text-xl text-white">
                                                         {getUserDisplayName(user, fullName).charAt(0).toUpperCase()}
                                                     </span>
                                                 )}
                                             </div>
-                                            {unreadCount > 0 && (
-                                                <Badge
-                                                    className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-safety-orange hover:bg-safety-orange text-white border-charcoal border-2 text-[10px]"
-                                                >
-                                                    {unreadCount}
-                                                </Badge>
-                                            )}
-                                        </button>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-white truncate">{getUserDisplayName(user, fullName)}</p>
+                                                <p className="text-sm text-concrete/60 truncate">{user.email}</p>
+                                            </div>
+                                        </div>
 
-                                        {isMenuOpen && (
-                                            <>
-                                                <div
-                                                    className="fixed inset-0 z-40"
-                                                    onClick={() => setIsMenuOpen(false)}
-                                                />
-                                                <div className="absolute right-0 mt-3 w-56 bg-charcoal rounded-2xl shadow-2xl shadow-black/40 py-1 border border-white/10 z-50 overflow-hidden">
-                                                    <div className="px-4 py-3 border-b border-white/10">
-                                                        <p className="text-sm font-semibold text-white truncate">
-                                                            {getUserDisplayName(user, fullName)}
-                                                        </p>
-                                                    </div>
-                                                    <Link
-                                                        href="/profile"
-                                                        className="block px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
-                                                        onClick={() => setIsMenuOpen(false)}
-                                                    >
-                                                        Profile
-                                                    </Link>
-                                                    <Link
-                                                        href="/messages"
-                                                        className="flex items-center justify-between px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
-                                                        onClick={() => setIsMenuOpen(false)}
-                                                    >
-                                                        <span>Messages</span>
-                                                        {unreadCount > 0 && (
-                                                            <Badge className="bg-safety-orange hover:bg-safety-orange text-[10px]">{unreadCount}</Badge>
-                                                        )}
-                                                    </Link>
-                                                    <Link
-                                                        href="/my-rentals"
-                                                        className="block px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
-                                                        onClick={() => setIsMenuOpen(false)}
-                                                    >
-                                                        My Rentals
-                                                    </Link>
-                                                    <Link
-                                                        href="/favorites"
-                                                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-concrete hover:bg-white/5 hover:text-safety-orange transition-colors"
-                                                        onClick={() => setIsMenuOpen(false)}
-                                                    >
-                                                        <Heart className="h-3.5 w-3.5 text-red-400" />
-                                                        My Favorites
-                                                    </Link>
-                                                    <div className="border-t border-white/10 mt-1">
-                                                        <button
-                                                            onClick={() => {
-                                                                handleSignOut();
-                                                                setIsMenuOpen(false);
-                                                            }}
-                                                            className="block w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
-                                                            tabIndex={0}
-                                                            onKeyDown={(e) => { if (e.key === "Enter") { handleSignOut(); setIsMenuOpen(false); } }}
-                                                        >
-                                                            Log Out
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <>
-                                    <Link href="/auth">
-                                        <Button
-                                            variant="ghost"
-                                            className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 ${isScrolled
-                                                ? "text-concrete hover:text-white hover:bg-white/10"
-                                                : "text-white/80 hover:text-white hover:bg-white/10"
-                                                }`}
-                                        >
-                                            Log In
-                                        </Button>
-                                    </Link>
-                                    <Link href="/signup">
-                                        <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
-                                            Sign Up
-                                        </Button>
-                                    </Link>
-                                </>
-                            )}
-                        </div>
+                                        {/* Primary Actions */}
+                                        <div className="space-y-3">
+                                            <Link
+                                                href="/add-tool"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-12 text-base shadow-lg shadow-safety-orange/20 rounded-xl uppercase tracking-wider" })}
+                                            >
+                                                + List a Tool
+                                            </Link>
+                                            <Link
+                                                href="/dashboard"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={buttonVariants({ variant: "outline", className: "w-full border-white/20 text-white hover:bg-white/5 font-bold h-12 text-base rounded-xl uppercase tracking-wider" })}
+                                            >
+                                                Dashboard
+                                            </Link>
+                                        </div>
 
-                        {/* Mobile Hamburger */}
-                        <button
-                            className={`md:hidden p-2 relative transition-colors ${isScrolled ? "text-concrete hover:text-white" : "text-white/80 hover:text-white"
-                                }`}
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            aria-label="Open menu"
-                            tabIndex={0}
-                            onKeyDown={(e) => { if (e.key === "Enter") setIsMobileMenuOpen(true); }}
-                        >
-                            <Menu className="h-5 w-5" />
-                            {user && unreadCount > 0 && (
-                                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-safety-orange" />
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </div>
+                                        {/* Navigation Links */}
+                                        <div className="flex flex-col">
+                                            <Link href="/listings" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                Listings
+                                            </Link>
+                                            <Link href="/messages" className="flex items-center justify-between py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                <span>Messages</span>
+                                                {unreadCount > 0 && (
+                                                    <Badge className="bg-safety-orange hover:bg-safety-orange text-[10px]">{unreadCount}</Badge>
+                                                )}
+                                            </Link>
+                                            <Link href="/my-rentals" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                My Rentals
+                                            </Link>
+                                            <Link href="/favorites" className="flex items-center gap-2 py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                <Heart className="h-4 w-4 text-red-400" />
+                                                My Favorites
+                                            </Link>
+                                            <Link href="/profile" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                Profile
+                                            </Link>
+                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                How it Works
+                                            </Link>
+                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                Peace Fund
+                                            </Link>
+                                        </div>
 
-            {/* MOBILE DRAWER */}
-            {isMobileMenuOpen && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                    />
+                                        {/* Footer Actions */}
+                                        <div className="mt-auto pt-4 border-t border-white/10">
+                                            <button
+                                                onClick={handleSignOut}
+                                                className="w-full py-3 text-left text-red-400 font-medium hover:bg-red-500/10 rounded-lg px-3 transition-colors"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => { if (e.key === "Enter") handleSignOut(); }}
+                                            >
+                                                Log Out
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="space-y-4 pb-6 border-b border-white/10">
+                                            <Link
+                                                href="/signup"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-12 text-lg shadow-lg shadow-safety-orange/20 rounded-xl uppercase tracking-wider" })}
+                                            >
+                                                Sign Up
+                                            </Link>
+                                            <Link
+                                                href="/auth"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={buttonVariants({ variant: "ghost", className: "w-full text-concrete hover:text-white font-bold text-base hover:bg-white/5 rounded-xl" })}
+                                            >
+                                                Log In
+                                            </Link>
+                                        </div>
 
-                    <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-charcoal shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col h-full animate-in slide-in-from-right">
-                        {/* Drawer Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-white/10">
-                            <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
-                                <span className="text-sm font-bold uppercase tracking-wider text-concrete">Menu</span>
+                                        <div className="flex flex-col">
+                                            <Link href="/listings" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                Listings
+                                            </Link>
+                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                How it Works
+                                            </Link>
+                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                                Peace Fund
+                                            </Link>
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                            <button
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="p-2 text-concrete/60 hover:text-white hover:bg-white/5 rounded-full transition-colors"
-                                aria-label="Close menu"
-                                tabIndex={0}
-                                onKeyDown={(e) => { if (e.key === "Enter") setIsMobileMenuOpen(false); }}
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
                         </div>
+                    </>
+                )}
+            </nav>
 
-                        {/* Drawer Content */}
-                        <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
-                            {loading ? (
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                                        <Skeleton className="h-12 w-12 rounded-full bg-white/10" />
-                                        <div className="flex-1 space-y-2">
-                                            <Skeleton className="h-5 w-3/4 bg-white/10" />
-                                            <Skeleton className="h-4 w-1/2 bg-white/10" />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
-                                        <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
-                                    </div>
-                                </div>
-                            ) : user ? (
-                                <>
-                                    {/* User Info */}
-                                    <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                                        <div className="h-12 w-12 rounded-full bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center relative">
-                                            {avatarUrl ? (
-                                                <Image
-                                                    src={avatarUrl}
-                                                    alt="User"
-                                                    fill
-                                                    className="object-cover"
-                                                    sizes="48px"
-                                                />
-                                            ) : (
-                                                <span className="font-bold text-xl text-white">
-                                                    {getUserDisplayName(user, fullName).charAt(0).toUpperCase()}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-bold text-white truncate">{getUserDisplayName(user, fullName)}</p>
-                                            <p className="text-sm text-concrete/60 truncate">{user.email}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Primary Actions */}
-                                    <div className="space-y-3">
-                                        <Link
-                                            href="/add-tool"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-12 text-base shadow-lg shadow-safety-orange/20 rounded-xl uppercase tracking-wider" })}
-                                        >
-                                            + List a Tool
-                                        </Link>
-                                        <Link
-                                            href="/dashboard"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className={buttonVariants({ variant: "outline", className: "w-full border-white/20 text-white hover:bg-white/5 font-bold h-12 text-base rounded-xl uppercase tracking-wider" })}
-                                        >
-                                            Dashboard
-                                        </Link>
-                                    </div>
-
-                                    {/* Navigation Links */}
-                                    <div className="flex flex-col">
-                                        <Link href="/listings" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            Listings
-                                        </Link>
-                                        <Link href="/messages" className="flex items-center justify-between py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <span>Messages</span>
-                                            {unreadCount > 0 && (
-                                                <Badge className="bg-safety-orange hover:bg-safety-orange text-[10px]">{unreadCount}</Badge>
-                                            )}
-                                        </Link>
-                                        <Link href="/my-rentals" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            My Rentals
-                                        </Link>
-                                        <Link href="/favorites" className="flex items-center gap-2 py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Heart className="h-4 w-4 text-red-400" />
-                                            My Favorites
-                                        </Link>
-                                        <Link href="/profile" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            Profile
-                                        </Link>
-                                        <Link href="/how-it-works" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            How it Works
-                                        </Link>
-                                        <Link href="/peace-fund" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            Peace Fund
-                                        </Link>
-                                    </div>
-
-                                    {/* Footer Actions */}
-                                    <div className="mt-auto pt-4 border-t border-white/10">
-                                        <button
-                                            onClick={handleSignOut}
-                                            className="w-full py-3 text-left text-red-400 font-medium hover:bg-red-500/10 rounded-lg px-3 transition-colors"
-                                            tabIndex={0}
-                                            onKeyDown={(e) => { if (e.key === "Enter") handleSignOut(); }}
-                                        >
-                                            Log Out
-                                        </button>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="space-y-4 pb-6 border-b border-white/10">
-                                        <Link
-                                            href="/signup"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-12 text-lg shadow-lg shadow-safety-orange/20 rounded-xl uppercase tracking-wider" })}
-                                        >
-                                            Sign Up
-                                        </Link>
-                                        <Link
-                                            href="/auth"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className={buttonVariants({ variant: "ghost", className: "w-full text-concrete hover:text-white font-bold text-base hover:bg-white/5 rounded-xl" })}
-                                        >
-                                            Log In
-                                        </Link>
-                                    </div>
-
-                                    <div className="flex flex-col">
-                                        <Link href="/listings" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            Listings
-                                        </Link>
-                                        <Link href="/how-it-works" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            How it Works
-                                        </Link>
-                                        <Link href="/peace-fund" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                            Peace Fund
-                                        </Link>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </>
-            )}
-        </nav>
+            {/* Spacer to push content below fixed navbar on non-homepage routes */}
+            {!isHomepage && <div className="h-20" />}
+        </>
     );
 }
