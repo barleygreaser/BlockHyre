@@ -545,14 +545,14 @@ export default function InventoryPage() {
                             onKeyDown={(e) => { if (e.key === 'Enter') setIsFiltersOpen(true); }}
                         >
                             <Filter className="h-4 w-4" />
-                            <div className="relative inline-flex gap-2">
+                            <span className="relative">
                                 Filter
                                 {activeFilterCount > 0 && (
-                                    <span className="absolute -top-1.5 -right-3 h-[18px] min-w-[18px] rounded-full bg-safety-orange text-white text-[9px] font-black flex items-center justify-center px-1 shadow-sm border border-charcoal/20">
+                                    <span className="absolute -top-2 -right-3.5 h-[16px] min-w-[16px] rounded-full bg-safety-orange text-white text-[9px] font-bold flex items-center justify-center px-0.5">
                                         {activeFilterCount}
                                     </span>
                                 )}
-                            </div>
+                            </span>
                         </button>
                         <div className="w-px h-6 bg-white/15" />
                         <button
