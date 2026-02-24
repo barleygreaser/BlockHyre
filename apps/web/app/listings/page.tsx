@@ -196,19 +196,18 @@ export default function InventoryPage() {
     // Sort categories alphabetically
     const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
 
+    // Count active filters for mobile badge
+    const activeFilterCount = selectedCategories.length
+        + (selectedTier ? 1 : 0)
+        + (verifiedOwnersOnly ? 1 : 0)
+        + (acceptsBarterOnly ? 1 : 0)
+        + (instantBookOnly ? 1 : 0)
+        + (priceRange[1] < 300 ? 1 : 0);
+
     return (
         <main className="min-h-screen bg-signal-white">
             <Navbar />
 
-            {/* Mobile Sticky Control Bar */}
-            <div className="md:hidden sticky top-20 z-30 bg-signal-white/90 backdrop-blur-md border-b border-workshop-gray/10 px-4 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex gap-3">
-                <Button variant="outline" className="flex-1 rounded-full border-workshop-gray/20 bg-white text-charcoal font-semibold hover:border-safety-orange hover:text-safety-orange hover:bg-white" onClick={() => setIsFiltersOpen(true)}>
-                    <Filter className="mr-2 h-4 w-4" /> Filter
-                </Button>
-                <Button variant="outline" className="flex-1 rounded-full border-workshop-gray/20 bg-white text-charcoal font-semibold hover:border-safety-orange hover:text-safety-orange hover:bg-white" onClick={() => setIsSortOpen(true)}>
-                    <ArrowUpDown className="mr-2 h-4 w-4" /> Sort
-                </Button>
-            </div>
 
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col md:flex-row gap-8">
@@ -457,7 +456,7 @@ export default function InventoryPage() {
                             <>
                                 {/* Mobile List View */}
                                 {!isDesktop && (
-                                    <div className="space-y-3">
+                                    <div className="space-y-3 pb-24">
                                         {filteredTools.map(tool => (
                                             <MobileToolCard key={tool.id} tool={tool} />
                                         ))}
@@ -533,6 +532,40 @@ export default function InventoryPage() {
                 sortOption={sortOption}
                 setSortOption={setSortOption}
             />
+
+            {/* Mobile Floating Bottom Action Bar */}
+            {!isDesktop && (
+                <div className="fixed bottom-6 left-4 right-4 z-40 md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+                    <div className="bg-charcoal/85 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/30 px-3 py-2 flex items-center gap-2">
+                        <button
+                            onClick={() => setIsFiltersOpen(true)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider text-concrete hover:text-safety-orange transition-colors relative"
+                            aria-label="Open filters"
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter') setIsFiltersOpen(true); }}
+                        >
+                            <Filter className="h-4 w-4" />
+                            Filter
+                            {activeFilterCount > 0 && (
+                                <span className="absolute -top-1 right-2 h-5 min-w-[20px] rounded-full bg-safety-orange text-white text-[10px] font-bold flex items-center justify-center px-1">
+                                    {activeFilterCount}
+                                </span>
+                            )}
+                        </button>
+                        <div className="w-px h-6 bg-white/15" />
+                        <button
+                            onClick={() => setIsSortOpen(true)}
+                            className={`flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${sortOption ? 'text-safety-orange' : 'text-concrete hover:text-safety-orange'}`}
+                            aria-label="Open sort options"
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter') setIsSortOpen(true); }}
+                        >
+                            <ArrowUpDown className="h-4 w-4" />
+                            Sort
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <Footer />
         </main>
