@@ -166,8 +166,8 @@ export function Navbar() {
                                 {loading ? (
                                     maybeAuthenticated ? (
                                         <div className="flex items-center gap-2 xl:gap-3 opacity-60">
-                                            <Skeleton className="h-9 w-[110px] rounded-full bg-safety-orange/40" />
-                                            <Skeleton className="h-9 w-[90px] rounded-full bg-white/10" />
+                                            <Skeleton className="h-9 w-[120px] xl:w-[135px] rounded-full bg-safety-orange/40" />
+                                            <Skeleton className="h-9 w-[95px] xl:w-[110px] rounded-full bg-white/10" />
                                             <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
                                         </div>
                                     ) : (
