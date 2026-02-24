@@ -47,7 +47,7 @@ export function InventoryFiltersModal(props: InventoryFiltersModalProps) {
                 <DialogContent className="fixed inset-0 z-50 h-full w-full max-w-none rounded-none border-0 bg-signal-white p-0 shadow-none sm:max-w-none overflow-hidden flex flex-col">
                     <div className="flex items-center justify-between px-5 py-4 border-b border-workshop-gray/10 flex-shrink-0 bg-white">
                         <div>
-                            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-charcoal/40 block mb-0.5">Refine</span>
+
                             <DialogTitle className="text-xl font-bold font-serif text-charcoal flex items-center gap-2.5">
                                 <SlidersHorizontal className="h-5 w-5 text-safety-orange" />
                                 Filter Inventory
@@ -73,7 +73,7 @@ export function InventoryFiltersModal(props: InventoryFiltersModalProps) {
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DrawerContent className="h-[85vh] flex flex-col rounded-t-[2rem] bg-signal-white border-t border-workshop-gray/10">
                 <DrawerHeader className="text-left border-b border-workshop-gray/10 px-5 py-4">
-                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-charcoal/40 mb-1 block">Refine</span>
+
                     <DrawerTitle className="text-xl font-bold font-serif text-charcoal flex items-center gap-2.5">
                         <SlidersHorizontal className="h-5 w-5 text-safety-orange" />
                         Filter Inventory

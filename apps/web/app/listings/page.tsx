@@ -536,21 +536,23 @@ export default function InventoryPage() {
             {/* Mobile Floating Bottom Action Bar */}
             {!isDesktop && (
                 <div className="fixed top-[70px] left-4 right-4 z-40 md:hidden">
-                    <div className="bg-charcoal/85 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/30 px-3 py-2 flex items-center gap-2">
+                    <div className="bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-3 py-2 flex items-center gap-2">
                         <button
                             onClick={() => setIsFiltersOpen(true)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider text-concrete hover:text-safety-orange transition-colors relative"
+                            className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider text-concrete hover:text-safety-orange transition-colors"
                             aria-label="Open filters"
                             tabIndex={0}
                             onKeyDown={(e) => { if (e.key === 'Enter') setIsFiltersOpen(true); }}
                         >
                             <Filter className="h-4 w-4" />
-                            Filter
-                            {activeFilterCount > 0 && (
-                                <span className="absolute -top-1 right-2 h-5 min-w-[20px] rounded-full bg-safety-orange text-white text-[10px] font-bold flex items-center justify-center px-1">
-                                    {activeFilterCount}
-                                </span>
-                            )}
+                            <div className="relative inline-flex gap-2">
+                                Filter
+                                {activeFilterCount > 0 && (
+                                    <span className="absolute -top-1.5 -right-3 h-[18px] min-w-[18px] rounded-full bg-safety-orange text-white text-[9px] font-black flex items-center justify-center px-1 shadow-sm border border-charcoal/20">
+                                        {activeFilterCount}
+                                    </span>
+                                )}
+                            </div>
                         </button>
                         <div className="w-px h-6 bg-white/15" />
                         <button
