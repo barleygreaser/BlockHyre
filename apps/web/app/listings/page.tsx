@@ -508,6 +508,7 @@ export default function InventoryPage() {
                 setSearchQuery={setSearchQuery}
                 categories={categories}
                 selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
                 toggleCategory={toggleCategory}
                 selectedTier={selectedTier}
                 setSelectedTier={setSelectedTier}

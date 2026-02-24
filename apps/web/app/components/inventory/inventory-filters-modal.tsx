@@ -21,6 +21,7 @@ interface InventoryFiltersModalProps {
     setSearchQuery: (val: string) => void;
     categories: { id: string; name: string }[];
     selectedCategories: string[];
+    setSelectedCategories: (val: string[]) => void;
     toggleCategory: (cat: string) => void;
     selectedTier: string | null;
     setSelectedTier: (val: string | null) => void;
@@ -86,6 +87,7 @@ export function InventoryFiltersModal(props: InventoryFiltersModalProps) {
                             variant="ghost"
                             onClick={() => {
                                 props.setSearchQuery("");
+                                props.setSelectedCategories([]);
                                 props.setPriceRange([0, 300]);
                                 props.setSelectedTier(null);
                                 props.setVerifiedOwnersOnly(false);
@@ -302,6 +304,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
                         variant="ghost"
                         onClick={() => {
                             props.setSearchQuery("");
+                            props.setSelectedCategories([]);
                             props.setPriceRange([0, 300]);
                             props.setSelectedTier(null);
                             props.setVerifiedOwnersOnly(false);
