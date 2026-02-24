@@ -18,11 +18,13 @@ export const CategoryFilter = memo(({ categories, selectedCategory, onSelectCate
                         key={category}
                         onClick={() => onSelectCategory(category)}
                         className={cn(
-                            "px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap",
+                            "px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                             selectedCategory === category
-                                ? "bg-slate-900 text-white shadow-md"
-                                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                                ? "bg-safety-orange text-white shadow-lg shadow-safety-orange/20"
+                                : "bg-white/5 text-concrete/50 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:text-white"
                         )}
+                        aria-label={`Filter by ${category}`}
+                        tabIndex={0}
                     >
                         {category}
                     </button>

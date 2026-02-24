@@ -1,184 +1,144 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Twitter, Instagram, Linkedin } from "lucide-react";
 
 export function Footer() {
     return (
-        <footer className="bg-slate-900 text-slate-300 py-16 border-t border-slate-800">
-            <div className="container mx-auto px-4">
+        <footer className="bg-charcoal text-concrete/60 pt-20 pb-8 border-t border-white/5 relative">
+            {/* Grain overlay */}
+            <div
+                className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23grain)' opacity='1'/%3E%3C/svg%3E")`,
+                }}
+            />
+
+            <div className="container mx-auto px-4 md:px-8 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                    {/* Brand */}
                     <div className="flex flex-col gap-6">
-                        <div className="flex items-center gap-2">
-                            <div className="h-10 w-10">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="1930 0 1781.89 1783.63"
-                                    className="w-full h-full"
-                                >
-                                    <g id="Layer_4" data-name="Layer 4">
-                                        <rect
-                                            fill="#fff"
-                                            strokeWidth="0"
-                                            x="1930"
-                                            y="0"
-                                            width="1781.89"
-                                            height="1783.63"
-                                            rx="229.58"
-                                            ry="229.58"
-                                        />
-                                    </g>
-                                    <g id="Layer_3" data-name="Layer 3">
-                                        <g>
-                                            <path
-                                                fill="#0d1526"
-                                                strokeWidth="0"
-                                                d="M3050.31,904.33c151.81,51.62,165.69,194.17,145.74,275.54-17.24,70.32-92.61,177.62-257.32,179.53h-454.68v-98.77l80.46-19.28v-630.78l-80.46-17.52v-100.13h432.67s199.63,0,249.73,173.07c19.87,68.64-4.55,191.28-116.14,238.35Z"
-                                            />
-                                            <g>
-                                                <path
-                                                    fill="#fff"
-                                                    strokeWidth="0"
-                                                    d="M2889.38,850.35l-155.61.09.76-230.76h154.85c54.65,0,110.06,35.68,110.06,115.38,0,69.08-38.71,112.34-110.06,115.29Z"
-                                                />
-                                                <path
-                                                    fill="#fff"
-                                                    strokeWidth="0"
-                                                    d="M2887.87,1231.49h-154.09l.76-260.36h156.37c95.64,0,138.91,51.62,138.91,131.32,0,72.87-25.81,129.04-141.95,129.04Z"
-                                                />
-                                            </g>
-                                        </g>
-                                    </g>
-                                </svg>
+                        <div className="flex items-center gap-2.5">
+                            <div className="h-10 w-10 rounded-xl bg-safety-orange flex items-center justify-center">
+                                <span className="font-serif font-bold text-white text-lg">B</span>
                             </div>
                             <span className="text-2xl font-bold font-serif tracking-tight text-white">
                                 BlockHyre
                             </span>
                         </div>
-                        <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
+                        <p className="text-sm text-concrete/40 leading-relaxed max-w-xs">
                             Turn your neighborhood into a factory. Rent high-value tools from
-                            neighbors securely and affordably.
+                            verified neighbors. Every rental insured by The Peace Fund.
                         </p>
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                             <Link
                                 href="#"
-                                className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-full"
+                                className="text-concrete/30 hover:text-safety-orange transition-colors p-2 hover:bg-white/5 rounded-xl"
+                                aria-label="Twitter"
                             >
                                 <Twitter className="h-5 w-5" />
-                                <span className="sr-only">Twitter</span>
                             </Link>
                             <Link
                                 href="#"
-                                className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-full"
-                            >
-                                <Facebook className="h-5 w-5" />
-                                <span className="sr-only">Facebook</span>
-                            </Link>
-                            <Link
-                                href="#"
-                                className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-full"
+                                className="text-concrete/30 hover:text-safety-orange transition-colors p-2 hover:bg-white/5 rounded-xl"
+                                aria-label="Instagram"
                             >
                                 <Instagram className="h-5 w-5" />
-                                <span className="sr-only">Instagram</span>
                             </Link>
                             <Link
                                 href="#"
-                                className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-full"
+                                className="text-concrete/30 hover:text-safety-orange transition-colors p-2 hover:bg-white/5 rounded-xl"
+                                aria-label="LinkedIn"
                             >
                                 <Linkedin className="h-5 w-5" />
-                                <span className="sr-only">LinkedIn</span>
                             </Link>
                         </div>
                     </div>
 
+                    {/* Platform */}
                     <div>
-                        <h3 className="font-semibold text-white mb-6">Platform</h3>
+                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-concrete/30 mb-6">Platform</h3>
                         <ul className="space-y-4 text-sm">
                             <li>
-                                <Link href="/tools" className="hover:text-white transition-colors">
+                                <Link href="/listings" className="text-concrete/50 hover:text-safety-orange transition-colors">
                                     Browse Tools
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/add-tool" className="hover:text-white transition-colors">
+                                <Link href="/add-tool" className="text-concrete/50 hover:text-safety-orange transition-colors">
                                     List Your Tools
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    href="/how-it-works"
-                                    className="hover:text-white transition-colors"
-                                >
+                                <Link href="/how-it-works" className="text-concrete/50 hover:text-safety-orange transition-colors">
                                     How it Works
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
+                    {/* Community */}
                     <div>
-                        <h3 className="font-semibold text-white mb-6">Community</h3>
+                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-concrete/30 mb-6">Community</h3>
                         <ul className="space-y-4 text-sm">
                             <li>
-                                <Link href="/about" className="hover:text-white transition-colors">
+                                <Link href="/about" className="text-concrete/50 hover:text-safety-orange transition-colors">
                                     About Us
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    href="/community-guidelines"
-                                    className="hover:text-white transition-colors"
-                                >
+                                <Link href="/community-guidelines" className="text-concrete/50 hover:text-safety-orange transition-colors">
                                     Guidelines
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/peace-fund" className="hover:text-white transition-colors">
+                                <Link href="/peace-fund" className="text-concrete/50 hover:text-safety-orange transition-colors">
                                     Peace Fund
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/disputes" className="hover:text-white transition-colors">
+                                <Link href="/disputes" className="text-concrete/50 hover:text-safety-orange transition-colors">
                                     Dispute Tribunal
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
-                    <div className="flex flex-col gap-6">
-                        <h3 className="font-semibold text-white">Subscribe to our newsletter</h3>
-                        <p className="text-sm text-slate-400">
-                            The latest news, articles, and resources, sent to your inbox weekly.
+                    {/* Newsletter */}
+                    <div className="flex flex-col gap-5">
+                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-concrete/30">Stay Operational</h3>
+                        <p className="text-sm text-concrete/40">
+                            Get weekly updates on new tools in your neighborhood.
                         </p>
-                        <div className="flex flex-col gap-3">
-                            <div className="flex gap-2">
-                                <Input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-slate-600"
-                                />
-                                <Button
-                                    variant="default"
-                                    className="bg-white text-slate-900 hover:bg-slate-200"
-                                >
-                                    Subscribe
-                                </Button>
-                            </div>
+                        <div className="flex gap-2">
+                            <Input
+                                type="email"
+                                placeholder="your@email.com"
+                                className="bg-white/5 border-white/10 text-white placeholder:text-concrete/30 focus-visible:ring-safety-orange/30 focus-visible:border-safety-orange/40 rounded-xl h-10 text-sm"
+                                aria-label="Email for newsletter"
+                            />
+                            <Button
+                                className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold rounded-xl px-5 h-10 text-xs uppercase tracking-wider shrink-0 transition-all hover:shadow-lg hover:shadow-safety-orange/20"
+                            >
+                                Join
+                            </Button>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="text-xs text-slate-500 text-center md:text-left">
-                        <p>
-                            &copy; {new Date().getFullYear()} BlockHyre. Built for the 2,000 homes in
-                            [Neighborhood Name].
+                {/* Bottom Bar */}
+                <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-3">
+                        <div className="h-1.5 w-1.5 rounded-full bg-safety-orange animate-pulse-operational" />
+                        <p className="text-[10px] text-concrete/30 font-mono uppercase tracking-wider">
+                            &copy; {new Date().getFullYear()} BlockHyre Inc. All systems operational.
                         </p>
                     </div>
-                    <div className="flex flex-wrap justify-center gap-6 text-xs text-slate-500">
-                        <Link href="/terms" className="hover:text-white transition-colors">
+                    <div className="flex flex-wrap justify-center gap-6 text-xs text-concrete/30">
+                        <Link href="/terms" className="hover:text-safety-orange transition-colors">
                             Terms
                         </Link>
-                        <Link href="/liability" className="hover:text-white transition-colors">
+                        <Link href="/liability" className="hover:text-safety-orange transition-colors">
                             Liability
                         </Link>
                     </div>

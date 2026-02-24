@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { FeaturedToolCard } from "./featured-tool-card";
 import { CategoryFilter } from "./category-filter";
 import { Listing } from "@/app/hooks/use-marketplace";
@@ -9,11 +9,11 @@ import { Input } from "@/app/components/ui/input";
 import { useAuth } from "@/app/context/auth-context";
 
 interface FeaturedInventoryProps {
-    onRentClick: () => void; // Kept for interface compatibility, though CTA handles navigation now
+    onRentClick: () => void;
     listings: Listing[];
 }
 
-const CATEGORIES = ["All", "Harvest", "Heavy Machinery", "Small Power Tools", "Hand Tools", "Gardening", "Camping & Outdoor"];
+const CATEGORIES = ["All", "Woodworking", "Power Tools", "Gardening", "Heavy Machinery", "Hand Tools", "Camping & Outdoor"];
 
 const normalize = (str: string) => str.toLowerCase().trim();
 
@@ -21,8 +21,8 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
     const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
+    const sectionRef = useRef<HTMLElement>(null);
 
-    // Optimization: Pre-calculate normalized fields to avoid O(N*M) string ops during filtering
     const normalizedListings = useMemo(() => {
         return listings.map(tool => ({
             ...tool,
@@ -33,96 +33,124 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
         }));
     }, [listings]);
 
-    // Filter Logic:
-    // 1. Must be "High Value" (Tier 2 or 3) -> Price > $50 OR Heavy Machinery
-    // 2. Must match selected category (if not "All")
-    // 3. Must match search term (if not empty)
     const filteredListings = useMemo(() => {
-        // Pre-calculate filter values once per render
         const normSelectedCategory = selectedCategory !== "All" ? normalize(selectedCategory) : null;
         const normSearchTerm = searchTerm ? normalize(searchTerm) : null;
 
         return normalizedListings
             .filter(tool => {
-                // Tier 2+ check (Change logic here if "Tier 2" definition changes)
                 const isHighValue = tool.price > 50 || tool.is_high_powered;
                 if (!isHighValue) return false;
 
-                // Category filter
                 if (normSelectedCategory) {
                     if (tool.normCategory !== normSelectedCategory) return false;
                 }
 
-                // Search filter
                 if (normSearchTerm) {
                     if (!tool.normTitle.includes(normSearchTerm) && !tool.normDesc.includes(normSearchTerm)) return false;
                 }
 
                 return true;
             })
-            .slice(0, 6); // Limit to 6 items
+            .slice(0, 6);
     }, [normalizedListings, selectedCategory, searchTerm]);
 
-    // Optimize: Pre-calculate tool props to maintain referential stability
-    // This allows React.memo on FeaturedToolCard to work effectively
     const cardProps = useMemo(() => {
         return filteredListings.map(tool => ({
             id: tool.id,
-            title: tool.title || tool.description || "Untitled Tool", // Fallback title
+            title: tool.title || tool.description || "Untitled Tool",
             image: tool.images?.[0] || "",
             price: tool.daily_price,
-            deposit: tool.deposit || 100, // Fallback if not calc'd
+            deposit: tool.deposit || 100,
             category: tool.category?.name || "General",
             isHeavyMachinery: tool.is_high_powered,
-            coordinates: { latitude: 0, longitude: 0 }, // Not needed for display
+            coordinates: { latitude: 0, longitude: 0 },
             distance: tool.distance,
             acceptsBarter: tool.accepts_barter,
             instantBook: tool.booking_type === 'instant'
         }));
     }, [filteredListings]);
 
-    return (
-        <section className="pt-12 pb-20 bg-slate-50 relative" id="inventory">
-            {/* Background enhancement */}
-            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+    useEffect(() => {
+        const loadGsap = async () => {
+            try {
+                const gsapModule = await import("gsap");
+                const scrollTriggerModule = await import("gsap/ScrollTrigger");
+                const gsap = gsapModule.default;
+                const ScrollTrigger = scrollTriggerModule.default;
+                gsap.registerPlugin(ScrollTrigger);
 
-            <div className="container mx-auto px-4">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                if (!sectionRef.current) return;
+
+                const cards = sectionRef.current.querySelectorAll(".inventory-card");
+
+                cards.forEach((card, idx) => {
+                    gsap.from(card, {
+                        x: idx % 2 === 0 ? -60 : 60,
+                        opacity: 0,
+                        duration: 0.7,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 90%",
+                            toggleActions: "play none none none",
+                        },
+                    });
+                });
+            } catch {
+                // Graceful degradation
+            }
+        };
+        loadGsap();
+    }, [cardProps]);
+
+    return (
+        <section ref={sectionRef} className="py-20 md:py-32 bg-charcoal relative" id="inventory">
+            <div className="container mx-auto px-4 md:px-8">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                     <div className="max-w-xl">
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 font-serif tracking-tight">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="h-px flex-1 max-w-[60px] bg-safety-orange/40" />
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-safety-orange">
+                                Inventory
+                            </span>
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-bold text-white font-serif tracking-tight">
                             {user ? "Tools Near You" : "Recent Listings"}
                         </h2>
-                        <div className="flex items-center gap-2 mt-3 text-slate-600 font-medium">
+                        <div className="flex items-center gap-2 mt-4 text-concrete/50 text-sm font-medium">
                             {user ? (
                                 <>
                                     <MapPin className="h-4 w-4 text-safety-orange" />
-                                    <p>Showing tools within 2 miles of <span className="text-slate-900 underline decoration-dotted underline-offset-4 cursor-help" title="Based on your verified address">Verified Address</span></p>
+                                    <p>Tools within <span className="text-white font-bold">2 miles</span> of your verified address</p>
                                 </>
                             ) : (
                                 <>
                                     <Globe className="h-4 w-4 text-safety-orange" />
-                                    <p className="flex items-center gap-1">Showing active listings from everywhere</p>
+                                    <p>Showing active listings from everywhere</p>
                                 </>
                             )}
                         </div>
                     </div>
 
                     <div className="w-full md:w-80 relative group">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10 group-focus-within:text-safety-orange transition-colors">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-concrete/30 z-10 group-focus-within:text-safety-orange transition-colors">
                             <Search className="h-4 w-4" />
                         </div>
                         <Input
                             type="text"
-                            placeholder="Find a specific tool..."
+                            placeholder="Search tools..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="bg-white border-slate-200 pl-10 h-11 focus-visible:ring-safety-orange/20 focus-visible:border-safety-orange transition-all shadow-sm"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-concrete/30 pl-10 h-11 focus-visible:ring-safety-orange/20 focus-visible:border-safety-orange/40 transition-all rounded-xl"
+                            aria-label="Search tools"
                         />
                     </div>
                 </div>
 
                 {/* Filter Bar */}
-                <div className="mb-8">
+                <div className="mb-10">
                     <CategoryFilter
                         categories={CATEGORIES}
                         selectedCategory={selectedCategory}
@@ -130,18 +158,18 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                     />
                 </div>
 
+                {/* Tool Grid */}
                 {cardProps.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {cardProps.map((tool) => (
-                            <FeaturedToolCard
-                                key={tool.id}
-                                tool={tool}
-                            />
+                            <div key={tool.id} className="inventory-card">
+                                <FeaturedToolCard tool={tool} />
+                            </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-white rounded-lg p-12 text-center border border-dashed border-slate-300">
-                        <p className="text-slate-500 mb-4">
+                    <div className="bg-charcoal-light rounded-[2rem] p-12 text-center border border-white/5">
+                        <p className="text-concrete/40 mb-4 font-mono text-sm">
                             {user
                                 ? "No high-value tools found matching your criteria nearby."
                                 : "No high-value tools found matching your criteria."}
@@ -151,9 +179,9 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                                 setSelectedCategory("All");
                                 setSearchTerm("");
                             }}
-                            className="text-safety-orange font-medium hover:underline"
+                            className="text-safety-orange font-bold text-sm uppercase tracking-wider hover:underline"
                         >
-                            Reset filters
+                            Reset Filters
                         </button>
                     </div>
                 )}
