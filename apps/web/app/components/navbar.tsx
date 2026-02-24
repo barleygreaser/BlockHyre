@@ -87,27 +87,30 @@ export function Navbar() {
                         <div className="hidden lg:flex items-center gap-3 xl:gap-5">
                             <Link
                                 href="/listings"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`nav-bracket text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
+                                <span className="nav-bracket-left" aria-hidden="true">[</span>
                                 Listings
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
+                                <span className="nav-bracket-right" aria-hidden="true">]</span>
                             </Link>
                             <Link
                                 href="/how-it-works"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`nav-bracket text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
+                                <span className="nav-bracket-left" aria-hidden="true">[</span>
                                 How it Works
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
+                                <span className="nav-bracket-right" aria-hidden="true">]</span>
                             </Link>
                             <Link
                                 href="/peace-fund"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`nav-bracket text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
+                                <span className="nav-bracket-left" aria-hidden="true">[</span>
                                 Peace Fund
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-safety-orange transition-all duration-300 group-hover:w-full" />
+                                <span className="nav-bracket-right" aria-hidden="true">]</span>
                             </Link>
                         </div>
 
@@ -160,15 +163,15 @@ export function Navbar() {
                                 ) : user ? (
                                     <div className="flex items-center gap-2 xl:gap-3">
                                         <Link href="/add-tool">
-                                            <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
+                                            <Button className="nav-cta-magnetic bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all duration-300 hover:shadow-xl hover:shadow-safety-orange/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md active:shadow-safety-orange/20">
                                                 + List a Tool
                                             </Button>
                                         </Link>
 
                                         <Link href="/dashboard">
-                                            <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 transition-all ${isScrolled
-                                                ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                                                : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                                            <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 transition-all duration-300 ${isScrolled
+                                                ? "bg-white/10 text-white border border-white/20 hover:border-safety-orange/60 hover:bg-safety-orange/10 hover:text-safety-orange hover:shadow-[0_0_12px_rgba(255,107,0,0.15)]"
+                                                : "bg-white/10 text-white border border-white/20 hover:border-safety-orange/60 hover:bg-safety-orange/10 hover:text-safety-orange hover:shadow-[0_0_12px_rgba(255,107,0,0.15)]"
                                                 }`}>
                                                 Dashboard
                                             </Button>
@@ -184,9 +187,9 @@ export function Navbar() {
                                                 tabIndex={0}
                                                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsMenuOpen(!isMenuOpen); }}
                                             >
-                                                <div className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all relative ${isScrolled
-                                                    ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
-                                                    : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
+                                                <div className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 relative ${isScrolled
+                                                    ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/60 hover:ring-offset-2 hover:ring-offset-charcoal hover:shadow-[0_0_16px_rgba(255,107,0,0.25)]"
+                                                    : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/60 hover:ring-offset-2 hover:ring-offset-transparent hover:shadow-[0_0_16px_rgba(255,107,0,0.25)]"
                                                     }`}>
                                                     {avatarUrl ? (
                                                         <Image
