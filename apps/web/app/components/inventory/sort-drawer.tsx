@@ -22,7 +22,6 @@ export function SortDrawer({ isOpen, onClose, sortOption, setSortOption }: SortD
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DrawerContent className="rounded-t-[2rem] bg-signal-white border-t border-workshop-gray/10">
                 <DrawerHeader className="text-left border-b border-workshop-gray/10 px-5 py-4">
-                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-charcoal/40 mb-1 block">Arrange</span>
                     <DrawerTitle className="text-xl font-bold font-serif text-charcoal flex items-center gap-2.5">
                         <ArrowUpDown className="h-5 w-5 text-safety-orange" />
                         Sort Results
