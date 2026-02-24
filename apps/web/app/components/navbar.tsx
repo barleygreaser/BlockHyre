@@ -153,12 +153,11 @@ export function Navbar() {
                             </Link>
 
                             {/* Desktop Auth/User Actions */}
-                            <div className="hidden lg:flex items-center gap-2 xl:gap-3">
+                            <div className="hidden lg:flex items-center gap-2 xl:gap-3 transition-all duration-300 min-w-[170px] justify-end">
                                 {loading ? (
-                                    <div className="flex items-center gap-3">
-                                        <Skeleton className="h-9 w-[110px] rounded-full bg-white/10" />
-                                        <Skeleton className="h-9 w-[90px] rounded-full bg-white/10" />
-                                        <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                                    <div className="flex items-center gap-2 xl:gap-3 opacity-60">
+                                        <Skeleton className="h-9 w-[65px] rounded-full bg-white/5" />
+                                        <Skeleton className="h-9 w-[90px] rounded-full bg-safety-orange/40" />
                                     </div>
                                 ) : user ? (
                                     <div className="flex items-center gap-2 xl:gap-3">
@@ -348,17 +347,15 @@ export function Navbar() {
                             {/* Drawer Content */}
                             <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
                                 {loading ? (
-                                    <div className="space-y-6">
-                                        <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                                            <Skeleton className="h-12 w-12 rounded-full bg-white/10" />
-                                            <div className="flex-1 space-y-2">
-                                                <Skeleton className="h-5 w-3/4 bg-white/10" />
-                                                <Skeleton className="h-4 w-1/2 bg-white/10" />
-                                            </div>
+                                    <div className="space-y-6 opacity-60">
+                                        <div className="space-y-4 pb-6 border-b border-white/10">
+                                            <Skeleton className="h-12 w-full rounded-xl bg-safety-orange/40" />
+                                            <Skeleton className="h-12 w-full rounded-xl bg-white/5" />
                                         </div>
-                                        <div className="space-y-3">
-                                            <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
-                                            <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
+                                        <div className="flex flex-col gap-4 pt-2">
+                                            <Skeleton className="h-5 w-24 bg-white/5 rounded" />
+                                            <Skeleton className="h-5 w-32 bg-white/5 rounded" />
+                                            <Skeleton className="h-5 w-28 bg-white/5 rounded" />
                                         </div>
                                     </div>
                                 ) : user ? (
