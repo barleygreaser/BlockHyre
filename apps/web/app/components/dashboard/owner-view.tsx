@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
 import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info, CalendarClock, Clock } from "lucide-react";
@@ -29,7 +28,6 @@ import {
 } from "@/app/components/ui/empty";
 import { sendSystemMessage } from "@/app/lib/chat-helpers";
 
-// Static formatters to avoid re-creation on every render
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
 const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -56,7 +54,6 @@ export function OwnerDashboardView() {
         localStorage.setItem("dashboard_protip_dismissed", "true");
     };
 
-    // State for KPIs
     const [kpis, setKpis] = useState({
         activeRentals: 0,
         earnings30d: 0,
@@ -65,7 +62,6 @@ export function OwnerDashboardView() {
     const [kpiLoading, setKpiLoading] = useState(true);
     const [overdueCount, setOverdueCount] = useState(0);
 
-    // Fetch Owner KPIs
     useEffect(() => {
         if (!user) return;
 
@@ -85,7 +81,6 @@ export function OwnerDashboardView() {
                     });
                 }
 
-                // Fetch overdue rentals count
                 const { data: overdueData, error: overdueError } = await supabase
                     .from('rentals')
                     .select('id, listing:listings!inner(owner_id)')
@@ -96,7 +91,6 @@ export function OwnerDashboardView() {
                 if (overdueError) {
                     console.error("Error fetching overdue count:", overdueError);
                 } else {
-                    console.log("Overdue rentals found:", overdueData?.length || 0, overdueData);
                     setOverdueCount(overdueData?.length || 0);
                 }
             } catch (error) {
@@ -109,24 +103,21 @@ export function OwnerDashboardView() {
         fetchKPIs();
     }, [user]);
 
-    // Format currency
     const formatCurrency = (amount: number) => {
         return currencyFormatter.format(amount);
     };
-    // State for Lists
+
     const [actionItems, setActionItems] = useState<any[]>([]);
     const [rentalRequests, setRentalRequests] = useState<any[]>([]);
     const [extensionRequests, setExtensionRequests] = useState<any[]>([]);
     const [listsLoading, setListsLoading] = useState(true);
     const [sellerFeePercent, setSellerFeePercent] = useState<number>(0);
 
-    // Fetch Lists
     useEffect(() => {
         if (!user) return;
 
         const fetchLists = async () => {
             try {
-                // Fetch platform settings for seller fee
                 const { data: settingsData, error: settingsError } = await supabase
                     .from('platform_settings')
                     .select('seller_fee_percent')
@@ -138,8 +129,6 @@ export function OwnerDashboardView() {
                     setSellerFeePercent(settingsData.seller_fee_percent || 0);
                 }
 
-                // 1. Action Items (Status = Returned) - For Inspection
-                // Need to find rentals for MY listings that are 'Returned'
                 const { data: returnedData, error: returnedError } = await supabase
                     .from('rentals')
                     .select(`
@@ -155,7 +144,6 @@ export function OwnerDashboardView() {
                 if (returnedError) throw returnedError;
                 if (returnedData) setActionItems(returnedData);
 
-                // 2. Rental Requests (Status = Pending)
                 const { data: pendingData, error: pendingError } = await supabase
                     .from('rentals')
                     .select(`
@@ -175,7 +163,6 @@ export function OwnerDashboardView() {
                 if (pendingError) throw pendingError;
                 if (pendingData) setRentalRequests(pendingData);
 
-                // 3. Extension Requests
                 const { data: extensionsData, error: extensionsError } = await supabase
                     .rpc('get_owner_pending_extensions');
 
@@ -184,7 +171,6 @@ export function OwnerDashboardView() {
                 } else if (extensionsData) {
                     setExtensionRequests(extensionsData);
                 }
-
             } catch (error) {
                 console.error("Error fetching dashboard lists:", error);
             } finally {
@@ -200,14 +186,12 @@ export function OwnerDashboardView() {
     const handleApprove = async (rentalId: string) => {
         setProcessingId(rentalId);
         try {
-            // First, get the rental details before approving
             const rental = rentalRequests.find(r => r.id === rentalId);
             if (!rental) {
                 alert("Rental not found");
                 return;
             }
 
-            // Approve the rental via RPC
             const { error } = await supabase.rpc('approve_rental_request', {
                 p_rental_id: rentalId
             });
@@ -217,7 +201,6 @@ export function OwnerDashboardView() {
                 return;
             }
 
-            // Fetch additional data needed for the confirmation message
             const { data: rentalData, error: rentalError } = await supabase
                 .from('rentals')
                 .select(`
@@ -236,8 +219,6 @@ export function OwnerDashboardView() {
                 console.error("Error fetching rental details for message:", JSON.stringify(rentalError, null, 2));
                 console.error("Rental data received:", rentalData);
             } else {
-                // Use listing data from the rental object (already fetched in rentalRequests)
-                // The rental object includes: listing:listings!inner (title, owner_id)
                 const listingData = rental.listing ? {
                     title: rental.listing.title,
                     owner_id: rental.listing.owner_id,
@@ -245,14 +226,12 @@ export function OwnerDashboardView() {
                     preferred_pickup_time: rental.listing.preferred_pickup_time || 'Check with owner'
                 } : null;
 
-                // Fetch renter details
                 const { data: renterData } = await supabase
                     .from('users')
                     .select('full_name, email')
                     .eq('id', rentalData.renter_id)
                     .single();
 
-                // Fetch owner details
                 const { data: ownerData } = await supabase
                     .from('users')
                     .select('full_name')
@@ -265,10 +244,8 @@ export function OwnerDashboardView() {
                         renterData,
                         ownerData
                     }, null, 2));
-                    // Continue anyway, just use defaults
                 }
 
-                // Get or create chat for this user pair
                 const { data: existingChat } = await supabase
                     .from('chats')
                     .select('id')
@@ -279,7 +256,6 @@ export function OwnerDashboardView() {
                 let chatId = existingChat?.id;
 
                 if (!chatId) {
-                    // Create chat if it doesn't exist
                     const { data: newChat, error: chatError } = await supabase
                         .from('chats')
                         .insert([{
@@ -297,13 +273,12 @@ export function OwnerDashboardView() {
                     }
                 }
 
-                // Send BOOKING_CONFIRMED system messages if we have a chat
                 if (chatId) {
                     const startDate = new Date(rentalData.start_date);
                     const endDate = new Date(rentalData.end_date);
 
                     const context = {
-                        recipient_role: '', // Set by helper
+                        recipient_role: '',
                         tool_name: listingData?.title || 'Tool',
                         owner_name: ownerData?.full_name || 'Owner',
                         renter_name: renterData?.full_name || 'Renter',
@@ -327,16 +302,11 @@ export function OwnerDashboardView() {
                         );
                     } catch (msgError) {
                         console.error("Error sending confirmation message:", msgError);
-                        // Don't fail the approval if message fails
                     }
                 }
             }
 
-            // Refresh lists
             setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
-
-            // Optionally refresh KPIs too as active count changes
-            // fetchKPIs(); 
         } catch (err) {
             console.error("Approval failed:", err);
         } finally {
@@ -347,14 +317,12 @@ export function OwnerDashboardView() {
     const handleDeny = async (rentalId: string) => {
         setProcessingId(rentalId);
         try {
-            // Get the rental details before denying
             const rental = rentalRequests.find(r => r.id === rentalId);
             if (!rental) {
                 alert("Rental not found");
                 return;
             }
 
-            // Update status to rejected
             const { error } = await supabase
                 .from('rentals')
                 .update({
@@ -365,7 +333,6 @@ export function OwnerDashboardView() {
 
             if (error) throw error;
 
-            // Fetch additional data for system messages
             const { data: rentalData, error: rentalError } = await supabase
                 .from('rentals')
                 .select(`
@@ -380,7 +347,6 @@ export function OwnerDashboardView() {
                 .single();
 
             if (!rentalError && rentalData) {
-                // Get or create chat (match by user pair only)
                 const { data: existingChat } = await supabase
                     .from('chats')
                     .select('id')
@@ -406,9 +372,7 @@ export function OwnerDashboardView() {
                     }
                 }
 
-                // Send system messages if we have a chat
                 if (chatId) {
-                    // Fetch user names
                     const { data: renterData } = await supabase
                         .from('users')
                         .select('full_name')
@@ -430,8 +394,8 @@ export function OwnerDashboardView() {
                         renter_name: renterData?.full_name || 'Renter',
                         start_date: startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
                         end_date: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                        total_cost: '', // Not applicable for rejection
-                        owner_notes_link: '' // Not applicable for rejection
+                        total_cost: '',
+                        owner_notes_link: ''
                     };
 
                     try {
@@ -444,7 +408,6 @@ export function OwnerDashboardView() {
                         );
                     } catch (msgError) {
                         console.error("Error sending rejection messages:", msgError);
-                        // Don't fail the denial if message fails
                     }
                 }
             }
@@ -476,7 +439,6 @@ export function OwnerDashboardView() {
                 return;
             }
 
-            // Success - refresh the lists
             setExtensionRequests(prev => prev.filter(ext => ext.extension_id !== extensionId));
             toast.success('Extension approved successfully!');
         } catch (err) {
@@ -505,7 +467,6 @@ export function OwnerDashboardView() {
                 return;
             }
 
-            // Success - refresh the lists
             setExtensionRequests(prev => prev.filter(ext => ext.extension_id !== extensionId));
             toast.success('Extension declined');
         } catch (err) {
@@ -516,37 +477,33 @@ export function OwnerDashboardView() {
         }
     };
 
-    // Helper for date formatting
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
         return dateFormatter.format(new Date(dateStr));
     };
 
-    // Calculate owner's revenue after platform fee
     const calculateOwnerRevenue = (rentalFee: number) => {
         if (!rentalFee || !sellerFeePercent) return rentalFee || 0;
         const platformFee = rentalFee * (sellerFeePercent / 100);
         return rentalFee - platformFee;
     };
 
-    // Calculate time remaining before auto-denial (24 hours from created_at)
     const getTimeRemaining = (createdAt: string) => {
         if (!createdAt) return null;
 
         const created = new Date(createdAt);
-        const expiresAt = new Date(created.getTime() + 24 * 60 * 60 * 1000); // 24 hours
+        const expiresAt = new Date(created.getTime() + 24 * 60 * 60 * 1000);
         const now = new Date();
         const diff = expiresAt.getTime() - now.getTime();
 
-        if (diff <= 0) return null; // Expired
+        if (diff <= 0) return null;
 
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-        return { hours, minutes, isUrgent: hours < 2 }; // Urgent if less than 2 hours
+        return { hours, minutes, isUrgent: hours < 2 };
     };
 
-    // Format time remaining for display
     const formatTimeRemaining = (createdAt: string) => {
         const timeRemaining = getTimeRemaining(createdAt);
         if (!timeRemaining) return 'Expired';
@@ -562,75 +519,68 @@ export function OwnerDashboardView() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold font-serif text-slate-900">My Listings</h2>
-                    <p className="text-slate-500">Manage your tools, rentals, and earnings.</p>
+                    <h2 className="text-2xl font-bold font-serif text-slate-900 tracking-tight">My Listings</h2>
+                    <p className="text-sm text-slate-500 mt-1">Manage your tools, rentals, and earnings.</p>
                 </div>
                 <Link href="/add-tool">
-                    <Button className="bg-safety-orange hover:bg-safety-orange/90">
+                    <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
                         <Plus className="mr-2 h-4 w-4" />
                         List New Tool
                     </Button>
                 </Link>
             </div>
 
-            {/* Stats Row */}
-            {/* ... (Previous Stats Row Code) ... */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Link href="/owner/active-rentals" className="block">
-                    <Card className="border-slate-200 shadow-sm hover:border-blue-500/50 transition-colors cursor-pointer group">
-                        <CardContent className="p-6 flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">Tool Bookings</p>
-                                {kpiLoading ? (
-                                    <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
-                                ) : (
-                                    <h3 className="text-3xl font-bold text-slate-900">{kpis.activeRentals}</h3>
-                                )}
-                            </div>
-                            <div className="relative h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
-                                <Users className="h-6 w-6" />
-                                {!kpiLoading && overdueCount > 0 && (
-                                    <Badge className="absolute -top-1 -right-1 h-6 w-6 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-xs font-bold">
-                                        {overdueCount}
-                                    </Badge>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Link>
-
-                <Card className="border-slate-200 shadow-sm">
-                    <CardContent className="p-6 flex items-center justify-between">
+            {/* KPI Telemetry Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link href="/owner/active-rentals" className="block group">
+                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm">
                         <div>
-                            <p className="text-sm font-medium text-slate-500">Earnings (30d)</p>
+                            <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Tool Bookings</p>
                             {kpiLoading ? (
-                                <div className="h-9 w-24 bg-slate-100 animate-pulse rounded mt-1" />
+                                <div className="h-9 w-12 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
-                                <h3 className="text-3xl font-bold text-slate-900">{formatCurrency(kpis.earnings30d)}</h3>
+                                <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.activeRentals}</h3>
                             )}
                         </div>
-                        <div className="h-12 w-12 rounded-full bg-green-50 flex items-center justify-center text-green-600">
-                            <DollarSign className="h-6 w-6" />
+                        <div className="relative h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                            <Users className="h-6 w-6" />
+                            {!kpiLoading && overdueCount > 0 && (
+                                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-[10px] font-bold">
+                                    {overdueCount}
+                                </Badge>
+                            )}
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </Link>
 
-                <Link href="/owner/listings" className="block">
-                    <Card className="border-slate-200 shadow-sm hover:border-safety-orange/50 transition-colors cursor-pointer group">
-                        <CardContent className="p-6 flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-slate-500 group-hover:text-safety-orange transition-colors">Tools Listed</p>
-                                {kpiLoading ? (
-                                    <div className="h-9 w-12 bg-slate-100 animate-pulse rounded mt-1" />
-                                ) : (
-                                    <h3 className="text-3xl font-bold text-slate-900">{kpis.toolsListed}</h3>
-                                )}
-                            </div>
-                            <div className="h-12 w-12 rounded-full bg-orange-50 flex items-center justify-center text-safety-orange group-hover:scale-110 transition-transform">
-                                <Wrench className="h-6 w-6" />
-                            </div>
-                        </CardContent>
-                    </Card>
+                <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Earnings (30d)</p>
+                        {kpiLoading ? (
+                            <div className="h-9 w-24 bg-slate-100 animate-pulse rounded-lg mt-1" />
+                        ) : (
+                            <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{formatCurrency(kpis.earnings30d)}</h3>
+                        )}
+                    </div>
+                    <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <DollarSign className="h-6 w-6" />
+                    </div>
+                </div>
+
+                <Link href="/owner/listings" className="block group">
+                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm">
+                        <div>
+                            <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Tools Listed</p>
+                            {kpiLoading ? (
+                                <div className="h-9 w-12 bg-slate-100 animate-pulse rounded-lg mt-1" />
+                            ) : (
+                                <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.toolsListed}</h3>
+                            )}
+                        </div>
+                        <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-safety-orange group-hover:scale-110 transition-transform">
+                            <Wrench className="h-6 w-6" />
+                        </div>
+                    </div>
                 </Link>
             </div>
 
@@ -642,214 +592,217 @@ export function OwnerDashboardView() {
                     {/* Action Items (Returns Pending Inspection) */}
                     {actionItems.length > 0 && (
                         <div className="space-y-4">
-                            <h2 className="text-xl font-bold font-serif text-slate-900">Action Required</h2>
+                            <div className="flex items-center gap-3">
+                                <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                                <h2 className="text-lg font-bold font-serif text-slate-900">Action Required</h2>
+                            </div>
                             {actionItems.map(item => (
-                                <Card key={item.id} className="border-[1.5px] border-[#FFC107] shadow-sm bg-[#FFFBE6]">
-                                    <CardContent className="p-6">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Badge variant="outline" className="bg-white text-safety-orange border-safety-orange">Returned</Badge>
-                                                    <span className="text-xs text-slate-500">Needs Inspection</span>
-                                                </div>
-                                                <h4 className="font-bold text-slate-900">{item.listing.title}</h4>
-                                                <p className="text-sm text-slate-600">Returned by <span className="font-medium">{item.renter.full_name || 'Renter'}</span></p>
+                                <div key={item.id} className="bg-white rounded-[2rem] border-2 border-amber-300 p-6 shadow-sm">
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Badge className="bg-safety-orange/10 text-safety-orange border border-safety-orange/20 text-[10px] font-mono font-bold uppercase tracking-wider rounded-full px-3">Returned</Badge>
+                                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Needs Inspection</span>
                                             </div>
-                                            <Button onClick={() => setIsInspectionOpen(true)} className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold">
-                                                <Eye className="mr-2 h-4 w-4" />
-                                                Inspect & Release Deposit
-                                            </Button>
+                                            <h4 className="font-bold text-slate-900 text-base">{item.listing.title}</h4>
+                                            <p className="text-sm text-slate-500">Returned by <span className="font-medium text-slate-700">{item.renter.full_name || 'Renter'}</span></p>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                        <Button onClick={() => setIsInspectionOpen(true)} className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20">
+                                            <Eye className="mr-2 h-4 w-4" />
+                                            Inspect & Release
+                                        </Button>
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     )}
 
                     {/* Rental Requests */}
                     <div className="space-y-4">
-                        <h2 className="text-xl font-bold font-serif text-slate-900">Rental Requests</h2>
+                        <div className="flex items-center gap-3">
+                            <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                            <h2 className="text-lg font-bold font-serif text-slate-900">Rental Requests</h2>
+                        </div>
 
                         {listsLoading ? (
-                            <Card className="border-slate-200 shadow-sm"><CardContent className="p-6"><Skeleton className="h-20 w-full" /></CardContent></Card>
+                            <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                                <Skeleton className="h-20 w-full rounded-xl" />
+                            </div>
                         ) : (
                             <>
                                 {/* Extension Requests - Priority Display */}
                                 {extensionRequests.map((ext) => (
-                                    <Card key={ext.extension_id} className="border-2 border-amber-400 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50">
-                                        <CardContent className="p-6">
-                                            <div className="flex items-start gap-3 mb-4">
-                                                <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                                                    <CalendarClock className="h-6 w-6 text-amber-600" />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <Badge className="bg-amber-500 text-white font-semibold mb-2">
-                                                        ⏰ EXTENSION REQUEST
-                                                    </Badge>
-                                                    <h4 className="font-bold text-slate-900 text-lg">{ext.renter_name}</h4>
-                                                    <p className="text-sm text-slate-700">
-                                                        wants to extend <span className="font-semibold">{ext.listing_title}</span>
-                                                    </p>
-                                                </div>
+                                    <div key={ext.extension_id} className="bg-charcoal rounded-[2rem] p-6 shadow-lg border border-white/10">
+                                        <div className="flex items-start gap-3 mb-4">
+                                            <div className="h-12 w-12 rounded-2xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                                                <CalendarClock className="h-6 w-6 text-amber-400" />
                                             </div>
+                                            <div className="flex-1">
+                                                <Badge className="bg-safety-orange text-white font-bold text-[10px] uppercase tracking-wider rounded-full px-3 mb-2 border-0">
+                                                    ⏰ Extension Request
+                                                </Badge>
+                                                <h4 className="font-bold text-white text-lg">{ext.renter_name}</h4>
+                                                <p className="text-sm text-concrete/70">
+                                                    wants to extend <span className="font-semibold text-white">{ext.listing_title}</span>
+                                                </p>
+                                            </div>
+                                        </div>
 
-                                            <div className="grid grid-cols-2 gap-3 bg-white/60 rounded-lg p-4 mb-4 text-sm">
-                                                <div>
-                                                    <p className="text-xs text-slate-600 mb-1">Current End</p>
-                                                    <p className="font-semibold">{formatDate(ext.current_end_date)}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-slate-600 mb-1">New End</p>
-                                                    <p className="font-semibold text-amber-700">{formatDate(ext.new_end_date)}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-slate-600 mb-1">Extra Days</p>
-                                                    <p className="font-semibold">+{ext.extra_days}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-slate-600 mb-1">Extra Earnings</p>
-                                                    <p className="font-bold text-green-600">
-                                                        {formatCurrency(calculateOwnerRevenue(ext.additional_rental_fee))}
-                                                    </p>
-                                                </div>
+                                        <div className="grid grid-cols-2 gap-3 bg-white/5 rounded-2xl p-4 mb-4 border border-white/10">
+                                            <div>
+                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">Current End</p>
+                                                <p className="font-bold text-white font-mono text-sm">{formatDate(ext.current_end_date)}</p>
                                             </div>
+                                            <div>
+                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">New End</p>
+                                                <p className="font-bold text-safety-orange font-mono text-sm">{formatDate(ext.new_end_date)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">Extra Days</p>
+                                                <p className="font-bold text-white font-mono text-sm">+{ext.extra_days}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">Extra Earnings</p>
+                                                <p className="font-bold text-emerald-400 font-mono text-sm">
+                                                    {formatCurrency(calculateOwnerRevenue(ext.additional_rental_fee))}
+                                                </p>
+                                            </div>
+                                        </div>
 
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                                                    disabled={processingId === ext.extension_id}
-                                                    onClick={() => handleApproveExtension(ext.extension_id)}
-                                                >
-                                                    <Check className="mr-2 h-4 w-4" />
-                                                    Approve
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                                                    disabled={processingId === ext.extension_id}
-                                                    onClick={() => handleDeclineExtension(ext.extension_id)}
-                                                >
-                                                    <X className="mr-2 h-4 w-4" />
-                                                    Decline
-                                                </Button>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider rounded-full h-10"
+                                                disabled={processingId === ext.extension_id}
+                                                onClick={() => handleApproveExtension(ext.extension_id)}
+                                            >
+                                                <Check className="mr-2 h-4 w-4" />
+                                                Approve
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                className="flex-1 border-white/20 text-white hover:bg-white/10 font-bold text-xs uppercase tracking-wider rounded-full h-10"
+                                                disabled={processingId === ext.extension_id}
+                                                onClick={() => handleDeclineExtension(ext.extension_id)}
+                                            >
+                                                <X className="mr-2 h-4 w-4" />
+                                                Decline
+                                            </Button>
+                                        </div>
+                                    </div>
                                 ))}
 
                                 {/* Regular Rental Requests */}
                                 {rentalRequests.length > 0 ? (
                                     rentalRequests.map((request) => (
-                                        <Card key={request.id} className="border-slate-200 shadow-sm">
-                                            <CardContent className="p-6">
-                                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 overflow-hidden">
-                                                            {/* Avatar or Initial */}
-                                                            {request.renter.full_name ? request.renter.full_name.charAt(0) : 'R'}
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="font-bold text-slate-900 flex items-center gap-2">
-                                                                {request.renter.full_name || 'Unknown User'}
-                                                                <span className="flex items-center text-xs font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
-                                                                    <span className="text-yellow-400 mr-1">★</span>
-                                                                    5.0
-                                                                </span>
-                                                            </h4>
-                                                            <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
-                                                            <div className="flex items-center gap-3 mt-1 text-xs">
-                                                                <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
-                                                                    {formatDate(request.start_date)} - {formatDate(request.end_date)}
-                                                                </span>
-                                                                <span className="text-slate-400">•</span>
-                                                                <span className="text-slate-600">{request.total_days} Days</span>
-                                                                {request.rental_fee && (
-                                                                    <>
-                                                                        <span className="text-slate-400">•</span>
-                                                                        <TooltipProvider>
-                                                                            <Tooltip>
-                                                                                <TooltipTrigger asChild>
-                                                                                    <span className="font-bold text-green-600 flex items-center gap-1 cursor-help">
-                                                                                        {formatCurrency(calculateOwnerRevenue(request.rental_fee))} revenue
-                                                                                        <Info className="h-3 w-3" />
-                                                                                    </span>
-                                                                                </TooltipTrigger>
-                                                                                <TooltipContent side="top" className="bg-slate-900 text-white p-3 max-w-xs">
-                                                                                    <div className="space-y-1 text-xs">
-                                                                                        <div className="flex justify-between gap-4">
-                                                                                            <span className="text-slate-300">Rental Fee:</span>
-                                                                                            <span className="font-semibold">{formatCurrency(request.rental_fee)}</span>
-                                                                                        </div>
-                                                                                        <div className="flex justify-between gap-4">
-                                                                                            <span className="text-slate-300">Platform Fee ({sellerFeePercent}%):</span>
-                                                                                            <span className="text-red-400">-{formatCurrency(request.rental_fee * (sellerFeePercent / 100))}</span>
-                                                                                        </div>
-                                                                                        <div className="border-t border-slate-700 pt-1 mt-1"></div>
-                                                                                        <div className="flex justify-between gap-4">
-                                                                                            <span className="font-semibold">Your Revenue:</span>
-                                                                                            <span className="font-bold text-green-400">{formatCurrency(calculateOwnerRevenue(request.rental_fee))}</span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </TooltipContent>
-                                                                            </Tooltip>
-                                                                        </TooltipProvider>
-                                                                    </>
-                                                                )}
-                                                            </div>
-
-                                                            {/* Time Remaining Warning */}
-                                                            {(() => {
-                                                                const timeInfo = getTimeRemaining(request.created_at);
-                                                                if (!timeInfo) return null;
-                                                                const isUrgent = timeInfo.isUrgent;
-
-                                                                return (
-                                                                    <div className={`flex items-center gap-1.5 mt-3 text-xs font-medium px-2 py-1 rounded-md w-fit ${isUrgent
-                                                                        ? 'bg-red-50 text-red-700 border border-red-200'
-                                                                        : 'bg-amber-50 text-amber-700 border border-amber-200'
-                                                                        }`}>
-                                                                        <Clock className={`h-3.5 w-3.5 ${isUrgent ? 'animate-pulse' : ''}`} />
-                                                                        <span>
-                                                                            {isUrgent ? '⚠️ ' : ''}
-                                                                            {formatTimeRemaining(request.created_at)} to respond
-                                                                            {isUrgent ? ' - Auto-denies soon!' : ' or auto-denies'}
-                                                                        </span>
-                                                                    </div>
-                                                                );
-                                                            })()}
-                                                        </div>
+                                        <div key={request.id} className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-safety-orange/30 hover:shadow-md">
+                                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="h-10 w-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm overflow-hidden">
+                                                        {request.renter.full_name ? request.renter.full_name.charAt(0) : 'R'}
                                                     </div>
-                                                    <div className="flex gap-2 w-full sm:w-auto">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            className="flex-1 sm:flex-none text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
-                                                            onClick={() => handleDeny(request.id)}
-                                                            disabled={processingId === request.id}
-                                                        >
-                                                            <X className="mr-2 h-4 w-4" />
-                                                            Deny
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
-                                                            onClick={() => handleApprove(request.id)}
-                                                            disabled={processingId === request.id}
-                                                        >
-                                                            {processingId === request.id ? 'Processing...' : (
+                                                    <div>
+                                                        <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                                                            {request.renter.full_name || 'Unknown User'}
+                                                            <span className="flex items-center text-[10px] font-mono font-normal text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
+                                                                <span className="text-yellow-400 mr-1">★</span>
+                                                                5.0
+                                                            </span>
+                                                        </h4>
+                                                        <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
+
+                                                        {/* Specs Grid */}
+                                                        <div className="flex items-center gap-3 mt-2 text-[10px] font-mono uppercase tracking-wider">
+                                                            <span className="bg-slate-50 px-2.5 py-1 rounded-full text-slate-500 border border-slate-100">
+                                                                {formatDate(request.start_date)} – {formatDate(request.end_date)}
+                                                            </span>
+                                                            <span className="text-slate-300">•</span>
+                                                            <span className="text-slate-500">{request.total_days} Days</span>
+                                                            {request.rental_fee && (
                                                                 <>
-                                                                    <Check className="mr-2 h-4 w-4" />
-                                                                    Approve
+                                                                    <span className="text-slate-300">•</span>
+                                                                    <TooltipProvider>
+                                                                        <Tooltip>
+                                                                            <TooltipTrigger asChild>
+                                                                                <span className="font-bold text-emerald-600 flex items-center gap-1 cursor-help">
+                                                                                    {formatCurrency(calculateOwnerRevenue(request.rental_fee))} revenue
+                                                                                    <Info className="h-3 w-3" />
+                                                                                </span>
+                                                                            </TooltipTrigger>
+                                                                            <TooltipContent side="top" className="bg-charcoal text-white p-3 max-w-xs rounded-xl border border-white/10">
+                                                                                <div className="space-y-1 text-xs font-mono">
+                                                                                    <div className="flex justify-between gap-4">
+                                                                                        <span className="text-concrete/60">Rental Fee:</span>
+                                                                                        <span className="font-semibold">{formatCurrency(request.rental_fee)}</span>
+                                                                                    </div>
+                                                                                    <div className="flex justify-between gap-4">
+                                                                                        <span className="text-concrete/60">Platform Fee ({sellerFeePercent}%):</span>
+                                                                                        <span className="text-red-400">-{formatCurrency(request.rental_fee * (sellerFeePercent / 100))}</span>
+                                                                                    </div>
+                                                                                    <div className="border-t border-white/10 pt-1 mt-1"></div>
+                                                                                    <div className="flex justify-between gap-4">
+                                                                                        <span className="font-semibold">Your Revenue:</span>
+                                                                                        <span className="font-bold text-emerald-400">{formatCurrency(calculateOwnerRevenue(request.rental_fee))}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </TooltipContent>
+                                                                        </Tooltip>
+                                                                    </TooltipProvider>
                                                                 </>
                                                             )}
-                                                        </Button>
+                                                        </div>
+
+                                                        {/* Time Remaining Warning */}
+                                                        {(() => {
+                                                            const timeInfo = getTimeRemaining(request.created_at);
+                                                            if (!timeInfo) return null;
+                                                            const isUrgent = timeInfo.isUrgent;
+
+                                                            return (
+                                                                <div className={`flex items-center gap-1.5 mt-3 text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1.5 rounded-full w-fit ${isUrgent
+                                                                    ? 'bg-red-50 text-red-600 border border-red-200'
+                                                                    : 'bg-amber-50 text-amber-600 border border-amber-200'
+                                                                    }`}>
+                                                                    <Clock className={`h-3 w-3 ${isUrgent ? 'animate-pulse' : ''}`} />
+                                                                    <span>
+                                                                        {isUrgent ? '⚠️ ' : ''}
+                                                                        {formatTimeRemaining(request.created_at)} to respond
+                                                                        {isUrgent ? ' – Auto-denies soon!' : ' or auto-denies'}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        })()}
                                                     </div>
                                                 </div>
-                                            </CardContent>
-                                        </Card>
+                                                <div className="flex gap-2 w-full sm:w-auto">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="flex-1 sm:flex-none text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 rounded-full font-bold text-xs uppercase tracking-wider"
+                                                        onClick={() => handleDeny(request.id)}
+                                                        disabled={processingId === request.id}
+                                                    >
+                                                        <X className="mr-2 h-4 w-4" />
+                                                        Deny
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-bold text-xs uppercase tracking-wider"
+                                                        onClick={() => handleApprove(request.id)}
+                                                        disabled={processingId === request.id}
+                                                    >
+                                                        {processingId === request.id ? 'Processing...' : (
+                                                            <>
+                                                                <Check className="mr-2 h-4 w-4" />
+                                                                Approve
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     ))
                                 ) : (
-                                    <Empty className="bg-slate-50/50 shadow-sm">
+                                    <Empty className="bg-white rounded-[2rem] border border-slate-200 shadow-sm">
                                         <EmptyHeader>
                                             <EmptyMedia variant="icon">
                                                 <Files />
@@ -861,7 +814,7 @@ export function OwnerDashboardView() {
                                         </EmptyHeader>
                                         <EmptyContent>
                                             <Link href="/owner/listings">
-                                                <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
+                                                <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900 rounded-full font-bold text-xs uppercase tracking-wider">
                                                     Manage Listings
                                                 </Button>
                                             </Link>
@@ -871,102 +824,89 @@ export function OwnerDashboardView() {
                             </>
                         )}
                     </div>
-
-                    {/* Right Column: Quick Stats / Tips */}
-                    <div className="space-y-6">
-                        {/* Payout Status / Recent Payouts */}
-                        {stripeConnected ? (
-                            <Card className="border-slate-200">
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-lg font-serif">Recent Payouts</CardTitle>
-                                    <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs font-normal">
-                                        Stripe: Connected ●
-                                    </Badge>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        {/* Mock Payouts */}
-                                        <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                                            <div>
-                                                <p className="font-medium text-slate-900">Oct 15, 2025</p>
-                                                <p className="text-xs text-slate-500">To: ****4242</p>
-                                            </div>
-                                            <span className="text-green-600 font-bold">+$124.50</span>
-                                        </div>
-                                        <div className="flex justify-between items-center border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                                            <div>
-                                                <p className="font-medium text-slate-900">Oct 08, 2025</p>
-                                                <p className="text-xs text-slate-500">To: ****4242</p>
-                                            </div>
-                                            <span className="text-green-600 font-bold">+$85.00</span>
-                                        </div>
-                                        <Link href="#">
-                                            <Button variant="link" className="text-slate-500 p-0 h-auto text-xs w-full justify-start mt-2">
-                                                View all transactions &rarr;
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            <Card className="border-slate-200">
-                                <CardHeader>
-                                    <CardTitle className="text-lg font-serif">Payout Settings</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        <p className="text-sm text-slate-500">
-                                            Connect your bank account to receive payouts for your rentals.
-                                        </p>
-                                        <StripeConnectButton />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {kpiLoading ? (
-                            <Card className="bg-blue-50 border-blue-100 relative">
-                                <CardHeader>
-                                    <Skeleton className="h-6 w-24 bg-blue-200" />
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <Skeleton className="h-4 w-full bg-blue-200" />
-                                    <Skeleton className="h-4 w-3/4 bg-blue-200" />
-                                    <Skeleton className="h-4 w-1/2 bg-blue-200" />
-                                </CardContent>
-                            </Card>
-                        ) : showProTip && (
-                            <Card className="bg-blue-50 border-blue-100 relative">
-                                <button
-                                    onClick={handleDismissProTip}
-                                    className="absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition-colors"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                                <CardHeader>
-                                    <CardTitle className="text-lg font-serif text-blue-900">Pro Tip</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-blue-800 text-sm leading-relaxed">
-                                        Adding a link to the manufacturer's manual increases your tool's safety rating and reduces accident disputes by 40%.
-                                    </p>
-                                    <Link href="/add-tool">
-                                        <Button variant="link" className="text-blue-700 font-bold p-0 mt-4 h-auto hover:text-blue-900">
-                                            Update your listings &rarr;
-                                        </Button>
-                                    </Link>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
-
                 </div>
 
-                <ReturnInspectionModal
-                    isOpen={isInspectionOpen}
-                    onClose={() => setIsInspectionOpen(false)}
-                />
+                {/* Right Column: Quick Stats / Tips */}
+                <div className="space-y-6">
+                    {/* Payout Status */}
+                    {stripeConnected ? (
+                        <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-base font-bold font-serif text-slate-900">Recent Payouts</h3>
+                                <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 text-[10px] font-mono uppercase tracking-wider">
+                                    Stripe: Connected ●
+                                </Badge>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                                    <div>
+                                        <p className="font-medium text-slate-900 text-sm">Oct 15, 2025</p>
+                                        <p className="text-[10px] font-mono text-slate-400">To: ****4242</p>
+                                    </div>
+                                    <span className="text-emerald-600 font-bold font-mono">+$124.50</span>
+                                </div>
+                                <div className="flex justify-between items-center border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                                    <div>
+                                        <p className="font-medium text-slate-900 text-sm">Oct 08, 2025</p>
+                                        <p className="text-[10px] font-mono text-slate-400">To: ****4242</p>
+                                    </div>
+                                    <span className="text-emerald-600 font-bold font-mono">+$85.00</span>
+                                </div>
+                                <Link href="#">
+                                    <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-safety-orange/80">
+                                        View all transactions &rarr;
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                            <h3 className="text-base font-bold font-serif text-slate-900 mb-3">Payout Settings</h3>
+                            <div className="space-y-4">
+                                <p className="text-sm text-slate-500">
+                                    Connect your bank account to receive payouts for your rentals.
+                                </p>
+                                <StripeConnectButton />
+                            </div>
+                        </div>
+                    )}
+
+                    {kpiLoading ? (
+                        <div className="bg-safety-orange/5 rounded-[2rem] border border-safety-orange/10 p-6 relative">
+                            <Skeleton className="h-6 w-24 bg-safety-orange/10 mb-3" />
+                            <div className="space-y-3">
+                                <Skeleton className="h-4 w-full bg-safety-orange/10" />
+                                <Skeleton className="h-4 w-3/4 bg-safety-orange/10" />
+                                <Skeleton className="h-4 w-1/2 bg-safety-orange/10" />
+                            </div>
+                        </div>
+                    ) : showProTip && (
+                        <div className="bg-safety-orange/5 rounded-[2rem] border border-safety-orange/10 p-6 relative">
+                            <button
+                                onClick={handleDismissProTip}
+                                className="absolute top-5 right-5 text-safety-orange/40 hover:text-safety-orange transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                            <h3 className="text-base font-bold font-serif text-slate-900 mb-2">Pro Tip</h3>
+                            <p className="text-slate-600 text-sm leading-relaxed">
+                                Adding a link to the manufacturer's manual increases your tool's safety rating and reduces accident disputes by 40%.
+                            </p>
+                            <Link href="/add-tool">
+                                <Button variant="link" className="text-safety-orange font-bold p-0 mt-3 h-auto text-xs uppercase tracking-wider hover:text-safety-orange/80">
+                                    Update your listings &rarr;
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
+                </div>
+
             </div>
+
+            <ReturnInspectionModal
+                isOpen={isInspectionOpen}
+                onClose={() => setIsInspectionOpen(false)}
+            />
         </div>
     );
 }

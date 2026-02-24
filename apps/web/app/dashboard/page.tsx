@@ -2,7 +2,6 @@
 
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { OwnerDashboardView } from "@/app/components/dashboard/owner-view";
 import { RenterDashboardView } from "@/app/components/dashboard/renter-view";
 import { useEffect, useState } from "react";
@@ -13,7 +12,6 @@ export default function DashboardPage() {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
-        // Function to check hash and update logic
         const checkHash = () => {
             if (typeof window !== 'undefined') {
                 const hash = window.location.hash;
@@ -25,11 +23,9 @@ export default function DashboardPage() {
             }
         };
 
-        // Check on mount
         checkHash();
         setIsMounted(true);
 
-        // Listen for hash changes (e.g. back button)
         window.addEventListener('hashchange', checkHash);
         return () => window.removeEventListener('hashchange', checkHash);
     }, []);
@@ -40,46 +36,66 @@ export default function DashboardPage() {
     };
 
     return (
-        <main className="min-h-screen bg-slate-50">
+        <main className="min-h-screen bg-signal-white">
             <Navbar />
 
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex flex-col gap-8">
-                    {/* Header Section */}
+            <div className="container mx-auto px-4 md:px-8 py-10 md:py-14">
+                <div className="flex flex-col gap-10">
+                    {/* Industrial Header */}
                     <div>
-                        <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">Dashboard</h1>
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="h-px flex-1 max-w-[60px] bg-safety-orange/40" />
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-safety-orange">
+                                Command Center
+                            </span>
+                        </div>
+                        <h1 className="text-3xl md:text-4xl font-bold font-serif text-slate-900 tracking-tight">
+                            Dashboard
+                        </h1>
                     </div>
 
                     {!isMounted ? (
                         <div className="space-y-6">
-                            {/* Tabs List Skeleton */}
-                            <Skeleton className="h-12 w-full sm:w-[31rem] rounded-lg bg-slate-200" />
-
-                            {/* Content Skeleton */}
+                            <Skeleton className="h-12 w-full sm:w-[31rem] rounded-full bg-slate-200" />
                             <div className="space-y-4">
-                                <Skeleton className="h-32 w-full" />
-                                <Skeleton className="h-64 w-full" />
+                                <Skeleton className="h-32 w-full rounded-[2rem]" />
+                                <Skeleton className="h-64 w-full rounded-[2rem]" />
                             </div>
                         </div>
                     ) : (
-                        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-                            <TabsList className="bg-slate-200 p-1 w-full sm:w-auto inline-flex h-auto">
-                                <TabsTrigger value="owner" className="py-2 px-6 text-sm sm:text-base data-[state=active]:bg-white data-[state=active]:text-safety-orange data-[state=active]:font-bold data-[state=active]:shadow-sm rounded-md flex-1 sm:flex-none">
-                                    My Listings (Owner View)
-                                </TabsTrigger>
-                                <TabsTrigger value="renter" className="py-2 px-6 text-sm sm:text-base data-[state=active]:bg-white data-[state=active]:text-safety-orange data-[state=active]:font-bold data-[state=active]:shadow-sm rounded-md flex-1 sm:flex-none">
-                                    My Rentals (Renter View)
-                                </TabsTrigger>
-                            </TabsList>
+                        <div className="space-y-8">
+                            {/* Industrial Pill Tabs */}
+                            <div className="inline-flex p-1 bg-slate-100 border border-slate-200 rounded-full gap-1">
+                                <button
+                                    onClick={() => handleTabChange("owner")}
+                                    className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 ${activeTab === "owner"
+                                            ? "bg-safety-orange text-white shadow-lg shadow-safety-orange/20"
+                                            : "text-slate-500 hover:text-slate-700 hover:bg-white/60"
+                                        }`}
+                                    aria-label="Switch to Owner View"
+                                    tabIndex={0}
+                                >
+                                    My Listings (Owner)
+                                </button>
+                                <button
+                                    onClick={() => handleTabChange("renter")}
+                                    className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 ${activeTab === "renter"
+                                            ? "bg-safety-orange text-white shadow-lg shadow-safety-orange/20"
+                                            : "text-slate-500 hover:text-slate-700 hover:bg-white/60"
+                                        }`}
+                                    aria-label="Switch to Renter View"
+                                    tabIndex={0}
+                                >
+                                    My Rentals (Renter)
+                                </button>
+                            </div>
 
-                            <TabsContent value="owner" className="focus-visible:outline-none">
-                                <OwnerDashboardView />
-                            </TabsContent>
-
-                            <TabsContent value="renter" className="focus-visible:outline-none">
-                                <RenterDashboardView />
-                            </TabsContent>
-                        </Tabs>
+                            {/* Tab Content */}
+                            <div>
+                                {activeTab === "owner" && <OwnerDashboardView />}
+                                {activeTab === "renter" && <RenterDashboardView />}
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>
