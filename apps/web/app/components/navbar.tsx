@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button, buttonVariants } from "./ui/button";
 import { ShoppingCart, Menu, X, User, Heart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
@@ -16,8 +16,14 @@ export function Navbar() {
     const { user, userProfile, signOut, loading } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
+
+    const isHomepage = pathname === "/";
+
+    // On non-homepage routes, always show the pill state.
+    // On homepage, transition from transparent → pill on scroll.
+    const [isScrolled, setIsScrolled] = useState(!isHomepage);
 
     const unreadCount = useUnreadCount();
 
@@ -25,13 +31,18 @@ export function Navbar() {
     const fullName = userProfile?.fullName ?? null;
 
     useEffect(() => {
+        if (!isHomepage) {
+            setIsScrolled(true);
+            return;
+        }
+
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 60);
         };
         window.addEventListener("scroll", handleScroll, { passive: true });
         handleScroll();
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    }, [isHomepage]);
 
     const handleSignOut = useCallback(async () => {
         try {
@@ -46,22 +57,22 @@ export function Navbar() {
     return (
         <nav
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isScrolled
-                    ? "py-2 px-4 md:px-8"
-                    : "py-3 px-4 md:px-8"
+                ? "py-2 px-4 md:px-8"
+                : "py-3 px-4 md:px-8"
                 }`}
         >
             <div
                 className={`mx-auto transition-all duration-500 ease-out ${isScrolled
-                        ? "max-w-5xl bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-4 md:px-6"
-                        : "max-w-[1440px] bg-transparent px-2 md:px-6"
+                    ? "max-w-5xl bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-4 md:px-6"
+                    : "max-w-[1440px] bg-transparent px-2 md:px-6"
                     }`}
             >
                 <div className="flex h-14 items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2.5 group" aria-label="BlockHyre Home">
                         <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${isScrolled
-                                ? "bg-safety-orange text-white"
-                                : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
+                            ? "bg-safety-orange text-white"
+                            : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
                             }`}>
                             <span className="font-serif font-bold text-sm">B</span>
                         </div>
@@ -155,8 +166,8 @@ export function Navbar() {
 
                                     <Link href="/dashboard">
                                         <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 transition-all ${isScrolled
-                                                ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                                                : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                                            ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                                            : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
                                             }`}>
                                             Dashboard
                                         </Button>
@@ -173,8 +184,8 @@ export function Navbar() {
                                             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsMenuOpen(!isMenuOpen); }}
                                         >
                                             <div className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all relative ${isScrolled
-                                                    ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
-                                                    : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
+                                                ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
+                                                : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/50"
                                                 }`}>
                                                 {avatarUrl ? (
                                                     <Image
@@ -267,8 +278,8 @@ export function Navbar() {
                                         <Button
                                             variant="ghost"
                                             className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 ${isScrolled
-                                                    ? "text-concrete hover:text-white hover:bg-white/10"
-                                                    : "text-white/80 hover:text-white hover:bg-white/10"
+                                                ? "text-concrete hover:text-white hover:bg-white/10"
+                                                : "text-white/80 hover:text-white hover:bg-white/10"
                                                 }`}
                                         >
                                             Log In
