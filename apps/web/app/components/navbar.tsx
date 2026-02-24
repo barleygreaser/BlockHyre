@@ -58,8 +58,8 @@ export function Navbar() {
         <>
             <nav
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${isScrolled
-                    ? "py-2 px-4 md:px-8 bg-signal-white/90 backdrop-blur-md border-b border-workshop-gray/10 shadow-sm"
-                    : "py-3 px-4 md:px-8 bg-transparent"
+                    ? `py-2 px-4 md:px-8 ${!isHomepage ? "bg-gradient-to-b from-signal-white via-signal-white/95 to-transparent" : ""}`
+                    : "py-3 px-4 md:px-8"
                     }`}
             >
                 <div
