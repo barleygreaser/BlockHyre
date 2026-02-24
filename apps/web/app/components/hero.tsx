@@ -145,7 +145,7 @@ export function Hero() {
                     {/* Subtitle */}
                     <p className="hero-subtitle text-lg md:text-xl text-white/80 leading-relaxed max-w-xl font-light">
                         Rent woodworking tools, power tools, and gardening equipment from
-                        verified neighbors within 2 miles. Every rental insured by{" "}
+                        verified neighbors within 2 miles. Every rental protected by{" "}
                         <span className="text-safety-orange font-medium">The Peace Fund</span>.
                     </p>
 

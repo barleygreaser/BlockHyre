@@ -96,30 +96,24 @@ export function Navbar() {
                         <div className="hidden lg:flex items-center gap-3 xl:gap-5">
                             <Link
                                 href="/listings"
-                                className={`nav-bracket text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
-                                <span className="nav-bracket-left" aria-hidden="true">[</span>
                                 Listings
-                                <span className="nav-bracket-right" aria-hidden="true">]</span>
                             </Link>
                             <Link
                                 href="/how-it-works"
-                                className={`nav-bracket text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
-                                <span className="nav-bracket-left" aria-hidden="true">[</span>
                                 How it Works
-                                <span className="nav-bracket-right" aria-hidden="true">]</span>
                             </Link>
                             <Link
                                 href="/peace-fund"
-                                className={`nav-bracket text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
                                     }`}
                             >
-                                <span className="nav-bracket-left" aria-hidden="true">[</span>
                                 Peace Fund
-                                <span className="nav-bracket-right" aria-hidden="true">]</span>
                             </Link>
                         </div>
 

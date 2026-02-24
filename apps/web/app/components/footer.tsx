@@ -99,14 +99,14 @@ export function Footer() {
                         {/* Scanner Bar effect */}
                         <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-safety-orange/50 h-full opacity-0 hover:animate-pulse hover:opacity-100 transition-opacity" />
 
-                        <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-white">System Updates</h3>
+                        <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-white">BlockHyre Updates</h3>
                         <p className="text-sm font-sans text-concrete/50">
-                            Get weekly telemetry on new tools initialized in your sector.
+                            Get updates on what's happening in your neighborhood and with BlockHyre.
                         </p>
                         <form className="flex gap-2.5 mt-2" onSubmit={(e) => e.preventDefault()}>
                             <Input
                                 type="email"
-                                placeholder="sys_admin@email.com"
+                                placeholder="neighbor@email.com"
                                 className="bg-charcoal border-white/10 text-white font-mono placeholder:text-concrete/30 focus-visible:ring-1 focus-visible:ring-safety-orange focus-visible:border-safety-orange rounded-xl h-11 text-[13px] tracking-wide"
                                 aria-label="Email for updates"
                             />
@@ -125,7 +125,7 @@ export function Footer() {
                     <div className="flex items-center gap-4 bg-black/40 px-3 py-1.5 rounded-md border border-white/5">
                         <div className="h-2 w-2 rounded-sm bg-safety-orange animate-pulse" />
                         <p className="text-[10px] text-concrete/40 font-mono uppercase tracking-[0.15em]">
-                            SYS.OP &copy; {new Date().getFullYear()} BLOCKHYRE INC.
+                            &copy; {new Date().getFullYear()} BLOCKHYRE LLC.
                         </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-8 text-[11px] font-mono text-concrete/40 tracking-widest uppercase">
