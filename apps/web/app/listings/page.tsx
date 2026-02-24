@@ -197,15 +197,15 @@ export default function InventoryPage() {
     const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
 
     return (
-        <main className="min-h-screen bg-slate-50">
+        <main className="min-h-screen bg-signal-white">
             <Navbar />
 
             {/* Mobile Sticky Control Bar */}
-            <div className="md:hidden sticky top-16 z-30 bg-white border-b border-slate-200 px-4 py-3 shadow-sm flex gap-3">
-                <Button variant="outline" className="flex-1 rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-50" onClick={() => setIsFiltersOpen(true)}>
+            <div className="md:hidden sticky top-20 z-30 bg-signal-white/90 backdrop-blur-md border-b border-workshop-gray/10 px-4 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex gap-3">
+                <Button variant="outline" className="flex-1 rounded-full border-workshop-gray/20 bg-white text-charcoal font-semibold hover:border-safety-orange hover:text-safety-orange hover:bg-white" onClick={() => setIsFiltersOpen(true)}>
                     <Filter className="mr-2 h-4 w-4" /> Filter
                 </Button>
-                <Button variant="outline" className="flex-1 rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-50" onClick={() => setIsSortOpen(true)}>
+                <Button variant="outline" className="flex-1 rounded-full border-workshop-gray/20 bg-white text-charcoal font-semibold hover:border-safety-orange hover:text-safety-orange hover:bg-white" onClick={() => setIsSortOpen(true)}>
                     <ArrowUpDown className="mr-2 h-4 w-4" /> Sort
                 </Button>
             </div>
