@@ -1,6 +1,6 @@
 'use client'
 
-import { createClient } from '@/lib/client'
+import { supabase } from '@/lib/supabase'
 import { useCallback, useEffect, useState, useRef } from 'react'
 
 interface UseRealtimeChatProps {
@@ -24,13 +24,13 @@ export interface ChatMessage {
 const EVENT_MESSAGE_TYPE = 'message'
 
 export function useRealtimeChat({ roomName, username }: UseRealtimeChatProps) {
-  const supabaseRef = useRef(createClient())
-  const channelRef = useRef<ReturnType<typeof supabaseRef.current.channel> | null>(null)
+  // Use global supabase instance instead of creating a new one per component
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    const supabase = supabaseRef.current
+    // Reuse global supabase client
     const channel = supabase.channel(roomName)
     channelRef.current = channel
 
