@@ -223,17 +223,17 @@ export function RenterDashboardView() {
                 </Link>
             </div>
 
-            {/* KPI Telemetry Row */}
-            <div className="grid grid-cols-3 gap-4">
+            {/* KPI Telemetry Row — always 3 columns, fixed height at all viewports */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 {/* Active Rentals Count */}
-                <div className={`bg-white rounded-[2rem] border p-5 shadow-sm flex items-center justify-between group ${overdueCount > 0 ? 'border-2 border-red-300' : 'border-slate-200'
+                <div className={`bg-white rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group ${overdueCount > 0 ? 'border-2 border-red-300' : 'border-slate-200'
                     }`}>
                     <div>
-                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Active</p>
-                        <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{totalActive}</h3>
+                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Active</p>
+                        <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{totalActive}</h3>
                     </div>
-                    <div className="relative h-10 w-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
-                        <Calendar className="h-5 w-5" />
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                        <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
                         {overdueCount > 0 ? (
                             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -246,29 +246,29 @@ export function RenterDashboardView() {
                 </div>
 
                 {/* Urgent Count */}
-                <div className={`rounded-[2rem] border p-5 shadow-sm flex items-center justify-between ${urgentCount > 0
-                        ? 'bg-red-50/60 border-2 border-red-300 animate-pulse-subtle'
-                        : 'bg-white border-slate-200'
+                <div className={`rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between ${urgentCount > 0
+                    ? 'bg-red-50/60 border-2 border-red-300 animate-pulse-subtle'
+                    : 'bg-white border-slate-200'
                     }`}>
                     <div>
-                        <p className="text-[10px] font-mono font-bold uppercase tracking-wider mb-1 text-slate-400">Urgent</p>
-                        <h3 className={`text-3xl font-bold font-mono tabular-nums ${urgentCount > 0 ? 'text-red-600' : 'text-slate-900'
+                        <p className="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider mb-1 text-slate-400">Urgent</p>
+                        <h3 className={`text-xl sm:text-3xl font-bold font-mono tabular-nums ${urgentCount > 0 ? 'text-red-600' : 'text-slate-900'
                             }`}>{urgentCount}</h3>
                     </div>
-                    <div className={`relative h-10 w-10 rounded-2xl flex items-center justify-center ${urgentCount > 0 ? 'bg-red-100 text-red-500' : 'bg-slate-100 text-slate-400'
+                    <div className={`relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${urgentCount > 0 ? 'bg-red-100 text-red-500' : 'bg-slate-100 text-slate-400'
                         }`}>
-                        <TriangleAlert className="h-5 w-5" />
+                        <TriangleAlert className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
                 </div>
 
                 {/* Pending Requests */}
-                <div className="bg-white rounded-[2rem] border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+                <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Pending</p>
-                        <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{pendingRequests.length}</h3>
+                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Pending</p>
+                        <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{pendingRequests.length}</h3>
                     </div>
-                    <div className="relative h-10 w-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500">
-                        <CalendarClock className="h-5 w-5" />
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0">
+                        <CalendarClock className="h-5 w-5 sm:h-6 sm:w-6" />
                         {pendingRequests.length > 0 && (
                             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -330,8 +330,8 @@ export function RenterDashboardView() {
                                             {/* Industrial Detonation Timer */}
                                             {(isOverdue || isDueToday) && (
                                                 <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border font-mono text-xs font-bold tracking-wider ${isOverdue
-                                                        ? 'bg-red-900/10 border-red-300 text-red-600'
-                                                        : 'bg-amber-900/10 border-amber-300 text-amber-600'
+                                                    ? 'bg-red-900/10 border-red-300 text-red-600'
+                                                    : 'bg-amber-900/10 border-amber-300 text-amber-600'
                                                     }`}>
                                                     <span className="animate-ping inline-flex h-2 w-2 rounded-full opacity-75" style={{ backgroundColor: isOverdue ? '#ef4444' : '#f59e0b' }}></span>
                                                     {isOverdue
