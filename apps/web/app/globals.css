@@ -119,6 +119,17 @@
   animation: scanner-sweep 1.5s ease-in-out;
 }
 
+/* ── Skeleton Shimmer ── */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* ── Pulsing Operational Dot ── */
 @keyframes pulse-operational {
 

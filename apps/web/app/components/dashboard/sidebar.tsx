@@ -1,32 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
+import { useDashboard } from "@/app/context/dashboard-context";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Home, Wrench, MessageSquare, User, Heart, LogOut, Package, Menu, X } from "lucide-react";
 
 export function DashboardSidebar() {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const { user, signOut } = useAuth();
+    // activeRole and setActiveRole come from DashboardContext — instant React state, no routing
+    const { activeRole, setActiveRole } = useDashboard();
     const [alerts, setAlerts] = useState({ owner: 0, renter: 0 });
-    const [activeRole, setActiveRole] = useState<'owner' | 'renter'>('renter');
     const [drawerOpen, setDrawerOpen] = useState(false);
-
-    // Derive active role from URL:
-    // - On /dashboard, read ?role= param
-    // - On sub-pages like /dashboard/inventory or /dashboard/owner/*, infer from pathname
-    useEffect(() => {
-        if (pathname === '/dashboard') {
-            setActiveRole(searchParams.get('role') === 'owner' ? 'owner' : 'renter');
-        } else if (pathname?.includes('/dashboard/owner') || pathname?.includes('/dashboard/inventory')) {
-            setActiveRole('owner');
-        } else {
-            setActiveRole('renter');
-        }
-    }, [pathname, searchParams]);
 
     // Close drawer on route change
     useEffect(() => {
@@ -61,7 +49,7 @@ export function DashboardSidebar() {
     const totalAlerts = alerts.owner + alerts.renter;
 
     const navLinkClass = (active: boolean) =>
-        `flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${active ? 'bg-white/10 text-white font-bold border border-white/5' : 'text-slate-400 hover:text-white hover:bg-white/5'
+        `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm ${active ? 'bg-white/10 text-white font-bold border border-white/5' : 'text-slate-400 hover:text-white hover:bg-white/5'
         }`;
 
     const SidebarContent = () => (
@@ -81,16 +69,16 @@ export function DashboardSidebar() {
                 </button>
             </div>
 
-            {/* Role Switcher */}
+            {/* Role Switcher — buttons call context directly, zero router latency */}
             <div className="px-4 py-4 mb-2">
                 <div className="bg-white/5 p-1 rounded-2xl flex gap-1 relative border border-white/10 shadow-inner">
-                    <Link
-                        href="/dashboard?role=renter"
+                    <button
                         onClick={() => setActiveRole('renter')}
-                        className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 relative ${activeRole === 'renter'
-                            ? 'bg-signal-white text-slate-900 shadow-sm'
-                            : 'text-slate-400 hover:text-white'
+                        className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 relative ${activeRole === 'renter'
+                                ? 'bg-signal-white text-slate-900 shadow-sm'
+                                : 'text-slate-400 hover:text-white'
                             }`}
+                        aria-label="Switch to Renter view"
                     >
                         <span className="relative inline-block">
                             Renter
@@ -101,14 +89,14 @@ export function DashboardSidebar() {
                                 </span>
                             )}
                         </span>
-                    </Link>
-                    <Link
-                        href="/dashboard?role=owner"
+                    </button>
+                    <button
                         onClick={() => setActiveRole('owner')}
-                        className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 relative ${activeRole === 'owner'
-                            ? 'bg-safety-orange text-white shadow-[0_0_15px_rgba(255,102,0,0.3)] border border-safety-orange/50'
-                            : 'text-slate-400 hover:text-white'
+                        className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 relative ${activeRole === 'owner'
+                                ? 'bg-safety-orange text-white shadow-[0_0_15px_rgba(255,102,0,0.3)] border border-safety-orange/50'
+                                : 'text-slate-400 hover:text-white'
                             }`}
+                        aria-label="Switch to Owner view"
                     >
                         <span className="relative inline-block">
                             Owner
@@ -119,7 +107,7 @@ export function DashboardSidebar() {
                                 </span>
                             )}
                         </span>
-                    </Link>
+                    </button>
                 </div>
             </div>
 
@@ -130,53 +118,71 @@ export function DashboardSidebar() {
                 </p>
 
                 {activeRole === 'renter' ? (
-                    <Link href="/dashboard/renter" className={navLinkClass(pathname === '/dashboard/renter')}>
+                    <button
+                        onClick={() => setActiveRole('renter')}
+                        className={navLinkClass(pathname === '/dashboard' || pathname === '/dashboard/renter')}
+                        style={{ width: '100%', textAlign: 'left' }}
+                    >
                         <Package className="w-4 h-4 flex-shrink-0" />
-                        <span className="text-sm">Overview</span>
-                    </Link>
+                        <span>Overview</span>
+                    </button>
                 ) : (
                     <>
-                        <Link href="/dashboard/owner" className={navLinkClass(pathname === '/dashboard/owner')}>
+                        <button
+                            onClick={() => setActiveRole('owner')}
+                            className={navLinkClass(pathname === '/dashboard' || pathname === '/dashboard/owner')}
+                            style={{ width: '100%', textAlign: 'left' }}
+                        >
                             <Home className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm">Dashboard</span>
-                        </Link>
+                            <span>Dashboard</span>
+                        </button>
                         <Link href="/dashboard/owner/active-rentals" className={navLinkClass(!!pathname?.includes('/dashboard/owner/active-rentals'))}>
                             <Package className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm">Tool Bookings</span>
+                            <span>Tool Bookings</span>
                         </Link>
                         <Link href="/dashboard/inventory" className={navLinkClass(!!pathname?.includes('/dashboard/inventory'))}>
                             <Wrench className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm">My Fleet</span>
+                            <span>My Fleet</span>
                         </Link>
                     </>
                 )}
             </div>
 
+            {/* Notice Card — placeholder for future announcements */}
+            <div className="px-4 pb-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                        <div className="h-1.5 w-1.5 rounded-full bg-safety-orange/50" />
+                        <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider">Notice</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 leading-relaxed">
+                        Updates and announcements will appear here.
+                    </p>
+                </div>
+            </div>
+
             {/* Bottom Global Section */}
-            <div className="p-4 border-t border-white/10 space-y-1 bg-charcoal">
-                <p className="px-2 text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-2 mt-1">
-                    Global
-                </p>
+            <div className="px-4 pb-4 pt-3 border-t border-white/10 space-y-0.5 bg-charcoal">
                 <Link href="/messages" className={navLinkClass(pathname === '/messages')}>
                     <MessageSquare className="w-4 h-4 flex-shrink-0" />
-                    <span className="text-sm">Messages</span>
+                    <span>Messages</span>
                     <span className="ml-auto text-[9px] font-mono text-slate-600 uppercase tracking-wider">↗</span>
                 </Link>
                 <Link href="/favorites" className={navLinkClass(pathname === '/favorites')}>
                     <Heart className="w-4 h-4 flex-shrink-0" />
-                    <span className="text-sm">Favorites</span>
+                    <span>Favorites</span>
                 </Link>
                 <Link href="/profile" className={navLinkClass(pathname === '/profile')}>
                     <User className="w-4 h-4 flex-shrink-0" />
-                    <span className="text-sm">Profile</span>
+                    <span>Profile</span>
                 </Link>
                 <button
                     onClick={() => signOut()}
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-all mt-2"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-all text-sm"
                     aria-label="Log out"
                 >
                     <LogOut className="w-4 h-4 flex-shrink-0" />
-                    <span className="text-sm border-l border-white/10 pl-2">Log out</span>
+                    <span className="border-l border-white/10 pl-2">Log out</span>
                 </button>
             </div>
         </>
