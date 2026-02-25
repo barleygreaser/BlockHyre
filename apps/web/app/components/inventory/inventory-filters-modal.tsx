@@ -135,8 +135,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
         showDistanceFilter = true
     } = props;
 
-    // Sort categories
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    // Categories are already sorted by parent
 
     return (
         <div className={cn("p-4 space-y-8", isDesktop ? "flex-1 overflow-y-auto bg-slate-50" : "")}>
@@ -182,7 +181,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             <section className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
                 <Label className="font-bold text-slate-900 mb-4 block">Categories</Label>
                 <div className="grid grid-cols-2 gap-3">
-                    {sortedCategories.map(cat => (
+                    {categories.map(cat => (
                         <div
                             key={cat.id}
                             className={cn(
