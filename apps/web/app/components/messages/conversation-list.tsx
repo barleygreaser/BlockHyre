@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useMessages, type Chat } from "@/app/hooks/use-messages";
+import { useMessages, type Chat, type Message } from "@/app/hooks/use-messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { MessageSquare } from "lucide-react";
@@ -18,6 +18,7 @@ interface ConversationListProps {
 export function ConversationList({ selectedChatId, onSelectChat }: ConversationListProps) {
     const { fetchConversations, loading } = useMessages();
     const [conversations, setConversations] = useState<Chat[]>([]);
+    const conversationsRef = useRef(conversations); // Track state for stale closure fix
     const { user } = useAuth();
     const channelRef = useRef<RealtimeChannel | null>(null);
     const [initialLoad, setInitialLoad] = useState(true);
@@ -29,7 +30,11 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
     // Track selectedChatId in a ref to use in subscription callback without re-subscribing
     const selectedChatIdRef = useRef(selectedChatId);
 
-    // Update ref when prop changes
+    // Update refs when dependencies change
+    useEffect(() => {
+        conversationsRef.current = conversations;
+    }, [conversations]);
+
     useEffect(() => {
         selectedChatIdRef.current = selectedChatId;
     }, [selectedChatId]);
@@ -65,7 +70,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                 },
                 (payload) => {
                     if (payload.eventType === 'INSERT') {
-                        const newMsg = payload.new as any;
+                        const newMsg = payload.new as Message;
                         setConversations((prev) => {
                             const index = prev.findIndex((c) => c.id === newMsg.chat_id);
 
@@ -93,35 +98,77 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
                             return newConversations;
                         });
                     } else if (payload.eventType === 'UPDATE') {
-                        // P4: For UPDATE events (e.g. is_read changes), optimistically
-                        // update the unread count if the chat is currently selected,
-                        // instead of doing a full reload every time.
-                        const updatedMsg = payload.new as any;
+                        // P4: Handle updates optimistically to avoid N+1 reloads
+                        const updatedMsg = payload.new as Message;
 
-                        // Use ref to check selected chat ID without triggering re-subscription
-                        const currentSelectedChatId = selectedChatIdRef.current;
+                        // Check if we can handle this update locally based on current state.
+                        // We use a ref to access the latest conversations state inside the stale closure.
+                        const currentConversations = conversationsRef.current;
+                        const chatIndex = currentConversations.findIndex(c => c.id === updatedMsg.chat_id);
+                        let canHandle = false;
 
-                        // If the message was marked as read and belongs to the selected chat,
-                        // just reset unread count for that chat (no network call needed).
-                        if (updatedMsg.is_read === true && updatedMsg.chat_id === currentSelectedChatId) {
-                            setConversations((prev) =>
-                                prev.map((c) =>
-                                    c.id === updatedMsg.chat_id
-                                        ? { ...c, unread_count: 0 }
-                                        : c
-                                )
-                            );
-                            return;
+                        if (chatIndex !== -1) {
+                            const chat = currentConversations[chatIndex];
+
+                            // 1. Read status update (message from other user became read)
+                            const isReadUpdate = updatedMsg.sender_id !== user.id && updatedMsg.is_read === true;
+
+                            // 2. Content update for the last message (timestamp match)
+                            const isLastMessageUpdate = chat.last_message_time === updatedMsg.created_at;
+
+                            if (isReadUpdate || isLastMessageUpdate) {
+                                canHandle = true;
+                            }
                         }
 
-                        // P4: Debounce full reload for UPDATE events to batch rapid changes
-                        // (e.g. marking multiple messages read fires many UPDATEs in quick succession)
-                        if (reloadTimerRef.current) {
-                            clearTimeout(reloadTimerRef.current);
+                        if (canHandle) {
+                            setConversations((prev) => {
+                                const index = prev.findIndex((c) => c.id === updatedMsg.chat_id);
+                                if (index === -1) return prev;
+
+                                const newConversations = [...prev];
+                                const chat = { ...newConversations[index] };
+                                let hasChanges = false;
+
+                                // Handle read status updates
+                                if (updatedMsg.sender_id !== user.id && updatedMsg.is_read === true) {
+                                    if (updatedMsg.chat_id === selectedChatIdRef.current) {
+                                        if ((chat.unread_count || 0) > 0) {
+                                            chat.unread_count = 0;
+                                            hasChanges = true;
+                                        }
+                                    } else {
+                                        const currentCount = chat.unread_count || 0;
+                                        if (currentCount > 0) {
+                                            chat.unread_count = Math.max(0, currentCount - 1);
+                                            hasChanges = true;
+                                        }
+                                    }
+                                }
+
+                                // Handle content updates
+                                if (chat.last_message_time === updatedMsg.created_at) {
+                                    if (chat.last_message_content !== updatedMsg.content) {
+                                        chat.last_message_content = updatedMsg.content;
+                                        hasChanges = true;
+                                    }
+                                }
+
+                                if (hasChanges) {
+                                    newConversations[index] = chat;
+                                    return newConversations;
+                                }
+                                return prev;
+                            });
+                        } else {
+                            // Fallback: reload conversations if we couldn't handle the update locally
+                            if (reloadTimerRef.current) {
+                                clearTimeout(reloadTimerRef.current);
+                            }
+                            reloadTimerRef.current = setTimeout(() => {
+                                loadConversations();
+                            }, 1000);
                         }
-                        reloadTimerRef.current = setTimeout(() => {
-                            loadConversations();
-                        }, 1000);
                     }
                     // DELETE events are rare; ignore them or handle as needed
                 }
