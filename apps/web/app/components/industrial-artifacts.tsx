@@ -15,7 +15,7 @@ function AvailabilityHeatmap() {
 
     return (
         <div
-            className="group relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden cursor-pointer transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
+            className="group h-full flex flex-col relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden cursor-pointer transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             role="article"
@@ -69,7 +69,7 @@ function AvailabilityHeatmap() {
                 ))}
             </div>
 
-            <div className="flex items-center gap-4 mt-5 text-[10px] text-slate-400 font-mono uppercase tracking-wider">
+            <div className="flex items-center gap-4 mt-auto pt-5 text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 <div className="flex items-center gap-1.5">
                     <div className="h-2.5 w-2.5 rounded bg-safety-orange/20 border border-safety-orange/30" />
                     Available
@@ -110,7 +110,7 @@ function ListingShuffler() {
 
     return (
         <div
-            className="relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
+            className="relative h-full flex flex-col bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
             role="article"
             aria-label="Tool Listing Shuffler"
             tabIndex={0}
@@ -165,7 +165,7 @@ function ListingShuffler() {
             </div>
 
             {/* Progress Dots */}
-            <div className="flex items-center gap-2 mt-4 justify-center">
+            <div className="flex items-center gap-2 mt-auto pt-4 justify-center">
                 {tools.map((_, idx) => (
                     <button
                         key={idx}
@@ -228,7 +228,7 @@ function PeaceFundTelemetry() {
 
     return (
         <div
-            className="relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
+            className="relative h-full flex flex-col bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
             role="article"
             aria-label="Peace Fund Telemetry Feed"
             tabIndex={0}
@@ -335,13 +335,13 @@ export function IndustrialArtifacts() {
             {/* Cards Grid */}
             <div className="container mx-auto px-4 md:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="artifact-card">
+                    <div className="artifact-card h-full">
                         <AvailabilityHeatmap />
                     </div>
-                    <div className="artifact-card">
+                    <div className="artifact-card h-full">
                         <ListingShuffler />
                     </div>
-                    <div className="artifact-card">
+                    <div className="artifact-card h-full">
                         <PeaceFundTelemetry />
                     </div>
                 </div>

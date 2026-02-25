@@ -39,9 +39,6 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
 
         return normalizedListings
             .filter(tool => {
-                const isHighValue = tool.price > 50 || tool.is_high_powered;
-                if (!isHighValue) return false;
-
                 if (normSelectedCategory) {
                     if (tool.normCategory !== normSelectedCategory) return false;
                 }
@@ -85,23 +82,25 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                 if (!sectionRef.current) return;
 
                 ctx = gsap.context(() => {
-                    const cards = sectionRef.current!.querySelectorAll(".inventory-card");
+                    const cards = gsap.utils.toArray<HTMLElement>(".inventory-card");
 
-                    cards.forEach((card, idx) => {
-                        gsap.set(card, { x: idx % 2 === 0 ? -60 : 60, opacity: 0 });
+                    if (cards.length > 0) {
+                        gsap.set(cards, { y: 60, opacity: 0 });
 
-                        gsap.to(card, {
-                            x: 0,
-                            opacity: 1,
-                            duration: 0.7,
-                            ease: "power3.out",
-                            scrollTrigger: {
-                                trigger: card,
-                                start: "top 90%",
-                                toggleActions: "play none none none",
-                            },
+                        ScrollTrigger.batch(cards, {
+                            start: "top 85%",
+                            onEnter: (elements) => {
+                                gsap.to(elements, {
+                                    y: 0,
+                                    opacity: 1,
+                                    duration: 0.8,
+                                    stagger: 0.15,
+                                    ease: "power3.out",
+                                    overwrite: true
+                                });
+                            }
                         });
-                    });
+                    }
                 }, sectionRef);
             } catch {
                 // Graceful degradation
@@ -181,8 +180,8 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                     <div className="bg-white rounded-[2rem] p-12 text-center border border-slate-200 shadow-sm">
                         <p className="text-slate-400 mb-4 font-mono text-sm">
                             {user
-                                ? "No high-value tools found matching your criteria nearby."
-                                : "No high-value tools found matching your criteria."}
+                                ? "No tools found matching your criteria nearby."
+                                : "No tools found matching your criteria."}
                         </p>
                         <button
                             onClick={() => {

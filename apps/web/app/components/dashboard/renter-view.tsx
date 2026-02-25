@@ -175,30 +175,34 @@ export function RenterDashboardView() {
         switch (status) {
             case 'overdue':
                 return {
-                    card: "border-2 border-red-400 bg-red-50/50",
+                    card: "border-2 border-red-400 bg-red-50/50 animate-pulse-subtle",
                     badge: "bg-red-500 text-white hover:bg-red-600 border-none text-[10px] font-mono font-bold uppercase tracking-wider rounded-full px-3",
                     text: "text-red-600 font-bold",
-                    dot: "bg-red-500 animate-pulse"
+                    dot: "bg-red-500 animate-ping",
+                    timerColor: "text-red-500",
                 };
-            case 'due-today':
+            case 'due_today':
                 return {
                     card: "border-2 border-amber-300 bg-amber-50/50",
                     badge: "bg-amber-500 text-white hover:bg-amber-600 border-none text-[10px] font-mono font-bold uppercase tracking-wider rounded-full px-3",
                     text: "text-amber-600 font-medium",
-                    dot: "bg-amber-500 animate-pulse"
+                    dot: "bg-amber-500 animate-pulse",
+                    timerColor: "text-amber-500",
                 };
             default:
                 return {
                     card: "border border-slate-200 bg-white",
                     badge: "bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200 text-[10px] font-mono font-bold uppercase tracking-wider rounded-full px-3",
                     text: "text-slate-500 font-normal",
-                    dot: "bg-emerald-500"
+                    dot: "bg-emerald-500",
+                    timerColor: "text-slate-400",
                 };
         }
     };
 
     const totalActive = activeRentals.length;
     const urgentCount = activeRentals.filter(r => r.dashboard_status === 'overdue' || r.dashboard_status === 'due_today').length;
+    const overdueCount = activeRentals.filter(r => r.dashboard_status === 'overdue').length;
 
     if (loading) {
         return <RenterDashboardSkeleton />;
@@ -217,6 +221,62 @@ export function RenterDashboardView() {
                         Find Tools
                     </Button>
                 </Link>
+            </div>
+
+            {/* KPI Telemetry Row */}
+            <div className="grid grid-cols-3 gap-4">
+                {/* Active Rentals Count */}
+                <div className={`bg-white rounded-[2rem] border p-5 shadow-sm flex items-center justify-between group ${overdueCount > 0 ? 'border-2 border-red-300' : 'border-slate-200'
+                    }`}>
+                    <div>
+                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Active</p>
+                        <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{totalActive}</h3>
+                    </div>
+                    <div className="relative h-10 w-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                        <Calendar className="h-5 w-5" />
+                        {overdueCount > 0 ? (
+                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 border border-white"></span>
+                            </span>
+                        ) : (
+                            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-emerald-500 border border-white animate-pulse-operational"></span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Urgent Count */}
+                <div className={`rounded-[2rem] border p-5 shadow-sm flex items-center justify-between ${urgentCount > 0
+                        ? 'bg-red-50/60 border-2 border-red-300 animate-pulse-subtle'
+                        : 'bg-white border-slate-200'
+                    }`}>
+                    <div>
+                        <p className="text-[10px] font-mono font-bold uppercase tracking-wider mb-1 text-slate-400">Urgent</p>
+                        <h3 className={`text-3xl font-bold font-mono tabular-nums ${urgentCount > 0 ? 'text-red-600' : 'text-slate-900'
+                            }`}>{urgentCount}</h3>
+                    </div>
+                    <div className={`relative h-10 w-10 rounded-2xl flex items-center justify-center ${urgentCount > 0 ? 'bg-red-100 text-red-500' : 'bg-slate-100 text-slate-400'
+                        }`}>
+                        <TriangleAlert className="h-5 w-5" />
+                    </div>
+                </div>
+
+                {/* Pending Requests */}
+                <div className="bg-white rounded-[2rem] border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Pending</p>
+                        <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{pendingRequests.length}</h3>
+                    </div>
+                    <div className="relative h-10 w-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500">
+                        <CalendarClock className="h-5 w-5" />
+                        {pendingRequests.length > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-white"></span>
+                            </span>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -239,35 +299,47 @@ export function RenterDashboardView() {
                                 <p className="text-slate-400 text-sm font-mono">No active rentals</p>
                             </div>
                         ) : activeRentals.map((rental) => {
-                            const statusMap = {
-                                'overdue': 'overdue',
-                                'due_today': 'due-today',
-                                'active': 'due-future'
-                            };
-                            const displayStatus = statusMap[rental.dashboard_status] || 'due-future';
-                            const styles = getRentalStyles(displayStatus);
+                            const styles = getRentalStyles(rental.dashboard_status);
+                            const endDate = new Date(rental.end_date);
+                            const now = new Date();
+                            const msLeft = endDate.getTime() - now.getTime();
+                            const hoursLeft = Math.floor(msLeft / (1000 * 60 * 60));
+                            const daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24));
+                            const isOverdue = rental.dashboard_status === 'overdue';
+                            const isDueToday = rental.dashboard_status === 'due_today';
 
-                            const badgeText = rental.dashboard_status === 'overdue' ? 'OVERDUE' :
-                                rental.dashboard_status === 'due_today' ? 'Return Today' :
-                                    `Due in ${Math.ceil((new Date(rental.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days`;
-
-                            const dueText = rental.dashboard_status === 'overdue' ? 'Due Yesterday' :
-                                rental.dashboard_status === 'due_today' ? 'Due by 5:00 PM' :
-                                    format(new Date(rental.end_date), 'MMM d');
+                            const badgeText = isOverdue
+                                ? `OVERDUE ${Math.abs(daysLeft)}D`
+                                : isDueToday
+                                    ? 'Return Today'
+                                    : `Due in ${daysLeft} Days`;
 
                             return (
                                 <div key={rental.rental_id} className={`rounded-[2rem] p-6 shadow-sm transition-all duration-300 ${styles.card}`}>
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                        <div>
+                                        <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <div className="flex items-center gap-1.5">
                                                     <div className={`h-2 w-2 rounded-full ${styles.dot}`} />
                                                     <Badge variant="secondary" className={styles.badge}>{badgeText}</Badge>
                                                 </div>
-                                                <span className={`text-[10px] font-mono ${styles.text}`}>{dueText}</span>
                                             </div>
-                                            <h4 className="font-bold text-slate-900 text-lg tracking-tight">{rental.listing_title}</h4>
-                                            <p className="text-sm text-slate-500">Owner: <span className="font-medium text-slate-700">{rental.owner_name}</span></p>
+                                            <h4 className="font-bold text-slate-900 text-lg tracking-tight font-serif">{rental.listing_title}</h4>
+                                            <p className="text-sm text-slate-500 mt-0.5">Owner: <span className="font-medium text-slate-700">{rental.owner_name}</span></p>
+
+                                            {/* Industrial Detonation Timer */}
+                                            {(isOverdue || isDueToday) && (
+                                                <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border font-mono text-xs font-bold tracking-wider ${isOverdue
+                                                        ? 'bg-red-900/10 border-red-300 text-red-600'
+                                                        : 'bg-amber-900/10 border-amber-300 text-amber-600'
+                                                    }`}>
+                                                    <span className="animate-ping inline-flex h-2 w-2 rounded-full opacity-75" style={{ backgroundColor: isOverdue ? '#ef4444' : '#f59e0b' }}></span>
+                                                    {isOverdue
+                                                        ? `OVERDUE: ${Math.abs(hoursLeft)}h ago`
+                                                        : `RETURN WINDOW: ${hoursLeft}h remaining`
+                                                    }
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex flex-col gap-2 w-full sm:w-auto">
                                             <Link href={`/messages?listing=${rental.listing_id}&owner=${rental.owner_id}`}>

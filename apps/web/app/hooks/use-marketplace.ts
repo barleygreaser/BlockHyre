@@ -131,7 +131,6 @@ export const useMarketplace = () => {
                     )
                 `)
                 .eq('status', 'active')
-                .or('daily_price.gt.50,is_high_powered.eq.true')
                 .order('created_at', { ascending: false })
                 .limit(50);
 

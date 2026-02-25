@@ -184,20 +184,31 @@ export function OwnerDashboardView() {
     const [processingId, setProcessingId] = useState<string | null>(null);
 
     const handleApprove = async (rentalId: string) => {
-        setProcessingId(rentalId);
+        const rental = rentalRequests.find(r => r.id === rentalId);
+        if (!rental) {
+            toast.error("Rental not found");
+            return;
+        }
+
+        // Optimistic UI: Remove from list immediately
+        setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
+        toast.message(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] Action logged. Details processing...`, {
+            description: `Approving ${rental.listing.title}`,
+            className: "font-mono border-l-4 border-l-safety-orange rounded-none",
+        });
+
         try {
-            const rental = rentalRequests.find(r => r.id === rentalId);
-            if (!rental) {
-                alert("Rental not found");
-                return;
-            }
 
             const { error } = await supabase.rpc('approve_rental_request', {
                 p_rental_id: rentalId
             });
 
             if (error) {
-                alert(`Error: ${error.message}`);
+                toast.error(`[SYSTEM ERROR] Failed to approve: ${error.message}`, {
+                    className: "font-mono border-l-4 border-l-red-500 rounded-none bg-charcoal text-white",
+                });
+                // Revert optimistic update gracefully
+                setRentalRequests(prev => [rental, ...prev]);
                 return;
             }
 
@@ -306,11 +317,15 @@ export function OwnerDashboardView() {
                 }
             }
 
-            setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
+            toast.success(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] RENTAL APPROVED`, {
+                description: `${rental.listing.title} marked active for ${rental.renter.full_name}`,
+                className: "font-mono border-l-4 border-l-emerald-500 rounded-none bg-charcoal text-emerald-400",
+            });
         } catch (err) {
             console.error("Approval failed:", err);
-        } finally {
-            setProcessingId(null);
+            // Revert optimistic
+            setRentalRequests(prev => [rental, ...prev]);
+            toast.error("Process interrupted. Please refresh.");
         }
     };
 
@@ -532,9 +547,12 @@ export function OwnerDashboardView() {
 
             {/* KPI Telemetry Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link href="/owner/active-rentals" className="block group">
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm">
-                        <div>
+                <Link href="/dashboard/owner/active-rentals" className="block group active:translate-y-[2px] transition-transform">
+                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm relative overflow-hidden">
+                        {/* Scanner Sweep Element */}
+                        <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
+
+                        <div className="relative z-10">
                             <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Tool Bookings</p>
                             {kpiLoading ? (
                                 <div className="h-9 w-12 bg-slate-100 animate-pulse rounded-lg mt-1" />
@@ -542,34 +560,46 @@ export function OwnerDashboardView() {
                                 <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.activeRentals}</h3>
                             )}
                         </div>
-                        <div className="relative h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                        <div className="relative z-10 h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
                             <Users className="h-6 w-6" />
-                            {!kpiLoading && overdueCount > 0 && (
-                                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 hover:bg-red-500 text-white border-white border-2 text-[10px] font-bold">
-                                    {overdueCount}
+                            {!kpiLoading && overdueCount > 0 ? (
+                                <Badge className="absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-transparent border border-white">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                                 </Badge>
+                            ) : (
+                                <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>
                             )}
                         </div>
                     </div>
                 </Link>
 
-                <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between shadow-sm">
-                    <div>
-                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Earnings (30d)</p>
-                        {kpiLoading ? (
-                            <div className="h-9 w-24 bg-slate-100 animate-pulse rounded-lg mt-1" />
-                        ) : (
-                            <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{formatCurrency(kpis.earnings30d)}</h3>
-                        )}
-                    </div>
-                    <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                        <DollarSign className="h-6 w-6" />
+                <div className="block group active:translate-y-[2px] transition-transform cursor-pointer">
+                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between shadow-sm relative overflow-hidden hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
+                        {/* Scanner Sweep Element */}
+                        <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
+
+                        <div className="relative z-10">
+                            <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Earnings (30d)</p>
+                            {kpiLoading ? (
+                                <div className="h-9 w-24 bg-slate-100 animate-pulse rounded-lg mt-1" />
+                            ) : (
+                                <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{formatCurrency(kpis.earnings30d)}</h3>
+                            )}
+                        </div>
+                        <div className="relative z-10 h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                            <DollarSign className="h-6 w-6" />
+                            {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
+                        </div>
                     </div>
                 </div>
 
-                <Link href="/owner/listings" className="block group">
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm">
-                        <div>
+                <Link href="/dashboard/inventory" className="block group active:translate-y-[2px] transition-transform">
+                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 flex items-center justify-between transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm relative overflow-hidden">
+                        {/* Scanner Sweep Element */}
+                        <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
+
+                        <div className="relative z-10">
                             <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Tools Listed</p>
                             {kpiLoading ? (
                                 <div className="h-9 w-12 bg-slate-100 animate-pulse rounded-lg mt-1" />
@@ -577,8 +607,9 @@ export function OwnerDashboardView() {
                                 <h3 className="text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.toolsListed}</h3>
                             )}
                         </div>
-                        <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-safety-orange group-hover:scale-110 transition-transform">
+                        <div className="relative z-10 h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-safety-orange group-hover:scale-110 transition-transform">
                             <Wrench className="h-6 w-6" />
+                            {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
                         </div>
                     </div>
                 </Link>
@@ -786,16 +817,12 @@ export function OwnerDashboardView() {
                                                     </Button>
                                                     <Button
                                                         size="sm"
-                                                        className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-bold text-xs uppercase tracking-wider"
+                                                        className="flex-1 sm:flex-none bg-safety-orange hover:bg-safety-orange/90 shadow-lg shadow-safety-orange/20 text-white rounded-full font-bold text-xs uppercase tracking-wider"
                                                         onClick={() => handleApprove(request.id)}
                                                         disabled={processingId === request.id}
                                                     >
-                                                        {processingId === request.id ? 'Processing...' : (
-                                                            <>
-                                                                <Check className="mr-2 h-4 w-4" />
-                                                                Approve
-                                                            </>
-                                                        )}
+                                                        <Check className="mr-2 h-4 w-4" />
+                                                        Approve
                                                     </Button>
                                                 </div>
                                             </div>

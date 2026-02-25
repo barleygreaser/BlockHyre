@@ -27,17 +27,35 @@ export function Hero() {
 
                 // Create a GSAP context scoped to the hero — auto-cleans everything on revert
                 ctx = gsap.context(() => {
-                    const targets = [".hero-line-1", ".hero-line-2", ".hero-subtitle", ".hero-cta"];
+                    // Check if the user has already seen the animation in this session
+                    const hasSeenAnimation = sessionStorage.getItem("heroAnimationSeen");
+
+                    if (hasSeenAnimation) {
+                        // Animation was already seen, leave elements in their default visible state
+                        // We forcefully set them just in case
+                        gsap.set([".hero-line-1", ".hero-line-2", ".hero-subtitle", ".hero-cta"], {
+                            y: 0,
+                            opacity: 1,
+                            skewY: 0
+                        });
+                        return;
+                    }
 
                     // Reset all animated elements to hidden state first
-                    // This ensures clean re-entry on client-side navigation
+                    // This ensures clean re-entry for the animation
                     gsap.set(".hero-line-1", { y: 60, opacity: 0 });
                     gsap.set(".hero-line-2", { y: 80, opacity: 0, skewY: 2 });
                     gsap.set(".hero-subtitle", { y: 30, opacity: 0 });
                     gsap.set(".hero-cta", { y: 20, opacity: 0 });
 
                     // Build the entrance timeline
-                    tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+                    tl = gsap.timeline({
+                        defaults: { ease: "power3.out" },
+                        onComplete: () => {
+                            // Mark animation as seen once it finishes
+                            sessionStorage.setItem("heroAnimationSeen", "true");
+                        }
+                    });
 
                     tl.to(".hero-line-1", {
                         y: 0,
