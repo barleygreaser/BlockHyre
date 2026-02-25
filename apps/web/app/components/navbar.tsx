@@ -10,7 +10,7 @@ import { useAuth } from "@/app/context/auth-context";
 import { getUserDisplayName } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useUnreadCount } from "@/hooks/use-unread-count";
+import { useMessageContext } from "@/app/context/message-context";
 
 export function Navbar() {
     const { user, userProfile, signOut, loading } = useAuth();
@@ -19,7 +19,7 @@ export function Navbar() {
     const router = useRouter();
 
     // Global unread count hook
-    const unreadCount = useUnreadCount();
+    const { unreadCount } = useMessageContext();
 
     // Derive avatar and name from centralized user profile
     const avatarUrl = userProfile?.profilePhotoUrl ?? null;
