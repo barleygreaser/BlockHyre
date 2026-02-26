@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { useAuth, type UserProfile } from "@/app/context/auth-context";
+import { useAuth } from "@/app/context/auth-context";
 
 export interface Chat {
     id: string;
@@ -50,15 +50,26 @@ export function useMessages() {
         try {
             const userId = user.id;
 
+            // P1: Fetch chats with their latest message in a single query
             const { data: chats, error: chatsError } = await supabase
                 .from('chats')
                 .select(`
                     *,
                     listing:listing_id(title),
                     owner:owner_id(id, full_name, profile_photo_url),
-                    renter:renter_id(id, full_name, profile_photo_url)
+                    renter:renter_id(id, full_name, profile_photo_url),
+                    messages (
+                        content,
+                        created_at,
+                        recipient_id
+                    )
                 `)
                 .or(`owner_id.eq.${userId},renter_id.eq.${userId}`)
+                // Filter messages to only get the latest one relevant to the user
+                .or(`recipient_id.is.null,recipient_id.eq.${userId}`, { foreignTable: 'messages' })
+                .order('created_at', { foreignTable: 'messages', ascending: false })
+                .limit(1, { foreignTable: 'messages' })
+                // Sort chats by last activity
                 .order('last_message_at', { ascending: false, nullsFirst: false });
 
             if (chatsError) {
@@ -85,39 +96,34 @@ export function useMessages() {
                 }
             }
 
-            // Fetch last message for each chat
-            const enrichedChats = await Promise.all(
-                (chats || []).map(async (chat) => {
-                    const { data: lastMessage } = await supabase
-                        .from('messages')
-                        .select('content, created_at')
-                        .eq('chat_id', chat.id)
-                        .or(`recipient_id.is.null,recipient_id.eq.${userId}`)
-                        .order('created_at', { ascending: false })
-                        .limit(1)
-                        .single();
+            // Map results to Chat interface
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const enrichedChats = ((chats || []) as any[]).map((chat) => {
+                const unreadCount = unreadCountsMap.get(chat.id) || 0;
+                const otherUser = chat.owner_id === userId ? chat.renter : chat.owner;
 
-                    const unreadCount = unreadCountsMap.get(chat.id) || 0;
-                    const otherUser = chat.owner_id === userId ? chat.renter : chat.owner;
+                // Extract the last message from the nested array
+                const lastMessage = chat.messages?.[0];
 
-                    return {
-                        id: chat.id,
-                        listing_id: chat.listing_id,
-                        created_at: chat.created_at,
-                        updated_at: chat.updated_at,
-                        listing_title: chat.listing?.title,
-                        other_user_name: otherUser?.full_name || 'Unknown User',
-                        other_user_photo: otherUser?.profile_photo_url,
-                        last_message_content: lastMessage?.content,
-                        last_message_time: lastMessage?.created_at,
-                        unread_count: unreadCount,
-                    };
-                })
-            );
+                return {
+                    id: chat.id,
+                    listing_id: chat.listing_id,
+                    created_at: chat.created_at,
+                    updated_at: chat.updated_at,
+                    listing_title: chat.listing?.title,
+                    other_user_name: otherUser?.full_name || 'Unknown User',
+                    other_user_photo: otherUser?.profile_photo_url,
+                    last_message_content: lastMessage?.content,
+                    last_message_time: lastMessage?.created_at,
+                    unread_count: unreadCount,
+                };
+            });
 
             return enrichedChats;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
-            setError(err.message);
+            console.error('Error fetching conversations:', err);
+            setError(err.message || 'An error occurred');
             return [];
         } finally {
             setLoading(false);
