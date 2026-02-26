@@ -222,6 +222,16 @@ export default function ListingDetailScreen() {
         const ownerId = listing.owner_id || 'mock-owner-id';
         const listingId = listing.id;
 
+        // Velocity Fix: Intercept mock listings to prevent Supabase RPC errors
+        if (listingId.length < 20 || ownerId === 'mock-owner-id') {
+            Alert.alert(
+                'Demo Mode',
+                'Messaging is disabled for mock listings.',
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
         try {
             const chatId = await upsertConversation(listingId, ownerId);
 
