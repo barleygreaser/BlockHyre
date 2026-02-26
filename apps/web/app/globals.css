@@ -7,8 +7,20 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-serif: var(--font-roboto-slab);
-  --color-safety-orange: #FF6700;
+  --font-display: var(--font-bebas-neue);
+
+  /* ── Industrial Boutique Palette ── */
+  --color-safety-orange: #FF6B00;
+  --color-safety-orange-hover: #E55C00;
+  --color-charcoal: #1A1A1A;
+  --color-charcoal-light: #2A2A2A;
+  --color-concrete: #E8E4DD;
+  --color-concrete-dark: #D4CFC7;
+  --color-signal-white: #FAFAF8;
+  --color-workshop-gray: #333333;
   --color-slate-900: #0f172a;
+
+  /* ── Existing ShadCN tokens ── */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -45,8 +57,189 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --radius-boutique: 2.5rem;
 }
 
+/* ── Global Grain Overlay (Workshop Grit Texture) ── */
+.grain-overlay::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23grain)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* ── Conveyor Belt Slide-in ── */
+@keyframes conveyor-left {
+  from {
+    opacity: 0;
+    transform: translateX(-80px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes conveyor-right {
+  from {
+    opacity: 0;
+    transform: translateX(80px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-conveyor-left {
+  animation: conveyor-left 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-conveyor-right {
+  animation: conveyor-right 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Scanner Sweep (Availability Heatmap) ── */
+@keyframes scanner-sweep {
+  0% {
+    left: -2px;
+  }
+
+  100% {
+    left: calc(100% + 2px);
+  }
+}
+
+.animate-scanner {
+  animation: scanner-sweep 1.5s ease-in-out;
+}
+
+/* ── Skeleton Shimmer ── */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ── Pulsing Operational Dot ── */
+@keyframes pulse-operational {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.4);
+  }
+}
+
+.animate-pulse-operational {
+  animation: pulse-operational 2s ease-in-out infinite;
+}
+
+/* ── Industrial Bracket Reveal (Nav Links) ── */
+.nav-bracket {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.nav-bracket-left,
+.nav-bracket-right {
+  display: inline-block;
+  font-weight: 300;
+  font-family: 'Courier New', Courier, monospace;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  color: currentColor;
+}
+
+.nav-bracket-left {
+  transform: translateX(6px);
+  margin-right: -2px;
+}
+
+.nav-bracket-right {
+  transform: translateX(-6px);
+  margin-left: -2px;
+}
+
+.nav-bracket:hover .nav-bracket-left {
+  opacity: 0.6;
+  transform: translateX(0);
+  margin-right: 2px;
+}
+
+.nav-bracket:hover .nav-bracket-right {
+  opacity: 0.6;
+  transform: translateX(0);
+  margin-left: 2px;
+}
+
+/* ── Text Reveal ── */
+@keyframes text-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
+.animate-text-reveal {
+  animation: text-reveal 1s cubic-bezier(0.77, 0, 0.175, 1) both;
+}
+
+/* ── Mechanical Click (Listing Shuffler) ── */
+@keyframes shuffle-up {
+  0% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-105%);
+  }
+
+  60% {
+    transform: translateY(-95%);
+  }
+
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+/* ── Floating Up Animation ── */
+@keyframes float-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float-up {
+  animation: float-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Glow Animations ── */
 @keyframes glow {
 
   0%,
@@ -64,6 +257,7 @@
 }
 
 @keyframes pulse-subtle {
+
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
@@ -76,6 +270,26 @@
 
 .animate-pulse-subtle {
   animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* ── Magnetic Button Hover ── */
+.magnetic-btn {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.magnetic-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 40px rgba(255, 107, 0, 0.35);
+}
+
+/* ── Industrial spec sheet card hover ── */
+.spec-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.spec-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 :root {

@@ -198,21 +198,18 @@ export default function InventoryPage() {
         return [...categories].sort((a, b) => a.name.localeCompare(b.name));
     }, [categories]);
 
+    // Count active filters for mobile badge
+    const activeFilterCount = selectedCategories.length
+        + (selectedTier ? 1 : 0)
+        + (verifiedOwnersOnly ? 1 : 0)
+        + (acceptsBarterOnly ? 1 : 0)
+        + (instantBookOnly ? 1 : 0)
+        + (priceRange[1] < 300 ? 1 : 0);
+
     return (
-        <main className="min-h-screen bg-slate-50">
+        <main className="min-h-screen bg-signal-white">
             <Navbar />
-
-            {/* Mobile Sticky Control Bar */}
-            <div className="md:hidden sticky top-16 z-30 bg-white border-b border-slate-200 px-4 py-3 shadow-sm flex gap-3">
-                <Button variant="outline" className="flex-1 rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-50" onClick={() => setIsFiltersOpen(true)}>
-                    <Filter className="mr-2 h-4 w-4" /> Filter
-                </Button>
-                <Button variant="outline" className="flex-1 rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-50" onClick={() => setIsSortOpen(true)}>
-                    <ArrowUpDown className="mr-2 h-4 w-4" /> Sort
-                </Button>
-            </div>
-
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 pt-20 pb-8 md:py-8">
                 <div className="flex flex-col md:flex-row gap-8">
 
                     {/* Sidebar (Filters) */}
@@ -513,6 +510,7 @@ export default function InventoryPage() {
                 setSearchQuery={setSearchQuery}
                 categories={sortedCategories}
                 selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
                 toggleCategory={toggleCategory}
                 selectedTier={selectedTier}
                 setSelectedTier={setSelectedTier}
@@ -535,6 +533,42 @@ export default function InventoryPage() {
                 sortOption={sortOption}
                 setSortOption={setSortOption}
             />
+
+            {/* Mobile Floating Action Bar */}
+            {!isDesktop && (
+                <div className="fixed top-[80px] left-4 right-4 z-40 md:hidden">
+                    <div className="bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-3 py-2 flex items-center gap-2">
+                        <button
+                            onClick={() => setIsFiltersOpen(true)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider text-concrete hover:text-safety-orange transition-colors"
+                            aria-label="Open filters"
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter') setIsFiltersOpen(true); }}
+                        >
+                            <Filter className="h-4 w-4" />
+                            <span className="relative">
+                                Filter
+                                {activeFilterCount > 0 && (
+                                    <span className="absolute -top-2 -right-3.5 h-[16px] min-w-[16px] rounded-full bg-safety-orange text-white text-[9px] font-bold flex items-center justify-center px-0.5">
+                                        {activeFilterCount}
+                                    </span>
+                                )}
+                            </span>
+                        </button>
+                        <div className="w-px h-6 bg-white/15" />
+                        <button
+                            onClick={() => setIsSortOpen(true)}
+                            className={`flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${sortOption ? 'text-safety-orange' : 'text-concrete hover:text-safety-orange'}`}
+                            aria-label="Open sort options"
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter') setIsSortOpen(true); }}
+                        >
+                            <ArrowUpDown className="h-4 w-4" />
+                            Sort
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <Footer />
         </main>

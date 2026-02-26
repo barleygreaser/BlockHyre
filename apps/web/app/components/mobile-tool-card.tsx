@@ -13,7 +13,7 @@ interface MobileToolCardProps {
 
 export const MobileToolCard = memo(({ tool }: MobileToolCardProps) => {
     return (
-        <div className="flex bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm h-32 relative group">
+        <div className="flex bg-signal-white rounded-xl border border-workshop-gray/10 overflow-hidden shadow-sm h-32 relative group transition-all duration-300 hover:shadow-md hover:border-safety-orange/30">
             <div className="w-[35%] relative">
                 <Image
                     src={tool.image}
@@ -30,17 +30,17 @@ export const MobileToolCard = memo(({ tool }: MobileToolCardProps) => {
             </div>
             <div className="flex-1 p-3 flex flex-col justify-between">
                 <div>
-                    <h3 className="font-bold text-slate-900 line-clamp-2 text-sm leading-tight mb-1">{tool.title}</h3>
-                    <div className="text-xs text-slate-500">{tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}</div>
+                    <h3 className="font-bold font-serif text-charcoal line-clamp-2 text-sm leading-tight mb-1">{tool.title}</h3>
+                    <div className="text-xs font-mono uppercase tracking-widest text-charcoal/60">{tool.distance ? `${tool.distance.toFixed(1)} miles` : 'Nearby'}</div>
                 </div>
                 <div className="mt-1">
-                    <span className="font-bold text-lg text-safety-orange">${tool.price}</span>
-                    <span className="text-xs text-slate-500">/day</span>
+                    <span className="font-bold font-mono text-lg text-safety-orange tracking-tight">${tool.price}</span>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-charcoal/50 ml-1">/day</span>
                 </div>
             </div>
             <Link
                 href={`/listings/${tool.id}/${generateSlug(tool.title)}`}
-                className="absolute inset-0 z-10"
+                className="absolute inset-0 z-10 block"
                 aria-label={`View details for ${tool.title}`}
             >
                 <span className="sr-only">View Details</span>
