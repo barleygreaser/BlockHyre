@@ -13,7 +13,7 @@ import { useAuth } from "@/app/context/auth-context";
 import { getUserDisplayName } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useUnreadCount } from "@/hooks/use-unread-count";
+import { useMessageContext } from "@/app/context/message-context";
 
 export function Navbar() {
     const { user, userProfile, signOut, loading, maybeAuthenticated } = useAuth();
@@ -29,7 +29,8 @@ export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(!isHomepage);
     const [isMounted, setIsMounted] = useState(false);
 
-    const unreadCount = useUnreadCount();
+    // Global unread count hook
+    const { unreadCount } = useMessageContext();
 
     const avatarUrl = userProfile?.profilePhotoUrl ?? null;
     const fullName = userProfile?.fullName ?? null;

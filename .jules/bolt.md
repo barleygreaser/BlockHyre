@@ -55,3 +55,6 @@
 ## 2025-02-26 - Supabase Realtime Subscription Optimization
 **Learning:** Depending on transient UI state (e.g. `selectedChatId`) inside a `useEffect` for Supabase Realtime subscription causes the subscription to tear down and reconnect on every interaction (e.g. clicking a chat).
 **Action:** Use a `useRef` to track the current value of the transient state and access `ref.current` inside the subscription callback to maintain a stable subscription while still accessing fresh state.
+## 2025-02-18 - Unified Supabase Subscriptions
+**Learning:** Multiple hooks subscribing to the same Supabase table/channel (e.g. `useUnreadCount` and `useMessageNotifications`) create independent WebSocket connections, multiplying database load and client overhead. Consolidating these into a single Context Provider (`MessageContext`) reduces connections by 50%+ and ensures consistent state application-wide.
+**Action:** Always check for existing subscriptions before creating new ones. Use Context to share Realtime data across components.

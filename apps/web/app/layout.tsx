@@ -36,7 +36,7 @@ import { FavoritesProvider } from "./context/favorites-context";
 import { LocationOnboardingModal } from "./components/location-onboarding-modal";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { MessageNotificationProvider } from "./components/message-notification-provider";
+import { MessageProvider } from "@/app/context/message-context";
 
 export default async function RootLayout({
   children,
@@ -55,9 +55,10 @@ export default async function RootLayout({
           <AuthProvider initialAuthHint={authHint}>
             <FavoritesProvider>
               <CartProvider>
-                <MessageNotificationProvider />
-                <LocationOnboardingModal />
-                {children}
+                <MessageProvider>
+                  <LocationOnboardingModal />
+                  {children}
+                </MessageProvider>
                 <Toaster richColors theme="light" />
               </CartProvider>
             </FavoritesProvider>
