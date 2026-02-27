@@ -7,17 +7,19 @@ import { Listing } from "@/app/hooks/use-marketplace";
 import { MapPin, Search, Globe } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { useAuth } from "@/app/context/auth-context";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 interface FeaturedInventoryProps {
     onRentClick: () => void;
     listings: Listing[];
+    loading?: boolean;
 }
 
 const CATEGORIES = ["All", "Woodworking", "Power Tools", "Gardening", "Heavy Machinery", "Hand Tools", "Camping & Outdoor"];
 
 const normalize = (str: string) => str.toLowerCase().trim();
 
-export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInventoryProps) => {
+export const FeaturedInventory = memo(({ listings, onRentClick, loading }: FeaturedInventoryProps) => {
     const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
@@ -168,7 +170,25 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                 </div>
 
                 {/* Tool Grid */}
-                {cardProps.length > 0 ? (
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden flex flex-col h-[400px]">
+                                <Skeleton className="h-[220px] w-full rounded-none" />
+                                <div className="p-5 md:p-6 flex flex-col gap-3 flex-grow">
+                                    <Skeleton className="h-6 w-3/4 mb-2" />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-full" />
+                                    </div>
+                                    <Skeleton className="h-10 w-full mt-auto rounded-xl" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : cardProps.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {cardProps.map((tool) => (
                             <div key={tool.id} className="inventory-card">

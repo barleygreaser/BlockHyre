@@ -10,7 +10,7 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 import { Button, buttonVariants } from "./ui/button";
 import { ShoppingCart, Menu, X, User, Heart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
-import { getUserDisplayName } from "@/lib/utils";
+import { getUserDisplayName, cn } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useMessageContext } from "@/app/context/message-context";
@@ -35,10 +35,36 @@ export function Navbar() {
     const avatarUrl = userProfile?.profilePhotoUrl ?? null;
     const fullName = userProfile?.fullName ?? null;
 
-    useIsomorphicLayoutEffect(() => {
-        // Delay enabling CSS transitions by 1 macrotask so the initial render state doesn't jump
-        setTimeout(() => setIsMounted(true), 50);
+    // 1. Close menus automatically on route changes (fixes back-button bug)
+    useEffect(() => {
+        setIsMenuOpen(false);
+        setIsMobileMenuOpen(false);
+    }, [pathname]);
 
+    // 2. Lock body scroll when mobile menu is open
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => { document.body.style.overflow = "unset"; };
+    }, [isMobileMenuOpen]);
+
+    // 3. Accessibility: Close menus on 'Escape' key press
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setIsMenuOpen(false);
+                setIsMobileMenuOpen(false);
+            }
+        };
+        document.addEventListener("keydown", handleEscape);
+        return () => document.removeEventListener("keydown", handleEscape);
+    }, []);
+
+    // 1. Handle Scroll State BEFORE paint (prevents the visual layout snap)
+    useIsomorphicLayoutEffect(() => {
         if (!isHomepage) {
             setIsScrolled(true);
             return;
@@ -47,12 +73,25 @@ export function Navbar() {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 60);
         };
-        // Check scroll immediately to sync state before browser paints
+
+        // Check synchronously before first paint so the skeleton matches scroll position
         handleScroll();
 
         window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, [isHomepage]);
+
+    // 2. Enable transitions AFTER paint (prevents animating the layout correction)
+    useEffect(() => {
+        // Double requestAnimationFrame ensures the browser has fully painted the 
+        // corrected initial state before we turn on the CSS transition classes.
+        const frame = requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setIsMounted(true);
+            });
+        });
+        return () => cancelAnimationFrame(frame);
+    }, []);
 
     const handleSignOut = useCallback(async () => {
         try {
@@ -67,27 +106,36 @@ export function Navbar() {
     return (
         <>
             <nav
-                className={`fixed top-0 left-0 right-0 z-50 ${isMounted ? "transition-all duration-500 ease-out" : ""} ${isScrolled
-                    ? `py-2 px-4 md:px-8 ${!isHomepage ? "bg-gradient-to-b from-black/40 via-black/5 to-transparent" : ""}`
-                    : "py-3 px-4 md:px-8"
-                    }`}
+                suppressHydrationWarning
+                className={cn(
+                    "fixed top-0 left-0 right-0 z-50 px-4 md:px-8",
+                    // Hide on homepage during SSR to prevent any incorrect layout flash flash
+                    isHomepage && !isMounted ? "opacity-0" : "opacity-100",
+                    isMounted && "transition-all duration-500 ease-out",
+                    isScrolled ? "py-2" : "py-3",
+                    isScrolled && !isHomepage && "bg-gradient-to-b from-black/40 via-black/5 to-transparent"
+                )}
             >
                 <div
-                    className={`mx-auto border rounded-full ${isMounted ? "transition-all duration-300 ease-in-out" : ""} ${isScrolled
-                        ? "max-w-6xl bg-charcoal/80 backdrop-blur-xl border-safety-orange/20 shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6 py-1"
-                        : "max-w-[1440px] bg-transparent border-transparent shadow-none px-2 md:px-6 py-1"
-                        }`}
+                    suppressHydrationWarning
+                    className={cn(
+                        "mx-auto border rounded-full",
+                        isMounted && "transition-all duration-300 ease-in-out",
+                        isScrolled
+                            ? "max-w-6xl bg-charcoal/80 backdrop-blur-xl border-safety-orange/20 shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6 py-1"
+                            : "max-w-[1440px] bg-transparent border-transparent shadow-none px-2 md:px-6 py-1"
+                    )}
                 >
                     <div className="flex h-14 items-center justify-between">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2.5 group" aria-label="BlockHyre Home">
-                            <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${isScrolled
+                            <div suppressHydrationWarning className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${isScrolled
                                 ? "bg-safety-orange text-white"
                                 : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
                                 }`}>
                                 <span className="font-serif font-bold text-sm">B</span>
                             </div>
-                            <span className={`text-lg font-bold font-serif tracking-tight transition-colors duration-300 ${isScrolled ? "text-white" : "text-white"
+                            <span suppressHydrationWarning className={`text-lg font-bold font-serif tracking-tight transition-colors duration-300 ${isScrolled ? "text-white" : "text-white"
                                 }`}>
                                 BlockHyre
                             </span>
@@ -126,17 +174,18 @@ export function Navbar() {
                                     <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
                                     <div className="absolute inset-0 h-2 w-2 rounded-full bg-safety-orange/40 animate-ping" />
                                 </div>
-                                <span className={`hidden xl:inline text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-safety-orange" : "text-safety-orange"
+                                <span suppressHydrationWarning className={`hidden xl:inline text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-safety-orange" : "text-safety-orange"
                                     }`}>
                                     Operational
                                 </span>
                             </div>
 
                             {/* Mobile User Button */}
-                            <Link href={user ? "/dashboard" : "/auth"} className="lg:hidden">
+                            <Link href={user ? "/dashboard" : "/auth"} className="lg:hidden" suppressHydrationWarning>
                                 <Button
                                     variant="ghost"
                                     size="icon"
+                                    suppressHydrationWarning
                                     className={`${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
                                     aria-label="User Account"
                                 >
@@ -145,10 +194,11 @@ export function Navbar() {
                             </Link>
 
                             {/* Cart */}
-                            <Link href="/cart">
+                            <Link href="/cart" suppressHydrationWarning>
                                 <Button
                                     variant="ghost"
                                     size="icon"
+                                    suppressHydrationWarning
                                     className={`relative ${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
                                     aria-label="Shopping Cart"
                                 >
@@ -161,14 +211,14 @@ export function Navbar() {
                                 {loading ? (
                                     maybeAuthenticated ? (
                                         <div className="flex items-center gap-2 xl:gap-3 opacity-60">
-                                            <Skeleton className="h-9 w-[120px] xl:w-[135px] rounded-full bg-safety-orange/40" />
-                                            <Skeleton className="h-9 w-[95px] xl:w-[110px] rounded-full bg-white/10" />
-                                            <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                                            <Skeleton aria-hidden="true" className="h-9 w-[120px] xl:w-[135px] rounded-full bg-safety-orange/40" />
+                                            <Skeleton aria-hidden="true" className="h-9 w-[95px] xl:w-[110px] rounded-full bg-white/10" />
+                                            <Skeleton aria-hidden="true" className="h-8 w-8 rounded-full bg-white/10" />
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2 xl:gap-3 opacity-60">
-                                            <Skeleton className="h-9 w-[65px] rounded-full bg-white/5" />
-                                            <Skeleton className="h-9 w-[90px] rounded-full bg-safety-orange/40" />
+                                            <Skeleton aria-hidden="true" className="h-9 w-[70px] xl:w-[85px] rounded-full bg-white/5" />
+                                            <Skeleton aria-hidden="true" className="h-9 w-[80px] xl:w-[95px] rounded-full bg-safety-orange/40" />
                                         </div>
                                     )
                                 ) : user ? (
@@ -198,7 +248,7 @@ export function Navbar() {
                                                 tabIndex={0}
                                                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsMenuOpen(!isMenuOpen); }}
                                             >
-                                                <div className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 relative ${isScrolled
+                                                <div suppressHydrationWarning className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 relative ${isScrolled
                                                     ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/60 hover:ring-offset-2 hover:ring-offset-charcoal hover:shadow-[0_0_16px_rgba(255,107,0,0.25)]"
                                                     : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/60 hover:ring-offset-2 hover:ring-offset-transparent hover:shadow-[0_0_16px_rgba(255,107,0,0.25)]"
                                                     }`}>
@@ -228,7 +278,7 @@ export function Navbar() {
                                             {isMenuOpen && (
                                                 <>
                                                     <div
-                                                        className="fixed inset-0 z-40"
+                                                        className="fixed inset-0 z-[49]"
                                                         onClick={() => setIsMenuOpen(false)}
                                                     />
                                                     <div className="absolute right-0 top-[calc(100%+20px)] w-56 bg-charcoal/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 p-1.5 border border-safety-orange/20 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
@@ -363,27 +413,27 @@ export function Navbar() {
                                         {maybeAuthenticated ? (
                                             <>
                                                 <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                                                    <Skeleton className="h-12 w-12 rounded-full bg-white/10" />
+                                                    <Skeleton aria-hidden="true" className="h-12 w-12 rounded-full bg-white/10" />
                                                     <div className="flex-1 space-y-2">
-                                                        <Skeleton className="h-5 w-3/4 bg-white/10" />
-                                                        <Skeleton className="h-4 w-1/2 bg-white/10" />
+                                                        <Skeleton aria-hidden="true" className="h-5 w-3/4 bg-white/10" />
+                                                        <Skeleton aria-hidden="true" className="h-4 w-1/2 bg-white/10" />
                                                     </div>
                                                 </div>
                                                 <div className="space-y-3">
-                                                    <Skeleton className="h-12 w-full rounded-xl bg-safety-orange/40" />
-                                                    <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
+                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-safety-orange/40" />
+                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-white/10" />
                                                 </div>
                                             </>
                                         ) : (
                                             <>
                                                 <div className="space-y-4 pb-6 border-b border-white/10">
-                                                    <Skeleton className="h-12 w-full rounded-xl bg-safety-orange/40" />
-                                                    <Skeleton className="h-12 w-full rounded-xl bg-white/5" />
+                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-safety-orange/40" />
+                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-white/5" />
                                                 </div>
                                                 <div className="flex flex-col gap-4 pt-2">
-                                                    <Skeleton className="h-5 w-24 bg-white/5 rounded" />
-                                                    <Skeleton className="h-5 w-32 bg-white/5 rounded" />
-                                                    <Skeleton className="h-5 w-28 bg-white/5 rounded" />
+                                                    <Skeleton aria-hidden="true" className="h-5 w-24 bg-white/5 rounded" />
+                                                    <Skeleton aria-hidden="true" className="h-5 w-32 bg-white/5 rounded" />
+                                                    <Skeleton aria-hidden="true" className="h-5 w-28 bg-white/5 rounded" />
                                                 </div>
                                             </>
                                         )}

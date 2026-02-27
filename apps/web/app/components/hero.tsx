@@ -48,6 +48,10 @@ export function Hero() {
                     gsap.set(".hero-subtitle", { y: 30, opacity: 0 });
                     gsap.set(".hero-cta", { y: 20, opacity: 0 });
 
+                    // Remove FOUC style if it exists safely AFTER GSAP applies inline styles
+                    const foucStyle = document.getElementById("hero-fouc-fix");
+                    if (foucStyle) foucStyle.remove();
+
                     // Build the entrance timeline
                     tl = gsap.timeline({
                         defaults: { ease: "power3.out" },
@@ -84,6 +88,9 @@ export function Hero() {
             } catch {
                 // GSAP not critical — animations degrade gracefully
                 // On failure, make sure elements are visible
+                const foucStyle = document.getElementById("hero-fouc-fix");
+                if (foucStyle) foucStyle.remove();
+
                 if (headlineRef.current) {
                     headlineRef.current.querySelectorAll(".hero-line-1, .hero-line-2, .hero-subtitle, .hero-cta")
                         .forEach((el) => {
@@ -111,6 +118,21 @@ export function Hero() {
             className="relative h-[100vh] min-h-[700px] w-full overflow-hidden flex items-center"
             id="hero"
         >
+            {/* FOUC Prevention Script */}
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `
+                        try {
+                            if (!sessionStorage.getItem('heroAnimationSeen')) {
+                                var style = document.createElement('style');
+                                style.id = 'hero-fouc-fix';
+                                style.innerHTML = '#hero .hero-line-1 { opacity: 0; transform: translateY(60px); } #hero .hero-line-2 { opacity: 0; transform: translateY(80px) skewY(2deg); } #hero .hero-subtitle { opacity: 0; transform: translateY(30px); } #hero .hero-cta { opacity: 0; transform: translateY(20px); }';
+                                document.head.appendChild(style);
+                            }
+                        } catch (e) {}
+                    `
+                }}
+            />
             {/* Background Images — Original BlockHyre Community Photos */}
             <div className="absolute inset-0 z-0">
                 <Image

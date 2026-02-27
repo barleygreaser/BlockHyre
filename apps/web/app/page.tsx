@@ -14,7 +14,7 @@ import { useMarketplace } from "./hooks/use-marketplace";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { listings, fetchFeaturedListings } = useMarketplace();
+  const { listings, fetchFeaturedListings, loading } = useMarketplace();
 
   useEffect(() => {
     fetchFeaturedListings();
@@ -28,7 +28,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <IndustrialArtifacts />
-      <FeaturedInventory onRentClick={openModal} listings={listings} />
+      <FeaturedInventory onRentClick={openModal} listings={listings} loading={loading} />
       <Manifesto />
       <Protocol />
       <Footer />

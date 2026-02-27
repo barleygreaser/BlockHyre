@@ -81,11 +81,11 @@ export function Footer() {
                         <div>
                             <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-concrete/40 mb-6">Community</h3>
                             <ul className="space-y-4 text-sm font-sans">
-                                {['About Us', 'Guidelines', 'Dispute Tribunal'].map((text) => (
-                                    <li key={text}>
-                                        <Link href="#" className="group text-concrete/60 hover:text-white transition-colors relative flex items-center w-fit">
+                                {[{ name: 'About Us', href: '/about' }, { name: 'Guidelines', href: '/guidelines' }, { name: 'Dispute Tribunal', href: '/tribunal' }].map((link) => (
+                                    <li key={link.name}>
+                                        <Link href={link.href} className="group text-concrete/60 hover:text-white transition-colors relative flex items-center w-fit">
                                             <span className="text-safety-orange opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 mr-1 font-mono">[</span>
-                                            {text}
+                                            {link.name}
                                             <span className="text-safety-orange opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 ml-1 font-mono">]</span>
                                         </Link>
                                     </li>
