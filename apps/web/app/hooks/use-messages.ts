@@ -50,16 +50,23 @@ export function useMessages() {
         try {
             const userId = user.id;
 
+            // Fetch chats and last message in a single query
             const { data: chats, error: chatsError } = await supabase
                 .from('chats')
                 .select(`
                     *,
                     listing:listing_id(title),
                     owner:owner_id(id, full_name, profile_photo_url),
-                    renter:renter_id(id, full_name, profile_photo_url)
+                    renter:renter_id(id, full_name, profile_photo_url),
+                    messages(content, created_at, recipient_id)
                 `)
                 .or(`owner_id.eq.${userId},renter_id.eq.${userId}`)
-                .order('last_message_at', { ascending: false, nullsFirst: false });
+                .order('last_message_at', { ascending: false, nullsFirst: false })
+                // Limit messages to 1, order by created_at desc to get the last one
+                // And filter by recipient to ensure privacy
+                .order('created_at', { foreignTable: 'messages', ascending: false })
+                .limit(1, { foreignTable: 'messages' })
+                .or(`recipient_id.is.null,recipient_id.eq.${userId}`, { foreignTable: 'messages' });
 
             if (chatsError) {
                 console.error('Chats error details:', chatsError);
@@ -85,35 +92,28 @@ export function useMessages() {
                 }
             }
 
-            // Fetch last message for each chat
-            const enrichedChats = await Promise.all(
-                (chats || []).map(async (chat) => {
-                    const { data: lastMessage } = await supabase
-                        .from('messages')
-                        .select('content, created_at')
-                        .eq('chat_id', chat.id)
-                        .or(`recipient_id.is.null,recipient_id.eq.${userId}`)
-                        .order('created_at', { ascending: false })
-                        .limit(1)
-                        .single();
+            // Map results to Chat interface
+            const enrichedChats = (chats || []).map((chat) => {
+                const unreadCount = unreadCountsMap.get(chat.id) || 0;
+                const otherUser = chat.owner_id === userId ? chat.renter : chat.owner;
 
-                    const unreadCount = unreadCountsMap.get(chat.id) || 0;
-                    const otherUser = chat.owner_id === userId ? chat.renter : chat.owner;
+                // Extract last message from the embedded array
+                // @ts-ignore - Supabase types might not perfectly reflect the embedded array structure here without deeper typing
+                const lastMessage = chat.messages && chat.messages.length > 0 ? chat.messages[0] : null;
 
-                    return {
-                        id: chat.id,
-                        listing_id: chat.listing_id,
-                        created_at: chat.created_at,
-                        updated_at: chat.updated_at,
-                        listing_title: chat.listing?.title,
-                        other_user_name: otherUser?.full_name || 'Unknown User',
-                        other_user_photo: otherUser?.profile_photo_url,
-                        last_message_content: lastMessage?.content,
-                        last_message_time: lastMessage?.created_at,
-                        unread_count: unreadCount,
-                    };
-                })
-            );
+                return {
+                    id: chat.id,
+                    listing_id: chat.listing_id,
+                    created_at: chat.created_at,
+                    updated_at: chat.updated_at,
+                    listing_title: chat.listing?.title,
+                    other_user_name: otherUser?.full_name || 'Unknown User',
+                    other_user_photo: otherUser?.profile_photo_url,
+                    last_message_content: lastMessage?.content,
+                    last_message_time: lastMessage?.created_at,
+                    unread_count: unreadCount,
+                };
+            });
 
             return enrichedChats;
         } catch (err: any) {
