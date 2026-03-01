@@ -58,3 +58,7 @@
 ## 2025-02-18 - Unified Supabase Subscriptions
 **Learning:** Multiple hooks subscribing to the same Supabase table/channel (e.g. `useUnreadCount` and `useMessageNotifications`) create independent WebSocket connections, multiplying database load and client overhead. Consolidating these into a single Context Provider (`MessageContext`) reduces connections by 50%+ and ensures consistent state application-wide.
 **Action:** Always check for existing subscriptions before creating new ones. Use Context to share Realtime data across components.
+
+## 2024-03-01 - Optimize Explore screen normalizations
+**Learning:** React components sometimes repeatedly normalize the same strings over and over during render/useMemo execution.
+**Action:** When filtering a static or rarely-changing list based on text input (e.g. search term, selected category), instead of normalizing the search term and the items' strings inside a loop, move string normalization of the items to a single initial `useMemo` transformation (if not done yet), and normalize the search term outside the loop.
