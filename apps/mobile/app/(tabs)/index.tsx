@@ -161,9 +161,19 @@ export default function ExploreScreen() {
   });
 
   // --- Filtering & Sorting ---
+  // Optimize: Pre-calculate normalized title to avoid redundant lowercase operations during filter loop
+  const normalizedTools = useMemo(() => {
+    return tools.map(tool => ({
+      ...tool,
+      normTitle: tool.title.toLowerCase()
+    }));
+  }, [tools]);
+
   const filteredTools = useMemo(() => {
-    return tools.filter(tool => {
-      const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const normQuery = searchQuery.toLowerCase();
+
+    return normalizedTools.filter(tool => {
+      const matchesSearch = tool.normTitle.includes(normQuery);
       const matchesCategory = activeCategory === 'All' ? true : tool.category === activeCategory;
       return matchesSearch && matchesCategory;
     }).sort((a, b) => {
@@ -171,7 +181,7 @@ export default function ExploreScreen() {
       if (sortOption === 'price-desc') return b.pricePerDay - a.pricePerDay;
       return 0;
     });
-  }, [tools, searchQuery, activeCategory, sortOption]);
+  }, [normalizedTools, searchQuery, activeCategory, sortOption]);
 
   const handleCardPress = (id: string) => {
     router.push({
