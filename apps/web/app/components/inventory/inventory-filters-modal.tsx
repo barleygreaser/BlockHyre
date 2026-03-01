@@ -131,7 +131,8 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
         showDistanceFilter = true
     } = props;
 
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    // Optimization: Categories are pre-sorted by the parent component (InventoryPage)
+    // to avoid redundant O(n log n) sorting operations during every render cycle.
 
     return (
         <div className={cn("p-5 space-y-5", isDesktop ? "flex-1 overflow-y-auto" : "")}>
@@ -177,7 +178,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             <section className="bg-white p-4 rounded-xl border border-workshop-gray/10">
                 <Label className="font-bold font-serif text-charcoal mb-4 block">Categories</Label>
                 <div className="flex flex-wrap gap-2">
-                    {sortedCategories.map(cat => (
+                    {categories.map(cat => (
                         <button
                             key={cat.id}
                             className={cn(

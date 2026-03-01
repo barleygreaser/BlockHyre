@@ -58,3 +58,7 @@
 ## 2025-02-18 - Unified Supabase Subscriptions
 **Learning:** Multiple hooks subscribing to the same Supabase table/channel (e.g. `useUnreadCount` and `useMessageNotifications`) create independent WebSocket connections, multiplying database load and client overhead. Consolidating these into a single Context Provider (`MessageContext`) reduces connections by 50%+ and ensures consistent state application-wide.
 **Action:** Always check for existing subscriptions before creating new ones. Use Context to share Realtime data across components.
+
+## 2026-03-01 - [Removed Redundant Sort in InventoryFiltersModal]
+**Learning:** In React components like `InventoryFiltersModal` that receive a `categories` prop, if the parent (`InventoryPage`) already pre-sorts the array (e.g., via `useMemo` as `sortedCategories`), the child shouldn't perform the same O(n log n) sorting operation again on every render cycle. Redundant operations like `[...categories].sort(...)` in a render function without memoization cause unnecessary work.
+**Action:** When working on lists that require sorting, push the sorting logic up to the parent component (and memoize it) or memoize it in the child. Always verify if the prop is already correctly shaped or sorted by the parent before adding operations inside the render loop.
