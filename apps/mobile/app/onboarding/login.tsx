@@ -72,6 +72,10 @@ export default function LoginSheet() {
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 bottomSheetRef.current?.close();
+                if (router.canDismiss()) {
+                    router.dismiss();
+                }
+                router.replace('/(tabs)/');
             } catch (error: any) {
                 Alert.alert('Login Failed', error.message);
             } finally {
