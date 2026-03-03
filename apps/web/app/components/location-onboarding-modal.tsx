@@ -77,9 +77,11 @@ export function LocationOnboardingModal() {
     };
 
     // Mock "Google Places Autocomplete" behavior
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    const woodstockLower = "woodstock, ga";
     const filteredNeighborhoods = neighborhoods.filter(n =>
-        n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        "Woodstock, GA".toLowerCase().includes(searchTerm.toLowerCase())
+        n.name.toLowerCase().includes(lowerSearchTerm) ||
+        woodstockLower.includes(lowerSearchTerm)
     );
 
     const handleConfirm = async () => {
