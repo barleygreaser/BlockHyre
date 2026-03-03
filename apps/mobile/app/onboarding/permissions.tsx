@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +11,7 @@ const { width } = Dimensions.get('window');
 
 export default function OnboardingPermissions() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     const handleCompleteOnboarding = async () => {
         try {
@@ -37,7 +39,7 @@ export default function OnboardingPermissions() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
             <StatusBar style="dark" />
 
             <View style={styles.content}>
@@ -77,7 +79,7 @@ export default function OnboardingPermissions() {
                     <Text style={styles.secondaryButtonText}>Not Now</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 

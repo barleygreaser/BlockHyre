@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Platform, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Radar, CheckCircle2, ShieldCheck, Handshake, Home, Store } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -52,6 +53,7 @@ const STEPS = [
 export default function HowItWorksScreen() {
     const router = useRouter();
     const flatListRef = useRef<FlatList>(null);
+    const insets = useSafeAreaInsets();
 
     const activeIndex = useSharedValue(0);
     const [isLastStep, setIsLastStep] = useState(false);
@@ -151,9 +153,9 @@ export default function HowItWorksScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
             <StatusBar style="dark" />
-            <SafeAreaView style={styles.safeArea}>
+            <View style={styles.safeArea}>
 
                 {/* Header Spacer (removed header) */}
                 <View style={{ height: 20 }} />
@@ -187,7 +189,7 @@ export default function HowItWorksScreen() {
                     />
                 </View>
 
-            </SafeAreaView>
+            </View>
         </View>
     );
 }
