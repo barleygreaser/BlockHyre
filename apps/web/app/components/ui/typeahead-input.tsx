@@ -59,11 +59,14 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
 
             // Handle categories locally (no API call)
             if (type === 'category' && categories) {
+                const lowerQuery = debouncedValue.toLowerCase();
                 const filtered = categories
-                    .filter(cat => cat.name.toLowerCase().includes(debouncedValue.toLowerCase()))
+                    .filter(cat => cat.name.toLowerCase().includes(lowerQuery))
                     .sort((a, b) => {
-                        const aStarts = a.name.toLowerCase().startsWith(debouncedValue.toLowerCase());
-                        const bStarts = b.name.toLowerCase().startsWith(debouncedValue.toLowerCase());
+                        const aLower = a.name.toLowerCase();
+                        const bLower = b.name.toLowerCase();
+                        const aStarts = aLower.startsWith(lowerQuery);
+                        const bStarts = bLower.startsWith(lowerQuery);
                         if (aStarts && !bStarts) return -1;
                         if (!aStarts && bStarts) return 1;
                         return a.name.localeCompare(b.name);

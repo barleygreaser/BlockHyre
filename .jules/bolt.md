@@ -62,3 +62,7 @@
 ## 2024-03-01 - Optimize Explore screen normalizations
 **Learning:** React components sometimes repeatedly normalize the same strings over and over during render/useMemo execution.
 **Action:** When filtering a static or rarely-changing list based on text input (e.g. search term, selected category), instead of normalizing the search term and the items' strings inside a loop, move string normalization of the items to a single initial `useMemo` transformation (if not done yet), and normalize the search term outside the loop.
+
+## 2025-03-05 - Avoid Redundant Prop Sorting
+**Learning:** Components sometimes redundantly re-sort props passed to them (e.g. `categories.sort((a,b) => a.name.localeCompare(b.name))` on every render), despite the parent already performing the sorting and memoizing the result.
+**Action:** When working with sorted data like categories, always verify if the parent component (e.g. the page) is already sorting it before performing redundant operations, especially those using `localeCompare` which is slow.
