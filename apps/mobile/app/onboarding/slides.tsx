@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, View, Text, FlatList, Dimensions, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Dimensions, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -29,6 +30,7 @@ const SLIDES = [
 
 export default function OnboardingSlides() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
 
@@ -74,7 +76,7 @@ export default function OnboardingSlides() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
             <StatusBar style="dark" />
 
             <View style={styles.header}>
@@ -120,7 +122,7 @@ export default function OnboardingSlides() {
                     </Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
