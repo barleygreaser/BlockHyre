@@ -159,7 +159,7 @@ export default function FavoritesScreen() {
                 style={styles.exploreButton}
                 onPress={() => {
                     // Navigate to the root of the tabs (index.tsx)
-                    if (router.canGoBack()) {
+                    if (router.canDismiss()) {
                         router.dismiss();
                     }
                     router.replace('/(tabs)/');
