@@ -66,3 +66,7 @@
 ## 2025-03-05 - Avoid Redundant Prop Sorting
 **Learning:** Components sometimes redundantly re-sort props passed to them (e.g. `categories.sort((a,b) => a.name.localeCompare(b.name))` on every render), despite the parent already performing the sorting and memoizing the result.
 **Action:** When working with sorted data like categories, always verify if the parent component (e.g. the page) is already sorting it before performing redundant operations, especially those using `localeCompare` which is slow.
+
+## 2025-03-05 - localeCompare Optimization Pitfalls
+**Learning:** While `localeCompare` is notoriously slow for string sorting compared to basic relational operators (`<`, `>`), replacing it blindly can introduce functional regressions. Basic operators use strict Unicode code point comparison, meaning all uppercase letters sort before lowercase letters, breaking case-insensitive and locale-aware sorting expectations for user-facing strings like categories.
+**Action:** Do not replace `localeCompare` with `<`/`>` for user-facing strings. Instead, focus on memoizing the sort operation (e.g. via `useMemo`) so it only runs when the underlying data changes, rather than on every render.

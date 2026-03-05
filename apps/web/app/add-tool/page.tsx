@@ -17,6 +17,7 @@ import { supabase } from "@/lib/supabase";
 import { Switch } from "@/app/components/ui/switch";
 import { TypeaheadInput } from "@/app/components/ui/typeahead-input";
 import { useDebounce } from "@/app/hooks/use-debounce";
+import { useMemo } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
 import {
     Dialog,
@@ -104,8 +105,10 @@ export default function AddToolPage() {
         }
     }, [selectedCategory]);
 
-    // Sort categories alphabetically
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    // Sort categories alphabetically (Memoized to prevent re-sort on every render)
+    const sortedCategories = useMemo(() => {
+        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    }, [categories]);
 
     // Auto-calculate Risk/Deposit based on Hybrid Tier (override > default)
     const currentTier = financials.currentTier;
