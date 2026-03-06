@@ -105,11 +105,6 @@ export default function AddToolPage() {
         }
     }, [selectedCategory]);
 
-    // Sort categories alphabetically (Memoized to prevent re-sort on every render)
-    const sortedCategories = useMemo(() => {
-        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
-    }, [categories]);
-
     // Auto-calculate Risk/Deposit based on Hybrid Tier (override > default)
     const currentTier = financials.currentTier;
     const deposit = financials.deductible;
@@ -388,7 +383,7 @@ export default function AddToolPage() {
                                                     <SelectValue placeholder="Select a category..." />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {sortedCategories.map(cat => (
+                                                    {categories.map(cat => (
                                                         <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                                                     ))}
                                                 </SelectContent>

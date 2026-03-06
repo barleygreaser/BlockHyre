@@ -193,11 +193,6 @@ export default function InventoryPage() {
         );
     };
 
-    // Sort categories alphabetically (Memoized to prevent re-sort on every render)
-    const sortedCategories = useMemo(() => {
-        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
-    }, [categories]);
-
     // Count active filters for mobile badge
     const activeFilterCount = selectedCategories.length
         + (selectedTier ? 1 : 0)
@@ -269,7 +264,7 @@ export default function InventoryPage() {
                                     })
                                 ) : (
                                     // ACTUAL CATEGORY LIST
-                                    sortedCategories.map(category => (
+                                    categories.map(category => (
                                         <div key={category.id} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={`category-${category.id}`}
@@ -508,7 +503,7 @@ export default function InventoryPage() {
                 onClose={() => setIsFiltersOpen(false)}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
-                categories={sortedCategories}
+                categories={categories}
                 selectedCategories={selectedCategories}
                 setSelectedCategories={setSelectedCategories}
                 toggleCategory={toggleCategory}

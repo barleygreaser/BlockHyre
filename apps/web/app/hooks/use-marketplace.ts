@@ -343,7 +343,8 @@ export const useMarketplace = () => {
                 .select('id, name, risk_daily_fee, risk_tier, deductible_amount');
 
             if (error) throw error;
-            cachedCategories = data || [];
+            // Pre-sort categories once during fetch so components don't have to sort them individually
+            cachedCategories = (data || []).sort((a, b) => a.name.localeCompare(b.name));
             setCategories(cachedCategories);
         } catch (e) {
             console.error("Error fetching categories:", e);
