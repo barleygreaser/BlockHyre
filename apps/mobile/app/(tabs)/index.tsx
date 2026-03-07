@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useCallback, memo } from 'react';
 import { Image } from 'expo-image';
 import {
   View,
@@ -40,6 +40,74 @@ const CATEGORIES = [
 
 type SortOption = 'price-asc' | 'price-desc' | null;
 
+
+// ⚡ Bolt Optimization: Extracted inline render function to a standalone React.memo component
+// Impact: Prevents re-rendering of all category chips when only one changes state or when search query updates.
+const CategoryItem = memo(({ item, isSelected, onPress }: { item: string, isSelected: boolean, onPress: (item: string) => void }) => {
+  return (
+    <TouchableOpacity
+      onPress={() => onPress(item)}
+      style={[
+        styles.categoryChip,
+        isSelected && styles.categoryChipActive
+      ]}
+      activeOpacity={0.7}
+    >
+      <Text style={[
+        styles.categoryText,
+        isSelected && styles.categoryTextActive
+      ]}>
+        {item}
+      </Text>
+    </TouchableOpacity>
+  );
+});
+
+
+// ⚡ Bolt Optimization: Extracted inline render function to a standalone React.memo component
+// Impact: Prevents re-rendering of the entire list of tool cards when the user types in the search bar or changes categories.
+const ToolCard = memo(({ item, onPress }: { item: Tool, onPress: (id: string) => void }) => {
+  return (
+    <TouchableOpacity
+      style={styles.cardContainer}
+      onPress={() => onPress(item.id)}
+      activeOpacity={0.95}
+    >
+      {/* Image Container */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={item.image}
+          style={styles.cardImage}
+          contentFit="cover"
+          transition={1000}
+        />
+        {/* Rating Badge */}
+        {item.rating && (
+          <View style={styles.ratingBadge}>
+            <Star size={12} color="#FACC15" fill="#FACC15" />
+            <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Content */}
+      <View style={styles.cardContent}>
+        <Text style={styles.cardTitle} numberOfLines={2}>{item.title}</Text>
+
+        <View style={styles.locationRow}>
+          <MapPin size={12} color="#9CA3AF" />
+          <Text style={styles.distanceText}>{item.distance}</Text>
+        </View>
+
+        <View style={styles.priceRow}>
+          <Text style={styles.cardPrice}>${item.pricePerDay}</Text>
+          <Text style={styles.cardPriceSuffix}>/day</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+});
+
 export default function ExploreScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -52,7 +120,7 @@ export default function ExploreScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchTools = async () => {
+  const fetchTools = useCallback(async () => {
     try {
       if (!refreshing) setLoading(true);
 
@@ -95,16 +163,16 @@ export default function ExploreScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [refreshing]);
 
   React.useEffect(() => {
     fetchTools();
   }, []);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setRefreshing(true);
     fetchTools();
-  };
+  }, [fetchTools]);
 
   // Scroll animation
   const scrollY = useSharedValue(0);
@@ -183,76 +251,32 @@ export default function ExploreScreen() {
     });
   }, [normalizedTools, searchQuery, activeCategory, sortOption]);
 
-  const handleCardPress = (id: string) => {
+  // ⚡ Bolt Optimization: Wrapped handler in useCallback
+  // Impact: Provides a stable reference to ToolCard items, ensuring they don't break memoization on parent re-renders.
+  const handleCardPress = useCallback((id: string) => {
     router.push({
       pathname: '/listings/[id]',
       params: { id }
     });
-  };
+  }, [router]);
 
   // --- Render Components ---
-  const renderCategoryItem = (item: string) => {
-    const isSelected = activeCategory === item;
-    return (
-      <TouchableOpacity
-        key={item}
-        onPress={() => setActiveCategory(item)}
-        style={[
-          styles.categoryChip,
-          isSelected && styles.categoryChipActive
-        ]}
-        activeOpacity={0.7}
-      >
-        <Text style={[
-          styles.categoryText,
-          isSelected && styles.categoryTextActive
-        ]}>
-          {item}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+  const renderCategoryItem = useCallback((item: string) => (
+    <CategoryItem
+      key={item}
+      item={item}
+      isSelected={activeCategory === item}
+      onPress={setActiveCategory}
+    />
+  ), [activeCategory]);
 
-  const renderToolCard = (item: Tool) => (
-    <TouchableOpacity
+  const renderToolCard = useCallback((item: Tool) => (
+    <ToolCard
       key={item.id}
-      style={styles.cardContainer}
-      onPress={() => handleCardPress(item.id)}
-      activeOpacity={0.95}
-    >
-      {/* Image Container */}
-      <View style={styles.imageContainer}>
-        <Image
-          source={item.image}
-          style={styles.cardImage}
-          contentFit="cover"
-          transition={1000}
-        />
-        {/* Rating Badge */}
-        {item.rating && (
-          <View style={styles.ratingBadge}>
-            <Star size={12} color="#FACC15" fill="#FACC15" />
-            <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
-          </View>
-        )}
-      </View>
-
-      {/* Content */}
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle} numberOfLines={2}>{item.title}</Text>
-
-        <View style={styles.locationRow}>
-          <MapPin size={12} color="#9CA3AF" />
-          <Text style={styles.distanceText}>{item.distance}</Text>
-        </View>
-
-        <View style={styles.priceRow}>
-          <Text style={styles.cardPrice}>${item.pricePerDay}</Text>
-          <Text style={styles.cardPriceSuffix}>/day</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+      item={item}
+      onPress={handleCardPress}
+    />
+  ), [handleCardPress]);
 
   // Create rows of 2 cards each for the grid layout
   const toolRows = useMemo(() => {

@@ -70,3 +70,7 @@
 ## 2025-03-05 - localeCompare Optimization Pitfalls
 **Learning:** While `localeCompare` is notoriously slow for string sorting compared to basic relational operators (`<`, `>`), replacing it blindly can introduce functional regressions. Basic operators use strict Unicode code point comparison, meaning all uppercase letters sort before lowercase letters, breaking case-insensitive and locale-aware sorting expectations for user-facing strings like categories.
 **Action:** Do not replace `localeCompare` with `<`/`>` for user-facing strings. Instead, focus on memoizing the sort operation (e.g. via `useMemo`) so it only runs when the underlying data changes, rather than on every render.
+
+## 2025-03-07 - Optimize React Native ScrollView lists
+**Learning:** React Native lists (like ScrollView with mapped items) suffer from massive performance degradation when rendering logic creates inline components/functions on each re-render, especially for complex UIs like `ExploreScreen` that has animated scroll handlers. Recreating handler functions like `handleCardPress` inside the component body and passing them down to inline items breaks pure component optimization.
+**Action:** Always extract list items into standalone `React.memo` components, and strongly stabilize callback functions using `useCallback` inside the parent list, so that changes in one part of the UI (like typing a search query or changing active category) don't trigger unnecessary re-renders of the entire item list.
