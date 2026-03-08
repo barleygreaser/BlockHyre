@@ -70,3 +70,7 @@
 ## 2025-03-05 - localeCompare Optimization Pitfalls
 **Learning:** While `localeCompare` is notoriously slow for string sorting compared to basic relational operators (`<`, `>`), replacing it blindly can introduce functional regressions. Basic operators use strict Unicode code point comparison, meaning all uppercase letters sort before lowercase letters, breaking case-insensitive and locale-aware sorting expectations for user-facing strings like categories.
 **Action:** Do not replace `localeCompare` with `<`/`>` for user-facing strings. Instead, focus on memoizing the sort operation (e.g. via `useMemo`) so it only runs when the underlying data changes, rather than on every render.
+
+## 2025-03-08 - O(N log N) Sorting Optimization in Typeahead
+**Learning:** Calling `.sort()` with `localeCompare` inside a highly interactive component like `TypeaheadInput`'s debounce effect adds O(N log N) complexity on every keystroke. This is especially wasteful when the parent component already passes a sorted array.
+**Action:** When working with pre-sorted arrays (like categories) and needing to prioritize results (e.g. `startsWith` before `includes`), replace `.filter().sort()` with a single O(N) traversal. Partition the items into separate arrays based on match quality and concatenate them. This preserves the original sub-sorting automatically and eliminates redundant `localeCompare` calls.

@@ -60,17 +60,21 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
             // Handle categories locally (no API call)
             if (type === 'category' && categories) {
                 const lowerQuery = debouncedValue.toLowerCase();
-                const filtered = categories
-                    .filter(cat => cat.name.toLowerCase().includes(lowerQuery))
-                    .sort((a, b) => {
-                        const aLower = a.name.toLowerCase();
-                        const bLower = b.name.toLowerCase();
-                        const aStarts = aLower.startsWith(lowerQuery);
-                        const bStarts = bLower.startsWith(lowerQuery);
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-                        return a.name.localeCompare(b.name);
-                    });
+                const startsWith: Suggestion[] = [];
+                const includes: Suggestion[] = [];
+
+                // Optimization: Avoid O(N log N) sorting and redundant localeCompare by traversing
+                // the already alphabetically-sorted categories array once.
+                for (const cat of categories) {
+                    const lowerName = cat.name.toLowerCase();
+                    if (lowerName.startsWith(lowerQuery)) {
+                        startsWith.push(cat);
+                    } else if (lowerName.includes(lowerQuery)) {
+                        includes.push(cat);
+                    }
+                }
+
+                const filtered = [...startsWith, ...includes];
                 setSuggestions(filtered);
                 if (filtered.length > 0) setIsOpen(true);
                 return;
