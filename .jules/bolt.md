@@ -70,3 +70,7 @@
 ## 2025-03-05 - localeCompare Optimization Pitfalls
 **Learning:** While `localeCompare` is notoriously slow for string sorting compared to basic relational operators (`<`, `>`), replacing it blindly can introduce functional regressions. Basic operators use strict Unicode code point comparison, meaning all uppercase letters sort before lowercase letters, breaking case-insensitive and locale-aware sorting expectations for user-facing strings like categories.
 **Action:** Do not replace `localeCompare` with `<`/`>` for user-facing strings. Instead, focus on memoizing the sort operation (e.g. via `useMemo`) so it only runs when the underlying data changes, rather than on every render.
+
+## 2024-05-18 - [O(N log N) bottlenecks in Typeahead / Search Inputs]
+**Learning:** React component `TypeaheadInput` previously used an O(N log N) `localeCompare` sort combined with a filter to prioritize prefix (`startsWith`) vs substring (`includes`) matches on every keystroke. Although arrays were already presorted alphabetically from parents, `localeCompare` re-sorting on every render created an input delay bottle-neck.
+**Action:** Replace filter-then-sort operations on pre-sorted array data with a single O(N) pass loop that groups prioritized matches (e.g. `startsWith` into one array, `includes` into another) and then concatenates them. This preserves the original alphabetical order while ensuring prioritized display at vastly lower compute cost.
