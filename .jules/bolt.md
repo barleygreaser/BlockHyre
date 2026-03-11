@@ -70,3 +70,7 @@
 ## 2025-03-05 - localeCompare Optimization Pitfalls
 **Learning:** While `localeCompare` is notoriously slow for string sorting compared to basic relational operators (`<`, `>`), replacing it blindly can introduce functional regressions. Basic operators use strict Unicode code point comparison, meaning all uppercase letters sort before lowercase letters, breaking case-insensitive and locale-aware sorting expectations for user-facing strings like categories.
 **Action:** Do not replace `localeCompare` with `<`/`>` for user-facing strings. Instead, focus on memoizing the sort operation (e.g. via `useMemo`) so it only runs when the underlying data changes, rather than on every render.
+
+## 2025-03-05 - Avoid localeCompare in render/typing loops
+**Learning:** `localeCompare` is significantly slower (e.g. 5-10x) than basic relational operators (`<`, `>`). While necessary for case-insensitive/locale-aware sorting of user-facing strings (like categories), it should never be used in a fast path (e.g., inside an `onChange` handler or a render loop with `.filter().sort()`).
+**Action:** Pre-sort data with `localeCompare` at the topmost possible level (e.g., using `useMemo` in the parent component). In child components that filter this data (like `TypeaheadInput`), use O(N) array partitioning to preserve the original sorted order rather than re-sorting.
