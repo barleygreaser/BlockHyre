@@ -60,17 +60,26 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
             // Handle categories locally (no API call)
             if (type === 'category' && categories) {
                 const lowerQuery = debouncedValue.toLowerCase();
-                const filtered = categories
-                    .filter(cat => cat.name.toLowerCase().includes(lowerQuery))
-                    .sort((a, b) => {
-                        const aLower = a.name.toLowerCase();
-                        const bLower = b.name.toLowerCase();
-                        const aStarts = aLower.startsWith(lowerQuery);
-                        const bStarts = bLower.startsWith(lowerQuery);
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-                        return a.name.localeCompare(b.name);
-                    });
+
+                // Optimization: Avoid chaining .filter().sort() with localeCompare for match prioritization.
+                // Assuming categories are pre-sorted alphabetically by the parent, we can just do an O(N) traversal
+                // to partition the items into exact (startsWith) and partial (includes) matches. This preserves
+                // the original alphabetical sub-sorting automatically.
+                const exactMatches: Suggestion[] = [];
+                const partialMatches: Suggestion[] = [];
+
+                for (let i = 0; i < categories.length; i++) {
+                    const cat = categories[i];
+                    const catNameLower = cat.name.toLowerCase();
+
+                    if (catNameLower.startsWith(lowerQuery)) {
+                        exactMatches.push(cat);
+                    } else if (catNameLower.includes(lowerQuery)) {
+                        partialMatches.push(cat);
+                    }
+                }
+
+                const filtered = [...exactMatches, ...partialMatches];
                 setSuggestions(filtered);
                 if (filtered.length > 0) setIsOpen(true);
                 return;

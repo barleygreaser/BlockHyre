@@ -70,3 +70,7 @@
 ## 2025-03-05 - localeCompare Optimization Pitfalls
 **Learning:** While `localeCompare` is notoriously slow for string sorting compared to basic relational operators (`<`, `>`), replacing it blindly can introduce functional regressions. Basic operators use strict Unicode code point comparison, meaning all uppercase letters sort before lowercase letters, breaking case-insensitive and locale-aware sorting expectations for user-facing strings like categories.
 **Action:** Do not replace `localeCompare` with `<`/`>` for user-facing strings. Instead, focus on memoizing the sort operation (e.g. via `useMemo`) so it only runs when the underlying data changes, rather than on every render.
+
+## 2025-03-05 - Avoid .filter().sort() with localeCompare for match prioritization
+**Learning:** When trying to prioritize certain results (e.g. `startsWith` matches over `includes` matches) in an autocomplete dropdown that is already backed by alphabetically sorted data, chaining `.filter().sort((a,b) => localeCompare)` destroys the existing sort order and reconstructs it very slowly on every keystroke (O(N log N) + string overhead).
+**Action:** Use an O(N) array traversal to partition the items into an `exactMatches` array and a `partialMatches` array, then concatenate them. This implicitly preserves the original alphabetical sub-sorting of the source data without requiring any `.sort()` calls.
