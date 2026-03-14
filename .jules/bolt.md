@@ -74,3 +74,6 @@
 ## 2025-03-06 - Pre-sorting Data at the Fetch Layer
 **Learning:** Components often redundantly sort arrays like `categories` using `localeCompare` in `useMemo` hooks, causing performance overhead.
 **Action:** When data is fetched (e.g., via a global hook like `useMarketplace`), pre-sort the data once before caching it. This allows all consuming components to simply use the pre-sorted array directly without individual memoization or sorting steps, eliminating redundant `localeCompare` overhead.
+## 2024-03-14 - Split `useMemo` filtering and sorting in `apps/web/app/listings/page.tsx`
+**Learning:** Chaining `.filter().sort()` in a single `useMemo` inside a React component causes the O(N) filtering to re-run unnecessarily when only the sort criteria (e.g., `sortOption`) changes. While `.sort()` mutating the array from `.filter()` is functionally safe, it's computationally inefficient for large lists.
+**Action:** When working with filtered and sorted lists derived from state, split them into two `useMemo` hooks: `baseFilteredItems` (depends on filter state) and `sortedItems` (depends on `baseFilteredItems` and sort state), making sure to spread `[...baseFilteredItems]` before sorting to avoid mutating the cached array.

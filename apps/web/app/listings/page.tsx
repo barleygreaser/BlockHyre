@@ -150,8 +150,8 @@ export default function InventoryPage() {
         });
     }, [listings, userLocation]);
 
-    // Client-side sorting/filtering
-    const filteredTools = useMemo(() => {
+    // Client-side filtering
+    const baseFilteredTools = useMemo(() => {
         return inventoryTools.filter(tool => {
             // 2. Protection Tier
             if (selectedTier && tool.tier !== parseInt(selectedTier)) {
@@ -174,16 +174,24 @@ export default function InventoryPage() {
                 return false;
             }
             return true;
-        })
-            .sort((a, b) => {
-                if (sortOption === "price-asc") {
-                    return a.price - b.price;
-                } else if (sortOption === "price-desc") {
-                    return b.price - a.price;
-                }
-                return 0;
-            });
-    }, [inventoryTools, selectedTier, verifiedOwnersOnly, acceptsBarterOnly, instantBookOnly, selectedCategories, sortOption]);
+        });
+    }, [inventoryTools, selectedTier, verifiedOwnersOnly, acceptsBarterOnly, instantBookOnly, selectedCategories]);
+
+    // Client-side sorting
+    const filteredTools = useMemo(() => {
+        // Prevent sorting if no sort option is selected or 'default' (though 'default' translates to null)
+        if (!sortOption) return baseFilteredTools;
+
+        // Spread to avoid mutating the cached filtered array
+        return [...baseFilteredTools].sort((a, b) => {
+            if (sortOption === "price-asc") {
+                return a.price - b.price;
+            } else if (sortOption === "price-desc") {
+                return b.price - a.price;
+            }
+            return 0;
+        });
+    }, [baseFilteredTools, sortOption]);
 
     const toggleCategory = (category: string) => {
         setSelectedCategories(prev =>
