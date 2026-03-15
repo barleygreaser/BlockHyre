@@ -74,3 +74,7 @@
 ## 2025-03-06 - Pre-sorting Data at the Fetch Layer
 **Learning:** Components often redundantly sort arrays like `categories` using `localeCompare` in `useMemo` hooks, causing performance overhead.
 **Action:** When data is fetched (e.g., via a global hook like `useMarketplace`), pre-sort the data once before caching it. This allows all consuming components to simply use the pre-sorted array directly without individual memoization or sorting steps, eliminating redundant `localeCompare` overhead.
+
+## 2024-05-19 - Optimize `FeaturedInventory` filter performance with debouncing
+**Learning:** In React components with animations (like GSAP) attached to a list of items, filtering the list synchronously on every keystroke in a search input can lead to severe performance issues. The state updates immediately, recreating the list items, and causing the animation library to recalculate and re-animate on every keystroke, resulting in layout thrashing and an unresponsive UI.
+**Action:** Always debounce the search term state when filtering lists that have complex animations or renders attached to them. This ensures the filter and subsequent animations only run after the user pauses typing, providing a smoother experience.
