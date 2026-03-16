@@ -7,6 +7,7 @@ import { Listing } from "@/app/hooks/use-marketplace";
 import { MapPin, Search, Globe } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { useAuth } from "@/app/context/auth-context";
+import { useDebounce } from "@/app/hooks/use-debounce";
 
 interface FeaturedInventoryProps {
     onRentClick: () => void;
@@ -21,6 +22,7 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
     const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
     const sectionRef = useRef<HTMLElement>(null);
 
     const normalizedListings = useMemo(() => {
@@ -35,7 +37,7 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
 
     const filteredListings = useMemo(() => {
         const normSelectedCategory = selectedCategory !== "All" ? normalize(selectedCategory) : null;
-        const normSearchTerm = searchTerm ? normalize(searchTerm) : null;
+        const normSearchTerm = debouncedSearchTerm ? normalize(debouncedSearchTerm) : null;
 
         return normalizedListings
             .filter(tool => {
@@ -50,7 +52,7 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                 return true;
             })
             .slice(0, 6);
-    }, [normalizedListings, selectedCategory, searchTerm]);
+    }, [normalizedListings, selectedCategory, debouncedSearchTerm]);
 
     const cardProps = useMemo(() => {
         return filteredListings.map(tool => ({
