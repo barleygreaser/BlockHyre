@@ -23,50 +23,49 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
     const [searchTerm, setSearchTerm] = useState("");
     const sectionRef = useRef<HTMLElement>(null);
 
-    const normalizedListings = useMemo(() => {
+    // Transform data once to stable objects containing both view data and search data
+    const preparedListings = useMemo(() => {
         return listings.map(tool => ({
-            ...tool,
+            // Search normalized fields
             normTitle: normalize(tool.title || ""),
             normDesc: normalize(tool.description || ""),
             normCategory: normalize(tool.category?.name || ""),
-            price: Number(tool.daily_price)
+            // Presentation props
+            cardProp: {
+                id: tool.id,
+                title: tool.title || tool.description || "Untitled Tool",
+                image: tool.images?.[0] || "",
+                price: Number(tool.daily_price),
+                deposit: tool.deposit || 100,
+                category: tool.category?.name || "General",
+                isHeavyMachinery: tool.is_high_powered,
+                coordinates: { latitude: 0, longitude: 0 },
+                distance: tool.distance,
+                acceptsBarter: tool.accepts_barter,
+                instantBook: tool.booking_type === 'instant'
+            }
         }));
     }, [listings]);
 
-    const filteredListings = useMemo(() => {
+    // Filter the stable objects and return the stable presentation props
+    // This preserves object identity so React.memo child components don't unnecessarily re-render
+    const filteredCardProps = useMemo(() => {
         const normSelectedCategory = selectedCategory !== "All" ? normalize(selectedCategory) : null;
         const normSearchTerm = searchTerm ? normalize(searchTerm) : null;
 
-        return normalizedListings
+        return preparedListings
             .filter(tool => {
-                if (normSelectedCategory) {
-                    if (tool.normCategory !== normSelectedCategory) return false;
+                if (normSelectedCategory && tool.normCategory !== normSelectedCategory) {
+                    return false;
                 }
-
-                if (normSearchTerm) {
-                    if (!tool.normTitle.includes(normSearchTerm) && !tool.normDesc.includes(normSearchTerm)) return false;
+                if (normSearchTerm && !tool.normTitle.includes(normSearchTerm) && !tool.normDesc.includes(normSearchTerm)) {
+                    return false;
                 }
-
                 return true;
             })
-            .slice(0, 6);
-    }, [normalizedListings, selectedCategory, searchTerm]);
-
-    const cardProps = useMemo(() => {
-        return filteredListings.map(tool => ({
-            id: tool.id,
-            title: tool.title || tool.description || "Untitled Tool",
-            image: tool.images?.[0] || "",
-            price: tool.daily_price,
-            deposit: tool.deposit || 100,
-            category: tool.category?.name || "General",
-            isHeavyMachinery: tool.is_high_powered,
-            coordinates: { latitude: 0, longitude: 0 },
-            distance: tool.distance,
-            acceptsBarter: tool.accepts_barter,
-            instantBook: tool.booking_type === 'instant'
-        }));
-    }, [filteredListings]);
+            .slice(0, 6)
+            .map(tool => tool.cardProp);
+    }, [preparedListings, selectedCategory, searchTerm]);
 
     useEffect(() => {
         let ctx: any = null;
@@ -111,7 +110,7 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
         return () => {
             if (ctx) ctx.revert();
         };
-    }, [cardProps]);
+    }, [filteredCardProps]);
 
     return (
         <section ref={sectionRef} className="py-20 md:py-32 bg-concrete/30 relative" id="inventory">
@@ -168,9 +167,9 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
                 </div>
 
                 {/* Tool Grid */}
-                {cardProps.length > 0 ? (
+                {filteredCardProps.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {cardProps.map((tool) => (
+                        {filteredCardProps.map((tool) => (
                             <div key={tool.id} className="inventory-card">
                                 <FeaturedToolCard tool={tool} />
                             </div>

@@ -74,3 +74,7 @@
 ## 2025-03-06 - Pre-sorting Data at the Fetch Layer
 **Learning:** Components often redundantly sort arrays like `categories` using `localeCompare` in `useMemo` hooks, causing performance overhead.
 **Action:** When data is fetched (e.g., via a global hook like `useMarketplace`), pre-sort the data once before caching it. This allows all consuming components to simply use the pre-sorted array directly without individual memoization or sorting steps, eliminating redundant `localeCompare` overhead.
+
+## 2025-03-16 - Optimize FeaturedInventory Component
+**Learning:** In React Native/Next.js lists wrapped in `React.memo`, mapping data into new objects *after* filtering breaks memoization, causing O(N) re-renders on every filter change (e.g. typing in search).
+**Action:** When filtering data to pass to memoized components, transform the list to its final shape (including both view props and search normalization props) *once* in a `useMemo` dependent on the raw data. Then filter that stable array, returning the exact prop objects.
