@@ -78,3 +78,7 @@
 ## 2024-05-19 - Optimize `FeaturedInventory` filter performance with debouncing
 **Learning:** In React components with animations (like GSAP) attached to a list of items, filtering the list synchronously on every keystroke in a search input can lead to severe performance issues. The state updates immediately, recreating the list items, and causing the animation library to recalculate and re-animate on every keystroke, resulting in layout thrashing and an unresponsive UI.
 **Action:** Always debounce the search term state when filtering lists that have complex animations or renders attached to them. This ensures the filter and subsequent animations only run after the user pauses typing, providing a smoother experience.
+
+## 2025-03-08 - Prioritized Autocomplete Search Optimization
+**Learning:** Using `.filter()` chained with `.sort()` that implements complex `startsWith` vs `includes` logic via `localeCompare` to prioritize autocomplete matches adds O(N log N) overhead.
+**Action:** When filtering an array (like categories) to prioritize items that *start with* a query over items that merely *include* it, use a single O(N) loop to partition the array into `startsWith` and `includes` arrays, then concatenate them. This guarantees O(N) complexity and preserves the original pre-sorted order of the categories without invoking `localeCompare`.
