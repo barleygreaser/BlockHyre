@@ -26,15 +26,18 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { Image } from 'expo-image';
 import { useFocusEffect } from '@react-navigation/native';
 
+const timeFormatter = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+const dateFormatter = new Intl.DateTimeFormat(undefined);
+
 const formatTime = (dateString?: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     if (diff < 24 * 60 * 60 * 1000) {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return timeFormatter.format(date);
     }
-    return date.toLocaleDateString();
+    return dateFormatter.format(date);
 };
 
 export default function MessagesScreen() {

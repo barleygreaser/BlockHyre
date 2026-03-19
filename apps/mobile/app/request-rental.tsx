@@ -70,6 +70,10 @@ const getMockBlockedDates = (): string[] => {
 
 type ActiveField = 'pickup' | 'return';
 
+const blockedDateFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+const shortDateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+const fullDateFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
 export default function RequestRentalScreen() {
     return (
         <ToastProvider>
@@ -185,11 +189,7 @@ function RequestRentalContent() {
     // Handle blocked date press
     const handleBlockedDatePress = useCallback((date: Date) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        const formattedDate = date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric'
-        });
+        const formattedDate = blockedDateFormatter.format(date);
 
         showToast({
             title: 'Date Unavailable',
@@ -213,11 +213,11 @@ function RequestRentalContent() {
 
     // Format date for display
     const formatDate = (date: Date): string => {
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return shortDateFormatter.format(date);
     };
 
     const formatDateFull = (date: Date) => {
-        return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        return fullDateFormatter.format(date);
     };
 
     // Handle date selection
