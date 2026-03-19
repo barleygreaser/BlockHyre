@@ -29,6 +29,7 @@ import {
 import { sendSystemMessage } from "@/app/lib/chat-helpers";
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+const timeFormatter = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
 const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -192,7 +193,7 @@ export function OwnerDashboardView() {
 
         // Optimistic UI: Remove from list immediately
         setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
-        toast.message(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] Action logged. Details processing...`, {
+        toast.message(`[${timeFormatter.format(new Date())}] Action logged. Details processing...`, {
             description: `Approving ${rental.listing.title}`,
             className: "font-mono border-l-4 border-l-safety-orange rounded-none",
         });
@@ -317,7 +318,7 @@ export function OwnerDashboardView() {
                 }
             }
 
-            toast.success(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] RENTAL APPROVED`, {
+            toast.success(`[${timeFormatter.format(new Date())}] RENTAL APPROVED`, {
                 description: `${rental.listing.title} marked active for ${rental.renter.full_name}`,
                 className: "font-mono border-l-4 border-l-emerald-500 rounded-none bg-charcoal text-emerald-400",
             });
