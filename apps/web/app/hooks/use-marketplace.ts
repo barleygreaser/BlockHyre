@@ -45,7 +45,7 @@ export type Listing = {
     min_rental_days?: number;
     owner_notes?: string;
     is_available?: boolean;
-    deposit?: number;
+    deposit_amount?: number;
     manual_url?: string;
     specifications?: Record<string, any>;
     owner_id?: string;

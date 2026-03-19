@@ -14,6 +14,7 @@ import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { NeighborhoodMap } from "@/app/components/neighborhood-map";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -71,7 +72,7 @@ export default function ProfilePage() {
             setSelectedFile(null); // Reset
         } catch (error) {
             console.error("Error saving profile:", error);
-            alert("Failed to save profile changes.");
+            toast.error("Failed to save profile changes.");
         } finally {
             setSaveLoading(false);
         }
@@ -134,11 +135,11 @@ export default function ProfilePage() {
             if (data.url) {
                 window.location.href = data.url;
             } else {
-                alert("Failed to initiate Stripe connection.");
+                toast.error("Failed to initiate Stripe connection.");
             }
         } catch (error) {
             console.error("Stripe Connect Error:", error);
-            alert("An error occurred connecting to Stripe.");
+            toast.error("An error occurred connecting to Stripe.");
         } finally {
             setStripeLoading(false);
         }

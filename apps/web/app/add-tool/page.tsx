@@ -183,7 +183,6 @@ export default function AddToolPage() {
 
     const handleSubmit = async () => {
         // setLoading(true); // Handled by promise toast
-        console.log("Submitting with categories available:", categories);
 
         const createListingPromise = async () => {
             const { data: { user } } = await supabase.auth.getUser();

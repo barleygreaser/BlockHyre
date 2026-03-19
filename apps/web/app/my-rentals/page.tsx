@@ -58,7 +58,7 @@ export default function MyRentalsPage() {
             try {
                 // Check if user is authenticated
                 const { data: { user } } = await supabase.auth.getUser();
-                console.log('Current user:', user?.id);
+
 
                 if (!user) {
                     console.warn('No authenticated user found');
@@ -67,29 +67,29 @@ export default function MyRentalsPage() {
                 }
 
                 // Fetch active rentals
-                console.log('Fetching active rentals...');
+
                 const { data: activeData, error: activeError } = await supabase
                     .rpc('get_my_active_rentals');
 
-                console.log('Active rentals response:', { activeData, activeError });
+
                 if (activeError) throw activeError;
                 setActiveRentals(activeData || []);
 
                 // Fetch upcoming bookings
-                console.log('Fetching upcoming bookings...');
+
                 const { data: upcomingData, error: upcomingError } = await supabase
                     .rpc('get_my_upcoming_bookings');
 
-                console.log('Upcoming bookings response:', { upcomingData, upcomingError });
+
                 if (upcomingError) throw upcomingError;
                 setUpcomingBookings(upcomingData || []);
 
                 // Fetch rental history
-                console.log('Fetching rental history...');
+
                 const { data: historyData, error: historyError } = await supabase
                     .rpc('get_my_rental_history');
 
-                console.log('Rental history response:', { historyData, historyError });
+
                 if (historyError) throw historyError;
                 setRentalHistory(historyData || []);
             } catch (error) {

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Button } from "@/app/components/ui/button";
 import { Star, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 function ReviewFormContent() {
     const router = useRouter();
@@ -64,7 +65,7 @@ function ReviewFormContent() {
         e.preventDefault();
 
         if (rating === 0) {
-            alert('Please select a rating');
+            toast.error('Please select a rating');
             return;
         }
 
@@ -94,7 +95,7 @@ function ReviewFormContent() {
             router.push('/dashboard/renter/rentals');
         } catch (error) {
             console.error('Error submitting review:', error);
-            alert('Failed to submit review. Please try again.');
+            toast.error('Failed to submit review. Please try again.');
         } finally {
             setSubmitting(false);
         }

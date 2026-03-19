@@ -94,7 +94,7 @@ export async function upsertConversation(toolId: string, ownerId: string, contex
             throw new Error("Not authenticated");
         }
 
-        console.log('Calling upsert_conversation with:', { toolId, ownerId, renterId: user.id });
+
 
         // Call the RPC function (It now only Creates/Gets chat, DOES NOT insert message)
         const { data: chatId, error } = await supabase.rpc('upsert_conversation', {
@@ -103,10 +103,10 @@ export async function upsertConversation(toolId: string, ownerId: string, contex
             listing_id_in: toolId
         });
 
-        console.log('RPC response:', { chatId, error });
+
 
         if (error) {
-            console.log('Raw error object:', error);
+
             throw error;
         }
 

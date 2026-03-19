@@ -106,7 +106,9 @@ export default function ListingDetailsPage() {
     const riskTier = riskFee === 1 ? 1 : riskFee === 3 ? 2 : 3;
 
     const { subtotal, peaceFundTotal, finalTotal } = calculateRentalPrice(listing.daily_price, days, riskTier as 1 | 2 | 3);
-    const deposit = 100; // Hardcoded for now, or add to DB
+    
+    // Security: Use server-provided deposit amount instead of hardcoded value
+    const deposit = listing.deposit_amount || 0;
     const totalDue = finalTotal + deposit;
 
     const handleAddToCart = () => {
@@ -137,7 +139,7 @@ export default function ListingDetailsPage() {
             days
         });
 
-        alert("Item added to cart!");
+        toast.success("Item added to cart!");
     };
 
     const handleRentNow = () => {

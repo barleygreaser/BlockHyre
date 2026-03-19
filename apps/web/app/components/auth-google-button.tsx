@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/app/components/ui/button";
+import { toast } from "sonner";
 
 export function AuthGoogleButton() {
     const handleGoogleLogin = async () => {
@@ -14,7 +15,7 @@ export function AuthGoogleButton() {
 
         if (error) {
             console.error("Error logging in with Google:", error);
-            alert("Error logging in with Google");
+            toast.error("Error logging in with Google");
         }
     };
 

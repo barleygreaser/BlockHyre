@@ -7,6 +7,7 @@ import { Upload, X, Loader2, Crop as CropIcon } from 'lucide-react';
 import Image from 'next/image';
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import { toast } from "sonner";
 
 import {
     Dialog,
@@ -100,7 +101,7 @@ export function ImageUpload({
 
     const performUpload = async (blob: Blob) => {
         if (!user) {
-            alert("You must be logged in to upload images.");
+            toast.error("You must be logged in to upload images.");
             return;
         }
 
@@ -133,7 +134,7 @@ export function ImageUpload({
             onUpload(publicUrl);
         } catch (error: any) {
             console.error('Error uploading image:', error);
-            alert(`Error uploading image: ${error.message}`);
+            toast.error(`Error uploading image: ${error.message}`);
             setPreview(null);
         } finally {
             setUploading(false);

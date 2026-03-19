@@ -394,7 +394,7 @@ export function OwnerDashboardView() {
         try {
             const rental = rentalRequests.find(r => r.id === rentalId);
             if (!rental) {
-                alert("Rental not found");
+                toast.error("Rental not found");
                 return;
             }
 
@@ -490,7 +490,7 @@ export function OwnerDashboardView() {
             setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
         } catch (err) {
             console.error("Denial failed:", err);
-            alert("Could not deny request. Please try again.");
+            toast.error("Could not deny request. Please try again.");
         } finally {
             setProcessingId(null);
         }

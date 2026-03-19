@@ -28,6 +28,18 @@ export async function POST(req: Request) {
     if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
 
+        // 0. Idempotency Check: Check if we've already processed this session
+        const { data: existingRentals } = await supabaseAdmin
+            .from("rentals")
+            .select("id")
+            .eq("stripe_session_id", session.id)
+            .limit(1);
+
+        if (existingRentals && existingRentals.length > 0) {
+            console.log(`Webhook already processed for session ${session.id}. Skipping.`);
+            return NextResponse.json({ received: true, already_processed: true });
+        }
+
         // 1. Extract metadata
         const metadata = session.metadata;
         if (!metadata || !metadata.cart_items) {
@@ -65,7 +77,8 @@ export async function POST(req: Request) {
                         peace_fund_fee: riskTier * item.days,
                         total_paid: session.amount_total ? session.amount_total / 100 : 0,
                         daily_price_snapshot: listing.daily_price,
-                        risk_fee_snapshot: riskTier
+                        risk_fee_snapshot: riskTier,
+                        stripe_session_id: session.id
                     });
 
                 if (rentalError) {

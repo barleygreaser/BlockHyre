@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { Loader2, CreditCard } from "lucide-react";
+import { toast } from "sonner";
 
 export function StripeConnectButton() {
     const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +14,7 @@ export function StripeConnectButton() {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
-                alert("Please log in first.");
+                toast.error("Please log in first.");
                 return;
             }
 
@@ -36,7 +37,7 @@ export function StripeConnectButton() {
             }
         } catch (error: any) {
             console.error("Error linking Stripe:", error);
-            alert(`Failed to initialize Stripe connection: ${error.message || "Unknown error"}`);
+            toast.error(`Failed to initialize Stripe connection: ${error.message || "Unknown error"}`);
         } finally {
             setIsLoading(false);
         }

@@ -77,9 +77,8 @@ export default function SignupPage() {
 
             setSuccess(true);
             setTimeout(() => {
-                const intentQuery = intent ? `?intent=${intent}` : '';
-                router.push(`/auth${intentQuery}`); // Redirect to login page
-            }, 2000);
+                router.push('/auth/verify'); // Redirect to verify landing page for instructions
+            }, 3000);
 
         } catch (err: any) {
             setError(err.message);
@@ -120,7 +119,7 @@ export default function SignupPage() {
                                     <div className="ml-3">
                                         <h3 className="text-sm font-medium text-green-800">Account created successfully!</h3>
                                         <div className="mt-2 text-sm text-green-700">
-                                            <p>Redirecting you to login...</p>
+                                            <p>Please check your email to confirm your account.</p>
                                         </div>
                                     </div>
                                 </div>

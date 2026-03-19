@@ -10,6 +10,7 @@ import { useAuthRedirect } from "@/app/hooks/use-auth-redirect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function AuthPage() {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -36,7 +37,7 @@ export default function AuthPage() {
             if (isSignUp) {
                 // Sign Up Logic
                 await signUp(email, password, fullName);
-                alert('Check your email for the confirmation link!');
+                router.push('/auth/verify');
             } else {
                 // Sign In Logic
                 await signIn(email, password);
@@ -106,6 +107,18 @@ export default function AuthPage() {
 
                             {errorMsg && (
                                 <div className="text-red-500 text-sm text-center">{errorMsg}</div>
+                            )}
+
+                            {!isSignUp && (
+                                <div className="text-right">
+                                    <Button
+                                        asChild
+                                        variant="link"
+                                        className="text-safety-orange hover:text-orange-700 font-medium p-0 h-auto text-sm"
+                                    >
+                                        <Link href="/auth/forgot-password">Forgot password?</Link>
+                                    </Button>
+                                </div>
                             )}
 
                             <div>

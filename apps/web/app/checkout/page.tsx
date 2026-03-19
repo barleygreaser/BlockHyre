@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
     const { cart, clearCart } = useCart();
@@ -32,7 +33,7 @@ export default function CheckoutPage() {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
-                alert("Please log in to continue.");
+                toast.error("Please log in to continue.");
                 return;
             }
 
@@ -70,7 +71,7 @@ export default function CheckoutPage() {
             }
         } catch (error: any) {
             console.error("Payment Error:", error);
-            alert(error.message || "Something went wrong during checkout.");
+            toast.error(error.message || "Something went wrong during checkout.");
         } finally {
             setIsProcessing(false);
         }

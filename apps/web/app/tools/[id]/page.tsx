@@ -24,6 +24,7 @@ import {
 import { addDays, differenceInDays } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { useCart } from "@/app/context/cart-context";
 import { useRouter, useParams } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
@@ -103,7 +104,7 @@ export default function ToolDetailsPage() {
             days
         });
 
-        alert("Item added to cart!");
+        toast.success("Item added to cart!");
     };
 
     const handleRentNow = () => {
