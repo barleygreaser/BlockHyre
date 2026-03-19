@@ -1,10 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { memo } from "react";
-import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
-import { Shield, ShieldCheck } from "lucide-react";
+import { ShieldCheck, ArrowRight, Zap } from "lucide-react";
 import { generateSlug } from "@/lib/utils";
 import { Tool } from "@/app/components/tool-card";
 
@@ -13,80 +12,113 @@ interface FeaturedToolCardProps {
 }
 
 export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
-    // Determine Tier based on simple logic for now
-    // Tier 3: Heavy Machinery or Price > $200
-    // Tier 2: Price > $50
-    // Tier 1: Others
     let tier = 1;
     if (tool.isHeavyMachinery || tool.price > 200) tier = 3;
     else if (tool.price > 50) tier = 2;
 
-    const isVerified = true; // Hardcoded trust signal as requested
+    const tierLabel = `T${tier}`;
+    const tierColor = tier === 3
+        ? "text-red-500 bg-red-50 border-red-200"
+        : tier === 2
+            ? "text-safety-orange bg-safety-orange/10 border-safety-orange/20"
+            : "text-slate-500 bg-slate-50 border-slate-200";
 
     return (
-        <Card className="group overflow-hidden border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full bg-white">
-            {/* Image Section - More compact on mobile */}
-            <div className="aspect-[4/3] md:aspect-[4/3] w-full bg-slate-100 relative overflow-hidden">
-                {tool.image ? (
-                    <Image
-                        src={tool.image}
-                        alt={tool.title}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                ) : (
-                    <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">
-                        No Image
+        <Link
+            href={`/listings/${tool.id}/${generateSlug(tool.title)}`}
+            className="block group"
+        >
+            <div className="spec-card bg-white rounded-[2rem] border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm flex flex-col h-full">
+                {/* Image Section */}
+                <div className="aspect-[16/10] w-full bg-slate-100 relative overflow-hidden">
+                    {tool.image ? (
+                        <Image
+                            src={tool.image}
+                            alt={tool.title}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300 font-mono text-xs uppercase tracking-wider">
+                            No Image
+                        </div>
+                    )}
+
+                    {/* Top Badges */}
+                    <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
+                        <Badge className={`${tierColor} border text-[10px] font-mono font-bold uppercase tracking-widest rounded-full px-3 py-1`}>
+                            {tierLabel}
+                        </Badge>
+                        {tool.instantBook && (
+                            <Badge className="bg-safety-orange/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-full px-3 py-1 flex items-center gap-1 border-0">
+                                <Zap className="h-3 w-3" />
+                                Instant
+                            </Badge>
+                        )}
                     </div>
-                )}
 
-                {/* Full-width Price Badge - Smaller on mobile */}
-                <div className="absolute bottom-0 left-0 right-0 bg-safety-orange py-1.5 md:py-2 px-2 md:px-3 flex items-center justify-center">
-                    <span className="text-white font-bold text-base md:text-lg tracking-wide">
-                        ${tool.price}<span className="text-xs md:text-sm font-medium opacity-90">/day</span>
-                    </span>
+                    {/* Price Bar */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent pt-8 pb-3 px-4">
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-white font-mono">${tool.price}</span>
+                            <span className="text-xs text-white/60 font-mono">/day</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {/* Content Section - Tighter padding on mobile */}
-            <CardContent className="p-3 md:p-5 flex flex-col gap-2 md:gap-3 flex-grow">
-                {/* Header: Title & Tier Badge */}
-                <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-bold text-base md:text-lg text-slate-900 leading-tight line-clamp-2 md:min-h-[3rem]" title={tool.title}>
+                {/* Spec Sheet Content */}
+                <div className="p-5 md:p-6 flex flex-col gap-3 flex-grow">
+                    {/* Title */}
+                    <h3 className="font-bold text-base md:text-lg text-slate-900 leading-tight line-clamp-2 tracking-tight" title={tool.title}>
                         {tool.title}
                     </h3>
-                    <Badge variant="outline" className="shrink-0 border-slate-300 text-slate-600 text-[9px] md:text-[10px] uppercase font-bold tracking-wider">
-                        Tier {tier}
-                    </Badge>
-                </div>
 
-                {/* Trust Signals - Smaller on mobile */}
-                <div className="flex items-center gap-1 md:gap-1.5 text-emerald-700">
-                    <ShieldCheck className="w-3.5 md:w-4 h-3.5 md:h-4 fill-emerald-100" />
-                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-wide">Verified Owner</span>
-                </div>
+                    {/* Specs Grid */}
+                    <div className="grid grid-cols-2 gap-2 text-[10px] font-mono uppercase tracking-wider">
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-slate-300">Category</span>
+                            <span className="text-slate-600 font-bold">{tool.category}</span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-slate-300">Distance</span>
+                            <span className="text-slate-600 font-bold">
+                                {tool.distance ? `${tool.distance.toFixed(1)} mi` : "Nearby"}
+                            </span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-slate-300">Deposit</span>
+                            <span className="text-slate-600 font-bold">${tool.deposit}</span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-slate-300">Status</span>
+                            <span className="flex items-center gap-1">
+                                <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                                <span className="text-emerald-600 font-bold">Verified</span>
+                            </span>
+                        </div>
+                    </div>
 
-                {/* Categories/Meta - Smaller text on mobile */}
-                <p className="text-xs md:text-sm text-slate-500 line-clamp-2 flex-grow">
-                    {tool.category} — {tool.distance ? `${tool.distance.toFixed(1)} miles away` : 'Nearby'}
-                </p>
+                    {/* Barter Badge */}
+                    {tool.acceptsBarter && (
+                        <div className="text-[10px] font-mono text-safety-orange/70 uppercase tracking-wider border border-safety-orange/15 rounded-full px-3 py-1 self-start bg-safety-orange/5">
+                            Accepts Barter
+                        </div>
+                    )}
 
-                {/* Friction Reducer: Deposit - Smaller on mobile */}
-                <p className="text-[10px] md:text-xs text-slate-400 font-medium">
-                    Refundable Deposit: ${tool.deposit}
-                </p>
-
-                {/* CTA - Smaller button on mobile */}
-                <div className="pt-1 md:pt-2 mt-auto">
-                    <Link href={`/listings/${tool.id}/${generateSlug(tool.title)}`} className="block w-full">
-                        <Button variant="outline" className="w-full text-xs md:text-sm h-8 md:h-10 border-slate-300 hover:border-safety-orange hover:text-safety-orange transition-colors">
-                            View Tool Details
+                    {/* CTA */}
+                    <div className="pt-2 mt-auto">
+                        <Button
+                            variant="ghost"
+                            className="w-full text-xs h-10 text-slate-400 hover:text-safety-orange hover:bg-safety-orange/5 font-bold uppercase tracking-wider rounded-xl transition-all group/btn flex items-center justify-center gap-2"
+                        >
+                            View Spec Sheet
+                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
                         </Button>
-                    </Link>
+                    </div>
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+        </Link>
     );
 });
 
