@@ -48,7 +48,7 @@ function DashboardProviderInner({ children }: { children: ReactNode }) {
         }
     };
 
-    // Keep role in sync when navigating to sub-pages (inventory, active-rentals)
+    // Keep role in sync when navigating to sub-pages (inventory, bookings)
     useEffect(() => {
         if (pathname === '/dashboard') {
             const param = searchParams.get('role');

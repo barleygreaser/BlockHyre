@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { DashboardSidebar } from "@/app/components/dashboard/sidebar";
 import { AuthGuard } from "@/app/components/auth/auth-guard";
 import { DashboardProvider } from "@/app/context/dashboard-context";
+import { DashboardOnboardingOverlay } from "@/app/components/dashboard/dashboard-onboarding-overlay";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
     return (
@@ -27,7 +28,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                         </div>
                     </main>
                 </div>
+
+                <DashboardOnboardingOverlay />
             </DashboardProvider>
         </AuthGuard>
     );
 }
+

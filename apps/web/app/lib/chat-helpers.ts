@@ -49,25 +49,29 @@ export async function sendSystemMessage(
 
         // 4. Insert Owner's Message (Visible to Owner, Recipient = Owner)
         // Sender = Owner (Me)
-        const { error: ownerErr } = await supabase.rpc('send_system_message', {
-            p_chat_id: chatId,
-            p_content: ownerContent,
-            p_sender_id: ownerId,
-            p_recipient_id: ownerId
-        });
+        if (ownerContent && ownerContent.trim().length > 0) {
+            const { error: ownerErr } = await supabase.rpc('send_system_message', {
+                p_chat_id: chatId,
+                p_content: ownerContent.trim(),
+                p_sender_id: ownerId,
+                p_recipient_id: ownerId
+            });
 
-        if (ownerErr) console.error('Error inserting owner system message:', ownerErr);
+            if (ownerErr) console.error('Error inserting owner system message:', ownerErr);
+        }
 
         // 5. Insert Renter's Message (Visible to Renter, Recipient = Renter)
         // Sender = Owner (from Owner to Renter)
-        const { error: renterErr } = await supabase.rpc('send_system_message', {
-            p_chat_id: chatId,
-            p_content: renterContent,
-            p_sender_id: ownerId,
-            p_recipient_id: renterId
-        });
+        if (renterContent && renterContent.trim().length > 0) {
+            const { error: renterErr } = await supabase.rpc('send_system_message', {
+                p_chat_id: chatId,
+                p_content: renterContent.trim(),
+                p_sender_id: ownerId,
+                p_recipient_id: renterId
+            });
 
-        if (renterErr) console.error('Error inserting renter system message:', renterErr);
+            if (renterErr) console.error('Error inserting renter system message:', renterErr);
+        }
 
     } catch (error) {
         console.error('System message generation failed:', error);

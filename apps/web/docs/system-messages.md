@@ -145,19 +145,38 @@ CREATE FUNCTION send_system_message(
 
 ## Current System Messages
 
-| Event Name | Trigger | Roles |
-|------------|---------|-------|
-| `BOOKING_CONFIRMED` | Owner approves rental | Owner, Renter |
-| `RENTAL_REQUEST_SUBMITTED` | Renter submits request | Owner, Renter |
-| `RENTAL_REQUEST_EXPIRING` | Request < 2 hours until auto-denial | Owner only |
-| `RENTAL_REQUEST_REJECTED` | Owner manually declines request | Owner, Renter |
-| `RENTAL_REQUEST_AUTO_DENIED` | Request auto-denied after 24 hours | Owner, Renter |
-| `RENTAL_CANCELLED` | Cancellation occurs | Owner, Renter |
-| `LISTING_INQUIRY` | New chat started | Owner, Renter |
-| `RENTAL_OVERDUE` | Return date passed | Owner, Renter |
-| `RETURN_REMINDER_TODAY` | Day of return | Owner, Renter |
-| `RETURN_REMINDER_TOMORROW` | 24h before return | Owner, Renter |
-| `EXTENSION_REQUEST` | Renter requests extension | Owner, Renter |
+*Last Updated: 2026-03-04T20:42:00*
+
+| Event Name | Trigger | Roles | Status |
+|------------|---------|-------|--------|
+| `BOOKING_CONFIRMED` | Owner approves rental | Owner, Renter | ✅ Active |
+| `RENTAL_REQUEST_SUBMITTED` | Renter submits request | Owner, Renter | ✅ Active |
+| `RENTAL_REQUEST_EXPIRING` | Request < 2 hours until auto-denial | Owner only | ✅ Active |
+| `RENTAL_REQUEST_REJECTED` | Owner manually declines request | Owner, Renter | ✅ Active |
+| `RENTAL_REQUEST_AUTO_DENIED` | Request auto-denied after 24 hours | Owner, Renter | ✅ Active |
+| `RENTAL_CANCELLED` | Cancellation occurs | Owner, Renter | ❌ Removed (Handled functionally) |
+| `LISTING_INQUIRY` | New chat started | Owner, Renter | ✅ Active |
+| `RENTAL_OVERDUE` | Return date passed | Owner, Renter | ✅ Active |
+| `RETURN_REMINDER_TODAY` | Day of return | Owner, Renter | ✅ Active |
+| `RETURN_REMINDER_TOMORROW` | 24h before return | Owner, Renter | ✅ Active |
+| `EXTENSION_REQUEST` | Renter requests extension | Owner, Renter | ✅ Active |
+| `EXTENSION_APPROVED` | Owner approves extension | Owner, Renter | ✅ Active |
+| `EXTENSION_REJECTED` | Owner rejects extension | Owner, Renter | ✅ Active |
+
+### System Messages Chronological Sequence (Full Journey)
+When testing or simulating a full rental journey, system messages are typically expected in the following sequential order:
+
+1. `LISTING_INQUIRY` (Renter spots a listing and clicks "Rent Tool" or "Contact Owner")
+2. `RENTAL_REQUEST_SUBMITTED` (Renter formally submits their dates/payment details)
+3. `RENTAL_REQUEST_EXPIRING` (Owner is warned 2 hours prior to the 24h expiration limit)
+4. `RENTAL_REQUEST_REJECTED` (Owner actively denies) OR `RENTAL_REQUEST_AUTO_DENIED` (24h period expires)
+5. `BOOKING_CONFIRMED` (Owner actively approves)
+6. `EXTENSION_REQUEST` (Before return, Renter asks for more time)
+7. `EXTENSION_REJECTED` (Owner actively denies extension)
+8. `EXTENSION_APPROVED` (Owner accepts extension)
+9. `RETURN_REMINDER_TOMORROW` (24 hours prior to the end date)
+10. `RETURN_REMINDER_TODAY` (On the end date)
+11. `RENTAL_OVERDUE` (End date passes without the tool being returned)
 
 ---
 

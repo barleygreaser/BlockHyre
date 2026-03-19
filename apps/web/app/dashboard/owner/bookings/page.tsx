@@ -24,7 +24,7 @@ import {
 } from "@/app/components/ui/empty";
 import { Skeleton } from "@/app/components/ui/skeleton";
 
-export default function ActiveRentalsPage() {
+export default function OwnerBookingsPage() {
     const { user } = useAuth();
     const [activeRentals, setActiveRentals] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -145,7 +145,7 @@ export default function ActiveRentalsPage() {
                         Tool Bookings
                     </span>
                 </div>
-                <h1 className="text-3xl font-bold font-serif text-slate-900 tracking-tight">Active Rentals</h1>
+                <h1 className="text-3xl font-bold font-serif text-slate-900 tracking-tight">Tool Bookings</h1>
                 <p className="text-slate-500 mt-1 text-sm">Track tools currently rented out and manage renter communications.</p>
             </div>
 
@@ -156,8 +156,8 @@ export default function ActiveRentalsPage() {
                         key={key}
                         onClick={() => handleFilterChange(key)}
                         className={`px-4 py-2 rounded-full text-sm font-bold font-mono uppercase tracking-wider transition-all ${activeFilter === key
-                                ? `${color} text-white shadow-lg`
-                                : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
+                            ? `${color} text-white shadow-lg`
+                            : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
                             }`}
                     >
                         {label}
@@ -187,8 +187,8 @@ export default function ActiveRentalsPage() {
                             <div
                                 key={rental.id}
                                 className={`bg-white rounded-[2rem] border p-6 shadow-sm transition-all duration-200 hover:shadow-md ${isOverdue ? 'border-2 border-red-400 bg-red-50/30 animate-pulse-subtle'
-                                        : isDueToday ? 'border-2 border-amber-300 bg-amber-50/20'
-                                            : 'border-slate-200 hover:border-safety-orange/30'
+                                    : isDueToday ? 'border-2 border-amber-300 bg-amber-50/20'
+                                        : 'border-slate-200 hover:border-safety-orange/30'
                                     }`}
                             >
                                 <div className="flex gap-4">
@@ -204,9 +204,9 @@ export default function ActiveRentalsPage() {
                                         )}
                                         <div className="absolute top-1 left-1">
                                             <Badge className={`border-none capitalize text-[10px] font-mono font-bold px-2 py-0.5 ${rental.status.toLowerCase() === 'active' ? 'bg-emerald-500 text-white'
-                                                    : rental.status.toLowerCase() === 'approved' ? 'bg-blue-500 text-white'
-                                                        : rental.status.toLowerCase() === 'returned' ? 'bg-amber-500 text-white'
-                                                            : 'bg-slate-500 text-white'
+                                                : rental.status.toLowerCase() === 'approved' ? 'bg-blue-500 text-white'
+                                                    : rental.status.toLowerCase() === 'returned' ? 'bg-amber-500 text-white'
+                                                        : 'bg-slate-500 text-white'
                                                 }`}>
                                                 {rental.status}
                                             </Badge>

@@ -75,6 +75,7 @@ export function RenterDashboardView() {
     const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
     const [cancelPendingModalOpen, setCancelPendingModalOpen] = useState(false);
     const [selectedPendingRequest, setSelectedPendingRequest] = useState<PendingRequest | null>(null);
+    const [pendingExtensionRentalIds, setPendingExtensionRentalIds] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         async function fetchRenterData() {
@@ -160,6 +161,26 @@ export function RenterDashboardView() {
                         }));
                         setPendingRequests(mapped);
                     }
+
+                    // Fetch pending extension requests to disable the button for affected rentals
+                    const { data: extensionsData } = await supabase
+                        .from('rental_extensions')
+                        .select('rental_id')
+                        .eq('status', 'pending');
+
+                    if (extensionsData && extensionsData.length > 0) {
+                        setPendingExtensionRentalIds(new Set(extensionsData.map((e: any) => e.rental_id)));
+                    }
+                }
+
+                // Fetch current renter disputes
+                const { data: disputesData, error: disputesError } = await supabase
+                    .rpc('get_renter_disputes');
+
+                if (disputesError) {
+                    console.error('Error fetching renter disputes:', disputesError);
+                } else if (disputesData) {
+                    setActiveDisputes(disputesData);
                 }
             } catch (error) {
                 console.error('Unexpected error in fetchRenterData:', error);
@@ -215,7 +236,7 @@ export function RenterDashboardView() {
                     <h2 className="text-2xl font-bold font-serif text-slate-900 tracking-tight">My Rentals</h2>
                     <p className="text-sm text-slate-500 mt-1">Track your active rentals and history.</p>
                 </div>
-                <Link href="/listings">
+                <Link href="/listings" data-tour="find-tools-btn">
                     <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
                         <Search className="mr-2 h-4 w-4" />
                         Find Tools
@@ -288,7 +309,7 @@ export function RenterDashboardView() {
                         <div className="flex items-center gap-3">
                             <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Active Rentals</h2>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-xs font-mono font-bold border border-slate-200">
+                            <div data-tour="active-rentals-stat" className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-xs font-mono font-bold border border-slate-200">
                                 <span className="text-slate-700">{totalActive}</span>
                                 <span className="text-slate-300">|</span>
                                 <span className="text-red-500">{urgentCount}</span>
@@ -348,17 +369,28 @@ export function RenterDashboardView() {
                                                     Message {rental.owner_name}
                                                 </Button>
                                             </Link>
-                                            <Button
-                                                variant="outline"
-                                                className="w-full border-safety-orange/30 text-safety-orange hover:bg-safety-orange hover:text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all"
-                                                onClick={() => {
-                                                    setSelectedRental(rental);
-                                                    setExtensionModalOpen(true);
-                                                }}
-                                            >
-                                                <CalendarClock className="mr-2 h-4 w-4" />
-                                                Request Extension
-                                            </Button>
+                                            {pendingExtensionRentalIds.has(rental.rental_id) ? (
+                                                <Button
+                                                    variant="outline"
+                                                    disabled
+                                                    className="w-full border-slate-200 text-slate-400 bg-slate-50 rounded-full font-bold text-xs uppercase tracking-wider cursor-not-allowed opacity-60"
+                                                >
+                                                    <CalendarClock className="mr-2 h-4 w-4" />
+                                                    Extension Pending…
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full border-safety-orange/30 text-safety-orange hover:bg-safety-orange hover:text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all"
+                                                    onClick={() => {
+                                                        setSelectedRental(rental);
+                                                        setExtensionModalOpen(true);
+                                                    }}
+                                                >
+                                                    <CalendarClock className="mr-2 h-4 w-4" />
+                                                    Request Extension
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -550,7 +582,14 @@ export function RenterDashboardView() {
                 <div className="space-y-6">
                     {/* Rental History */}
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
-                        <h3 className="text-base font-bold font-serif text-slate-900 mb-4">Rental History</h3>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-base font-bold font-serif text-slate-900">Rental History</h3>
+                            {rentalHistory.length > 0 && (
+                                <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-[10px] font-mono font-bold uppercase tracking-wider rounded-full px-2.5">
+                                    {rentalHistory.length}
+                                </Badge>
+                            )}
+                        </div>
                         <div className="space-y-4">
                             {rentalHistory.length === 0 ? (
                                 <p className="text-sm text-slate-400 text-center py-4 font-mono">No rental history yet</p>
@@ -578,6 +617,11 @@ export function RenterDashboardView() {
                                     )}
                                 </div>
                             ))}
+                            <Link href="/dashboard/renter/rentals#completed">
+                                <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-safety-orange/80">
+                                    View all rentals &rarr;
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 
@@ -586,14 +630,23 @@ export function RenterDashboardView() {
                         <div className="bg-red-50 rounded-[2rem] border-2 border-red-300 p-6 shadow-sm">
                             <h3 className="text-base font-bold font-serif text-red-700 flex items-center gap-2 mb-3">
                                 <TriangleAlert className="h-5 w-5" />
-                                Active Dispute
+                                Action Required
                             </h3>
-                            <p className="text-red-600 text-sm mb-4">
-                                Action is required on your rental for <strong>Makita Circular Saw</strong>.
-                            </p>
-                            <Button size="sm" className="w-full font-bold bg-red-500 hover:bg-red-600 text-white rounded-full text-xs uppercase tracking-wider">
-                                View Details
-                            </Button>
+                            <div className="space-y-4">
+                                {activeDisputes.slice(0, 3).map((dispute: any) => (
+                                    <div key={dispute.dispute_id} className="border-b border-red-200 pb-3 last:border-0 last:pb-0">
+                                        <p className="text-red-900 font-medium text-sm truncate">{dispute.listing_title}</p>
+                                        <p className="text-red-600 text-xs mt-1 lowercase opacity-80 font-mono">
+                                            {dispute.dispute_type.replace('_', ' ')} • {format(new Date(dispute.created_at), 'MMM d, yyyy')}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                            <Link href="/dashboard/renter/disputes" className="block mt-4">
+                                <Button size="sm" className="w-full font-bold bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 text-white rounded-full text-xs uppercase tracking-wider">
+                                    View Details
+                                </Button>
+                            </Link>
                         </div>
                     ) : (
                         <div className="bg-white rounded-[2rem] border border-slate-200 p-5 flex items-center justify-between shadow-sm">

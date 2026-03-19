@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
-import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info, CalendarClock, Clock } from "lucide-react";
+import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info, CalendarClock, Clock, TriangleAlert } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { StripeConnectButton } from "@/app/components/stripe-connect-button";
@@ -36,10 +36,21 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 0,
 });
 
+interface RecentPayout {
+    id: string;
+    amount: number;
+    arrivalDate: string | null;
+    createdAt: string;
+    status: string;
+    bankLast4: string | null;
+}
+
 export function OwnerDashboardView() {
     const { user } = useAuth();
     const [isInspectionOpen, setIsInspectionOpen] = useState(false);
     const [stripeConnected, setStripeConnected] = useState(false);
+    const [recentPayouts, setRecentPayouts] = useState<RecentPayout[]>([]);
+    const [payoutsLoading, setPayoutsLoading] = useState(true);
     const [showProTip, setShowProTip] = useState(true);
 
     useEffect(() => {
@@ -53,6 +64,45 @@ export function OwnerDashboardView() {
         setShowProTip(false);
         localStorage.setItem("dashboard_protip_dismissed", "true");
     };
+
+    // Fetch Stripe connection status and recent payouts
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchStripeData = async () => {
+            try {
+                // Check stripe connection from user profile
+                const { data: profile } = await supabase
+                    .from('users')
+                    .select('stripe_account_id, stripe_connected')
+                    .eq('id', user.id)
+                    .single();
+
+                const isConnected = !!profile?.stripe_account_id;
+                setStripeConnected(isConnected);
+
+                if (isConnected) {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const token = session?.access_token;
+                    if (token) {
+                        const response = await fetch('/api/stripe/transactions', {
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
+                        if (response.ok) {
+                            const data = await response.json();
+                            setRecentPayouts((data.payouts || []).slice(0, 3));
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching Stripe data:', error);
+            } finally {
+                setPayoutsLoading(false);
+            }
+        };
+
+        fetchStripeData();
+    }, [user]);
 
     const [kpis, setKpis] = useState({
         activeRentals: 0,
@@ -110,6 +160,7 @@ export function OwnerDashboardView() {
     const [actionItems, setActionItems] = useState<any[]>([]);
     const [rentalRequests, setRentalRequests] = useState<any[]>([]);
     const [extensionRequests, setExtensionRequests] = useState<any[]>([]);
+    const [activeDisputes, setActiveDisputes] = useState<any[]>([]);
     const [listsLoading, setListsLoading] = useState(true);
     const [sellerFeePercent, setSellerFeePercent] = useState<number>(0);
 
@@ -170,6 +221,15 @@ export function OwnerDashboardView() {
                     console.error('Error fetching extensions:', extensionsError);
                 } else if (extensionsData) {
                     setExtensionRequests(extensionsData);
+                }
+
+                const { data: disputesData, error: disputesError } = await supabase
+                    .rpc('get_owner_disputes', { p_owner_id: user.id });
+
+                if (disputesError) {
+                    console.error('Error fetching disputes:', disputesError);
+                } else if (disputesData) {
+                    setActiveDisputes(disputesData);
                 }
             } catch (error) {
                 console.error("Error fetching dashboard lists:", error);
@@ -547,7 +607,7 @@ export function OwnerDashboardView() {
 
             {/* KPI Telemetry Row — always 3 columns, fixed height at all viewports */}
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                <Link href="/dashboard/owner/active-rentals" className="block group active:translate-y-[2px] transition-transform">
+                <Link href="/dashboard/owner/bookings" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm relative overflow-hidden">
                         <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
                         <div className="relative z-10">
@@ -572,7 +632,7 @@ export function OwnerDashboardView() {
                     </div>
                 </Link>
 
-                <div className="block group active:translate-y-[2px] transition-transform cursor-pointer">
+                <Link href="/dashboard/owner/transactions" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] shadow-sm relative overflow-hidden hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
                         <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
                         <div className="relative z-10 min-w-0">
@@ -588,7 +648,7 @@ export function OwnerDashboardView() {
                             {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
                         </div>
                     </div>
-                </div>
+                </Link>
 
                 <Link href="/dashboard/inventory" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm relative overflow-hidden">
@@ -704,8 +764,7 @@ export function OwnerDashboardView() {
                                                 Approve
                                             </Button>
                                             <Button
-                                                variant="outline"
-                                                className="flex-1 border-white/20 text-white hover:bg-white/10 font-bold text-xs uppercase tracking-wider rounded-full h-10"
+                                                className="flex-1 bg-white/10 border border-white/20 text-white hover:bg-red-500/20 hover:border-red-400/40 hover:text-red-300 font-bold text-xs uppercase tracking-wider rounded-full h-10 transition-all"
                                                 disabled={processingId === ext.extension_id}
                                                 onClick={() => handleDeclineExtension(ext.extension_id)}
                                             >
@@ -822,7 +881,7 @@ export function OwnerDashboardView() {
                                             </div>
                                         </div>
                                     ))
-                                ) : (
+                                ) : extensionRequests.length === 0 ? (
                                     <Empty className="bg-white rounded-[2rem] border border-slate-200 shadow-sm">
                                         <EmptyHeader>
                                             <EmptyMedia variant="icon">
@@ -834,14 +893,14 @@ export function OwnerDashboardView() {
                                             </EmptyDescription>
                                         </EmptyHeader>
                                         <EmptyContent>
-                                            <Link href="/owner/listings">
+                                            <Link href="/dashboard/inventory">
                                                 <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900 rounded-full font-bold text-xs uppercase tracking-wider">
                                                     Manage Listings
                                                 </Button>
                                             </Link>
                                         </EmptyContent>
                                     </Empty>
-                                )}
+                                ) : null}
                             </>
                         )}
                     </div>
@@ -849,6 +908,44 @@ export function OwnerDashboardView() {
 
                 {/* Right Column: Quick Stats / Tips */}
                 <div className="space-y-6">
+                    {/* Disputes */}
+                    {listsLoading ? (
+                        <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                            <Skeleton className="h-6 w-24 mb-4" />
+                            <Skeleton className="h-8 w-full" />
+                        </div>
+                    ) : activeDisputes.length > 0 ? (
+                        <div className="bg-red-50 rounded-[2rem] border-2 border-red-300 p-6 shadow-sm">
+                            <h3 className="text-base font-bold font-serif text-red-700 flex items-center gap-2 mb-3">
+                                <TriangleAlert className="h-5 w-5" />
+                                Action Required
+                            </h3>
+                            <div className="space-y-4">
+                                {activeDisputes.slice(0, 3).map(dispute => (
+                                    <div key={dispute.dispute_id} className="border-b border-red-200 pb-3 last:border-0 last:pb-0">
+                                        <p className="text-red-900 font-medium text-sm truncate">{dispute.listing_title}</p>
+                                        <p className="text-red-600 text-xs mt-1 lowercase opacity-80 font-mono">
+                                            {dispute.dispute_type.replace('_', ' ')} • {formatDate(dispute.created_at)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                            <Link href="/dashboard/owner/disputes" className="block mt-4">
+                                <Button size="sm" className="w-full font-bold bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 text-white rounded-full text-xs uppercase tracking-wider">
+                                    Manage {activeDisputes.length > 1 ? `${activeDisputes.length} Disputes` : 'Dispute'}
+                                </Button>
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 flex items-center justify-between shadow-sm">
+                            <span className="font-serif text-slate-900 font-medium text-sm">Disputes</span>
+                            <div className="flex items-center gap-2 text-emerald-600 text-[10px] font-mono font-bold uppercase tracking-wider">
+                                <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                No active disputes
+                            </div>
+                        </div>
+                    )}
+
                     {/* Payout Status */}
                     {stripeConnected ? (
                         <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
@@ -859,21 +956,37 @@ export function OwnerDashboardView() {
                                 </Badge>
                             </div>
                             <div className="space-y-4">
-                                <div className="flex justify-between items-center border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-                                    <div>
-                                        <p className="font-medium text-slate-900 text-sm">Oct 15, 2025</p>
-                                        <p className="text-[10px] font-mono text-slate-400">To: ****4242</p>
-                                    </div>
-                                    <span className="text-emerald-600 font-bold font-mono">+$124.50</span>
-                                </div>
-                                <div className="flex justify-between items-center border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-                                    <div>
-                                        <p className="font-medium text-slate-900 text-sm">Oct 08, 2025</p>
-                                        <p className="text-[10px] font-mono text-slate-400">To: ****4242</p>
-                                    </div>
-                                    <span className="text-emerald-600 font-bold font-mono">+$85.00</span>
-                                </div>
-                                <Link href="#">
+                                {payoutsLoading ? (
+                                    <>
+                                        <div className="flex justify-between items-center pb-3">
+                                            <div className="space-y-1.5">
+                                                <div className="h-4 w-24 bg-slate-100 animate-pulse rounded" />
+                                                <div className="h-3 w-16 bg-slate-100 animate-pulse rounded" />
+                                            </div>
+                                            <div className="h-5 w-16 bg-slate-100 animate-pulse rounded" />
+                                        </div>
+                                    </>
+                                ) : recentPayouts.length > 0 ? (
+                                    recentPayouts.map((payout) => (
+                                        <div key={payout.id} className="flex justify-between items-center border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                                            <div>
+                                                <p className="font-medium text-slate-900 text-sm">
+                                                    {payout.arrivalDate
+                                                        ? new Date(payout.arrivalDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                                                        : new Date(payout.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                                                    }
+                                                </p>
+                                                <p className="text-[10px] font-mono text-slate-400">
+                                                    {payout.bankLast4 ? `To: ****${payout.bankLast4}` : `Status: ${payout.status}`}
+                                                </p>
+                                            </div>
+                                            <span className="text-emerald-600 font-bold font-mono">+${payout.amount.toFixed(2)}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-slate-400 font-mono">No payouts yet</p>
+                                )}
+                                <Link href="/dashboard/owner/transactions">
                                     <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-safety-orange/80">
                                         View all transactions &rarr;
                                     </Button>

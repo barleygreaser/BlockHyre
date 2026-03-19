@@ -1,20 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
 import { useDashboard } from "@/app/context/dashboard-context";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Home, Wrench, MessageSquare, User, Heart, LogOut, Package, Menu, X } from "lucide-react";
+import { useMessageContext } from "@/app/context/message-context";
+import { Home, Wrench, MessageSquare, User, Heart, LogOut, Package, Menu, X, DollarSign, Calendar } from "lucide-react";
 
 export function DashboardSidebar() {
     const pathname = usePathname();
+    const router = useRouter();
     const { user, signOut } = useAuth();
     // activeRole and setActiveRole come from DashboardContext — instant React state, no routing
     const { activeRole, setActiveRole } = useDashboard();
+    const { unreadCount } = useMessageContext();
     const [alerts, setAlerts] = useState({ owner: 0, renter: 0 });
     const [drawerOpen, setDrawerOpen] = useState(false);
+
+    // When on a sub-page, role tab clicks must also navigate back to the main dashboard
+    const handleRoleSwitch = (role: 'owner' | 'renter') => {
+        setActiveRole(role);
+        if (pathname !== '/dashboard') {
+            router.push(`/dashboard?role=${role}`);
+        }
+    };
 
     // Close drawer on route change
     useEffect(() => {
@@ -46,10 +57,10 @@ export function DashboardSidebar() {
         return () => { document.body.style.overflow = ''; };
     }, [drawerOpen]);
 
-    const totalAlerts = alerts.owner + alerts.renter;
+    const totalAlerts = alerts.owner + alerts.renter + unreadCount;
 
     const navLinkClass = (active: boolean) =>
-        `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm ${active ? 'bg-white/10 text-white font-bold border border-white/5' : 'text-slate-400 hover:text-white hover:bg-white/5'
+        `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm border ${active ? 'bg-white/10 text-white font-bold border-white/5' : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
         }`;
 
     const SidebarContent = () => (
@@ -73,10 +84,11 @@ export function DashboardSidebar() {
             <div className="px-4 py-4 mb-2">
                 <div className="bg-white/5 p-1 rounded-2xl flex gap-1 relative border border-white/10 shadow-inner">
                     <button
-                        onClick={() => setActiveRole('renter')}
+                        data-tour="renter-toggle"
+                        onClick={() => handleRoleSwitch('renter')}
                         className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 relative ${activeRole === 'renter'
-                                ? 'bg-signal-white text-slate-900 shadow-sm'
-                                : 'text-slate-400 hover:text-white'
+                            ? 'bg-signal-white text-slate-900 shadow-sm'
+                            : 'text-slate-400 hover:text-white'
                             }`}
                         aria-label="Switch to Renter view"
                     >
@@ -91,10 +103,11 @@ export function DashboardSidebar() {
                         </span>
                     </button>
                     <button
-                        onClick={() => setActiveRole('owner')}
+                        data-tour="owner-toggle"
+                        onClick={() => handleRoleSwitch('owner')}
                         className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 relative ${activeRole === 'owner'
-                                ? 'bg-safety-orange text-white shadow-[0_0_15px_rgba(255,102,0,0.3)] border border-safety-orange/50'
-                                : 'text-slate-400 hover:text-white'
+                            ? 'bg-safety-orange text-white shadow-[0_0_15px_rgba(255,102,0,0.3)] border border-safety-orange/50'
+                            : 'text-slate-400 hover:text-white'
                             }`}
                         aria-label="Switch to Owner view"
                     >
@@ -113,34 +126,50 @@ export function DashboardSidebar() {
 
             {/* Dynamic Middle Section */}
             <div className="flex-1 px-4 overflow-y-auto space-y-1">
-                <p className="px-2 text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-3 mt-2">
-                    {activeRole === 'owner' ? 'Command Center' : 'My Rentals'}
+                <p className="px-2 text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-3 mt-2 min-h-[15px]">
+                    {activeRole === 'owner' ? 'Command Center' : 'Renter Console'}
                 </p>
 
                 {activeRole === 'renter' ? (
-                    <button
-                        onClick={() => setActiveRole('renter')}
-                        className={navLinkClass(pathname === '/dashboard' || pathname === '/dashboard/renter')}
-                        style={{ width: '100%', textAlign: 'left' }}
-                    >
-                        <Package className="w-4 h-4 flex-shrink-0" />
-                        <span>Overview</span>
-                    </button>
+                    <>
+                        <button
+                            onClick={() => {
+                                setActiveRole('renter');
+                                if (pathname !== '/dashboard') router.push('/dashboard');
+                            }}
+                            className={navLinkClass(pathname === '/dashboard' || pathname === '/dashboard/renter')}
+                            style={{ width: '100%', textAlign: 'left' }}
+                        >
+                            <Home className="w-4 h-4 flex-shrink-0" />
+                            <span>Dashboard</span>
+                        </button>
+                        <Link href="/dashboard/renter/rentals" className={navLinkClass(!!pathname?.includes('/dashboard/renter/rentals'))}>
+                            <Calendar className="w-4 h-4 flex-shrink-0" />
+                            <span>My Rentals</span>
+                        </Link>
+                    </>
                 ) : (
                     <>
                         <button
-                            onClick={() => setActiveRole('owner')}
+                            onClick={() => {
+                                setActiveRole('owner');
+                                if (pathname !== '/dashboard') router.push('/dashboard');
+                            }}
                             className={navLinkClass(pathname === '/dashboard' || pathname === '/dashboard/owner')}
                             style={{ width: '100%', textAlign: 'left' }}
                         >
                             <Home className="w-4 h-4 flex-shrink-0" />
                             <span>Dashboard</span>
                         </button>
-                        <Link href="/dashboard/owner/active-rentals" className={navLinkClass(!!pathname?.includes('/dashboard/owner/active-rentals'))}>
+                        <Link href="/dashboard/owner/bookings" className={navLinkClass(!!pathname?.includes('/dashboard/owner/bookings'))}>
                             <Package className="w-4 h-4 flex-shrink-0" />
                             <span>Tool Bookings</span>
                         </Link>
-                        <Link href="/dashboard/inventory" className={navLinkClass(!!pathname?.includes('/dashboard/inventory'))}>
+                        <Link href="/dashboard/owner/transactions" data-tour="transactions-link" className={navLinkClass(!!pathname?.includes('/dashboard/owner/transactions'))}>
+                            <DollarSign className="w-4 h-4 flex-shrink-0" />
+                            <span>Transactions</span>
+                        </Link>
+                        <Link href="/dashboard/inventory" data-tour="fleet-link" className={navLinkClass(!!pathname?.includes('/dashboard/inventory'))}>
                             <Wrench className="w-4 h-4 flex-shrink-0" />
                             <span>My Fleet</span>
                         </Link>
@@ -163,10 +192,15 @@ export function DashboardSidebar() {
 
             {/* Bottom Global Section */}
             <div className="px-4 pb-4 pt-3 border-t border-white/10 space-y-0.5 bg-charcoal">
-                <Link href="/messages" className={navLinkClass(pathname === '/messages')}>
+                <Link href="/messages" data-tour="messages-link" className={navLinkClass(pathname === '/messages')}>
                     <MessageSquare className="w-4 h-4 flex-shrink-0" />
                     <span>Messages</span>
-                    <span className="ml-auto text-[9px] font-mono text-slate-600 uppercase tracking-wider">↗</span>
+                    {unreadCount > 0 && (
+                        <span className="ml-auto bg-safety-orange text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-[0_0_10px_rgba(255,102,0,0.4)]">
+                            {unreadCount}
+                        </span>
+                    )}
+                    <span className={`${unreadCount > 0 ? 'ml-2' : 'ml-auto'} text-[9px] font-mono text-slate-600 uppercase tracking-wider`}>↗</span>
                 </Link>
                 <Link href="/favorites" className={navLinkClass(pathname === '/favorites')}>
                     <Heart className="w-4 h-4 flex-shrink-0" />
@@ -199,6 +233,7 @@ export function DashboardSidebar() {
             <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-charcoal border-b border-white/10 z-50 flex items-center justify-between px-4">
                 {/* Hamburger */}
                 <button
+                    data-tour="mobile-nav-trigger"
                     onClick={() => setDrawerOpen(true)}
                     className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all relative"
                     aria-label="Open navigation"
