@@ -25,50 +25,51 @@ export const FeaturedInventory = memo(({ listings, onRentClick }: FeaturedInvent
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
     const sectionRef = useRef<HTMLElement>(null);
 
-    const normalizedListings = useMemo(() => {
+    // Combine normalization and props mapping to stabilize references before filtering.
+    // This ensures `FeaturedToolCard` (which is React.memo'd) doesn't re-render
+    // unnecessarily when the filtered subset changes, as the objects remain strictly equal.
+    const processedListings = useMemo(() => {
         return listings.map(tool => ({
-            ...tool,
+            // Searchable normalized fields
             normTitle: normalize(tool.title || ""),
             normDesc: normalize(tool.description || ""),
             normCategory: normalize(tool.category?.name || ""),
-            price: Number(tool.daily_price)
+            // Renderable props for the card
+            props: {
+                id: tool.id,
+                title: tool.title || tool.description || "Untitled Tool",
+                image: tool.images?.[0] || "",
+                price: Number(tool.daily_price), // Coerce for internal logic if needed, card expects number
+                deposit: tool.deposit || 100,
+                category: tool.category?.name || "General",
+                isHeavyMachinery: tool.is_high_powered,
+                coordinates: { latitude: 0, longitude: 0 },
+                distance: tool.distance,
+                acceptsBarter: tool.accepts_barter,
+                instantBook: tool.booking_type === 'instant'
+            }
         }));
     }, [listings]);
 
-    const filteredListings = useMemo(() => {
+    const cardProps = useMemo(() => {
         const normSelectedCategory = selectedCategory !== "All" ? normalize(selectedCategory) : null;
         const normSearchTerm = debouncedSearchTerm ? normalize(debouncedSearchTerm) : null;
 
-        return normalizedListings
-            .filter(tool => {
+        return processedListings
+            .filter(item => {
                 if (normSelectedCategory) {
-                    if (tool.normCategory !== normSelectedCategory) return false;
+                    if (item.normCategory !== normSelectedCategory) return false;
                 }
 
                 if (normSearchTerm) {
-                    if (!tool.normTitle.includes(normSearchTerm) && !tool.normDesc.includes(normSearchTerm)) return false;
+                    if (!item.normTitle.includes(normSearchTerm) && !item.normDesc.includes(normSearchTerm)) return false;
                 }
 
                 return true;
             })
-            .slice(0, 6);
-    }, [normalizedListings, selectedCategory, debouncedSearchTerm]);
-
-    const cardProps = useMemo(() => {
-        return filteredListings.map(tool => ({
-            id: tool.id,
-            title: tool.title || tool.description || "Untitled Tool",
-            image: tool.images?.[0] || "",
-            price: tool.daily_price,
-            deposit: tool.deposit || 100,
-            category: tool.category?.name || "General",
-            isHeavyMachinery: tool.is_high_powered,
-            coordinates: { latitude: 0, longitude: 0 },
-            distance: tool.distance,
-            acceptsBarter: tool.accepts_barter,
-            instantBook: tool.booking_type === 'instant'
-        }));
-    }, [filteredListings]);
+            .slice(0, 6)
+            .map(item => item.props); // Extract the stable props reference
+    }, [processedListings, selectedCategory, debouncedSearchTerm]);
 
     useEffect(() => {
         let ctx: any = null;
