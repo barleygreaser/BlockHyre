@@ -85,3 +85,7 @@
 
 ## 2024-XX-XX
 - When resolving duplicate `GestureHandlerRootView` invariant violations in Expo Router v3+, completely removing the `GestureHandlerRootView` wrapper and its import from `_layout.tsx` is required, as Expo Router injects and manages the Gestures API at the core wrapper level.
+
+## 2025-03-06 - Pre-sorted Search Priority Partitioning
+**Learning:** When performing typeahead/autocomplete searches on a list that is already alphabetically sorted (e.g., categories), standard implementations often use `.filter().sort()` to prioritize `startsWith` matches over `includes` matches. However, using `localeCompare` inside that `.sort()` is O(N log N) and very expensive on every keystroke.
+**Action:** Replace the `.filter().sort()` chain with a single O(N) traversal that partitions the matches into two separate arrays (`startsWith` matches and `includes` matches). Concatenating these arrays at the end natively preserves the original alphabetical sub-sorting without needing any `.sort()` or `localeCompare` calls.

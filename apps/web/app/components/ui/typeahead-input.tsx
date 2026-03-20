@@ -60,17 +60,26 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
             // Handle categories locally (no API call)
             if (type === 'category' && categories) {
                 const lowerQuery = debouncedValue.toLowerCase();
-                const filtered = categories
-                    .filter(cat => cat.name.toLowerCase().includes(lowerQuery))
-                    .sort((a, b) => {
-                        const aLower = a.name.toLowerCase();
-                        const bLower = b.name.toLowerCase();
-                        const aStarts = aLower.startsWith(lowerQuery);
-                        const bStarts = bLower.startsWith(lowerQuery);
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-                        return a.name.localeCompare(b.name);
-                    });
+
+                // Optimization: Categories are already pre-sorted alphabetically from the API.
+                // Instead of using an O(N log N) .filter().sort() chain with expensive localeCompare,
+                // we use a single O(N) pass to partition exact startsWith matches vs includes matches.
+                // Concatenating them inherently preserves the original alphabetical sub-sorting.
+                const startsWithMatches: Suggestion[] = [];
+                const includesMatches: Suggestion[] = [];
+
+                for (let i = 0; i < categories.length; i++) {
+                    const cat = categories[i];
+                    const catNameLower = cat.name.toLowerCase();
+
+                    if (catNameLower.startsWith(lowerQuery)) {
+                        startsWithMatches.push(cat);
+                    } else if (catNameLower.includes(lowerQuery)) {
+                        includesMatches.push(cat);
+                    }
+                }
+
+                const filtered = [...startsWithMatches, ...includesMatches];
                 setSuggestions(filtered);
                 if (filtered.length > 0) setIsOpen(true);
                 return;
