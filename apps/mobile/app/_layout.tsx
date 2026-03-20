@@ -4,7 +4,6 @@ import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -49,17 +48,15 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <BottomSheetModalProvider>
-          <ToastProvider>
-            <SheetProvider>
-              <RootLayoutNav />
-            </SheetProvider>
-          </ToastProvider>
-        </BottomSheetModalProvider>
-      </ThemeProvider>
-    </GestureHandlerRootView>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <BottomSheetModalProvider>
+        <ToastProvider>
+          <SheetProvider>
+            <RootLayoutNav />
+          </SheetProvider>
+        </ToastProvider>
+      </BottomSheetModalProvider>
+    </ThemeProvider>
   );
 }
 
