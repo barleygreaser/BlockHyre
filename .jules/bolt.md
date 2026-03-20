@@ -82,3 +82,6 @@
 ## 2024-03-20 - Optimizing Filtered Lists with Stabilized Object Props
 **Learning:** When using `React.memo` for child components in a list (like `FeaturedToolCard` inside `FeaturedInventory`), filtering a mapped array dynamically during render logic often breaks referential equality if the properties are mapped *after* filtering or if normalized search properties are injected repeatedly. Even if the array is sliced, returning a newly mapped object on every search/filter change causes all visible cards to re-render, bypassing `memo()`.
 **Action:** When filtering complex lists, combine string normalization (for search/filtering) and final prop object mapping into a *single* `useMemo` block *before* filtering. Then, apply `filter().map(item => item.props)` in the second `useMemo`. This pattern ensures that the final prop object reference remains identical across renders for any item that survives the filter, completely eliminating redundant re-renders of list items while the user types or clicks filters.
+
+## 2024-XX-XX
+- When resolving duplicate `GestureHandlerRootView` invariant violations in Expo Router v3+, completely removing the `GestureHandlerRootView` wrapper and its import from `_layout.tsx` is required, as Expo Router injects and manages the Gestures API at the core wrapper level.
