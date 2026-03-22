@@ -85,3 +85,7 @@
 
 ## 2024-XX-XX
 - When resolving duplicate `GestureHandlerRootView` invariant violations in Expo Router v3+, completely removing the `GestureHandlerRootView` wrapper and its import from `_layout.tsx` is required, as Expo Router injects and manages the Gestures API at the core wrapper level.
+
+## 2025-02-26 - Optimized Typeahead Category Filtering
+**Learning:** Chaining `.filter().sort()` with `localeCompare` for prioritizing "starts with" matches on pre-sorted data destroys performance unnecessarily (from O(N) to O(N log N) plus slow string comparisons).
+**Action:** Use an O(N) traversal to bucket matches into `startsWith` and `includes` arrays and concatenate them. This naturally preserves the parent array's pre-sorting with virtually no overhead.
