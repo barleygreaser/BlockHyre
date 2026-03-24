@@ -85,3 +85,7 @@
 
 ## 2024-XX-XX
 - When resolving duplicate `GestureHandlerRootView` invariant violations in Expo Router v3+, completely removing the `GestureHandlerRootView` wrapper and its import from `_layout.tsx` is required, as Expo Router injects and manages the Gestures API at the core wrapper level.
+
+## 2025-03-09 - Avoid Select(*) in Frequent API Calls
+**Learning:** Using `select('*')` in high-frequency queries like typeahead APIs wastes bandwidth, adds unneeded memory pressure on the server, and slows down database query planning. In `/api/fetch-suggestions`, selecting all columns when the client only needed `name` and `tier_suggestion` bloated the payload unnecessarily.
+**Action:** Always explicitly specify required columns in Supabase queries (e.g. `select('name, tier_suggestion')`), particularly in public/frequently-accessed APIs and large list queries.
