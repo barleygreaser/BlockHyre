@@ -83,7 +83,7 @@ export async function GET(request: Request) {
         // Optimization: Try prefix search first
         const prefixResult = await supabase
             .from('tool_name_suggestions')
-            .select('*')
+            .select('name, tier_suggestion')
             .ilike('name', `${query}%`)
             .order('name', { ascending: true })
             .limit(20);
@@ -98,7 +98,7 @@ export async function GET(request: Request) {
             // Note: brandFilter is ignored since tool names are now generic
             const result = await supabase
                 .from('tool_name_suggestions')
-                .select('*')
+                .select('name, tier_suggestion')
                 .ilike('name', `%${query}%`)
                 .order('name', { ascending: true })
                 .limit(20);
