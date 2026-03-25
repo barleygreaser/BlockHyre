@@ -85,3 +85,7 @@
 
 ## 2024-XX-XX
 - When resolving duplicate `GestureHandlerRootView` invariant violations in Expo Router v3+, completely removing the `GestureHandlerRootView` wrapper and its import from `_layout.tsx` is required, as Expo Router injects and manages the Gestures API at the core wrapper level.
+
+## 2025-03-25 - React Native List Optimization
+**Learning:** Defining `renderItem` or `keyExtractor` inline inside functional React Native components that use `FlatList` or `FlashList` breaks referential stability, causing the entire list to re-render when the parent component updates (e.g., from scrolling animations).
+**Action:** Always wrap `renderItem` and related item handlers in `useCallback`, ensuring dependencies are correctly specified, to maximize list rendering performance.

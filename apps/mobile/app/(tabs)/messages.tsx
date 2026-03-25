@@ -118,7 +118,10 @@ export default function MessagesScreen() {
         }, [loadConversations])
     );
 
-    const renderItem = ({ item }: { item: Chat }) => {
+    // ⚡ Bolt: Wrapped `renderItem` in `useCallback` to maintain referential stability.
+    // This prevents `Animated.FlatList` from tearing down and recreating every item on
+    // scroll state updates or parent re-renders, significantly improving list performance.
+    const renderItem = useCallback(({ item }: { item: Chat }) => {
         const hasUnread = (item.unread_count || 0) > 0;
 
         return (
@@ -187,7 +190,7 @@ export default function MessagesScreen() {
                 </View>
             </TouchableOpacity>
         );
-    };
+    }, [router]);
 
     return (
         <View style={styles.container}>

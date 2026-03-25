@@ -89,7 +89,9 @@ export default function FavoritesScreen() {
         fetchFavorites();
     }, []);
 
-    const handleRemoveFavorite = async (favoriteId: string, listingId: string) => {
+    // ⚡ Bolt: Wrapped `handleRemoveFavorite` in `useCallback` to prevent redefining the function
+    // reference on each render, which would break the memoization of `renderFavoriteItem` below.
+    const handleRemoveFavorite = useCallback(async (favoriteId: string, listingId: string) => {
         // Optimistic update
         const previousFavorites = [...favorites];
         setFavorites(prev => prev.filter(item => item.id !== favoriteId));
@@ -106,9 +108,12 @@ export default function FavoritesScreen() {
             Alert.alert('Error', 'Failed to remove favorite');
             setFavorites(previousFavorites); // Revert
         }
-    };
+    }, [favorites]);
 
-    const renderFavoriteItem = ({ item }: { item: FavoriteItem }) => {
+    // ⚡ Bolt: Wrapped `renderFavoriteItem` in `useCallback` to stabilize its reference.
+    // This allows `FlatList` to optimize rendering by skipping unaffected items when the
+    // `favorites` array state updates or the parent component re-renders.
+    const renderFavoriteItem = useCallback(({ item }: { item: FavoriteItem }) => {
         const listing = item.listing;
         const imageUrl = listing.images && listing.images.length > 0
             ? listing.images[0]
@@ -148,7 +153,7 @@ export default function FavoritesScreen() {
                 </View>
             </TouchableOpacity>
         );
-    };
+    }, [router, handleRemoveFavorite]);
 
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
