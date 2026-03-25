@@ -95,7 +95,9 @@ export default function HowItWorksScreen() {
         [TOTAL_STEPS]
     );
 
-    const renderItem = ({ item }: { item: typeof STEPS[0] }) => {
+    // ⚡ Bolt: Wrapped `renderItem` with `useCallback` to preserve rendering performance,
+    // especially critical here since the FlatList interacts with `Animated` scroll values.
+    const renderItem = useCallback(({ item }: { item: typeof STEPS[0] }) => {
         return (
             <View style={[styles.stepContainer, { width }]}>
                 <View style={styles.stepContent}>
@@ -150,7 +152,7 @@ export default function HowItWorksScreen() {
                 </View>
             </View>
         );
-    };
+    }, [width]);
 
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>

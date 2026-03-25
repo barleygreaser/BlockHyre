@@ -63,7 +63,9 @@ export default function OnboardingSlides() {
         itemVisiblePercentThreshold: 50,
     }).current;
 
-    const renderItem = ({ item }: { item: typeof SLIDES[0] }) => {
+    // ⚡ Bolt: Extracted `renderItem` using `useCallback` to prevent continuous unmounting and
+    // remounting of `FlatList` elements as the `currentIndex` state changes during scroll behavior.
+    const renderItem = useCallback(({ item }: { item: typeof SLIDES[0] }) => {
         return (
             <View style={styles.slide}>
                 <View style={styles.iconContainer}>
@@ -73,7 +75,7 @@ export default function OnboardingSlides() {
                 <Text style={styles.description}>{item.description}</Text>
             </View>
         );
-    };
+    }, []);
 
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
