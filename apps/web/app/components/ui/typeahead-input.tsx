@@ -60,17 +60,26 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
             // Handle categories locally (no API call)
             if (type === 'category' && categories) {
                 const lowerQuery = debouncedValue.toLowerCase();
-                const filtered = categories
-                    .filter(cat => cat.name.toLowerCase().includes(lowerQuery))
-                    .sort((a, b) => {
-                        const aLower = a.name.toLowerCase();
-                        const bLower = b.name.toLowerCase();
-                        const aStarts = aLower.startsWith(lowerQuery);
-                        const bStarts = bLower.startsWith(lowerQuery);
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-                        return a.name.localeCompare(b.name);
-                    });
+
+                // Categories are already sorted alphabetically by the parent (useMarketplace).
+                // Instead of using .filter().sort() with expensive localeCompare,
+                // we partition the already-sorted array into exact prefixes vs internal matches
+                // in a single O(N) pass, preserving the original alphabetical sub-sorting.
+                const startsWithMatches: any[] = [];
+                const includesMatches: any[] = [];
+
+                for (let i = 0; i < categories.length; i++) {
+                    const cat = categories[i];
+                    const catLower = cat.name.toLowerCase();
+
+                    if (catLower.startsWith(lowerQuery)) {
+                        startsWithMatches.push(cat);
+                    } else if (catLower.includes(lowerQuery)) {
+                        includesMatches.push(cat);
+                    }
+                }
+
+                const filtered = [...startsWithMatches, ...includesMatches];
                 setSuggestions(filtered);
                 if (filtered.length > 0) setIsOpen(true);
                 return;
