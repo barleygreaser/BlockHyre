@@ -85,3 +85,7 @@
 
 ## 2024-XX-XX
 - When resolving duplicate `GestureHandlerRootView` invariant violations in Expo Router v3+, completely removing the `GestureHandlerRootView` wrapper and its import from `_layout.tsx` is required, as Expo Router injects and manages the Gestures API at the core wrapper level.
+
+## 2025-03-09 - Intl Formatter Optimization
+**Learning:** Components often instantiate `Intl.DateTimeFormat` or `Intl.NumberFormat` repeatedly inside the render cycle (e.g. inside a map function or an inline format function), causing performance overhead during renders.
+**Action:** When working with formatting functions in React, always pre-initialize standard Intl formatters (like `DateTimeFormat` and `NumberFormat`) outside of the component render cycle at the module level. They are stateless and safe to reuse.
