@@ -263,6 +263,8 @@ graph TD
 ### 🟡 P2 — Nice-to-Have for Launch Quality
 
 - [ ] Implement transactional email notifications via Resend for booking lifecycles
+- [ ] **Deferred to V2:** Scheduled reminders (Crons/Inngest) for upcoming returns/pickups
+- [ ] **Deferred to V2:** Implement PostHog for behavioral analytics (Funnels, Session Replays) to identify UI friction points and measure true conversion rates.
 - [x] ~~Build lightweight admin panel for dispute resolution~~ — 🛑 **Deferred to V2:** Disputes will be handled manually via Supabase/Stripe dashboards for MVP.
 - [x] Complete the Safety Gate enforcement before high-power tool checkout
 - [x] Complete return inspection side-by-side photo workflow
@@ -284,3 +286,30 @@ graph TD
 
 > [!TIP]
 > **Recommended launch strategy:** Focus exclusively on the P0 checklist. This can be completed in approximately **1-2 focused sprints** (1-2 weeks). The P1 items add another week. With P0 + P1 complete, you'd be at approximately **~75-80% readiness** — enough for a controlled private beta with your three trial neighborhoods.
+---
+
+## 7. VPS Deployment Strategy
+
+Since the environment is optimized for a self-hosted VPS, the following architecture is recommended for production.
+
+### Recommended Server Specs (Hobbyist/Small Beta)
+- **CPU:** 2 vCPU (Required for smooth Next.js builds/SWC compilation)
+- **RAM:** 4GB RAM (Next.js is memory-hungry during the build phase)
+- **Storage:** 40GB+ SSD (NVMe preferred)
+- **OS:** Ubuntu 22.04 LTS or 24.04 LTS
+- **Provider:** DigitalOcean, Hetzner (best value), or AWS EC2
+
+### The Docker Stack
+- **Engine:** Docker Engine + Docker Compose
+- **Proxy:** Nginx Proxy Manager (GUI) or Traefik (Auto-discovery)
+- **Runtime:** `node:20-alpine` or `oven/bun:latest` utilizing `output: 'standalone'` in Next.js
+- **SSL:** Let's Encrypt (Automated via proxy container)
+- **Crons:** Native Linux `crontab` hitting internal container endpoints via `curl` or running local `bun` scripts
+
+### Deployment Checklist
+1. [ ] Configure `next.config.ts` with `output: 'standalone'`
+2. [ ] Write `Dockerfile` for the monorepo structure
+3. [ ] Set up `docker-compose.yml` with Environment Variables injected via `.env.production`
+4. [ ] Configure Nginx reverse proxy to handle Port 443 -> Port 3000
+5. [ ] Set up internal health checks for zero-downtime restarts (Docker Swarm or simple blue-green)
+6. [ ] Map persistent volumes for any local file uploads (if not using Supabase Storage)

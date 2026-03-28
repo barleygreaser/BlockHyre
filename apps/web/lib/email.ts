@@ -4,7 +4,12 @@ import { Resend } from 'resend';
 const resendApiKey = process.env.RESEND_API_KEY;
 export const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
-export const SENDER_EMAIL = 'BlockHyre <notifications@blockhyre.com>';
+// USE RESEND SANDBOX EMAIL DURING DEV to bypass domain verification requirements
+const isProd = process.env.NODE_ENV === 'production';
+export const SENDER_EMAIL = isProd 
+    ? 'BlockHyre <notifications@blockhyre.com>' 
+    : 'BlockHyre Sandbox <onboarding@resend.dev>';
+
 // Add ADMIN_EMAIL for dispute/critical notifications
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@blockhyre.com';
 
