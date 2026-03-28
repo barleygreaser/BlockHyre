@@ -24,6 +24,13 @@ import {
 } from "@/app/components/ui/empty";
 import { Skeleton } from "@/app/components/ui/skeleton";
 
+// ⚡ Bolt Optimization: Instantiate Intl formatters at module scope to avoid expensive
+// object creation on every render cycle or inside mapping loops.
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0,
+});
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
 export default function ActiveRentalsPage() {
     const { user } = useAuth();
     const [activeRentals, setActiveRentals] = useState<any[]>([]);
@@ -43,13 +50,11 @@ export default function ActiveRentalsPage() {
         window.history.pushState(null, '', `#${filter}`);
     };
 
-    const formatCurrency = (amount: number) => new Intl.NumberFormat('en-US', {
-        style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0,
-    }).format(amount);
+    const formatCurrency = (amount: number) => currencyFormatter.format(amount);
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
-        return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return dateFormatter.format(new Date(dateStr));
     };
 
     const calculateOwnerRevenue = (rentalFee: number) => {
