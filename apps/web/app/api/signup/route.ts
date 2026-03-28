@@ -24,12 +24,20 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { email, password, confirmPassword, fullName, username } = body;
+        const { email, password, confirmPassword, fullName, username, tosAccepted } = body;
 
         // 1. Input Validation
         if (!email || !password || !confirmPassword || !fullName) {
             return NextResponse.json(
                 { error: "Missing required fields" },
+                { status: 400 }
+            );
+        }
+
+        // Security: Require explicit ToS acceptance — cannot be bypassed via direct API call
+        if (tosAccepted !== true) {
+            return NextResponse.json(
+                { error: "You must agree to the Terms of Service to create an account." },
                 { status: 400 }
             );
         }
@@ -74,11 +82,19 @@ export async function POST(request: Request) {
             );
         }
 
-        // Initialize Supabase Client (Admin context if needed, but Anon is fine for signUp)
-        // We use the service role key here to ensure we can check the public.users table 
-        // without RLS blocking us (if RLS is strict).
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+        // Security: Require service role key — the anon key cannot bypass RLS
+        // for username uniqueness checks and must never be used as a fallback here.
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!supabaseUrl || !supabaseServiceKey) {
+            console.error("Signup route: SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL is not configured.");
+            return NextResponse.json(
+                { error: "Service is temporarily unavailable. Please try again later." },
+                { status: 503 }
+            );
+        }
+
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
         // 2. Database Check (Username/Email uniqueness in public.users)

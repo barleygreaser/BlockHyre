@@ -201,7 +201,9 @@ export default function TransactionsPage() {
         { key: "in_transit" as FilterKey, label: "In Transit", count: payouts.filter(p => p.status === "in_transit").length },
     ];
 
-    const totalEarnings = rentalTransactions.reduce((sum, t) => sum + calculateOwnerRevenue(t.rental_fee), 0);
+    const totalGross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
+    const totalFees = totalGross * (sellerFeePercent / 100);
+    const totalEarnings = totalGross - totalFees;
 
     return (
         <div className="pt-4">
@@ -339,15 +341,15 @@ export default function TransactionsPage() {
                                         <TrendingUp className="h-4 w-4 text-safety-orange" />
                                     </div>
                                     <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                                        Total Earned
+                                        Net Earned
                                     </p>
                                     <Badge className="ml-auto h-2.5 w-2.5 p-0 bg-emerald-500 border border-white animate-pulse-operational" />
                                 </div>
-                                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">
+                                <h3 className="text-2xl sm:text-3xl font-bold text-emerald-600 font-mono tabular-nums">
                                     {formatCurrency(totalEarnings)}
                                 </h3>
                                 <p className="text-[10px] font-mono text-slate-400 mt-1 uppercase tracking-wider">
-                                    Lifetime revenue ({rentalTransactions.length} rentals)
+                                    {rentalTransactions.length} rentals · -{formatCurrency(totalFees)} fees
                                 </p>
                             </div>
                         </div>
@@ -474,12 +476,13 @@ export default function TransactionsPage() {
                         {rentalTransactions.length > 0 ? (
                             <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                                 {/* Table Header — Desktop only */}
-                                <div className="hidden md:grid grid-cols-[1fr_1fr_100px_100px_100px_80px] gap-4 px-6 py-3 border-b border-slate-100 bg-slate-50/50">
+                                <div className="hidden md:grid grid-cols-[1fr_1fr_100px_90px_90px_90px_80px] gap-4 px-6 py-3 border-b border-slate-100 bg-slate-50/50">
                                     <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Tool</span>
                                     <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Renter</span>
                                     <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Dates</span>
-                                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider text-right">Revenue</span>
-                                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider text-right">Total Paid</span>
+                                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider text-right">Gross</span>
+                                    <span className="text-[10px] font-mono font-bold text-red-400 uppercase tracking-wider text-right">Fee</span>
+                                    <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-wider text-right">Net</span>
                                     <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider text-center">Status</span>
                                 </div>
 
@@ -491,7 +494,7 @@ export default function TransactionsPage() {
                                             style={{ animationDelay: `${index * 30}ms` }}
                                         >
                                             {/* Desktop Row */}
-                                            <div className="hidden md:grid grid-cols-[1fr_1fr_100px_100px_100px_80px] gap-4 items-center">
+                                            <div className="hidden md:grid grid-cols-[1fr_1fr_100px_90px_90px_90px_80px] gap-4 items-center">
                                                 <span className="font-medium text-slate-900 text-sm truncate">
                                                     {tx.listing_title}
                                                 </span>
@@ -501,11 +504,14 @@ export default function TransactionsPage() {
                                                 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
                                                     {formatDateShort(tx.start_date)} – {formatDateShort(tx.end_date)}
                                                 </span>
+                                                <span className="font-mono text-sm text-slate-600 text-right tabular-nums">
+                                                    {formatCurrency(tx.rental_fee)}
+                                                </span>
+                                                <span className="font-mono text-sm text-red-400 text-right tabular-nums">
+                                                    -{formatCurrency(tx.rental_fee * (sellerFeePercent / 100))}
+                                                </span>
                                                 <span className="font-bold text-emerald-600 font-mono text-sm text-right tabular-nums">
                                                     {formatCurrency(calculateOwnerRevenue(tx.rental_fee))}
-                                                </span>
-                                                <span className="font-mono text-sm text-slate-500 text-right tabular-nums">
-                                                    {formatCurrency(tx.total_paid)}
                                                 </span>
                                                 <div className="flex justify-center">
                                                     <Badge className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0 h-5 border-0 capitalize ${tx.status === "completed" || tx.status === "archived"
@@ -528,9 +534,14 @@ export default function TransactionsPage() {
                                                         <h4 className="font-bold text-slate-900 text-sm truncate">{tx.listing_title}</h4>
                                                         <p className="text-xs text-slate-500 font-mono">{tx.renter_name}</p>
                                                     </div>
-                                                    <span className="font-bold text-emerald-600 font-mono text-sm whitespace-nowrap">
-                                                        {formatCurrency(calculateOwnerRevenue(tx.rental_fee))}
-                                                    </span>
+                                                    <div className="flex flex-col items-end">
+                                                        <span className="font-bold text-emerald-600 font-mono text-sm whitespace-nowrap">
+                                                            {formatCurrency(calculateOwnerRevenue(tx.rental_fee))}
+                                                        </span>
+                                                        <span className="text-[9px] font-mono text-red-400">
+                                                            -{formatCurrency(tx.rental_fee * (sellerFeePercent / 100))} fee
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
                                                     <span>{formatDateShort(tx.start_date)} – {formatDateShort(tx.end_date)}</span>

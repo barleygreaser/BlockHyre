@@ -4,7 +4,7 @@ import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { useCart } from "@/app/context/cart-context";
 import { Button } from "@/app/components/ui/button";
-import { Trash2, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
+import { Trash2, Calendar as CalendarIcon, AlertCircle, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { format } from "date-fns";
@@ -13,6 +13,10 @@ import Image from "next/image";
 export default function CartPage() {
     const { cart, removeFromCart, clearCart } = useCart();
     const router = useRouter();
+
+    // Detect mixed-owner cart (guarded at add time, but also guard at render for stale localStorage)
+    const uniqueOwnerIds = new Set(cart.map((item) => item.owner_id));
+    const hasMultipleOwners = uniqueOwnerIds.size > 1;
 
     const subtotal = cart.reduce((acc, item) => {
         const { subtotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
@@ -103,9 +107,20 @@ export default function CartPage() {
                                         <span>${finalTotal.toFixed(2)}</span>
                                     </div>
                                 </div>
+                                {hasMultipleOwners && (
+                                    <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                                        <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                                        <div>
+                                            <p className="font-bold">Mixed-owner cart detected</p>
+                                            <p className="mt-1 text-amber-700">Your cart contains items from different owners. BlockHyre currently processes one owner per checkout. Please remove items until only one owner remains, then proceed.</p>
+                                        </div>
+                                    </div>
+                                )}
                                 <Button
-                                    className="w-full mt-6 bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12"
+                                    className="w-full mt-6 bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
                                     onClick={() => router.push('/checkout')}
+                                    disabled={hasMultipleOwners}
+                                    aria-disabled={hasMultipleOwners}
                                 >
                                     Proceed to Checkout
                                 </Button>

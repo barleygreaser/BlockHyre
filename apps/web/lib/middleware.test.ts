@@ -50,7 +50,15 @@ describe('Middleware / updateSession', () => {
       },
     };
     return {
+      method: 'GET',
       nextUrl,
+      headers: {
+        get: vi.fn((name) => {
+          if (name === 'host') return 'localhost:3000';
+          if (name === 'origin') return 'http://localhost:3000';
+          return null;
+        }),
+      },
       cookies: {
         getAll: vi.fn().mockReturnValue([]),
         set: vi.fn(),

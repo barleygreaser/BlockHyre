@@ -56,6 +56,7 @@ describe('Signup API (POST)', () => {
       password: 'Password123!',
       confirmPassword: 'Password123!',
       fullName: 'John Doe',
+      tosAccepted: true,
     });
     const response = await POST(req);
     const data = await response.json();
@@ -70,6 +71,7 @@ describe('Signup API (POST)', () => {
       password: 'Password123!',
       confirmPassword: 'DifferentPassword123!',
       fullName: 'John Doe',
+      tosAccepted: true,
     });
     const response = await POST(req);
     const data = await response.json();
@@ -84,6 +86,7 @@ describe('Signup API (POST)', () => {
       password: 'weak',
       confirmPassword: 'weak',
       fullName: 'John Doe',
+      tosAccepted: true,
     });
     const response = await POST(req);
     const data = await response.json();
@@ -99,6 +102,7 @@ describe('Signup API (POST)', () => {
       password: 'Password123!',
       confirmPassword: 'Password123!',
       fullName: 'John Doe',
+      tosAccepted: true,
     });
     const response = await POST(req);
     const data = await response.json();

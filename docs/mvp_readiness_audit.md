@@ -101,9 +101,9 @@ graph TD
 | 1 | **Dispute Filing** | Page exists ([disputes/page.tsx](file:///c:/Users/Christopher%20Robinson/Documents/VPS/BlockHyre_Monorepo/apps/web/app/disputes/page.tsx)) but no resolution workflow, admin panel, or Peace Fund claim processing |
 | 2 | **Reviews / Ratings** | Only "write new review" page exists ([reviews/new/](file:///c:/Users/Christopher%20Robinson/Documents/VPS/BlockHyre_Monorepo/apps/web/app/reviews/new/)); no review aggregation, no display on listing cards, hardcoded `5.0 (Verified Neighbor)` on detail page |
 | 3 | **Safety Gate / Liability Waiver** | UI references safety gate for high-powered tools, `safety-modal.tsx` exists, but no enforcement gate before checkout completion |
-| 4 | **Return Inspection** | `return-inspection-modal.tsx` exists but the side-by-side photo comparison and deposit release flow is incomplete |
-| 5 | **Rental Extension** | `extension-modal.tsx` exists but owner approval workflow is unclear |
-| 6 | **Handover Flow** | `handover-modal.tsx` exists but pre-use inspection photo upload and verification is partial |
+| 4 | **Return Inspection** | ✅ Completed: Side-by-side photo comparison and finalization flow implemented in `return-inspection-modal.tsx` |
+| 5 | **Rental Extension** | `extension-modal.tsx` exists; owner approval workflow implemented via RPCs |
+| 6 | **Handover Flow** | ✅ Completed: Pre-use inspection photo upload and verification implemented in `handover-modal.tsx` |
 | 7 | **Neighborhood Map** | `neighborhood-map.tsx` exists but only basic Mapbox rendering; no hyperlocal 2-mile radius filter enforcement |
 | 8 | **Owner Transactions / Earnings** | Page exists with Stripe balance fetch, but breakdown of revenue vs. platform fees is basic |
 
@@ -250,25 +250,31 @@ graph TD
 ### 🟠 P1 — Should Complete Before Public Launch
 
 - [x] Remove all `console.log` statements from production code (12 instances)
-- [ ] Remove hardcoded `5.0 (Verified Neighbor)` — either implement reviews or show "New Listing"
-- [ ] Remove hardcoded `0.5 miles away` fallback — show "Distance unknown" or hide
-- [ ] Fix signup API fallback to anon key — fail explicitly if service role key is missing
-- [ ] Add client-side multi-owner cart prevention or split checkout
-- [ ] Add date availability conflict check before checkout session creation
-- [ ] Add rate limiting to remaining API routes (connect, transactions, suggestions)
-- [ ] Implement Terms of Service acceptance gate during signup
-- [ ] Add SEO metadata (`<title>`, `<meta description>`) to all public pages
+- [x] ~~Remove hardcoded `5.0 (Verified Neighbor)`~~ — ✅ Resolved: Shows real `average_rating`/`review_count` or `[NEW]` for new listings.
+- [x] ~~Remove hardcoded `0.5 miles away` fallback~~ — ✅ Resolved: Shows computed distance for logged-in users, neighborhood name for guests, or "Distance unknown".
+- [x] ~~Signup API can fall back to anon key~~ — ✅ Resolved: Now returns 503 immediately if `SUPABASE_SERVICE_ROLE_KEY` is missing.
+- [x] ~~Single-owner cart limitation not communicated~~ — ✅ Resolved: `addToCart` returns an error string on owner mismatch; cart page shows warning banner and disables checkout button.
+- [x] ~~Listing availability overlap possible~~ — ✅ Resolved: Handled in `/api/stripe/checkout` route using RPC `get_unavailable_dates_for_listing`.
+- [ ] No CSRF protection beyond middleware — API routes rely on bearer tokens but no explicit CSRF tokens for form submissions.
+- [x] ~~Add rate limiting to remaining API routes~~ — ✅ Resolved: Rate limited applied to `connect` and `transactions` endpoints. (`fetch-suggestions` was already limited).
+- [x] ~~Implement Terms of Service acceptance gate during signup~~ — ✅ Resolved: Added to `signup/page.tsx` making the checkbox a required boolean that controls form submission. Added backend validation.
+- [x] ~~Add SEO metadata to all public pages~~ — ✅ Resolved: Added specific `layout.tsx` files outlining Title and Description values for `listings`, `how-it-works`, `about`, `peace-fund`, `terms`, and `liability`.
 
 ### 🟡 P2 — Nice-to-Have for Launch Quality
 
 - [ ] Implement email/push notifications for booking lifecycle events
 - [ ] Build lightweight admin panel for dispute resolution
-- [ ] Complete the Safety Gate enforcement before high-power tool checkout
-- [ ] Complete return inspection side-by-side photo workflow
-- [ ] Implement deposit refund release mechanism
-- [ ] Add proper cancellation policy and refund processing
-- [ ] Build review aggregation and display on listing cards
+- [x] Complete the Safety Gate enforcement before high-power tool checkout
+- [x] Complete return inspection side-by-side photo workflow
+- [x] Implement renter pickup flow: capture photo(s) on pickup, upload to `rental-photos` bucket, store URLs in `rentals.pickup_photos`.
+- [x] Implement renter return flow: capture photo(s) on return, upload, store in `rentals.return_photos`, set status to `returned`.
+- [x] Add rating modal after return: star rating + optional comment, creates review for listing/owner.
+- [x] Implement deposit refund release mechanism
+- [x] Add proper cancellation policy and refund processing
+- [x] Build review aggregation and display on listing cards
+- [x] Implement accurate owner earnings logic (Gross vs Net breakdown)
 - [ ] Implement ID verification workflow (currently only badge display)
+- [ ] Implement CSRF protection for authenticated form submissions
 - [ ] Add Playwright E2E tests for core user journeys
 - [ ] Set up error tracking (Sentry or equivalent)
 - [ ] Add CSP and security headers to `next.config.ts`

@@ -9,11 +9,15 @@ import { useState } from "react";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { SafetyModal } from "@/app/components/safety-modal";
 
 export default function CheckoutPage() {
     const { cart, clearCart } = useCart();
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [showSafetyGate, setShowSafetyGate] = useState(false);
+
+    const hasHighPowerItems = cart.some(item => item.price.riskTier === 3);
 
     const subtotal = cart.reduce((acc, item) => {
         const { subtotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
@@ -27,6 +31,14 @@ export default function CheckoutPage() {
 
     const depositTotal = cart.reduce((acc, item) => acc + item.price.deposit, 0);
     const finalTotal = subtotal + peaceFundTotal + depositTotal;
+
+    const handlePaymentClick = () => {
+        if (hasHighPowerItems) {
+            setShowSafetyGate(true);
+        } else {
+            handlePayment();
+        }
+    };
 
     const handlePayment = async () => {
         setIsProcessing(true);
@@ -155,7 +167,7 @@ export default function CheckoutPage() {
                             </div>
                             <Button
                                 className="w-full mt-6 bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12"
-                                onClick={handlePayment}
+                                onClick={handlePaymentClick}
                                 disabled={isProcessing}
                             >
                                 {isProcessing ? "Processing..." : "Pay Now"}
@@ -164,6 +176,16 @@ export default function CheckoutPage() {
                     </div>
                 </div>
             </div>
+            
+            <SafetyModal 
+                isOpen={showSafetyGate} 
+                onClose={() => setShowSafetyGate(false)} 
+                onConfirm={() => {
+                    setShowSafetyGate(false);
+                    handlePayment();
+                }} 
+            />
+
             <Footer />
         </main>
     );

@@ -56,8 +56,8 @@ export function HandoverModal({
     };
 
     const handleUpload = async () => {
-        if (selectedFiles.length < 3) {
-            setError("Please upload at least 3 photos");
+        if (selectedFiles.length < 2) {
+            setError("Please upload at least 2 photos");
             return;
         }
 
@@ -167,7 +167,7 @@ export function HandoverModal({
                                         Click to upload or drag and drop
                                     </p>
                                     <p className="text-xs text-slate-500">
-                                        Minimum 3 photos required (Front, Back, Serial Number)
+                                        Minimum 2 photos required (Front & Back/Opposite Side)
                                     </p>
                                 </label>
                             </div>
@@ -196,7 +196,7 @@ export function HandoverModal({
                             )}
 
                             <p className="text-sm text-slate-600">
-                                {selectedFiles.length}/6 photos selected (minimum 3 required)
+                                {selectedFiles.length}/6 photos selected (minimum 2 required)
                             </p>
                         </>
                     )}
@@ -253,7 +253,7 @@ export function HandoverModal({
                     {step === 1 && (
                         <Button
                             onClick={handleUpload}
-                            disabled={selectedFiles.length < 3 || uploading}
+                            disabled={selectedFiles.length < 2 || uploading}
                             className="bg-safety-orange hover:bg-safety-orange/90"
                         >
                             {uploading ? (

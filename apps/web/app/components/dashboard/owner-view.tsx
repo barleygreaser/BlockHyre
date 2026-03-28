@@ -48,6 +48,7 @@ interface RecentPayout {
 export function OwnerDashboardView() {
     const { user } = useAuth();
     const [isInspectionOpen, setIsInspectionOpen] = useState(false);
+    const [selectedReturnItem, setSelectedReturnItem] = useState<any>(null);
     const [stripeConnected, setStripeConnected] = useState(false);
     const [recentPayouts, setRecentPayouts] = useState<RecentPayout[]>([]);
     const [payoutsLoading, setPayoutsLoading] = useState(true);
@@ -107,7 +108,10 @@ export function OwnerDashboardView() {
     const [kpis, setKpis] = useState({
         activeRentals: 0,
         earnings30d: 0,
-        toolsListed: 0
+        toolsListed: 0,
+        grossRevenue30d: 0,
+        platformFees30d: 0,
+        totalCompleted: 0
     });
     const [kpiLoading, setKpiLoading] = useState(true);
     const [overdueCount, setOverdueCount] = useState(0);
@@ -127,7 +131,10 @@ export function OwnerDashboardView() {
                     setKpis({
                         activeRentals: parseInt(data[0].active_rentals_count),
                         earnings30d: parseFloat(data[0].earnings_30d),
-                        toolsListed: parseInt(data[0].tools_listed_count)
+                        toolsListed: parseInt(data[0].tools_listed_count),
+                        grossRevenue30d: parseFloat(data[0].gross_revenue_30d || 0),
+                        platformFees30d: parseFloat(data[0].platform_fees_30d || 0),
+                        totalCompleted: parseInt(data[0].total_completed || 0)
                     });
                 }
 
@@ -186,6 +193,10 @@ export function OwnerDashboardView() {
                         id,
                         status,
                         created_at,
+                        handover_photos,
+                        return_photos,
+                        renter_receive_ts,
+                        renter_return_ts,
                         renter:users!renter_id (full_name),
                         listing:listings!inner (title, owner_id)
                     `)
@@ -632,23 +643,45 @@ export function OwnerDashboardView() {
                     </div>
                 </Link>
 
-                <Link href="/dashboard/owner/transactions" className="block group active:translate-y-[2px] transition-transform">
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] shadow-sm relative overflow-hidden hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
-                        <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
-                        <div className="relative z-10 min-w-0">
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Earnings (30d)</p>
-                            {kpiLoading ? (
-                                <div className="h-7 w-16 bg-slate-100 animate-pulse rounded-lg mt-1" />
-                            ) : (
-                                <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums truncate">{formatCurrency(kpis.earnings30d)}</h3>
-                            )}
-                        </div>
-                        <div className="relative z-10 h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform flex-shrink-0">
-                            <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
-                            {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
-                        </div>
-                    </div>
-                </Link>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Link href="/dashboard/owner/transactions" className="block group active:translate-y-[2px] transition-transform">
+                                <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] shadow-sm relative overflow-hidden hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
+                                    <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
+                                    <div className="relative z-10 min-w-0">
+                                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Net Earnings (30d)</p>
+                                        {kpiLoading ? (
+                                            <div className="h-7 w-16 bg-slate-100 animate-pulse rounded-lg mt-1" />
+                                        ) : (
+                                            <h3 className="text-xl sm:text-3xl font-bold text-emerald-600 font-mono tabular-nums truncate">{formatCurrency(kpis.earnings30d)}</h3>
+                                        )}
+                                    </div>
+                                    <div className="relative z-10 h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform flex-shrink-0">
+                                        <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
+                                        {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
+                                    </div>
+                                </div>
+                            </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="bg-charcoal text-white p-3 rounded-xl max-w-[220px]">
+                            <div className="space-y-1.5 text-[11px] font-mono">
+                                <div className="flex justify-between gap-4">
+                                    <span className="text-concrete/60">Gross Revenue</span>
+                                    <span className="font-bold">{formatCurrency(kpis.grossRevenue30d)}</span>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                    <span className="text-red-400">Platform Fee</span>
+                                    <span className="text-red-400">-{formatCurrency(kpis.platformFees30d)}</span>
+                                </div>
+                                <div className="border-t border-white/10 pt-1.5 flex justify-between gap-4">
+                                    <span className="text-emerald-400 font-bold">Net to You</span>
+                                    <span className="text-emerald-400 font-bold">{formatCurrency(kpis.earnings30d)}</span>
+                                </div>
+                            </div>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
 
                 <Link href="/dashboard/inventory" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm relative overflow-hidden">
@@ -692,7 +725,13 @@ export function OwnerDashboardView() {
                                             <h4 className="font-bold text-slate-900 text-base">{item.listing.title}</h4>
                                             <p className="text-sm text-slate-500">Returned by <span className="font-medium text-slate-700">{item.renter.full_name || 'Renter'}</span></p>
                                         </div>
-                                        <Button onClick={() => setIsInspectionOpen(true)} className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20">
+                                        <Button 
+                                            onClick={() => {
+                                                setSelectedReturnItem(item);
+                                                setIsInspectionOpen(true);
+                                            }} 
+                                            className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20"
+                                        >
                                             <Eye className="mr-2 h-4 w-4" />
                                             Inspect & Release
                                         </Button>
@@ -1024,7 +1063,7 @@ export function OwnerDashboardView() {
                             </button>
                             <h3 className="text-base font-bold font-serif text-slate-900 mb-2">Pro Tip</h3>
                             <p className="text-slate-600 text-sm leading-relaxed">
-                                Adding a link to the manufacturer's manual increases your tool's safety rating and reduces accident disputes by 40%.
+                                Adding a link to the manufacturer&apos;s manual increases your tool&apos;s safety rating and reduces accident disputes by 40%.
                             </p>
                             <Link href="/add-tool">
                                 <Button variant="link" className="text-safety-orange font-bold p-0 mt-3 h-auto text-xs uppercase tracking-wider hover:text-safety-orange/80">
@@ -1034,13 +1073,31 @@ export function OwnerDashboardView() {
                         </div>
                     )}
                 </div>
-
             </div>
 
-            <ReturnInspectionModal
-                isOpen={isInspectionOpen}
-                onClose={() => setIsInspectionOpen(false)}
-            />
+            {/* Inspection Overlay */}
+            {selectedReturnItem && (
+                <ReturnInspectionModal
+                    isOpen={isInspectionOpen}
+                    onClose={() => {
+                        setIsInspectionOpen(false);
+                        setSelectedReturnItem(null);
+                    }}
+                    rentalId={selectedReturnItem.id}
+                    listingTitle={selectedReturnItem.listing.title}
+                    renterName={selectedReturnItem.renter.full_name}
+                    pickupPhotos={selectedReturnItem.handover_photos || []}
+                    returnPhotos={selectedReturnItem.return_photos || []}
+                    pickupDate={selectedReturnItem.renter_receive_ts}
+                    returnDate={selectedReturnItem.renter_return_ts}
+                    onSuccess={() => {
+                        // Refresh data
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {/* Verification Helper Tooltip */}
         </div>
     );
 }

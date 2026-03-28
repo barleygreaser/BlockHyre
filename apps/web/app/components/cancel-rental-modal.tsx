@@ -29,12 +29,24 @@ export function CancelRentalModal({
         setIsSubmitting(true);
 
         try {
-            const { error: rpcError } = await supabase.rpc('cancel_rental_request', {
-                p_rental_id: rentalId
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                setError("You must be logged in to cancel a booking.");
+                return;
+            }
+
+            const response = await fetch("/api/rentals/cancel", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ rentalId })
             });
 
-            if (rpcError) {
-                setError(rpcError.message);
+            const data = await response.json();
+            if (!response.ok) {
+                setError(data.error || "Failed to cancel booking.");
                 return;
             }
 

@@ -78,7 +78,9 @@ export async function POST(req: Request) {
                         total_paid: session.amount_total ? session.amount_total / 100 : 0,
                         daily_price_snapshot: listing.daily_price,
                         risk_fee_snapshot: riskTier,
-                        stripe_session_id: session.id
+                        stripe_session_id: session.id,
+                        stripe_payment_intent_id: session.payment_intent as string,
+                        deposit_amount_snapshot: listing.deposit_amount || 0
                     });
 
                 if (rentalError) {

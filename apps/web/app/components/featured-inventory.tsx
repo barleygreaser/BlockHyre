@@ -60,13 +60,15 @@ export const FeaturedInventory = memo(({ listings, onRentClick, loading }: Featu
             title: tool.title || tool.description || "Untitled Tool",
             image: tool.images?.[0] || "",
             price: tool.daily_price,
-            deposit: tool.deposit || 100,
+            deposit: tool.deposit_amount || 100,
             category: tool.category?.name || "General",
             isHeavyMachinery: tool.is_high_powered,
             coordinates: { latitude: 0, longitude: 0 },
             distance: tool.distance,
             acceptsBarter: tool.accepts_barter,
-            instantBook: tool.booking_type === 'instant'
+            instantBook: tool.booking_type === 'instant',
+            ownerRating: tool.owner_average_rating ?? tool.owner?.average_rating ?? 0,
+            ownerReviewCount: tool.owner_review_count ?? tool.owner?.review_count ?? 0
         }));
     }, [filteredListings]);
 

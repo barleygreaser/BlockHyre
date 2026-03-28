@@ -51,11 +51,16 @@ export type Listing = {
     owner_id?: string;
     location_address?: string;
     preferred_pickup_time?: string;
+    owner_average_rating?: number;
+    owner_review_count?: number;
     owner?: {
         id: string;
         full_name: string;
         profile_photo_url: string;
         is_id_verified: boolean;
+        average_rating?: number;
+        review_count?: number;
+        neighborhoods?: { name: string } | null;
     };
 };
 
@@ -122,12 +127,17 @@ export const useMarketplace = () => {
                     is_high_powered,
                     accepts_barter,
                     booking_type,
+                    deposit_amount,
                     status,
                     categories (
                         name,
                         risk_daily_fee,
                         risk_tier,
                         deductible_amount
+                    ),
+                    owner:users!owner_id (
+                        average_rating,
+                        review_count
                     )
                 `)
                 .eq('status', 'active')
@@ -139,7 +149,9 @@ export const useMarketplace = () => {
             // Map 'categories' (DB relation) to 'category' (UI interface)
             const mappedListings = (data || []).map((item: any) => ({
                 ...item,
-                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1, deductible_amount: 0 }
+                category: item.categories || item.category || { name: 'Unknown', risk_daily_fee: 0, risk_tier: 1, deductible_amount: 0 },
+                owner_average_rating: item.owner?.average_rating ?? 0,
+                owner_review_count: item.owner?.review_count ?? 0
             }));
 
             setListings(mappedListings as Listing[]);
@@ -175,7 +187,7 @@ export const useMarketplace = () => {
             if (data.owner_id) {
                 const { data: userData } = await supabase
                     .from('users')
-                    .select('id, full_name, profile_photo_url, is_id_verified')
+                    .select('id, full_name, profile_photo_url, is_id_verified, average_rating, review_count, neighborhoods(name)')
                     .eq('id', data.owner_id)
                     .single();
 
@@ -308,7 +320,9 @@ export const useMarketplace = () => {
                 // Extra fields for UI
                 images: item.images,
                 distance: item.distance_miles,
-                coordinates: { latitude: item.latitude, longitude: item.longitude }
+                coordinates: { latitude: item.latitude, longitude: item.longitude },
+                owner_average_rating: item.owner_average_rating ?? 0,
+                owner_review_count: item.owner_review_count ?? 0
             }));
 
             // Client-side text filtering fallback (when RPC doesn't support search_query)

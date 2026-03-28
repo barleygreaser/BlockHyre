@@ -3,8 +3,8 @@ import Image from "next/image";
 import { memo } from "react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
-import { ShieldCheck, ArrowRight, Zap } from "lucide-react";
-import { generateSlug } from "@/lib/utils";
+import { ShieldCheck, ArrowRight, Zap, Star } from "lucide-react";
+import { cn, generateSlug } from "@/lib/utils";
 import { Tool } from "@/app/components/tool-card";
 
 interface FeaturedToolCardProps {
@@ -91,10 +91,14 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
                             <span className="text-slate-600 font-bold">${tool.deposit}</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
-                            <span className="text-slate-300">Status</span>
+                            <span className="text-slate-300">Rating</span>
                             <span className="flex items-center gap-1">
-                                <ShieldCheck className="w-3 h-3 text-emerald-500" />
-                                <span className="text-emerald-600 font-bold">Verified</span>
+                                <Star className={cn("w-3 h-3", (tool.ownerReviewCount ?? 0) > 0 ? "text-safety-orange fill-safety-orange" : "text-slate-300")} />
+                                <span className={cn("font-bold", (tool.ownerReviewCount ?? 0) > 0 ? "text-slate-600" : "text-slate-400")}>
+                                    {(tool.ownerReviewCount ?? 0) > 0
+                                        ? `${Number(tool.ownerRating).toFixed(1)} (${tool.ownerReviewCount})`
+                                        : "New"}
+                                </span>
                             </span>
                         </div>
                     </div>

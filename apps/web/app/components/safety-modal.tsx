@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { X, CheckCircle, AlertTriangle, FileText } from "lucide-react";
+import { X, CheckSquare, Square, AlertTriangle, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SafetyModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onConfirm: () => void;
 }
 
-export function SafetyModal({ isOpen, onClose }: SafetyModalProps) {
+export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
     const [checks, setChecks] = useState({
         manual: false,
         waiver: false,
@@ -35,111 +36,109 @@ export function SafetyModal({ isOpen, onClose }: SafetyModalProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+            <div className="w-full max-w-lg bg-signal-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col border border-workshop-gray/20">
 
-                {/* Header */}
-                <div className="bg-slate-900 p-6 flex justify-between items-start">
-                    <div>
-                        <div className="flex items-center gap-2 text-safety-orange mb-1">
-                            <AlertTriangle className="h-5 w-5" />
-                            <span className="text-xs font-bold uppercase tracking-wider">Safety First</span>
+                {/* Industrial Header */}
+                <div className="bg-charcoal p-8 flex justify-between items-center shrink-0 border-b-4 border-amber-500">
+                    <div className="flex gap-4 items-center">
+                        <div className="h-14 w-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                            <ShieldAlert className="h-7 w-7 text-amber-500" />
                         </div>
-                        <h2 className="text-2xl font-bold text-white font-serif">Safety Check Required</h2>
-                        <p className="text-slate-400 text-sm mt-1">
-                            Please confirm the following to proceed with your rental.
-                        </p>
+                        <div>
+                            <h2 className="text-2xl font-bold text-signal-white font-display uppercase tracking-tighter">SAFETY CLEARANCE REQUIRED</h2>
+                            <p className="text-concrete/60 text-[10px] font-mono font-bold uppercase tracking-widest mt-1">HIGH-POWER TIER 3 EQUIPMENT DETECTED</p>
+                        </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="text-slate-400 hover:text-white transition-colors"
+                </div>
+
+                {/* Main Viewport */}
+                <div className="p-10 space-y-6">
+                    <p className="text-sm font-serif text-slate-700 leading-relaxed mb-6">
+                        You are requesting a Tier 3 / High-Power item. To release the security lock and proceed to checkout, you must acknowledge the following operational protocols.
+                    </p>
+
+                    <div className="space-y-4">
+                        <button
+                            onClick={() => toggleCheck('manual')}
+                            className={cn(
+                                "w-full text-left flex items-start gap-4 p-5 border-2 transition-all",
+                                checks.manual ? "border-amber-500 bg-amber-50/50" : "border-[#333333] hover:border-amber-500/50"
+                            )}>
+                            <div className="mt-0.5 shrink-0">
+                                {checks.manual ? (
+                                    <CheckSquare className="h-6 w-6 text-amber-600" />
+                                ) : (
+                                    <Square className="h-6 w-6 text-slate-400" />
+                                )}
+                            </div>
+                            <div>
+                                <span className="font-bold text-slate-900 font-mono tracking-widest text-xs uppercase block">MANUAL VERIFICATION</span>
+                                <span className="text-xs font-serif text-slate-600 mt-1 block">I confirm I understand the operating procedures and safety constraints of this equipment.</span>
+                            </div>
+                        </button>
+
+                        <button
+                            onClick={() => toggleCheck('waiver')}
+                            className={cn(
+                                "w-full text-left flex items-start gap-4 p-5 border-2 transition-all",
+                                checks.waiver ? "border-amber-500 bg-amber-50/50" : "border-[#333333] hover:border-amber-500/50"
+                            )}>
+                            <div className="mt-0.5 shrink-0">
+                                {checks.waiver ? (
+                                    <CheckSquare className="h-6 w-6 text-amber-600" />
+                                ) : (
+                                    <Square className="h-6 w-6 text-slate-400" />
+                                )}
+                            </div>
+                            <div>
+                                <span className="font-bold text-slate-900 font-mono tracking-widest text-xs uppercase block">LIABILITY WAIVER</span>
+                                <span className="text-xs font-serif text-slate-600 mt-1 block">I accept full responsibility for safe operation and assume all risks associated with use.</span>
+                            </div>
+                        </button>
+
+                        <button
+                            onClick={() => toggleCheck('inspection')}
+                            className={cn(
+                                "w-full text-left flex items-start gap-4 p-5 border-2 transition-all",
+                                checks.inspection ? "border-amber-500 bg-amber-50/50" : "border-[#333333] hover:border-amber-500/50"
+                            )}>
+                            <div className="mt-0.5 shrink-0">
+                                {checks.inspection ? (
+                                    <CheckSquare className="h-6 w-6 text-amber-600" />
+                                ) : (
+                                    <Square className="h-6 w-6 text-slate-400" />
+                                )}
+                            </div>
+                            <div>
+                                <span className="font-bold text-slate-900 font-mono tracking-widest text-xs uppercase block">CONDITION PROTOCOL</span>
+                                <span className="text-xs font-serif text-slate-600 mt-1 block">I agree to submit required photographic condition reports before unlocking the tool.</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                {/* High-Performance Footer */}
+                <div className="p-10 bg-workshop-gray/5 border-t border-workshop-gray/10 flex flex-col sm:flex-row justify-between items-center gap-6 shrink-0">
+                    <button 
+                        onClick={onClose} 
+                        className="group font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors font-bold mr-auto"
                     >
-                        <X className="h-6 w-6" />
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity mr-1">[</span> 
+                        CANCEL CHECKOUT 
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity ml-1">]</span>
                     </button>
-                </div>
 
-                {/* Content */}
-                <div className="p-6 space-y-4">
-
-                    <label className={cn(
-                        "flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-all",
-                        checks.manual ? "border-green-500 bg-green-50" : "border-slate-200 hover:border-slate-300"
-                    )}>
-                        <div className={cn(
-                            "mt-0.5 h-5 w-5 rounded border flex items-center justify-center shrink-0 transition-colors",
-                            checks.manual ? "bg-green-500 border-green-500 text-white" : "border-slate-300 bg-white"
-                        )}>
-                            {checks.manual && <CheckCircle className="h-3.5 w-3.5" />}
-                        </div>
-                        <input
-                            type="checkbox"
-                            className="hidden"
-                            checked={checks.manual}
-                            onChange={() => toggleCheck('manual')}
-                        />
-                        <div>
-                            <span className="font-semibold text-slate-900 block">I have read the Safety Manual</span>
-                            <span className="text-xs text-slate-500">Confirm you understand the operating procedures.</span>
-                        </div>
-                    </label>
-
-                    <label className={cn(
-                        "flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-all",
-                        checks.waiver ? "border-green-500 bg-green-50" : "border-slate-200 hover:border-slate-300"
-                    )}>
-                        <div className={cn(
-                            "mt-0.5 h-5 w-5 rounded border flex items-center justify-center shrink-0 transition-colors",
-                            checks.waiver ? "bg-green-500 border-green-500 text-white" : "border-slate-300 bg-white"
-                        )}>
-                            {checks.waiver && <CheckCircle className="h-3.5 w-3.5" />}
-                        </div>
-                        <input
-                            type="checkbox"
-                            className="hidden"
-                            checked={checks.waiver}
-                            onChange={() => toggleCheck('waiver')}
-                        />
-                        <div>
-                            <span className="font-semibold text-slate-900 block">Liability Waiver & Assumption of Risk</span>
-                            <span className="text-xs text-slate-500">You accept full responsibility for safe operation.</span>
-                        </div>
-                    </label>
-
-                    <label className={cn(
-                        "flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-all",
-                        checks.inspection ? "border-green-500 bg-green-50" : "border-slate-200 hover:border-slate-300"
-                    )}>
-                        <div className={cn(
-                            "mt-0.5 h-5 w-5 rounded border flex items-center justify-center shrink-0 transition-colors",
-                            checks.inspection ? "bg-green-500 border-green-500 text-white" : "border-slate-300 bg-white"
-                        )}>
-                            {checks.inspection && <CheckCircle className="h-3.5 w-3.5" />}
-                        </div>
-                        <input
-                            type="checkbox"
-                            className="hidden"
-                            checked={checks.inspection}
-                            onChange={() => toggleCheck('inspection')}
-                        />
-                        <div>
-                            <span className="font-semibold text-slate-900 block">Pre-Rental Photo Inspection</span>
-                            <span className="text-xs text-slate-500">Agree to document tool condition before use.</span>
-                        </div>
-                    </label>
-
-                </div>
-
-                {/* Footer */}
-                <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-                    <Button variant="ghost" onClick={onClose}>Cancel</Button>
                     <Button
+                        onClick={() => {
+                            if (allChecked) {
+                                onConfirm();
+                            }
+                        }}
                         disabled={!allChecked}
-                        className={cn(
-                            "transition-all duration-300",
-                            allChecked ? "bg-safety-orange hover:bg-safety-orange/90" : "bg-slate-300 text-slate-500"
-                        )}
+                        className="bg-amber-600 hover:bg-amber-700 text-white font-bold h-12 rounded-none px-8 transition-all duration-200 shadow-[0_4px_0_0_#b45309] hover:shadow-[0_6px_0_0_#b45309] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none w-full sm:w-auto"
                     >
-                        Proceed to Payment
+                        ACKNOWLEDGE & PROCEED
                     </Button>
                 </div>
             </div>

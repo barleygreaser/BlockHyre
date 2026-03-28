@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Initialize Supabase Admin (Service Role needed to update user table securely)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -35,6 +36,14 @@ export async function POST(request: Request) {
 
         if (authError || !user) {
             return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
+        }
+
+        // Security: Rate Limit (10 requests per minute per user — generous for re-onboarding)
+        if (!checkRateLimit(`connect_${user.id}`, 10, 60000)) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again later." },
+                { status: 429 }
+            );
         }
 
         // 2. Check if user already has a stripe_account_id

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { isBefore, isSameDay, addDays, parseISO } from "date-fns";
 
 // Initialize Supabase Admin for secure listing verification
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -107,6 +108,7 @@ export async function POST(request: Request) {
         // 3. Prepare Line Items and verify prices server-side
         // Removed unused totalAmount
         let totalPlatformFee = 0;
+        let totalDepositAmount = 0;
         const lineItems = [];
 
         // For simplicity in this step, we take the first owner's stripe account for destination charges
@@ -132,6 +134,52 @@ export async function POST(request: Request) {
 
             const dbListing = listings.find(l => l.id === item.id);
             if (!dbListing) continue;
+
+            // Security: Date Availability Conflict Check
+            const { data: unavailableDates, error: datesError } = await supabaseAdmin.rpc('get_unavailable_dates_for_listing', {
+                p_listing_id: item.id
+            });
+
+            if (datesError) {
+                console.error("Availability Check Error:", datesError);
+                return NextResponse.json({ error: "Failed to verify availability. Please try again." }, { status: 500 });
+            }
+
+            // Parse existing rental dates into a flat array of unavailable Date objects
+            const blockedDates: Date[] = [];
+            unavailableDates?.forEach((rental: any) => {
+                const getLocalDateFromUTC = (dateStr: string) => {
+                    if (!dateStr) return new Date();
+                    if (dateStr.length <= 10) return parseISO(dateStr);
+                    const d = parseISO(dateStr);
+                    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+                };
+                let current = getLocalDateFromUTC(rental.start_date);
+                const end = getLocalDateFromUTC(rental.end_date);
+                while (isBefore(current, end) || isSameDay(current, end)) {
+                    blockedDates.push(new Date(current));
+                    current = addDays(current, 1);
+                }
+            });
+
+            // Parse requested dates
+            const reqStart = new Date(item.dates.from);
+            const reqEnd = new Date(item.dates.to);
+            let checkDate = new Date(reqStart);
+            
+            // Check if any requested date falls within a blocked date
+            let hasConflict = false;
+            while (isBefore(checkDate, reqEnd) || isSameDay(checkDate, reqEnd)) {
+                if (blockedDates.some(blocked => isSameDay(checkDate, blocked))) {
+                    hasConflict = true;
+                    break;
+                }
+                checkDate = addDays(checkDate, 1);
+            }
+
+            if (hasConflict) {
+                return NextResponse.json({ error: `The item "${item.title}" is no longer available for the requested dates.` }, { status: 409 });
+            }
 
             const riskTier = dbListing.categories?.risk_tier || 1;
 
@@ -163,6 +211,7 @@ export async function POST(request: Request) {
             // totalAmount += itemTotal; // Unused
             // Platform Fee = Peace Fund + Platform Commission (let's say we take the peace fund as our fee)
             totalPlatformFee += peaceFundTotal;
+            totalDepositAmount += deposit;
         }
 
         // 4. Create Stripe Checkout Session
@@ -204,7 +253,8 @@ export async function POST(request: Request) {
                 })))
             },
             payment_intent_data: {
-                application_fee_amount: Math.round(totalPlatformFee * 100),
+                // Platform keeps Platform Fee AND Deposit. The Owner only receives the base Rental Fee.
+                application_fee_amount: Math.round((totalPlatformFee + totalDepositAmount) * 100),
                 transfer_data: {
                     destination: firstOwnerStripeId,
                 },

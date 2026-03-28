@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import { Checkbox } from "@/app/components/ui/checkbox";
 
 import { AuthGoogleButton } from "@/app/components/auth-google-button";
 import { useAuthRedirect } from "@/app/hooks/use-auth-redirect";
@@ -26,7 +27,8 @@ export default function SignupPage() {
         email: "",
         username: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        tosAccepted: false
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -57,6 +59,11 @@ export default function SignupPage() {
         setError("");
 
         if (!validateForm()) return;
+        
+        if (!formData.tosAccepted) {
+            setError("You must agree to the Terms of Service to create an account.");
+            return;
+        }
 
         setLoading(true);
 
@@ -206,6 +213,19 @@ export default function SignupPage() {
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
                                         />
+                                    </div>
+
+                                    <div className="flex items-start space-x-2 pt-2">
+                                        <Checkbox
+                                            id="tosAccepted"
+                                            name="tosAccepted"
+                                            checked={formData.tosAccepted}
+                                            onCheckedChange={(checked: boolean) => setFormData({ ...formData, tosAccepted: checked })}
+                                            className="mt-1 border-slate-300 data-[state=checked]:bg-safety-orange data-[state=checked]:border-safety-orange"
+                                        />
+                                        <label htmlFor="tosAccepted" className="text-sm text-slate-600 leading-snug cursor-pointer">
+                                            By creating an account, I agree to BlockHyre's <Link href="/terms" className="text-safety-orange hover:underline">Terms of Service</Link>, <Link href="/liability" className="text-safety-orange hover:underline">Liability Waiver</Link>, and acknowledge the <Link href="/peace-fund" className="text-safety-orange hover:underline">Peace Fund rules</Link>. <span className="text-red-500">*</span>
+                                        </label>
                                     </div>
                                 </div>
 

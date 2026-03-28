@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -25,6 +26,14 @@ export async function GET(request: Request) {
 
         if (authError || !user) {
             return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
+        }
+
+        // Security: Rate Limit (30 requests per minute — generous because dashboard polls this)
+        if (!checkRateLimit(`transactions_${user.id}`, 30, 60000)) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again later." },
+                { status: 429 }
+            );
         }
 
         const { data: profile } = await supabaseAdmin

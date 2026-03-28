@@ -145,7 +145,9 @@ export default function InventoryPage() {
                 coordinates: listing.coordinates || userLocation,
                 distance: listing.distance, // Use distance from RPC
                 tier: tier,
-                ownerVerified: true // Mock for now
+                ownerVerified: true, // Mock for now
+                ownerRating: listing.owner_average_rating ?? listing.owner?.average_rating ?? 0,
+                ownerReviewCount: listing.owner_review_count ?? listing.owner?.review_count ?? 0
             };
         });
     }, [listings, userLocation]);

@@ -11,7 +11,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { RescheduleModal } from "@/app/components/reschedule-modal";
 import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
 import { HandoverModal } from "@/app/components/modals/handover-modal";
+import { ReturnModal } from "@/app/components/modals/return-modal";
 import { ExtensionModal } from "@/app/components/extension-modal";
+import { RatingModal } from "@/app/components/modals/rating-modal";
 import Image from "next/image";
 import { CountdownTimer } from "@/app/components/countdown-timer";
 
@@ -41,7 +43,9 @@ interface UpcomingBooking {
 interface RentalHistory {
     rental_id: string;
     listing_id: string;
+    owner_id: string;
     listing_title: string;
+    listing_image_url: string;
     end_date: string;
     has_review: boolean;
 }
@@ -69,6 +73,7 @@ export function RenterDashboardView() {
     const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
     const [handoverModalOpen, setHandoverModalOpen] = useState(false);
+    const [returnModalOpen, setReturnModalOpen] = useState(false);
     const [extensionModalOpen, setExtensionModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<UpcomingBooking | null>(null);
     const [selectedRental, setSelectedRental] = useState<ActiveRental | null>(null);
@@ -76,6 +81,20 @@ export function RenterDashboardView() {
     const [cancelPendingModalOpen, setCancelPendingModalOpen] = useState(false);
     const [selectedPendingRequest, setSelectedPendingRequest] = useState<PendingRequest | null>(null);
     const [pendingExtensionRentalIds, setPendingExtensionRentalIds] = useState<Set<string>>(new Set());
+    const [pendingRatingRental, setPendingRatingRental] = useState<RentalHistory | null>(null);
+    const [dismissedRatingRentalId, setDismissedRatingRentalId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (rentalHistory.length > 0) {
+            const firstUnreviewed = rentalHistory.find(r => !r.has_review && r.rental_id !== dismissedRatingRentalId);
+            if (firstUnreviewed) {
+                const timer = setTimeout(() => {
+                    setPendingRatingRental(firstUnreviewed);
+                }, 1000);
+                return () => clearTimeout(timer);
+            }
+        }
+    }, [rentalHistory, dismissedRatingRentalId]);
 
     useEffect(() => {
         async function fetchRenterData() {
@@ -391,6 +410,17 @@ export function RenterDashboardView() {
                                                     Request Extension
                                                 </Button>
                                             )}
+                                            <Button
+                                                variant="outline"
+                                                className="w-full border-emerald-500/30 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all"
+                                                onClick={() => {
+                                                    setSelectedRental(rental);
+                                                    setReturnModalOpen(true);
+                                                }}
+                                            >
+                                                <Package className="mr-2 h-4 w-4" />
+                                                Return Tool
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -725,6 +755,21 @@ export function RenterDashboardView() {
                 />
             )}
 
+            {selectedRental && (
+                <ReturnModal
+                    isOpen={returnModalOpen}
+                    onClose={() => {
+                        setReturnModalOpen(false);
+                        setSelectedRental(null);
+                    }}
+                    rentalId={selectedRental.rental_id}
+                    listingTitle={selectedRental.listing_title}
+                    onSuccess={() => {
+                        window.location.reload();
+                    }}
+                />
+            )}
+
             {selectedPendingRequest && (
                 <CancelRentalModal
                     isOpen={cancelPendingModalOpen}
@@ -736,6 +781,27 @@ export function RenterDashboardView() {
                     listingTitle={selectedPendingRequest.listing_title}
                     onSuccess={() => {
                         window.location.reload();
+                    }}
+                />
+            )}
+
+            {pendingRatingRental && (
+                <RatingModal
+                    isOpen={!!pendingRatingRental}
+                    onClose={() => {
+                        setDismissedRatingRentalId(pendingRatingRental.rental_id);
+                        setPendingRatingRental(null);
+                    }}
+                    rentalId={pendingRatingRental.rental_id}
+                    ownerId={pendingRatingRental.owner_id}
+                    listingTitle={pendingRatingRental.listing_title}
+                    listingImageUrl={pendingRatingRental.listing_image_url}
+                    onSuccess={() => {
+                        // Optimistically update the list so it doesn't pop up again
+                        setRentalHistory(prev => prev.map(r => 
+                            r.rental_id === pendingRatingRental.rental_id ? { ...r, has_review: true } : r
+                        ));
+                        setPendingRatingRental(null);
                     }}
                 />
             )}

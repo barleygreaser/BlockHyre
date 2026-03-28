@@ -8,6 +8,7 @@ export type CartItem = {
     id: string;
     title: string;
     image: string;
+    owner_id: string;
     price: {
         daily: number;
         deposit: number;
@@ -22,7 +23,8 @@ export type CartItem = {
 
 type CartContextType = {
     cart: CartItem[];
-    addToCart: (item: CartItem) => void;
+    /** Returns an error message string if the item cannot be added, otherwise undefined. */
+    addToCart: (item: CartItem) => string | undefined;
     removeFromCart: (id: string) => void;
     clearCart: () => void;
     cartTotal: number;
@@ -57,7 +59,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('blockhyre_cart', JSON.stringify(cart));
     }, [cart]);
 
-    const addToCart = (item: CartItem) => {
+    const addToCart = (item: CartItem): string | undefined => {
+        // Enforce single-owner cart: Stripe destination charges only support one connected account per session.
+        const existingOwnerId = cart.find((i) => i.owner_id !== item.owner_id)?.owner_id;
+        if (existingOwnerId) {
+            return "Your cart already contains an item from a different owner. Please checkout or clear your cart before adding items from another owner.";
+        }
+
         setCart((prev) => {
             const existing = prev.find((i) => i.id === item.id);
             if (existing) {
@@ -65,6 +73,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             }
             return [...prev, item];
         });
+
+        return undefined;
     };
 
     const removeFromCart = (id: string) => {

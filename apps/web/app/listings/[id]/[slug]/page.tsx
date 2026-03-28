@@ -40,6 +40,7 @@ import {
 } from "@/app/components/ui/tooltip";
 import { useAuth } from "@/app/context/auth-context";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { calculateDistance } from "@/lib/location";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
 import { upsertConversation } from "@/app/lib/chat-helpers";
@@ -49,7 +50,7 @@ import { toast } from "sonner";
 export default function ListingDetailsPage() {
     const { id } = useParams();
     const searchParams = useSearchParams();
-    const { user } = useAuth();
+    const { user, userProfile } = useAuth();
     const { fetchListing, fetchUnavailableDates } = useMarketplace();
     const { addToCart } = useCart();
     const router = useRouter();
@@ -123,10 +124,11 @@ export default function ListingDetailsPage() {
             return;
         }
 
-        addToCart({
+        const error = addToCart({
             id: listing.id,
             title: listing.title,
             image: listing.images?.[0] || "",
+            owner_id: listing.owner_id!,
             price: {
                 daily: listing.daily_price,
                 deposit: deposit,
@@ -138,6 +140,11 @@ export default function ListingDetailsPage() {
             },
             days
         });
+
+        if (error) {
+            toast.error("Cannot add to cart", { description: error });
+            return;
+        }
 
         toast.success("Item added to cart!");
     };
@@ -331,11 +338,49 @@ export default function ListingDetailsPage() {
                                 <div className="flex items-center gap-4 text-sm text-slate-600">
                                     <div className="flex items-center gap-1">
                                         <MapPin className="h-4 w-4 text-safety-orange" />
-                                        <span>{listing.distance ? listing.distance.toFixed(1) : '0.5'} miles away</span>
+                                        <span>
+                                            {(() => {
+                                                const d = listing.distance;
+                                                const isLoggedIn = !!user;
+
+                                                if (isLoggedIn) {
+                                                    if (d !== undefined && d !== null) {
+                                                        return `${d.toFixed(1)} miles away`;
+                                                    }
+                                                    // @ts-ignore
+                                                    if (userProfile?.neighborhood && listing.latitude && listing.longitude) {
+                                                        const calculatedDist = calculateDistance(
+                                                            { latitude: userProfile.neighborhood.centerLat, longitude: userProfile.neighborhood.centerLon },
+                                                            // @ts-ignore
+                                                            { latitude: listing.latitude, longitude: listing.longitude }
+                                                        );
+                                                        return `${calculatedDist.toFixed(1)} miles away`;
+                                                    }
+                                                }
+                                                
+                                                // Fallback for logged-out users or missing distance
+                                                // @ts-ignore
+                                                if (listing.owner?.neighborhoods?.name) {
+                                                    // @ts-ignore
+                                                    return `In ${listing.owner.neighborhoods.name}`;
+                                                }
+                                                
+                                                return 'Distance unknown';
+                                            })()}
+                                        </span>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                                        <span>5.0 (Verified Neighbor)</span>
+                                    <div className="flex items-center gap-1.5">
+                                        <Star className={cn("h-3.5 w-3.5", listing.owner?.review_count && listing.owner.review_count > 0 ? "text-safety-orange fill-safety-orange" : "text-slate-300")} />
+                                        <span className="font-mono text-sm font-bold text-slate-700">
+                                            {listing.owner?.review_count && listing.owner.review_count > 0
+                                                ? `[${Number(listing.owner.average_rating).toFixed(1)}]`
+                                                : "[NEW]"}
+                                        </span>
+                                        <span className="text-xs text-slate-500 uppercase tracking-widest ml-1">
+                                            {listing.owner?.review_count && listing.owner.review_count > 0
+                                                ? `${listing.owner.review_count} REVIEWS`
+                                                : "VERIFIED NEIGHBOR"}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
