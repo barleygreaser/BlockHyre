@@ -46,7 +46,10 @@ import { upsertConversation } from "@/app/lib/chat-helpers";
 import { FavoriteButton } from "@/app/components/favorite-button";
 import { toast } from "sonner";
 
+// ⚡ Bolt Optimization: Instantiate Intl formatters at module scope to avoid expensive
+// object creation on every render cycle or function call.
 const dateFormatter = new Intl.DateTimeFormat(undefined);
+const priceDisplay = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 export default function ListingDetailsPage() {
     const { id } = useParams();
@@ -178,8 +181,6 @@ export default function ListingDetailsPage() {
     // Calculate transaction details for system message context
     const getSystemMessageContext = () => {
         if (!listing || !user) return undefined;
-
-        const priceDisplay = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
         return {
             tool_name: listing.title,
