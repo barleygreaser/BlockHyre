@@ -28,6 +28,10 @@ vi.mock('@/lib/stripe', () => ({
   },
 }));
 
+vi.mock('@/lib/email', () => ({
+  sendEmail: vi.fn().mockResolvedValue({ success: true }),
+}));
+
 vi.mock('next/headers', () => ({
   headers: vi.fn(async () => ({
     get: vi.fn().mockReturnValue('mock-signature'),
@@ -97,10 +101,29 @@ describe('Stripe Webhook API (POST)', () => {
     
     // Mock no existing rental found
     mockSupabase.limit.mockResolvedValueOnce({ data: [], error: null });
-    // Mock listing found
+    // Mock listing found (1st call)
     mockSupabase.single.mockResolvedValueOnce({ 
-        data: { daily_price: 100, deposit_amount: 100, categories: { risk_tier: 1 } }, 
+        data: { 
+            daily_price: 100, 
+            deposit_amount: 100, 
+            categories: { risk_tier: 1 },
+            owner_id: 'user_456',
+            tools: { name: 'Drill' },
+            owner: { email: 'owner@example.com', full_name: 'Bob Owner' }
+        }, 
         error: null 
+    });
+
+    // Mock renter found (2nd call)
+    mockSupabase.single.mockResolvedValueOnce({
+        data: { email: 'renter@example.com', full_name: 'Alice Renter' },
+        error: null
+    });
+
+    // Mock platform_settings found (3rd call)
+    mockSupabase.single.mockResolvedValueOnce({
+        data: { seller_fee_percent: 15 },
+        error: null
     });
 
     const req = createRequest(JSON.stringify(mockSession));

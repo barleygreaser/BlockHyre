@@ -262,8 +262,8 @@ graph TD
 
 ### 🟡 P2 — Nice-to-Have for Launch Quality
 
-- [ ] Implement email/push notifications for booking lifecycle events
-- [ ] Build lightweight admin panel for dispute resolution
+- [ ] Implement transactional email notifications via Resend for booking lifecycles
+- [x] ~~Build lightweight admin panel for dispute resolution~~ — 🛑 **Deferred to V2:** Disputes will be handled manually via Supabase/Stripe dashboards for MVP.
 - [x] Complete the Safety Gate enforcement before high-power tool checkout
 - [x] Complete return inspection side-by-side photo workflow
 - [x] Implement renter pickup flow: capture photo(s) on pickup, upload to `rental-photos` bucket, store URLs in `rentals.pickup_photos`.

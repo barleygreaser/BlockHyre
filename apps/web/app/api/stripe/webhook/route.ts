@@ -1,8 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
+import { stripe } from "@/lib/stripe";
+import { sendEmail } from "@/lib/email";
+import BookingRequestedEmail from "../../../../emails/booking-requested";
+import BookingApprovedEmail from "../../../../emails/booking-approved";
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,14 +56,27 @@ export async function POST(req: Request) {
         try {
             // 2. Insert Rental Records for each item
             for (const item of cartItems) {
-                // Fetch listing details for snapshots
+                // Fetch listing, tool name, owner details, and renter details for snapshots and emails
                 const { data: listing } = await supabaseAdmin
                     .from("listings")
-                    .select("daily_price, deposit_amount, categories(risk_tier)")
+                    .select(`
+                        daily_price, 
+                        deposit_amount, 
+                        categories(risk_tier),
+                        owner_id,
+                        tools (name),
+                        owner:owner_id(email, full_name)
+                    `)
                     .eq("id", item.listing_id)
                     .single() as any;
 
-                if (!listing) continue;
+                const { data: renter } = await supabaseAdmin
+                    .from("users")
+                    .select("email, full_name")
+                    .eq("id", renterId)
+                    .single() as any;
+
+                if (!listing || !renter) continue;
 
                 const riskTier = listing.categories?.risk_tier || 1;
 
@@ -88,8 +104,48 @@ export async function POST(req: Request) {
                     throw rentalError;
                 }
 
-                // 3. Mark the listing as potentially unavailable or just notify (workflow choice)
-                // For now, we trust the database rental check
+                // 3. Send Notifications via Resend
+                const startDateStr = new Date(item.start_date).toLocaleDateString();
+                const endDateStr = new Date(item.end_date).toLocaleDateString();
+                const toolName = listing.tools?.name || "a tool";
+                
+                // Calculate owner earnings (gross - platform fee)
+                const { data: platformSettings } = await supabaseAdmin.from("platform_settings").select("seller_fee_percent").single() as any;
+                const sellerFeeObj = platformSettings?.seller_fee_percent || 15;
+                const platformFee = (listing.daily_price * item.days) * (sellerFeeObj / 100);
+                const netEarnings = (listing.daily_price * item.days) - platformFee;
+
+                // Send to Owner: Booking Requested (Pickup Coordination)
+                if (listing.owner?.email) {
+                    await sendEmail({
+                        to: listing.owner.email,
+                        subject: `New Rental Request for ${toolName}`,
+                        react: BookingRequestedEmail({
+                            renterName: renter.full_name || "A neighbor",
+                            toolName: toolName,
+                            startDate: startDateStr,
+                            endDate: endDateStr,
+                            totalEarnings: `$${netEarnings.toFixed(2)}`,
+                            dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?role=owner`
+                        })
+                    });
+                }
+
+                // Send to Renter: Booking Approved
+                if (renter.email) {
+                    await sendEmail({
+                        to: renter.email,
+                        subject: `Your rental for ${toolName} was approved!`,
+                        react: BookingApprovedEmail({
+                            ownerName: listing.owner?.full_name || "The owner",
+                            toolName: toolName,
+                            startDate: startDateStr,
+                            endDate: endDateStr,
+                            dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my-rentals`
+                        })
+                    });
+                }
+
             }
 
             console.log(`Successfully processed ${cartItems.length} rentals for session ${session.id}`);
