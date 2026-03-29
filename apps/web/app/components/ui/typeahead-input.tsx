@@ -59,18 +59,25 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
 
             // Handle categories locally (no API call)
             if (type === 'category' && categories) {
+                // ⚡ Bolt: Optimize pre-sorted arrays by using O(N) partitioning
+                // instead of chaining .filter().sort() with expensive localeCompare.
+                // Since `categories` is already alphabetically sorted, pushing matches
+                // into separate arrays preserves the original alphabetical sub-sorting.
                 const lowerQuery = debouncedValue.toLowerCase();
-                const filtered = categories
-                    .filter(cat => cat.name.toLowerCase().includes(lowerQuery))
-                    .sort((a, b) => {
-                        const aLower = a.name.toLowerCase();
-                        const bLower = b.name.toLowerCase();
-                        const aStarts = aLower.startsWith(lowerQuery);
-                        const bStarts = bLower.startsWith(lowerQuery);
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-                        return a.name.localeCompare(b.name);
-                    });
+                const exactStarts: any[] = [];
+                const contains: any[] = [];
+
+                for (let i = 0; i < categories.length; i++) {
+                    const cat = categories[i];
+                    const lowerName = cat.name.toLowerCase();
+                    if (lowerName.startsWith(lowerQuery)) {
+                        exactStarts.push(cat);
+                    } else if (lowerName.includes(lowerQuery)) {
+                        contains.push(cat);
+                    }
+                }
+
+                const filtered = exactStarts.concat(contains);
                 setSuggestions(filtered);
                 if (filtered.length > 0) setIsOpen(true);
                 return;

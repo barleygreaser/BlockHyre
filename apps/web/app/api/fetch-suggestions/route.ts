@@ -65,15 +65,23 @@ export async function GET(request: Request) {
                 return NextResponse.json({ error: "Failed to fetch suggestions" }, { status: 500 });
             }
 
-            // Sort: prioritize results that START with the query
-            const sortedData = result.data.sort((a: { name: string }, b: { name: string }) => {
-                const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
-                const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+            // ⚡ Bolt: Optimize pre-sorted arrays by using O(N) partitioning
+            // instead of using Array.prototype.sort which can be O(N log N).
+            // Since the database returns results already alphabetically sorted,
+            // partitioning into separate arrays preserves the original sub-sorting.
+            const exactStarts: { name: string }[] = [];
+            const contains: { name: string }[] = [];
+            const lowerQuery = query.toLowerCase();
 
-                if (aStartsWith && !bStartsWith) return -1;
-                if (!aStartsWith && bStartsWith) return 1;
-                return 0; // Keep alphabetical order for same priority
-            });
+            for (let i = 0; i < result.data.length; i++) {
+                const item = result.data[i];
+                if (item.name.toLowerCase().startsWith(lowerQuery)) {
+                    exactStarts.push(item);
+                } else {
+                    contains.push(item);
+                }
+            }
+            const sortedData = exactStarts.concat(contains);
 
             // Map to expected format
             data = sortedData.map((item: { name: string }) => ({ brand: item.name }));
@@ -106,15 +114,23 @@ export async function GET(request: Request) {
             error = result.error;
 
             if (result.data) {
-                // Sort: prioritize results that START with the query
-                const sortedData = result.data.sort((a: { name: string }, b: { name: string }) => {
-                    const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
-                    const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+                // ⚡ Bolt: Optimize pre-sorted arrays by using O(N) partitioning
+                // instead of using Array.prototype.sort which can be O(N log N).
+                // Since the database returns results already alphabetically sorted,
+                // partitioning into separate arrays preserves the original sub-sorting.
+                const exactStarts: { name: string; tier_suggestion?: string }[] = [];
+                const contains: { name: string; tier_suggestion?: string }[] = [];
+                const lowerQuery = query.toLowerCase();
 
-                    if (aStartsWith && !bStartsWith) return -1;
-                    if (!aStartsWith && bStartsWith) return 1;
-                    return 0; // Keep alphabetical order for same priority
-                });
+                for (let i = 0; i < result.data.length; i++) {
+                    const item = result.data[i];
+                    if (item.name.toLowerCase().startsWith(lowerQuery)) {
+                        exactStarts.push(item);
+                    } else {
+                        contains.push(item);
+                    }
+                }
+                const sortedData = exactStarts.concat(contains);
 
                 // Map to expected format
                 data = sortedData.map((item: { name: string; tier_suggestion?: string }) => ({
