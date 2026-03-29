@@ -89,3 +89,7 @@
 ## 2025-03-28 - Intl formatter instantiations are costly
 **Learning:** Instantiating `Intl` objects (e.g., `Intl.NumberFormat`, `Intl.DateTimeFormat`) inside React components or within mapping functions is a significant performance bottleneck due to the cost of setup. They should not be instantiated during render cycles.
 **Action:** Always extract `Intl` formatter initializations out of the component scope into the module scope, reusing a single instance.
+
+## 2025-03-30 - Optimize filtering of pre-sorted arrays
+**Learning:** To optimize filtering of pre-sorted arrays (e.g., category lists in `TypeaheadInput` or database results with `order` clause), avoid chaining `.filter().sort()` with `localeCompare` for match prioritization. This causes unnecessary O(N log N) sorting overhead.
+**Action:** Use an O(N) traversal to partition items into separate arrays based on match quality (e.g., `startsWith` vs `includes`) and concatenate them. This approach preserves the original alphabetical sub-sorting automatically and improves performance.
