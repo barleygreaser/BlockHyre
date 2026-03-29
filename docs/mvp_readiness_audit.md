@@ -116,12 +116,12 @@ graph TD
 | 3 | **Auth Error Page** | ✅ Resolved: Dedicated error page added for OAuth failures. |
 | 4 | **Global Error Boundary** | ✅ Resolved: Component-level error boundaries added across core routes. |
 | 5 | **User ID Verification** | 🟡 References to "ID Verified" badges exist but no verification workflow is implemented. |
-| 6 | **Push / Email Notifications** | 🟡 No notification system for booking requests, approvals, returns, or messages. |
-| 7 | **Admin / Moderation Panel** | 🟡 No admin interface for dispute resolution, user management, or content moderation. |
+| 6 | **Push / Email Notifications** | ✅ Implemented: Transactional emails via Resend for booking requests, approvals, and admin dispute alerts. |
+| 7 | **Admin / Moderation Panel** | 🟡 **Self-Managed:** Using Supabase SQL Views for growth metrics and Stripe Dashboard for financial management. Custom panel deferred to V2. |
 | 8 | **Testing Suite** | 🔴 **CRITICAL** — Zero test files (`*.test.*`, `*.spec.*`) in the entire web app. No unit, integration, or E2E tests. |
 | 9 | **Rate Limiting on all APIs** | 🟡 Only signup and checkout have rate limiting; webhook, connect, transactions, suggestions don't. |
 | 10 | **Terms of Service Acceptance** | 🟡 Terms page exists but no checkbox/acceptance gate during signup or checkout. |
-| 11 | **Listing Availability Enforcement** | 🟡 Webhook inserts rental but comment says "trust the database rental check" — no actual conflict prevention. |
+| 11 | ~~**Listing Availability Enforcement**~~ | ✅ Resolved: DB Trigger prevents double-booking overlaps; webhook issues automatic Stripe refund. |
 | 12 | **Deposit Return / Refund Flow** | 🟡 Deposits are charged but no automated or manual release mechanism exists. |
 | 13 | **Cancel Rental Flow** | 🟡 `cancel-rental-modal.tsx` exists but cancellation policy and refund processing are absent. |
 
@@ -212,14 +212,14 @@ graph TD
 | **Core User Flows** (auth, browse, book, pay) | 25% | 85% | 21.3 |
 | **Owner Flows** (list, manage, approve, payout) | 20% | 80% | 16.0 |
 | **Security & Data Protection** | 20% | 60% | 12.0 |
-| **Error Handling & UX Polish** | 15% | 40% | 6.0 |
-| **Testing & CI/CD** | 10% | 5% | 0.5 |
-| **Operational Readiness** (monitoring, notifications, admin) | 10% | 15% | 1.5 |
+| **Operational Readiness** (monitoring, notifications, admin) | 10% | 75% | 7.5 |
+| **Testing & CI/CD** | 10% | 15% | 1.5 |
+| **Error Handling & UX Polish** | 15% | 60% | 9.0 |
 
-### **P(ready) = ~57%**
+### **P(ready) = ~68%**
 
 > [!IMPORTANT]
-> The app has a solid foundation with impressive UI/UX work and well-structured code. The core rental marketplace loop works. However, it's **not launch-ready** due to missing password reset, zero test coverage, unpolished error handling (`alert()` usage), and missing operational infrastructure (notifications, admin panel, error boundaries).
+> The app has a solid foundation with impressive UI/UX work and well-structured code. The core rental marketplace loop works. Operational readiness has improved significantly with the addition of the Resend notification engine and automated platform health metrics. Current focus is shifting toward finishing the remaining P1 security and conflict-prevention logic.
 
 ---
 
@@ -262,7 +262,7 @@ graph TD
 
 ### 🟡 P2 — Nice-to-Have for Launch Quality
 
-- [ ] Implement transactional email notifications via Resend for booking lifecycles
+- [x] Implement transactional email notifications via Resend for booking lifecycles
 - [ ] **Deferred to V2:** Scheduled reminders (Crons/Inngest) for upcoming returns/pickups
 - [ ] **Deferred to V2:** Implement PostHog for behavioral analytics (Funnels, Session Replays) to identify UI friction points and measure true conversion rates.
 - [x] ~~Build lightweight admin panel for dispute resolution~~ — 🛑 **Deferred to V2:** Disputes will be handled manually via Supabase/Stripe dashboards for MVP.

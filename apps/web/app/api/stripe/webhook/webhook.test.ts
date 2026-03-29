@@ -25,6 +25,9 @@ vi.mock('@/lib/stripe', () => ({
     webhooks: {
       constructEvent: vi.fn(),
     },
+    refunds: {
+      create: vi.fn().mockResolvedValue({ id: 're_test_refund' }),
+    }
   },
 }));
 
@@ -137,6 +140,47 @@ describe('Stripe Webhook API (POST)', () => {
         stripe_session_id: 'cs_test_new',
         renter_id: 'user_123'
     }));
+  });
+
+  it('issues a Stripe refund when database overlap trigger (P0001) fires', async () => {
+     const mockSession = {
+      id: 'cs_test_overlap',
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          id: 'cs_test_overlap',
+          amount_total: 10000,
+          payment_intent: 'pi_test_123',
+          metadata: {
+             renter_id: 'user_123',
+             cart_items: JSON.stringify([{ listing_id: 'tool_1', days: 1 }])
+          }
+        }
+      }
+    };
+
+    (stripe.webhooks.constructEvent as any).mockReturnValue(mockSession);
+    mockSupabase.limit.mockResolvedValueOnce({ data: [], error: null });
+    
+    mockSupabase.single.mockResolvedValueOnce({ 
+        data: { daily_price: 100, deposit_amount: 100, categories: { risk_tier: 1 } }, 
+        error: null 
+    });
+    mockSupabase.single.mockResolvedValueOnce({ data: { email: 'renter@example.com' }, error: null });
+
+    // Mock the P0001 Trigger Error on Insert
+    mockSupabase.insert.mockResolvedValueOnce({ error: { code: 'P0001', message: 'Overlap detected' } });
+
+    const req = createRequest(JSON.stringify(mockSession));
+    const response = await POST(req);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.received).toBe(true);
+    expect(stripe.refunds.create).toHaveBeenCalledWith({
+        payment_intent: 'pi_test_123',
+        reason: 'requested_by_customer',
+    });
   });
 
   it('returns 400 for invalid signature', async () => {

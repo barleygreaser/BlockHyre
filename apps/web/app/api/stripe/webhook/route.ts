@@ -100,6 +100,26 @@ export async function POST(req: Request) {
                     });
 
                 if (rentalError) {
+                    // Conflict Prevention: Catch our custom PostgreSQL Trigger (P0001) for Overlapping Dates
+                    if (rentalError.code === 'P0001' && session.payment_intent) {
+                        console.error(`Double-booking prevented for listing ${item.listing_id}. Issuing automatic refund for PaymentIntent ${session.payment_intent}`);
+                        
+                        try {
+                            // Issue a full refund immediately since the database rejected the overlapping rental
+                            await stripe.refunds.create({
+                                payment_intent: session.payment_intent as string,
+                                reason: 'requested_by_customer', // Best fit for "order canceled"
+                            });
+                            console.log(`Successfully refunded PaymentIntent ${session.payment_intent}`);
+                            // Do not throw; we handled it cleanly. Continue processing other items if any.
+                            continue;
+                        } catch (refundError) {
+                            console.error(`CRITICAL: Failed to issue overlap refund for ${session.payment_intent}`, refundError);
+                            // Throw here so the webhook fails and we can manually investigate it in Stripe Dashboard
+                            throw refundError;
+                        }
+                    }
+
                     console.error("Failed to insert rental:", rentalError);
                     throw rentalError;
                 }
