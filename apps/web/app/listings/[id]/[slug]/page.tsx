@@ -47,6 +47,9 @@ import { upsertConversation } from "@/app/lib/chat-helpers";
 import { FavoriteButton } from "@/app/components/favorite-button";
 import { toast } from "sonner";
 
+const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const dateFormatter = new Intl.DateTimeFormat('en-US');
+
 export default function ListingDetailsPage() {
     const { id } = useParams();
     const searchParams = useSearchParams();
@@ -186,14 +189,12 @@ export default function ListingDetailsPage() {
     const getSystemMessageContext = () => {
         if (!listing || !user) return undefined;
 
-        const priceDisplay = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-
         return {
             tool_name: listing.title,
             owner_name: listing.owner?.full_name || 'the owner',
             renter_name: user.user_metadata?.full_name || user.email || 'A neighbor',
-            start_date: dateRange?.from?.toLocaleDateString() || 'TBD',
-            end_date: dateRange?.to?.toLocaleDateString() || 'TBD',
+            start_date: dateRange?.from ? dateFormatter.format(dateRange.from) : 'TBD',
+            end_date: dateRange?.to ? dateFormatter.format(dateRange.to) : 'TBD',
             total_cost: totalDue.toFixed(2),
             owner_notes_link: `${window.location.origin}/messages`
         };

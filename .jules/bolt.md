@@ -58,3 +58,7 @@
 ## 2025-02-18 - Unified Supabase Subscriptions
 **Learning:** Multiple hooks subscribing to the same Supabase table/channel (e.g. `useUnreadCount` and `useMessageNotifications`) create independent WebSocket connections, multiplying database load and client overhead. Consolidating these into a single Context Provider (`MessageContext`) reduces connections by 50%+ and ensures consistent state application-wide.
 **Action:** Always check for existing subscriptions before creating new ones. Use Context to share Realtime data across components.
+
+## 2025-03-30 - Intl Formatters Instantiation Overhead
+**Learning:** Initializing `Intl.NumberFormat` or `Intl.DateTimeFormat` (or using `toLocaleDateString` which does so implicitly) inside React components, especially within `.map()` loops or formatting functions, creates a new expensive object on every render for every item. This can severely degrade performance in lists or dashboards (like `OwnerBookingsPage`, `TransactionsPage`, `RenterRentalsPage`).
+**Action:** Always extract `Intl.NumberFormat` and `Intl.DateTimeFormat` to static constants at the module level when the formatting options are static, rather than creating them inside functional closures or render loops.
