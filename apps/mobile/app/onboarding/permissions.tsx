@@ -12,12 +12,19 @@ export default function OnboardingPermissions() {
     const router = useRouter();
 
     const handleCompleteOnboarding = async () => {
+        const navigateToTabs = () => {
+            if (router.canDismiss()) {
+                router.dismiss();
+            }
+            router.replace('/(tabs)/');
+        };
+
         try {
             await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-            router.replace('/(tabs)');
+            navigateToTabs();
         } catch (e) {
             console.error('Failed to save onboarding status', e);
-            router.replace('/(tabs)');
+            navigateToTabs();
         }
     };
 
