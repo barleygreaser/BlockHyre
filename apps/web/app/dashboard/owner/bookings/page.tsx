@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
@@ -193,10 +194,17 @@ export default function OwnerBookingsPage() {
                             >
                                 <div className="flex gap-4">
                                     {/* Tool Image */}
+                                    {/* ⚡ Bolt Optimization: Replaced unoptimized <img> tag with next/image for automatic sizing and format conversion */}
+                                    {/* Impact: Significantly reduces image payload size on the bookings list page, improving LCP and rendering speed */}
                                     <div className="w-20 h-20 md:w-28 md:h-28 bg-slate-100 rounded-2xl overflow-hidden flex-shrink-0 relative border border-slate-100">
                                         {rental.listing_images && rental.listing_images.length > 0 ? (
-                                            // eslint-disable-next-line @next/next/no-img-element
-                                            <img src={rental.listing_images[0]} alt={rental.listing_title} className="w-full h-full object-cover" />
+                                            <Image
+                                                src={rental.listing_images[0]}
+                                                alt={rental.listing_title}
+                                                fill
+                                                sizes="(max-width: 768px) 80px, 112px"
+                                                className="object-cover"
+                                            />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-slate-300">
                                                 <Wrench className="h-8 w-8" />
