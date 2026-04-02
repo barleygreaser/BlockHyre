@@ -58,3 +58,7 @@
 ## 2025-02-18 - Unified Supabase Subscriptions
 **Learning:** Multiple hooks subscribing to the same Supabase table/channel (e.g. `useUnreadCount` and `useMessageNotifications`) create independent WebSocket connections, multiplying database load and client overhead. Consolidating these into a single Context Provider (`MessageContext`) reduces connections by 50%+ and ensures consistent state application-wide.
 **Action:** Always check for existing subscriptions before creating new ones. Use Context to share Realtime data across components.
+
+## 2024-05-24 - React Native FlatList Optimization
+**Learning:** `Intl.DateTimeFormat` instantiation inside a `renderItem` method of a React Native `FlatList` significantly degrades scrolling performance because it recalculates on every re-render and for every item. Further, if `renderItem` is not wrapped in `useCallback`, it gets re-created every time the parent re-renders, breaking `FlatList` internal optimizations.
+**Action:** Always pre-initialize `Intl.DateTimeFormat` outside the component scope if options are static. Always wrap `renderItem` in `useCallback` with proper dependencies to ensure referential stability.
