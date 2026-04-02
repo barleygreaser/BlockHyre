@@ -1,10 +1,11 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Platform, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Radar, CheckCircle2, ShieldCheck, Handshake, Home, Store } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Dots } from '../../components/onboarding/steps/dots';
 import { StepButtons } from '../../components/onboarding/steps/step-buttons';
@@ -52,6 +53,7 @@ const STEPS = [
 export default function HowItWorksScreen() {
     const router = useRouter();
     const flatListRef = useRef<FlatList>(null);
+    const insets = useSafeAreaInsets();
 
     const activeIndex = useSharedValue(0);
     const [isLastStep, setIsLastStep] = useState(false);
@@ -153,7 +155,7 @@ export default function HowItWorksScreen() {
     return (
         <View style={styles.container}>
             <StatusBar style="dark" />
-            <SafeAreaView style={styles.safeArea}>
+            <View style={[styles.safeArea, { paddingTop: insets.top }]}>
 
                 {/* Header Spacer (removed header) */}
                 <View style={{ height: 20 }} />
@@ -176,7 +178,7 @@ export default function HowItWorksScreen() {
                 </View>
 
                 {/* Controls */}
-                <View style={styles.controlsContainer}>
+                <View style={[styles.controlsContainer, { paddingBottom: Math.max(40, insets.bottom + 20) }]}>
                     <Dots activeIndex={activeIndex} count={TOTAL_STEPS} dotSize={10} />
                     <StepButtons
                         activeIndex={activeIndex}
@@ -187,7 +189,7 @@ export default function HowItWorksScreen() {
                     />
                 </View>
 
-            </SafeAreaView>
+            </View>
         </View>
     );
 }
@@ -199,7 +201,6 @@ const styles = StyleSheet.create({
     },
     safeArea: {
         flex: 1,
-        paddingTop: Platform.OS === 'android' ? 30 : 0,
     },
     stepContainer: {
         flex: 1,

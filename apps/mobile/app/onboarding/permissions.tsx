@@ -1,15 +1,17 @@
 import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
 export default function OnboardingPermissions() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     const handleCompleteOnboarding = async () => {
         const navigateToTabs = () => {
@@ -44,7 +46,7 @@ export default function OnboardingPermissions() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
             <StatusBar style="dark" />
 
             <View style={styles.content}>
@@ -68,7 +70,7 @@ export default function OnboardingPermissions() {
                 </View>
             </View>
 
-            <View style={styles.footer}>
+            <View style={[styles.footer, { paddingBottom: Math.max(40, insets.bottom + 20) }]}>
                 <TouchableOpacity
                     style={styles.primaryButton}
                     onPress={handleEnableLocation}
@@ -84,7 +86,7 @@ export default function OnboardingPermissions() {
                     <Text style={styles.secondaryButtonText}>Not Now</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
