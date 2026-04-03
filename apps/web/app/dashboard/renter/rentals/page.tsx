@@ -93,6 +93,24 @@ const STATUS_STYLES: Record<string, { badge: string; dot: string; label: string 
     },
 };
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+});
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+});
+
+const shortDateFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+});
+
 export default function RenterRentalsPage() {
     const { user } = useAuth();
     const [rentals, setRentals] = useState<RenterRental[]>([]);
@@ -111,29 +129,16 @@ export default function RenterRentalsPage() {
         window.history.pushState(null, "", `#${filter}`);
     };
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount);
+    const formatCurrency = (amount: number) => currencyFormatter.format(amount);
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) return "";
-        return new Date(dateStr).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-        });
+        return dateFormatter.format(new Date(dateStr));
     };
 
     const formatDateShort = (dateStr: string) => {
         if (!dateStr) return "";
-        return new Date(dateStr).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-        });
+        return shortDateFormatter.format(new Date(dateStr));
     };
 
     const categorizeRental = (rental: RenterRental): FilterKey => {

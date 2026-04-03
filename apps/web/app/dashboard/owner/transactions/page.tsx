@@ -67,6 +67,24 @@ const PAYOUT_STATUS_CONFIG: Record<string, { label: string; color: string; icon:
     canceled: { label: "Canceled", color: "bg-slate-500 text-white", icon: XCircle },
 };
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+});
+
+const shortDateFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+});
+
 export default function TransactionsPage() {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
@@ -78,29 +96,16 @@ export default function TransactionsPage() {
     const [sellerFeePercent, setSellerFeePercent] = useState<number>(0);
     const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        }).format(amount);
+    const formatCurrency = (amount: number) => currencyFormatter.format(amount);
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) return "";
-        return new Date(dateStr).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-        });
+        return dateFormatter.format(new Date(dateStr));
     };
 
     const formatDateShort = (dateStr: string) => {
         if (!dateStr) return "";
-        return new Date(dateStr).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-        });
+        return shortDateFormatter.format(new Date(dateStr));
     };
 
     const calculateOwnerRevenue = (rentalFee: number) => {

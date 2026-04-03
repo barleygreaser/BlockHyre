@@ -62,3 +62,7 @@
 ## 2024-05-24 - React Native FlatList Optimization
 **Learning:** `Intl.DateTimeFormat` instantiation inside a `renderItem` method of a React Native `FlatList` significantly degrades scrolling performance because it recalculates on every re-render and for every item. Further, if `renderItem` is not wrapped in `useCallback`, it gets re-created every time the parent re-renders, breaking `FlatList` internal optimizations.
 **Action:** Always pre-initialize `Intl.DateTimeFormat` outside the component scope if options are static. Always wrap `renderItem` in `useCallback` with proper dependencies to ensure referential stability.
+
+## 2024-06-25 - React Component Render Cycle Intl Instantiation Performance Bottleneck
+**Learning:** Instantiating formatters like `Intl.DateTimeFormat` or `Intl.NumberFormat` inside React components (especially within rendering loops mapping over arrays) causes measurable performance overhead due to repeated object initialization during every re-render and iteration.
+**Action:** Pre-initialize these objects at the module level outside the component render cycle to dramatically improve list rendering performance.
