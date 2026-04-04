@@ -59,6 +59,21 @@ export default function InventoryPage() {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedTier, setSelectedTier] = useState<string | null>(null);
     const [verifiedOwnersOnly, setVerifiedOwnersOnly] = useState(false);
+
+    // Initialize search query from URL parameter safely on client side
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialSearch = urlParams.get("search");
+            const initialCategory = urlParams.get("category");
+            if (initialSearch) {
+                setSearchQuery(initialSearch);
+            }
+            if (initialCategory) {
+                setSelectedCategories([initialCategory]);
+            }
+        }
+    }, []);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
     const [maxDistance, setMaxDistance] = useState(DEFAULT_LOCAL_RADIUS);
     const [acceptsBarterOnly, setAcceptsBarterOnly] = useState(false);

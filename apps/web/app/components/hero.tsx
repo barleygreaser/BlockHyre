@@ -2,14 +2,64 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
-import { MapPin, ChevronDown } from "lucide-react";
+import { MapPin, ChevronDown, Loader2 } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
+import { useDebounce } from "@/app/hooks/use-debounce";
 
 export function Hero() {
     const { user } = useAuth();
     const headlineRef = useRef<HTMLDivElement>(null);
+    const searchWrapperRef = useRef<HTMLDivElement>(null);
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [suggestions, setSuggestions] = useState<{tool_name?: string; category_path?: string}[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+    const debouncedQuery = useDebounce(searchQuery, 300);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchSuggestions = async () => {
+            if (debouncedQuery.length < 2) {
+                if (isMounted) setSuggestions([]);
+                return;
+            }
+            if (isMounted) setIsSearching(true);
+            try {
+                const res = await fetch(`/api/fetch-suggestions?query=${encodeURIComponent(debouncedQuery)}&type=tool`);
+                const data = await res.json();
+                if (isMounted && data.suggestions) {
+                    setSuggestions(data.suggestions);
+                    setShowSuggestions(true);
+                }
+            } catch (error) {
+                console.error("Error fetching suggestions:", error);
+            } finally {
+                if (isMounted) setIsSearching(false);
+            }
+        };
+
+        fetchSuggestions();
+        return () => { isMounted = false; };
+    }, [debouncedQuery]);
+
+    const handleSelectSuggestion = (itemName: string) => {
+        setSearchQuery(itemName);
+        setShowSuggestions(false);
+        window.location.href = `/listings?search=${encodeURIComponent(itemName)}`;
+    };
 
     useEffect(() => {
         let tl: any = null;
@@ -115,7 +165,7 @@ export function Hero() {
 
     return (
         <section
-            className="relative h-[100vh] min-h-[700px] w-full overflow-hidden flex items-center"
+            className="relative h-[100vh] min-h-[700px] w-full flex items-center"
             id="hero"
         >
             {/* FOUC Prevention Script */}
@@ -166,54 +216,102 @@ export function Hero() {
             </div>
 
             {/* Content */}
-            <div className="container relative z-10 mx-auto px-4 md:px-8" ref={headlineRef}>
-                <div className="max-w-3xl space-y-8">
+            <div className="container relative z-40 mx-auto px-4 md:px-8 mt-12 md:mt-24" ref={headlineRef}>
+                <div className="max-w-3xl space-y-6 md:space-y-8">
                     {/* Headline */}
                     <div className="space-y-2">
-                        <h1>
-                            <span className="hero-line-1 block text-2xl sm:text-3xl md:text-4xl font-bold font-sans text-white/90 leading-tight tracking-tight">
-                                Turn your neighborhood into a
+                        <h1 className="flex flex-col gap-1">
+                            <span className="hero-line-1 block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-sans font-bold text-white leading-tight tracking-tight">
+                                Own the project,
                             </span>
-                            <span className="hero-line-2 block text-[4.5rem] sm:text-[6rem] md:text-[8rem] lg:text-[10rem] font-display text-safety-orange leading-[0.85] tracking-tight uppercase"
-                                style={{ fontStyle: "italic" }}
-                            >
-                                FACTORY.
+                            <span className="hero-line-2 block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-sans text-safety-orange font-bold leading-tight tracking-tight">
+                                not the tools.
                             </span>
                         </h1>
                     </div>
 
                     {/* Subtitle */}
-                    <p className="hero-subtitle text-lg md:text-xl text-white/80 leading-relaxed max-w-xl font-light">
-                        Rent woodworking tools, power tools, and gardening equipment from
-                        verified neighbors within 2 miles. Every rental protected by{" "}
-                        <span className="text-safety-orange font-medium">The Peace Fund</span>.
+                    <p className="hero-subtitle text-base md:text-lg text-white/80 leading-relaxed max-w-xl font-light">
+                        High-quality gear from neighbors you trust. Nearby and ready when you are.
                     </p>
 
-                    {/* CTAs */}
-                    <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                        <Link href="/listings" className="hero-cta w-full sm:w-auto">
+                    {/* Search Bar */}
+                    <div ref={searchWrapperRef} className="hero-cta relative w-full max-w-2xl z-50">
+                        <div className="w-full bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-2xl flex gap-2 items-center group focus-within:bg-white/20 focus-within:border-white/40 transition-all">
+                            <div className="hidden sm:flex items-center justify-center p-2.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/60 group-focus-within:text-white transition-colors"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                            </div>
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    if (!showSuggestions) setShowSuggestions(true);
+                                }}
+                                onFocus={() => {
+                                    if (suggestions.length > 0) setShowSuggestions(true);
+                                }}
+                                placeholder="Search for what you want to rent"
+                                className="bg-transparent border-none text-white placeholder:text-white/60 flex-1 px-3 py-3 sm:py-3.5 text-base sm:text-lg focus:outline-none focus:ring-0 w-full"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        window.location.href = `/listings?search=${encodeURIComponent(searchQuery)}`;
+                                    }
+                                }}
+                            />
+                            {isSearching && (
+                                <Loader2 className="h-5 w-5 animate-spin text-white/60 mr-2" />
+                            )}
                             <Button
-                                size="lg"
-                                className="magnetic-btn w-full sm:w-auto h-14 px-10 text-lg font-bold bg-safety-orange hover:bg-safety-orange-hover text-white border-none rounded-full uppercase tracking-wider"
-                                id="hero-cta-find-tools"
+                                className="bg-safety-orange hover:bg-[#CC4400] text-white font-bold py-6 px-6 sm:px-8 rounded-xl transition-all shadow-lg text-base uppercase tracking-wider"
+                                onClick={() => {
+                                    if (searchQuery) {
+                                        window.location.href = `/listings?search=${encodeURIComponent(searchQuery)}`;
+                                    } else {
+                                        window.location.href = '/listings';
+                                    }
+                                }}
                             >
-                                <MapPin className="mr-2 h-5 w-5" />
-                                Find Tools Near You
+                                Search
                             </Button>
-                        </Link>
+                        </div>
 
-                        <Link
-                            href={user ? "/add-tool" : "/signup?intent=list-tool"}
-                            className="hero-cta w-full sm:w-auto"
-                        >
-                            <Button
-                                size="lg"
-                                className="w-full sm:w-auto h-14 px-10 text-lg font-bold bg-transparent text-white border-2 border-white/30 hover:border-safety-orange hover:text-safety-orange rounded-full uppercase tracking-wider transition-all"
-                                id="hero-cta-list-tools"
+                        {/* Autocomplete Dropdown */}
+                        {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 border border-slate-100 text-left">
+                                <div className="px-5 py-3 bg-slate-50 text-sm font-semibold text-slate-800 tracking-wide border-b border-slate-200">
+                                    Tool suggestions
+                                </div>
+                                <div className="max-h-72 overflow-y-auto">
+                                    {suggestions.map((item, idx) => (
+                                        <button
+                                            key={idx}
+                                            className="w-full text-left px-5 py-3 hover:bg-slate-100 transition-colors border-b border-slate-100 last:border-0 flex flex-col items-start focus:bg-slate-100 focus:outline-none"
+                                            onClick={() => handleSelectSuggestion(item.tool_name || '')}
+                                        >
+                                            <span className="font-semibold text-slate-900 text-base">{item.tool_name}</span>
+                                            {item.category_path && (
+                                                <span className="text-sm text-slate-500 mt-0.5">{item.category_path}</span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Popular Categories */}
+                    <div className="hero-cta flex flex-wrap items-center gap-3 pt-4">
+                        <span className="text-sm font-medium text-white/80">Popular:</span>
+                        {['Power Tools', 'Lawn & Garden', 'Painting', 'Plumbing'].map((category) => (
+                            <Link
+                                key={category}
+                                href={`/listings?category=${encodeURIComponent(category)}`}
+                                className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white/90 text-sm font-medium transition-colors backdrop-blur-sm"
                             >
-                                List My Tools
-                            </Button>
-                        </Link>
+                                {category}
+                            </Link>
+                        ))}
                     </div>
 
                     {/* Trust Signal */}
