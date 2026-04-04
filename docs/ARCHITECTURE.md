@@ -149,7 +149,7 @@ The platform features a real-time messaging system for communication between own
 
 ## 8. Deployment & Infrastructure
 
-**Cloud Provider:** Vercel (Web App), Supabase (Backend/DB)  
+**Cloud Provider:** VPS (Web App), Supabase (Backend/DB)  
 **Monorepo Tooling:** Turborepo for build orchestration and caching.
 **CI/CD Pipeline:** GitHub Actions.  
 

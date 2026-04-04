@@ -89,9 +89,10 @@ export async function GET(request: Request) {
             .limit(20);
 
         if (!prefixResult.error && prefixResult.data && prefixResult.data.length === 20) {
-             data = prefixResult.data.map((item: { name: string; tier_suggestion?: string }) => ({
+             data = prefixResult.data.map((item: { name: string; tier_suggestion?: string; category_path?: string }) => ({
                 tool_name: item.name,
-                tier_suggestion: item.tier_suggestion
+                tier_suggestion: item.tier_suggestion,
+                category_path: item.category_path
             }));
         } else {
             // Fetch generic tool names from tool_name_suggestions table
@@ -117,9 +118,10 @@ export async function GET(request: Request) {
                 });
 
                 // Map to expected format
-                data = sortedData.map((item: { name: string; tier_suggestion?: string }) => ({
+                data = sortedData.map((item: { name: string; tier_suggestion?: string; category_path?: string }) => ({
                     tool_name: item.name,
-                    tier_suggestion: item.tier_suggestion
+                    tier_suggestion: item.tier_suggestion,
+                    category_path: item.category_path
                 }));
             }
         }
