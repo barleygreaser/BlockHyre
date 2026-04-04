@@ -186,8 +186,6 @@ export default function ListingDetailsPage() {
     const getSystemMessageContext = () => {
         if (!listing || !user) return undefined;
 
-        const priceDisplay = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-
         return {
             tool_name: listing.title,
             owner_name: listing.owner?.full_name || 'the owner',
