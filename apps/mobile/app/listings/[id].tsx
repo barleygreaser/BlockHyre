@@ -222,6 +222,22 @@ export default function ListingDetailScreen() {
         const ownerId = listing.owner_id || 'mock-owner-id';
         const listingId = listing.id;
 
+        // Prevent RPC crashes for Mock data
+        if (listingId.length < 20 || ownerId === 'mock-owner-id') {
+            router.push({
+                pathname: '/request-rental',
+                params: {
+                    id: listing.id,
+                    title: listing.title,
+                    price: listing.price,
+                    image: listing.image_url,
+                    startDate: dateRange.start?.toISOString().split('T')[0],
+                    endDate: dateRange.end?.toISOString().split('T')[0],
+                }
+            });
+            return;
+        }
+
         try {
             const chatId = await upsertConversation(listingId, ownerId);
 
