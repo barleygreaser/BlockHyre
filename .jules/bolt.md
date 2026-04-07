@@ -66,3 +66,7 @@
 ## 2024-04-04 - [Performance] Pre-initialize Intl.NumberFormat and Intl.DateTimeFormat objects at the module level
 **Learning:** Found multiple instances where `Intl.DateTimeFormat` and `Intl.NumberFormat` objects were instantiated inside component functions (even inside loops) or used via `date.toLocaleDateString()` during render. Instantiating formatters inside React components (especially within rendering loops mapping over arrays) causes performance overhead due to recreation on every render.
 **Action:** Pre-initialize these objects at the module level outside the component render cycle to significantly improve performance. Replace repeated `toLocaleDateString` and `Intl.NumberFormat` with a single initialized instance for that format.
+
+## 2025-02-28 - Optimizing Filter+Sort on Pre-sorted Arrays
+**Learning:** Chaining `.filter().sort()` with `String.prototype.localeCompare` on a pre-sorted array (like category lists) forces O(N log N) time complexity and slow string operations, especially when the goal is just to prioritize prefix matches (startsWith) over partial matches (includes).
+**Action:** Use a single O(N) traversal to partition items into `exactMatches` and `partialMatches` arrays based on match quality, then concatenate them. This naturally preserves the original alphabetical sub-sorting automatically with significantly less CPU overhead.

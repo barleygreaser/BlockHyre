@@ -59,15 +59,22 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
 
             // Handle categories locally (no API call)
             if (type === 'category' && categories) {
-                const filtered = categories
-                    .filter(cat => cat.name.toLowerCase().includes(debouncedValue.toLowerCase()))
-                    .sort((a, b) => {
-                        const aStarts = a.name.toLowerCase().startsWith(debouncedValue.toLowerCase());
-                        const bStarts = b.name.toLowerCase().startsWith(debouncedValue.toLowerCase());
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-                        return a.name.localeCompare(b.name);
-                    });
+                const searchLower = debouncedValue.toLowerCase();
+                const exactMatches: Suggestion[] = [];
+                const partialMatches: Suggestion[] = [];
+
+                // O(N) traversal, avoids O(N log N) sorting and slow localeCompare
+                // Since categories are pre-sorted, splitting and merging maintains order
+                for (const cat of categories) {
+                    const nameLower = cat.name.toLowerCase();
+                    if (nameLower.startsWith(searchLower)) {
+                        exactMatches.push(cat);
+                    } else if (nameLower.includes(searchLower)) {
+                        partialMatches.push(cat);
+                    }
+                }
+
+                const filtered = [...exactMatches, ...partialMatches];
                 setSuggestions(filtered);
                 if (filtered.length > 0) setIsOpen(true);
                 return;
