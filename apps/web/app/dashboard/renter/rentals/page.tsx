@@ -48,7 +48,7 @@ interface RenterRental {
     has_review: boolean;
 }
 
-type FilterKey = "all" | "active" | "upcoming" | "completed" | "cancelled";
+type FilterKey = "all" | "active" | "upcoming" | "pending" | "completed" | "cancelled";
 
 const STATUS_STYLES: Record<string, { badge: string; dot: string; label: string }> = {
     active: {
@@ -101,7 +101,7 @@ export default function RenterRentalsPage() {
 
     useEffect(() => {
         const hash = window.location.hash.replace("#", "");
-        if (hash && ["all", "active", "upcoming", "completed", "cancelled"].includes(hash)) {
+        if (hash && ["all", "active", "upcoming", "pending", "completed", "cancelled"].includes(hash)) {
             setActiveFilter(hash as FilterKey);
         }
     }, []);
@@ -146,7 +146,7 @@ export default function RenterRentalsPage() {
         if (status === "completed" || status === "returned" || status === "archived") return "completed";
         if (status === "approved" && startDate > now) return "upcoming";
         if (status === "active" || (status === "approved" && startDate <= now)) return "active";
-        if (status === "pending") return "upcoming";
+        if (status === "pending") return "pending";
         return "active";
     };
 
@@ -275,7 +275,7 @@ export default function RenterRentalsPage() {
     });
 
     const getCounts = () => {
-        const result = { all: rentals.length, active: 0, upcoming: 0, completed: 0, cancelled: 0 };
+        const result = { all: rentals.length, active: 0, upcoming: 0, pending: 0, completed: 0, cancelled: 0 };
         rentals.forEach((rental) => {
             const cat = categorizeRental(rental);
             result[cat]++;
@@ -288,6 +288,7 @@ export default function RenterRentalsPage() {
         { key: "all", label: "All", color: "bg-safety-orange" },
         { key: "active", label: "Active", color: "bg-emerald-500" },
         { key: "upcoming", label: "Upcoming", color: "bg-blue-500" },
+        { key: "pending", label: "Pending", color: "bg-amber-500" },
         { key: "completed", label: "Completed", color: "bg-slate-600" },
         { key: "cancelled", label: "Cancelled", color: "bg-red-500" },
     ];

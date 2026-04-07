@@ -619,17 +619,16 @@ export function OwnerDashboardView() {
             {/* KPI Telemetry Row — always 3 columns, fixed height at all viewports */}
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 <Link href="/dashboard/owner/bookings" className="block group active:translate-y-[2px] transition-transform">
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
-                        <div className="relative z-10">
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Tool Bookings</p>
+                    <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
+                        <div>
+                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tool Bookings</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
                                 <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.activeRentals}</h3>
                             )}
                         </div>
-                        <div className="relative z-10 h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform flex-shrink-0">
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                             <Users className="h-5 w-5 sm:h-6 sm:w-6" />
                             {!kpiLoading && overdueCount > 0 ? (
                                 <Badge className="absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-transparent border border-white">
@@ -647,17 +646,16 @@ export function OwnerDashboardView() {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link href="/dashboard/owner/transactions" className="block group active:translate-y-[2px] transition-transform">
-                                <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] shadow-sm relative overflow-hidden hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
-                                    <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
-                                    <div className="relative z-10 min-w-0">
-                                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Net Earnings (30d)</p>
+                                <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
+                                    <div className="min-w-0">
+                                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Net Earnings (30d)</p>
                                         {kpiLoading ? (
                                             <div className="h-7 w-16 bg-slate-100 animate-pulse rounded-lg mt-1" />
                                         ) : (
                                             <h3 className="text-xl sm:text-3xl font-bold text-emerald-600 font-mono tabular-nums truncate">{formatCurrency(kpis.earnings30d)}</h3>
                                         )}
                                     </div>
-                                    <div className="relative z-10 h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform flex-shrink-0">
+                                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 group-hover:bg-emerald-100 transition-colors">
                                         <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
                                         {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
                                     </div>
@@ -684,17 +682,16 @@ export function OwnerDashboardView() {
                 </TooltipProvider>
 
                 <Link href="/dashboard/inventory" className="block group active:translate-y-[2px] transition-transform">
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-6 flex items-center justify-between h-[88px] sm:h-[100px] transition-all duration-300 hover:border-safety-orange/40 hover:shadow-xl shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
-                        <div className="relative z-10">
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Tools Listed</p>
+                    <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
+                        <div>
+                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tools Listed</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
                                 <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.toolsListed}</h3>
                             )}
                         </div>
-                        <div className="relative z-10 h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-safety-orange group-hover:scale-110 transition-transform flex-shrink-0">
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-safety-orange flex-shrink-0 group-hover:bg-orange-100 transition-colors">
                             <Wrench className="h-5 w-5 sm:h-6 sm:w-6" />
                             {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
                         </div>

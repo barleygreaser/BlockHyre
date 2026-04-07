@@ -83,7 +83,7 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                         </span>
                         {(tool.isHeavyMachinery || tool.acceptsBarter) && (
                             <div className="flex gap-1">
-                                {tool.isHeavyMachinery && <AlertTriangle className="h-3 w-3 text-amber-500" />}
+                                {tool.isHeavyMachinery && <AlertTriangle className="h-3 w-3 text-safety-orange" />}
                                 {tool.acceptsBarter && <span className="text-[10px]">🍓</span>}
                             </div>
                         )}
@@ -91,7 +91,7 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
 
                     {/* Rating Pill */}
                     <div className="flex items-center gap-1 shrink-0">
-                        <Star className={cn("h-3 w-3", hasReviews ? "text-safety-orange fill-safety-orange" : "text-slate-300")} />
+                        <Star className={cn("h-3 w-3", hasReviews ? "text-electric-indigo fill-electric-indigo" : "text-slate-300")} />
                         <span className={cn("font-mono text-[11px] font-bold", hasReviews ? "text-slate-700" : "text-slate-400")}>
                             {hasReviews
                                 ? `${Number(tool.ownerRating).toFixed(1)}`
@@ -122,3 +122,4 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
 });
 
 ToolCard.displayName = "ToolCard";
+

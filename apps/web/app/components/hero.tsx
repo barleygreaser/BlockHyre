@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { MapPin, ChevronDown, Loader2 } from "lucide-react";
@@ -14,7 +13,7 @@ export function Hero() {
     const searchWrapperRef = useRef<HTMLDivElement>(null);
 
     const [searchQuery, setSearchQuery] = useState("");
-    const [suggestions, setSuggestions] = useState<{tool_name?: string; category_path?: string}[]>([]);
+    const [suggestions, setSuggestions] = useState<{ tool_name?: string; category_path?: string }[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const debouncedQuery = useDebounce(searchQuery, 300);
@@ -183,28 +182,23 @@ export function Hero() {
                     `
                 }}
             />
-            {/* Background Images — Original BlockHyre Community Photos */}
+            {/* Background Video — BlockHyre Hero */}
             <div className="absolute inset-0 z-0">
-                <Image
-                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_landscape_opt.jpg"
-                    alt="BlockHyre Community Tools - Neighbors exchanging tools"
-                    fill
-                    sizes="(max-width: 767px) 1px, 100vw"
-                    className="hidden md:block object-cover object-right"
-                    priority
-                />
-                <Image
-                    src="https://uttbptpkekijlfzvauzu.supabase.co/storage/v1/object/public/assets/hero_portrait_opt.jpg"
-                    alt="BlockHyre Community Tools - Neighbors exchanging tools"
-                    fill
-                    sizes="(max-width: 767px) 100vw, 1px"
-                    className="md:hidden object-cover object-center"
-                    priority
-                />
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster="/hero-poster.jpg"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    aria-hidden="true"
+                >
+                    <source src="/final_homepage_hero.webm" type="video/webm" />
+                </video>
 
                 {/* Gradient overlays for readability */}
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-t from-signal-white via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-signal-white/85 via-signal-white/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-signal-white/70 via-transparent to-transparent" />
 
                 {/* Subtle noise overlay */}
                 <div
@@ -219,27 +213,27 @@ export function Hero() {
             <div className="container relative z-40 mx-auto px-4 md:px-8 mt-12 md:mt-24" ref={headlineRef}>
                 <div className="max-w-3xl space-y-6 md:space-y-8">
                     {/* Headline */}
-                    <div className="space-y-2">
-                        <h1 className="flex flex-col gap-1">
-                            <span className="hero-line-1 block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-sans font-bold text-white leading-tight tracking-tight">
-                                Own the project,
+                    <div>
+                        <h1 className="flex flex-col gap-2 md:gap-3">
+                            <span className="hero-line-1 block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-eerie-black leading-[1.1] tracking-[-0.02em]">
+                                Rent what you need.
                             </span>
-                            <span className="hero-line-2 block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-sans text-safety-orange font-bold leading-tight tracking-tight">
-                                not the tools.
+                            <span className="hero-line-2 block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-electric-indigo leading-[1.1] tracking-[-0.02em]">
+                                From people on your block.
                             </span>
                         </h1>
                     </div>
 
                     {/* Subtitle */}
-                    <p className="hero-subtitle text-base md:text-lg text-white/80 leading-relaxed max-w-xl font-light">
+                    <p className="hero-subtitle text-base md:text-lg text-eerie-black/70 leading-relaxed max-w-xl font-sans font-normal">
                         High-quality gear from neighbors you trust. Nearby and ready when you are.
                     </p>
 
                     {/* Search Bar */}
                     <div ref={searchWrapperRef} className="hero-cta relative w-full max-w-2xl z-50">
-                        <div className="w-full bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-2xl flex gap-2 items-center group focus-within:bg-white/20 focus-within:border-white/40 transition-all">
+                        <div className="w-full bg-signal-white/80 backdrop-blur-md p-2 rounded-2xl border border-opal/50 shadow-xl flex gap-2 items-center group focus-within:bg-white focus-within:border-electric-indigo transition-all">
                             <div className="hidden sm:flex items-center justify-center p-2.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/60 group-focus-within:text-white transition-colors"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-eerie-black/40 group-focus-within:text-electric-indigo transition-colors"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                             </div>
                             <input
                                 type="text"
@@ -252,7 +246,7 @@ export function Hero() {
                                     if (suggestions.length > 0) setShowSuggestions(true);
                                 }}
                                 placeholder="Search for what you want to rent"
-                                className="bg-transparent border-none text-white placeholder:text-white/60 flex-1 px-3 py-3 sm:py-3.5 text-base sm:text-lg focus:outline-none focus:ring-0 w-full"
+                                className="bg-transparent border-none text-eerie-black placeholder:text-eerie-black/50 flex-1 px-3 py-3 sm:py-3.5 text-base sm:text-lg focus:outline-none focus:ring-0 w-full"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         window.location.href = `/listings?search=${encodeURIComponent(searchQuery)}`;
@@ -260,10 +254,10 @@ export function Hero() {
                                 }}
                             />
                             {isSearching && (
-                                <Loader2 className="h-5 w-5 animate-spin text-white/60 mr-2" />
+                                <Loader2 className="h-5 w-5 animate-spin text-eerie-black/40 mr-2" />
                             )}
                             <Button
-                                className="bg-safety-orange hover:bg-[#CC4400] text-white font-bold py-6 px-6 sm:px-8 rounded-xl transition-all shadow-lg text-base uppercase tracking-wider"
+                                className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold py-6 px-6 sm:px-8 rounded-xl transition-all shadow-lg text-base uppercase tracking-wider"
                                 onClick={() => {
                                     if (searchQuery) {
                                         window.location.href = `/listings?search=${encodeURIComponent(searchQuery)}`;
@@ -302,12 +296,12 @@ export function Hero() {
 
                     {/* Popular Categories */}
                     <div className="hero-cta flex flex-wrap items-center gap-3 pt-4">
-                        <span className="text-sm font-medium text-white/80">Popular:</span>
+                        <span className="text-sm font-medium text-eerie-black/70">Popular:</span>
                         {['Power Tools', 'Lawn & Garden', 'Painting', 'Plumbing'].map((category) => (
                             <Link
                                 key={category}
                                 href={`/listings?category=${encodeURIComponent(category)}`}
-                                className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white/90 text-sm font-medium transition-colors backdrop-blur-sm"
+                                className="px-4 py-1.5 rounded-full bg-opal/20 hover:bg-opal/40 border border-opal/30 text-eerie-black/90 text-sm font-medium transition-colors backdrop-blur-sm"
                             >
                                 {category}
                             </Link>
@@ -320,14 +314,14 @@ export function Hero() {
                             {[1, 2, 3, 4].map((i) => (
                                 <div
                                     key={i}
-                                    className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center text-[10px] font-bold text-white"
+                                    className="h-8 w-8 rounded-full bg-muted-gold/20 backdrop-blur-sm border-2 border-white flex items-center justify-center text-[10px] font-bold text-muted-gold"
                                 >
                                     {String.fromCharCode(64 + i)}
                                 </div>
                             ))}
                         </div>
-                        <p className="text-sm text-white/60 font-medium">
-                            Trusted by <span className="text-white font-bold">2,000+</span> homes in your neighborhood
+                        <p className="text-sm text-eerie-black/60 font-medium">
+                            Trusted by <span className="text-eerie-black font-bold">2,000+</span> homes in your block
                         </p>
                     </div>
                 </div>
@@ -339,8 +333,8 @@ export function Hero() {
                 className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-bounce cursor-pointer group focus:outline-none"
                 aria-label="Scroll down"
             >
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-charcoal/60 group-hover:text-safety-orange transition-colors">Scroll</span>
-                <ChevronDown className="h-4 w-4 text-safety-orange" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-eerie-black/60 group-hover:text-electric-indigo transition-colors">Scroll</span>
+                <ChevronDown className="h-4 w-4 text-electric-indigo" />
             </button>
         </section>
     );

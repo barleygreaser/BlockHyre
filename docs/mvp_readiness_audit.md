@@ -116,7 +116,7 @@ graph TD
 | 3 | **Auth Error Page** | ✅ Resolved: Dedicated error page added for OAuth failures. |
 | 4 | **Global Error Boundary** | ✅ Resolved: Component-level error boundaries added across core routes. |
 | 5 | **User ID Verification** | 🟡 References to "ID Verified" badges exist but no verification workflow is implemented. |
-| 6 | **Push / Email Notifications** | ✅ Implemented: Transactional emails via Resend for booking requests, approvals, and admin dispute alerts. |
+| 6 | **Push / Email Notifications** | ✅ Implemented: Transactional emails via Resend for full rental lifecycle (bookings, rejections, reminders, extensions, overdue, disputes). Non-redundant system messages auto-dispatch via `/api/notifications/system-message`. |
 | 7 | **Admin / Moderation Panel** | 🟡 **Self-Managed:** Using Supabase SQL Views for growth metrics and Stripe Dashboard for financial management. Custom panel deferred to V2. |
 | 8 | **Testing Suite** | 🔴 **CRITICAL** — Zero test files (`*.test.*`, `*.spec.*`) in the entire web app. No unit, integration, or E2E tests. |
 | 9 | **Rate Limiting on all APIs** | 🟡 Only signup and checkout have rate limiting; webhook, connect, transactions, suggestions don't. |
@@ -155,7 +155,7 @@ graph TD
 | 5 | **Signup API can fall back to anon key** | [api/signup/route.ts:81](file:///c:/Users/Christopher%20Robinson/Documents/VPS/BlockHyre_Monorepo/apps/web/app/api/signup/route.ts#L81) — `SUPABASE_SERVICE_ROLE_KEY || NEXT_PUBLIC_SUPABASE_ANON_KEY` fallback means signup could use anon key on production if service role key is missing |
 | 6 | **Single-owner cart limitation not communicated** | Checkout rejects multi-owner carts but no client-side prevention or explanation in cart UI |
 | 7 | **Listing availability overlap possible** | No date-range conflict check before checkout creation |
-| 8 | **No CSRF protection beyond middleware** | API routes rely on bearer tokens but no explicit CSRF tokens for form submissions |
+| 8 | ~~**No CSRF protection beyond middleware**~~ | ✅ Resolved: Stateless Origin/Referer Validation (OWASP-recommended) is enforced in middleware |
 
 ---
 
@@ -255,14 +255,14 @@ graph TD
 - [x] ~~Signup API can fall back to anon key~~ — ✅ Resolved: Now returns 503 immediately if `SUPABASE_SERVICE_ROLE_KEY` is missing.
 - [x] ~~Single-owner cart limitation not communicated~~ — ✅ Resolved: `addToCart` returns an error string on owner mismatch; cart page shows warning banner and disables checkout button.
 - [x] ~~Listing availability overlap possible~~ — ✅ Resolved: Handled in `/api/stripe/checkout` route using RPC `get_unavailable_dates_for_listing`.
-- [ ] No CSRF protection beyond middleware — API routes rely on bearer tokens but no explicit CSRF tokens for form submissions.
+- [x] ~~No CSRF protection beyond middleware~~ — ✅ Resolved: Relies on OWASP-recommended Stateless Origin/Referer Validation in middleware.
 - [x] ~~Add rate limiting to remaining API routes~~ — ✅ Resolved: Rate limited applied to `connect` and `transactions` endpoints. (`fetch-suggestions` was already limited).
 - [x] ~~Implement Terms of Service acceptance gate during signup~~ — ✅ Resolved: Added to `signup/page.tsx` making the checkbox a required boolean that controls form submission. Added backend validation.
 - [x] ~~Add SEO metadata to all public pages~~ — ✅ Resolved: Added specific `layout.tsx` files outlining Title and Description values for `listings`, `how-it-works`, `about`, `peace-fund`, `terms`, and `liability`.
 
 ### 🟡 P2 — Nice-to-Have for Launch Quality
 
-- [x] Implement transactional email notifications via Resend for booking lifecycles
+- [x] ~~Implement transactional email notifications via Resend for booking lifecycles~~ — ✅ Expanded: All non-redundant system message events now trigger Resend emails via `/api/notifications/system-message` route. Skip-list prevents double-emailing for events already handled by Stripe webhook.
 - [ ] **Deferred to V2:** Scheduled reminders (Crons/Inngest) for upcoming returns/pickups
 - [ ] **Deferred to V2:** Implement PostHog for behavioral analytics (Funnels, Session Replays) to identify UI friction points and measure true conversion rates.
 - [x] ~~Build lightweight admin panel for dispute resolution~~ — 🛑 **Deferred to V2:** Disputes will be handled manually via Supabase/Stripe dashboards for MVP.
@@ -276,10 +276,10 @@ graph TD
 - [x] Build review aggregation and display on listing cards
 - [x] Implement accurate owner earnings logic (Gross vs Net breakdown)
 - [ ] Implement ID verification workflow (currently only badge display)
-- [ ] Implement CSRF protection for authenticated form submissions
+- [x] ~~Implement CSRF protection for authenticated form submissions~~ — ✅ Resolved: Handled statelessly in middleware via Origin/Referer checks.
 - [ ] Add Playwright E2E tests for core user journeys
 - [ ] Set up error tracking (Sentry or equivalent)
-- [ ] Add CSP and security headers to `next.config.ts`
+- [ ] Add CSP and security headers to `next.config.ts` — 🟡 Partially Resolved: Standard security headers (HSTS, etc.) exist, but explicit CSP is missing.
 - [ ] Implement proper logging service to replace `console.error`
 
 ---

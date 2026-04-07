@@ -266,13 +266,13 @@ export function RenterDashboardView() {
             {/* KPI Telemetry Row — always 3 columns, fixed height at all viewports */}
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 {/* Active Rentals Count */}
-                <div className={`bg-white rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group ${overdueCount > 0 ? 'border-2 border-red-300' : 'border-slate-200'
+                <Link href="/dashboard/renter/rentals#active" className={`bg-white rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md transition-all ${overdueCount > 0 ? 'border-2 border-red-300' : 'border-slate-200 hover:border-slate-300'
                     }`}>
                     <div>
-                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Active</p>
+                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Active</p>
                         <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{totalActive}</h3>
                     </div>
-                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                         <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
                         {overdueCount > 0 ? (
                             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
@@ -283,31 +283,36 @@ export function RenterDashboardView() {
                             <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-emerald-500 border border-white animate-pulse-operational"></span>
                         )}
                     </div>
-                </div>
+                </Link>
 
                 {/* Urgent Count */}
-                <div className={`rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between ${urgentCount > 0
-                    ? 'bg-red-50/60 border-2 border-red-300 animate-pulse-subtle'
-                    : 'bg-white border-slate-200'
+                <button 
+                    onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById('active-rentals')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className={`text-left w-full rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group transition-all hover:shadow-md ${urgentCount > 0
+                    ? 'bg-red-50/60 border-2 border-red-300 hover:border-red-400 animate-pulse-subtle'
+                    : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}>
                     <div>
-                        <p className="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider mb-1 text-slate-400">Urgent</p>
+                        <p className="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider mb-1 text-slate-400 group-hover:text-slate-500 transition-colors">Urgent</p>
                         <h3 className={`text-xl sm:text-3xl font-bold font-mono tabular-nums ${urgentCount > 0 ? 'text-red-600' : 'text-slate-900'
                             }`}>{urgentCount}</h3>
                     </div>
-                    <div className={`relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${urgentCount > 0 ? 'bg-red-100 text-red-500' : 'bg-slate-100 text-slate-400'
+                    <div className={`relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${urgentCount > 0 ? 'bg-red-100 text-red-500 group-hover:bg-red-200' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'
                         }`}>
                         <TriangleAlert className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                </div>
+                </button>
 
                 {/* Pending Requests */}
-                <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between">
+                <Link href="/dashboard/renter/rentals#pending" className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between hover:shadow-md hover:border-slate-300 transition-all group">
                     <div>
-                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1">Pending</p>
+                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Pending</p>
                         <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{pendingRequests.length}</h3>
                     </div>
-                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0">
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0 group-hover:bg-amber-100 transition-colors">
                         <CalendarClock className="h-5 w-5 sm:h-6 sm:w-6" />
                         {pendingRequests.length > 0 && (
                             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
@@ -316,7 +321,7 @@ export function RenterDashboardView() {
                             </span>
                         )}
                     </div>
-                </div>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -324,7 +329,7 @@ export function RenterDashboardView() {
                 <div className="lg:col-span-2 space-y-8">
 
                     {/* Active Rentals */}
-                    <div className="space-y-4">
+                    <div id="active-rentals" className="space-y-4 scroll-mt-24">
                         <div className="flex items-center gap-3">
                             <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Active Rentals</h2>
@@ -647,7 +652,7 @@ export function RenterDashboardView() {
                                     )}
                                 </div>
                             ))}
-                            <Link href="/dashboard/renter/rentals#completed">
+                            <Link href="/dashboard/renter/rentals#all">
                                 <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-safety-orange/80">
                                     View all rentals &rarr;
                                 </Button>

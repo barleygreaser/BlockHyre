@@ -65,7 +65,7 @@ export function ReturnInspectionModal({
                 particleCount: 150,
                 spread: 100,
                 origin: { y: 0.6 },
-                colors: ['#FF6B00', '#1A1A1A', '#FAFAF8']
+                colors: ['#F06449', '#1A1A1A', '#FAFAF8']
             });
 
             toast.success("Rental finalized and deposit released!");
@@ -306,7 +306,7 @@ export function ReturnInspectionModal({
                         <Button
                             onClick={handleConfirm}
                             disabled={submitting || isDisputing}
-                            className="flex-1 sm:flex-none bg-safety-orange hover:bg-[#e66000] text-white font-bold h-14 rounded-none px-12 transition-all duration-200 shadow-[0_4px_0_0_#b34b00] hover:shadow-[0_6px_0_0_#b34b00] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
+                            className="flex-1 sm:flex-none bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-14 rounded-none px-12 transition-all duration-200 shadow-[0_4px_0_0_#AF3D2B] hover:shadow-[0_6px_0_0_#AF3D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
                         >
                             {submitting ? (
                                 <>

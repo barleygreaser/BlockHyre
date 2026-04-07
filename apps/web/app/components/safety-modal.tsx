@@ -36,18 +36,18 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-            <div className="w-full max-w-lg bg-signal-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col border border-workshop-gray/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-eerie-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+            <div className="w-full max-w-lg bg-signal-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col border border-opal/20">
 
                 {/* Industrial Header */}
-                <div className="bg-charcoal p-8 flex justify-between items-center shrink-0 border-b-4 border-amber-500">
+                <div className="bg-eerie-black p-8 flex justify-between items-center shrink-0 border-b-4 border-safety-orange">
                     <div className="flex gap-4 items-center">
-                        <div className="h-14 w-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-                            <ShieldAlert className="h-7 w-7 text-amber-500" />
+                        <div className="h-14 w-14 rounded-2xl bg-safety-orange/10 border border-safety-orange/30 flex items-center justify-center">
+                            <ShieldAlert className="h-7 w-7 text-safety-orange" />
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-signal-white font-display uppercase tracking-tighter">SAFETY CLEARANCE REQUIRED</h2>
-                            <p className="text-concrete/60 text-[10px] font-mono font-bold uppercase tracking-widest mt-1">HIGH-POWER TIER 3 EQUIPMENT DETECTED</p>
+                            <p className="text-signal-white/60 text-[10px] font-mono font-bold uppercase tracking-widest mt-1">HIGH-POWER TIER 3 EQUIPMENT DETECTED</p>
                         </div>
                     </div>
                 </div>
@@ -63,11 +63,11 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
                             onClick={() => toggleCheck('manual')}
                             className={cn(
                                 "w-full text-left flex items-start gap-4 p-5 border-2 transition-all",
-                                checks.manual ? "border-amber-500 bg-amber-50/50" : "border-[#333333] hover:border-amber-500/50"
+                                checks.manual ? "border-safety-orange bg-safety-orange/5" : "border-[#333333] hover:border-safety-orange/30"
                             )}>
                             <div className="mt-0.5 shrink-0">
                                 {checks.manual ? (
-                                    <CheckSquare className="h-6 w-6 text-amber-600" />
+                                    <CheckSquare className="h-6 w-6 text-safety-orange" />
                                 ) : (
                                     <Square className="h-6 w-6 text-slate-400" />
                                 )}
@@ -82,11 +82,11 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
                             onClick={() => toggleCheck('waiver')}
                             className={cn(
                                 "w-full text-left flex items-start gap-4 p-5 border-2 transition-all",
-                                checks.waiver ? "border-amber-500 bg-amber-50/50" : "border-[#333333] hover:border-amber-500/50"
+                                checks.waiver ? "border-safety-orange bg-safety-orange/5" : "border-[#333333] hover:border-safety-orange/30"
                             )}>
                             <div className="mt-0.5 shrink-0">
                                 {checks.waiver ? (
-                                    <CheckSquare className="h-6 w-6 text-amber-600" />
+                                    <CheckSquare className="h-6 w-6 text-safety-orange" />
                                 ) : (
                                     <Square className="h-6 w-6 text-slate-400" />
                                 )}
@@ -101,11 +101,11 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
                             onClick={() => toggleCheck('inspection')}
                             className={cn(
                                 "w-full text-left flex items-start gap-4 p-5 border-2 transition-all",
-                                checks.inspection ? "border-amber-500 bg-amber-50/50" : "border-[#333333] hover:border-amber-500/50"
+                                checks.inspection ? "border-safety-orange bg-safety-orange/5" : "border-[#333333] hover:border-safety-orange/30"
                             )}>
                             <div className="mt-0.5 shrink-0">
                                 {checks.inspection ? (
-                                    <CheckSquare className="h-6 w-6 text-amber-600" />
+                                    <CheckSquare className="h-6 w-6 text-safety-orange" />
                                 ) : (
                                     <Square className="h-6 w-6 text-slate-400" />
                                 )}
@@ -119,7 +119,7 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
                 </div>
 
                 {/* High-Performance Footer */}
-                <div className="p-10 bg-workshop-gray/5 border-t border-workshop-gray/10 flex flex-col sm:flex-row justify-between items-center gap-6 shrink-0">
+                <div className="p-10 bg-opal/5 border-t border-opal/10 flex flex-col sm:flex-row justify-between items-center gap-6 shrink-0">
                     <button 
                         onClick={onClose} 
                         className="group font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors font-bold mr-auto"
@@ -136,7 +136,7 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
                             }
                         }}
                         disabled={!allChecked}
-                        className="bg-amber-600 hover:bg-amber-700 text-white font-bold h-12 rounded-none px-8 transition-all duration-200 shadow-[0_4px_0_0_#b45309] hover:shadow-[0_6px_0_0_#b45309] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none w-full sm:w-auto"
+                        className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-12 rounded-none px-8 transition-all duration-200 shadow-[0_4px_0_0_#AF3D2B] hover:shadow-[0_6px_0_0_#AF3D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none w-full sm:w-auto"
                     >
                         ACKNOWLEDGE & PROCEED
                     </Button>
@@ -145,3 +145,4 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
         </div>
     );
 }
+

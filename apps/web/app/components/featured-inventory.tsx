@@ -118,29 +118,29 @@ export const FeaturedInventory = memo(({ listings, onRentClick, loading }: Featu
     }, [cardProps]);
 
     return (
-        <section ref={sectionRef} className="py-20 md:py-32 bg-concrete/30 relative" id="inventory">
+        <section ref={sectionRef} className="py-20 md:py-32 bg-cool-gray relative" id="inventory">
             <div className="container mx-auto px-4 md:px-8">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                     <div className="max-w-xl">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="h-px flex-1 max-w-[60px] bg-safety-orange/40" />
-                            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-safety-orange">
+                            <div className="h-px flex-1 max-w-[60px] bg-midnight-navy/40" />
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-midnight-navy">
                                 Inventory
                             </span>
                         </div>
                         <h2 className="text-3xl md:text-5xl font-bold text-slate-900 font-serif tracking-tight">
-                            {user ? "Tools Near You" : "Recent Listings"}
+                            {user ? "Tools Near You" : "Available on your block right now"}
                         </h2>
                         <div className="flex items-center gap-2 mt-4 text-slate-500 text-sm font-medium">
                             {user ? (
                                 <>
-                                    <MapPin className="h-4 w-4 text-safety-orange" />
+                                    <MapPin className="h-4 w-4 text-electric-indigo" />
                                     <p>Tools within <span className="text-slate-900 font-bold">2 miles</span> of your verified address</p>
                                 </>
                             ) : (
                                 <>
-                                    <Globe className="h-4 w-4 text-safety-orange" />
+                                    <Globe className="h-4 w-4 text-electric-indigo" />
                                     <p>Showing active listings from everywhere</p>
                                 </>
                             )}
@@ -148,7 +148,7 @@ export const FeaturedInventory = memo(({ listings, onRentClick, loading }: Featu
                     </div>
 
                     <div className="w-full md:w-80 relative group">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 z-10 group-focus-within:text-safety-orange transition-colors">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 z-10 group-focus-within:text-electric-indigo transition-colors">
                             <Search className="h-4 w-4" />
                         </div>
                         <Input
@@ -156,7 +156,7 @@ export const FeaturedInventory = memo(({ listings, onRentClick, loading }: Featu
                             placeholder="Search tools..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-300 pl-10 h-11 focus-visible:ring-safety-orange/20 focus-visible:border-safety-orange/40 transition-all rounded-xl"
+                            className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-300 pl-10 h-11 focus-visible:ring-electric-indigo/20 focus-visible:border-electric-indigo/40 transition-all rounded-xl"
                             aria-label="Search tools"
                         />
                     </div>
@@ -210,7 +210,7 @@ export const FeaturedInventory = memo(({ listings, onRentClick, loading }: Featu
                                 setSelectedCategory("All");
                                 setSearchTerm("");
                             }}
-                            className="text-safety-orange font-bold text-sm uppercase tracking-wider hover:underline"
+                            className="text-electric-indigo font-bold text-sm uppercase tracking-wider hover:underline"
                         >
                             Reset Filters
                         </button>
@@ -222,3 +222,4 @@ export const FeaturedInventory = memo(({ listings, onRentClick, loading }: Featu
 });
 
 FeaturedInventory.displayName = "FeaturedInventory";
+

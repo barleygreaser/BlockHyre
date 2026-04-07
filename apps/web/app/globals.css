@@ -10,8 +10,8 @@
   --font-display: var(--font-bebas-neue);
 
   /* ── Industrial Boutique Palette ── */
-  --color-safety-orange: #FF6B00;
-  --color-safety-orange-hover: #E55C00;
+  --color-safety-orange: #F06449;
+  --color-safety-orange-hover: #D85941;
   --color-charcoal: #1A1A1A;
   --color-charcoal-light: #2A2A2A;
   --color-concrete: #E8E4DD;
@@ -19,6 +19,18 @@
   --color-signal-white: #FAFAF8;
   --color-workshop-gray: #333333;
   --color-slate-900: #0f172a;
+
+  /* ── BlockHyre Neighborhood Library Palette ── */
+  --color-opal: #AECACD;
+  --color-periwinkle-blue: #7289DA;
+  --color-eerie-black: #161616;
+  --color-muted-gold: #A29373;
+
+  /* ── Refined Hierarchy (Softer Blues + Neutrals) ── */
+  --color-midnight-navy: #1B2A4A;
+  --color-electric-indigo: #5B6EAE;
+  --color-cool-gray: #F0F2F5;
+  --color-deep-charcoal: #1C1C2E;
 
   /* ── Existing ShadCN tokens ── */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -279,7 +291,7 @@
 
 .magnetic-btn:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 10px 40px rgba(255, 107, 0, 0.35);
+  box-shadow: 0 10px 40px rgba(91, 110, 174, 0.35);
 }
 
 /* ── Industrial spec sheet card hover ── */

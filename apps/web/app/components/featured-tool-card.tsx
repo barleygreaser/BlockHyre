@@ -18,9 +18,9 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
 
     const tierLabel = `T${tier}`;
     const tierColor = tier === 3
-        ? "text-red-500 bg-red-50 border-red-200"
+        ? "text-safety-orange bg-safety-orange/10 border-safety-orange/20"
         : tier === 2
-            ? "text-safety-orange bg-safety-orange/10 border-safety-orange/20"
+            ? "text-electric-indigo bg-electric-indigo/10 border-electric-indigo/20"
             : "text-slate-500 bg-slate-50 border-slate-200";
 
     return (
@@ -28,7 +28,7 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
             href={`/listings/${tool.id}/${generateSlug(tool.title)}`}
             className="block group"
         >
-            <div className="spec-card bg-white rounded-[2rem] border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm flex flex-col h-full">
+            <div className="spec-card bg-white rounded-[2rem] border border-slate-200 overflow-hidden transition-all duration-500 hover:border-electric-indigo/40 hover:shadow-xl shadow-sm flex flex-col h-full">
                 {/* Image Section */}
                 <div className="aspect-[16/10] w-full bg-slate-100 relative overflow-hidden">
                     {tool.image ? (
@@ -51,7 +51,7 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
                             {tierLabel}
                         </Badge>
                         {tool.instantBook && (
-                            <Badge className="bg-safety-orange/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-full px-3 py-1 flex items-center gap-1 border-0">
+                            <Badge className="bg-electric-indigo/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-full px-3 py-1 flex items-center gap-1 border-0">
                                 <Zap className="h-3 w-3" />
                                 Instant
                             </Badge>
@@ -93,7 +93,7 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
                         <div className="flex flex-col gap-0.5">
                             <span className="text-slate-300">Rating</span>
                             <span className="flex items-center gap-1">
-                                <Star className={cn("w-3 h-3", (tool.ownerReviewCount ?? 0) > 0 ? "text-safety-orange fill-safety-orange" : "text-slate-300")} />
+                                <Star className={cn("w-3 h-3", (tool.ownerReviewCount ?? 0) > 0 ? "text-electric-indigo fill-electric-indigo" : "text-slate-300")} />
                                 <span className={cn("font-bold", (tool.ownerReviewCount ?? 0) > 0 ? "text-slate-600" : "text-slate-400")}>
                                     {(tool.ownerReviewCount ?? 0) > 0
                                         ? `${Number(tool.ownerRating).toFixed(1)} (${tool.ownerReviewCount})`
@@ -105,7 +105,7 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
 
                     {/* Barter Badge */}
                     {tool.acceptsBarter && (
-                        <div className="text-[10px] font-mono text-safety-orange/70 uppercase tracking-wider border border-safety-orange/15 rounded-full px-3 py-1 self-start bg-safety-orange/5">
+                        <div className="text-[10px] font-mono text-electric-indigo/70 uppercase tracking-wider border border-electric-indigo/15 rounded-full px-3 py-1 self-start bg-electric-indigo/5">
                             Accepts Barter
                         </div>
                     )}
@@ -114,7 +114,7 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
                     <div className="pt-2 mt-auto">
                         <Button
                             variant="ghost"
-                            className="w-full text-xs h-10 text-slate-400 hover:text-safety-orange hover:bg-safety-orange/5 font-bold uppercase tracking-wider rounded-xl transition-all group/btn flex items-center justify-center gap-2"
+                            className="w-full text-xs h-10 text-slate-400 hover:text-electric-indigo hover:bg-electric-indigo/5 font-bold uppercase tracking-wider rounded-xl transition-all group/btn flex items-center justify-center gap-2"
                         >
                             View Spec Sheet
                             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
@@ -127,3 +127,4 @@ export const FeaturedToolCard = memo(({ tool }: FeaturedToolCardProps) => {
 });
 
 FeaturedToolCard.displayName = "FeaturedToolCard";
+
