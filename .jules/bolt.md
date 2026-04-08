@@ -70,3 +70,7 @@
 ## 2025-02-28 - Optimizing Filter+Sort on Pre-sorted Arrays
 **Learning:** Chaining `.filter().sort()` with `String.prototype.localeCompare` on a pre-sorted array (like category lists) forces O(N log N) time complexity and slow string operations, especially when the goal is just to prioritize prefix matches (startsWith) over partial matches (includes).
 **Action:** Use a single O(N) traversal to partition items into `exactMatches` and `partialMatches` arrays based on match quality, then concatenate them. This naturally preserves the original alphabetical sub-sorting automatically with significantly less CPU overhead.
+
+## 2024-04-04 - [Performance] Pre-initialize Intl.DateTimeFormat object
+**Learning:** `Intl.DateTimeFormat` object is being instantiated repeatedly inside React components or helper functions during format string operations causing unnecessary re-renders.
+**Action:** Always pre-initialize `Intl.DateTimeFormat` objects at the module level when options are static. Replace repeated formatters with pre-initialized instance for the specific format.

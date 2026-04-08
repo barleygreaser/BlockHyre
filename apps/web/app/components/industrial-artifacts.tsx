@@ -185,6 +185,8 @@ function ListingShuffler() {
 }
 
 /* ── Card 3: Peace Fund Telemetry ── */
+const timeFormatter = new Intl.DateTimeFormat("en-US", { hour12: false, hour: 'numeric', minute: 'numeric', second: 'numeric' });
+
 function PeaceFundTelemetry() {
     const [logs, setLogs] = useState<Array<{ text: string; time: string; type: string }>>([]);
     const logContainerRef = useRef<HTMLDivElement>(null);
@@ -203,7 +205,7 @@ function PeaceFundTelemetry() {
     useEffect(() => {
         const initialLogs = logTemplates.slice(0, 4).map((log, idx) => ({
             ...log,
-            time: new Date(Date.now() - (4 - idx) * 15000).toLocaleTimeString("en-US", { hour12: false }),
+            time: timeFormatter.format(new Date(Date.now() - (4 - idx) * 15000)),
         }));
         setLogs(initialLogs);
 
@@ -211,7 +213,7 @@ function PeaceFundTelemetry() {
             const randomLog = logTemplates[Math.floor(Math.random() * logTemplates.length)];
             const newLog = {
                 ...randomLog,
-                time: new Date().toLocaleTimeString("en-US", { hour12: false }),
+                time: timeFormatter.format(new Date()),
             };
             setLogs((prev) => [...prev.slice(-6), newLog]);
         }, 4000);
