@@ -29,6 +29,9 @@ import {
 import { sendSystemMessage } from "@/app/lib/chat-helpers";
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+const dateFormatterFull = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const dateFormatterDefault = new Intl.DateTimeFormat('en-US');
+const timeFormatter = new Intl.DateTimeFormat('en-US', { hour12: false, hour: 'numeric', minute: 'numeric', second: 'numeric' });
 const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -263,7 +266,7 @@ export function OwnerDashboardView() {
 
         // Optimistic UI: Remove from list immediately
         setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
-        toast.message(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] Action logged. Details processing...`, {
+        toast.message(`[${timeFormatter.format(new Date())}] Action logged. Details processing...`, {
             description: `Approving ${rental.listing.title}`,
             className: "font-mono border-l-4 border-l-safety-orange rounded-none",
         });
@@ -364,8 +367,8 @@ export function OwnerDashboardView() {
                         tool_name: listingData?.title || 'Tool',
                         owner_name: ownerData?.full_name || 'Owner',
                         renter_name: renterData?.full_name || 'Renter',
-                        start_date: startDate.toLocaleDateString(),
-                        end_date: endDate.toLocaleDateString(),
+                        start_date: dateFormatterDefault.format(startDate),
+                        end_date: dateFormatterDefault.format(endDate),
                         location_address: listingData?.location_address || 'Address to be confirmed',
                         total_paid: rentalData.total_paid?.toFixed(2) || '0.00',
                         total_cost: rentalData.total_paid?.toFixed(2) || '0.00',
@@ -388,7 +391,7 @@ export function OwnerDashboardView() {
                 }
             }
 
-            toast.success(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] RENTAL APPROVED`, {
+            toast.success(`[${timeFormatter.format(new Date())}] RENTAL APPROVED`, {
                 description: `${rental.listing.title} marked active for ${rental.renter.full_name}`,
                 className: "font-mono border-l-4 border-l-emerald-500 rounded-none bg-charcoal text-emerald-400",
             });
@@ -478,8 +481,8 @@ export function OwnerDashboardView() {
                         tool_name: rental.listing?.title || 'Tool',
                         owner_name: ownerData?.full_name || 'Owner',
                         renter_name: renterData?.full_name || 'Renter',
-                        start_date: startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                        end_date: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                        start_date: dateFormatter.format(startDate),
+                        end_date: dateFormatter.format(endDate),
                         total_cost: '',
                         owner_notes_link: ''
                     };
@@ -1011,8 +1014,8 @@ export function OwnerDashboardView() {
                                             <div>
                                                 <p className="font-medium text-slate-900 text-sm">
                                                     {payout.arrivalDate
-                                                        ? new Date(payout.arrivalDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                                                        : new Date(payout.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                                                        ? dateFormatterFull.format(new Date(payout.arrivalDate))
+                                                        : dateFormatterFull.format(new Date(payout.createdAt))
                                                     }
                                                 </p>
                                                 <p className="text-[10px] font-mono text-slate-400">

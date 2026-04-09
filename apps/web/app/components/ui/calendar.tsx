@@ -12,6 +12,8 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
+const dateFormatter = new Intl.DateTimeFormat('en-US');
+
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
     blockedDates?: Date[];
     minDate?: Date | null;
@@ -260,7 +262,7 @@ function CalendarDayButton({
             ref={ref}
             variant="ghost"
             size="icon"
-            data-day={day.date.toLocaleDateString()}
+            data-day={dateFormatter.format(day.date)}
             data-selected-single={
                 modifiers.selected &&
                 !modifiers.range_start &&
