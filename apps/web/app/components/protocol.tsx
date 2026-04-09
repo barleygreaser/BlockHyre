@@ -7,13 +7,13 @@ const STEPS = [
     {
         number: "01",
         title: "Discover",
-        description: "Scan your 2-mile radius for the exact tool you need. Our verification system ensures every listing is production-ready.",
+        description: "Scan your 2-mile radius for the exact equipment you need. Our verification system ensures every listing is production-ready.",
         icon: Radar,
-        color: "text-safety-orange",
-        bgColor: "bg-safety-orange/10",
-        borderColor: "border-safety-orange/20",
-        ghostColor: "text-safety-orange/[0.06]",
-        accentVia: "via-safety-orange/15",
+        color: "text-electric-indigo",
+        bgColor: "bg-electric-indigo/10",
+        borderColor: "border-electric-indigo/20",
+        ghostColor: "text-electric-indigo/[0.06]",
+        accentVia: "via-electric-indigo/15",
     },
     {
         number: "02",
@@ -28,8 +28,8 @@ const STEPS = [
     },
     {
         number: "03",
-        title: "Build",
-        description: "Pick up your tool and get to work. Return it when you're done. Your neighborhood is your factory floor.",
+        title: "Use/Return",
+        description: "Pick up your equipment and get to work. Return it when you're done. Your neighborhood is your factory floor.",
         icon: Settings,
         color: "text-sky-500",
         bgColor: "bg-sky-50",
@@ -99,12 +99,12 @@ export function Protocol() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-20 md:py-32 bg-concrete/30 relative" id="protocol">
+        <section ref={sectionRef} className="py-20 md:py-32 bg-signal-white relative" id="protocol">
             {/* Section Header */}
             <div className="container mx-auto px-4 md:px-8 mb-16">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="h-px flex-1 max-w-[60px] bg-safety-orange/40" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-safety-orange">
+                    <div className="h-px flex-1 max-w-[60px] bg-midnight-navy/40" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-midnight-navy">
                         The Protocol
                     </span>
                 </div>
@@ -126,7 +126,7 @@ export function Protocol() {
                         return (
                             <div
                                 key={step.number}
-                                className={`protocol-card group relative bg-white rounded-[2.5rem] p-8 md:p-10 border ${step.borderColor} overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm`}
+                                className={`protocol-card group relative bg-white rounded-[2.5rem] p-8 md:p-10 border ${step.borderColor} overflow-hidden transition-all duration-500 hover:border-electric-indigo/40 hover:shadow-xl shadow-sm`}
                             >
                                 {/* Step Number */}
                                 <span className={`absolute top-8 right-8 text-[5rem] font-display ${step.ghostColor} leading-none select-none`}>
@@ -165,3 +165,4 @@ export function Protocol() {
         </section>
     );
 }
+

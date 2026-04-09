@@ -61,8 +61,7 @@ export function Manifesto() {
     return (
         <section
             ref={sectionRef}
-            className="relative py-32 md:py-48 overflow-hidden"
-            style={{ backgroundColor: "#111111" }}
+            className="relative py-32 md:py-48 overflow-hidden bg-deep-charcoal"
             id="manifesto"
         >
             {/* Grain/Noise Overlay */}
@@ -79,22 +78,22 @@ export function Manifesto() {
 
             <div className="container mx-auto px-4 md:px-8 text-center">
                 {/* Dimmed Philosophy */}
-                <p className="manifesto-dim text-lg md:text-2xl text-white/20 font-light mb-6 tracking-wide">
+                <p className="manifesto-dim text-lg md:text-2xl text-cyan-100/25 font-light mb-6 tracking-wide">
                     Most people focus on: <span className="font-medium">Ownership.</span>
                 </p>
 
                 {/* Bold Statement */}
                 <div className="manifesto-bold">
-                    <p className="text-xl md:text-3xl text-white/40 font-light mb-4 tracking-wide">
+                    <p className="text-xl md:text-3xl text-cyan-100/50 font-light mb-4 tracking-wide">
                         We focus on:
                     </p>
-                    <h2 className="text-[5rem] sm:text-[7rem] md:text-[10rem] lg:text-[12rem] font-display text-safety-orange leading-[0.85] tracking-tight uppercase">
+                    <h2 className="text-[5rem] sm:text-[7rem] md:text-[10rem] lg:text-[12rem] font-display text-white leading-[0.85] tracking-tight uppercase">
                         PRODUCTION.
                     </h2>
                 </div>
 
                 {/* Subtitle */}
-                <p className="mt-10 max-w-xl mx-auto text-sm md:text-base text-white/30 leading-relaxed font-light">
+                <p className="mt-10 max-w-xl mx-auto text-sm md:text-base text-cyan-100/40 leading-relaxed font-light">
                     BlockHyre is not a marketplace. It&apos;s a production network.
                     Your neighborhood already owns everything you need — we just connect the dots.
                 </p>
@@ -102,3 +101,4 @@ export function Manifesto() {
         </section>
     );
 }
+

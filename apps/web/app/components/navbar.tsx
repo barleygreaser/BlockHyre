@@ -122,7 +122,7 @@ export function Navbar() {
                         "mx-auto border rounded-full",
                         isMounted && "transition-all duration-300 ease-in-out",
                         isScrolled
-                            ? "max-w-6xl bg-charcoal/80 backdrop-blur-xl border-safety-orange/20 shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6 py-1"
+                            ? "max-w-6xl bg-deep-charcoal/80 backdrop-blur-xl border-electric-indigo/20 shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6 py-1"
                             : "max-w-[1440px] bg-transparent border-transparent shadow-none px-2 md:px-6 py-1"
                     )}
                 >
@@ -130,12 +130,12 @@ export function Navbar() {
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2.5 group" aria-label="BlockHyre Home">
                             <div suppressHydrationWarning className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${isScrolled
-                                ? "bg-safety-orange text-white"
-                                : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
+                                ? "bg-electric-indigo text-white"
+                                : "bg-midnight-navy/10 text-midnight-navy border border-midnight-navy/20"
                                 }`}>
                                 <span className="font-serif font-bold text-sm">B</span>
                             </div>
-                            <span suppressHydrationWarning className={`text-lg font-bold font-serif tracking-tight transition-colors duration-300 ${isScrolled ? "text-white" : "text-white"
+                            <span suppressHydrationWarning className={`text-lg font-bold font-serif tracking-tight transition-colors duration-300 ${isScrolled ? "text-white" : "text-midnight-navy"
                                 }`}>
                                 BlockHyre
                             </span>
@@ -145,21 +145,21 @@ export function Navbar() {
                         <div className="hidden lg:flex items-center gap-3 xl:gap-5">
                             <Link
                                 href="/listings"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-signal-white hover:text-electric-indigo" : "text-midnight-navy/80 hover:text-midnight-navy"
                                     }`}
                             >
                                 Listings
                             </Link>
                             <Link
                                 href="/how-it-works"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-signal-white hover:text-electric-indigo" : "text-midnight-navy/80 hover:text-midnight-navy"
                                     }`}
                             >
                                 How it Works
                             </Link>
                             <Link
                                 href="/peace-fund"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-concrete hover:text-safety-orange" : "text-white/80 hover:text-white"
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-signal-white hover:text-electric-indigo" : "text-midnight-navy/80 hover:text-midnight-navy"
                                     }`}
                             >
                                 Peace Fund
@@ -171,10 +171,10 @@ export function Navbar() {
                             {/* Operational Indicator */}
                             <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 mr-1 xl:mr-2">
                                 <div className="relative">
-                                    <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
-                                    <div className="absolute inset-0 h-2 w-2 rounded-full bg-safety-orange/40 animate-ping" />
+                                    <div className="h-2 w-2 rounded-full bg-electric-indigo animate-pulse-operational" />
+                                    <div className="absolute inset-0 h-2 w-2 rounded-full bg-electric-indigo/40 animate-ping" />
                                 </div>
-                                <span suppressHydrationWarning className={`hidden xl:inline text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-safety-orange" : "text-safety-orange"
+                                <span suppressHydrationWarning className={`hidden xl:inline text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-electric-indigo" : "text-electric-indigo"
                                     }`}>
                                     Operational
                                 </span>
@@ -186,7 +186,7 @@ export function Navbar() {
                                     variant="ghost"
                                     size="icon"
                                     suppressHydrationWarning
-                                    className={`${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                                    className={`${isScrolled ? "text-signal-white hover:text-white hover:bg-white/10" : "text-midnight-navy/80 hover:text-midnight-navy hover:bg-midnight-navy/10"}`}
                                     aria-label="User Account"
                                 >
                                     <User className="h-5 w-5" />
@@ -199,7 +199,7 @@ export function Navbar() {
                                     variant="ghost"
                                     size="icon"
                                     suppressHydrationWarning
-                                    className={`relative ${isScrolled ? "text-concrete hover:text-white hover:bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                                    className={`relative ${isScrolled ? "text-signal-white hover:text-white hover:bg-white/10" : "text-midnight-navy/80 hover:text-midnight-navy hover:bg-midnight-navy/10"}`}
                                     aria-label="Shopping Cart"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
@@ -211,28 +211,28 @@ export function Navbar() {
                                 {loading ? (
                                     maybeAuthenticated ? (
                                         <div className="flex items-center gap-2 xl:gap-3 opacity-60">
-                                            <Skeleton aria-hidden="true" className="h-9 w-[120px] xl:w-[135px] rounded-full bg-safety-orange/40" />
+                                            <Skeleton aria-hidden="true" className="h-9 w-[120px] xl:w-[135px] rounded-full bg-electric-indigo/40" />
                                             <Skeleton aria-hidden="true" className="h-9 w-[95px] xl:w-[110px] rounded-full bg-white/10" />
                                             <Skeleton aria-hidden="true" className="h-8 w-8 rounded-full bg-white/10" />
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2 xl:gap-3 opacity-60">
                                             <Skeleton aria-hidden="true" className="h-9 w-[70px] xl:w-[85px] rounded-full bg-white/5" />
-                                            <Skeleton aria-hidden="true" className="h-9 w-[80px] xl:w-[95px] rounded-full bg-safety-orange/40" />
+                                            <Skeleton aria-hidden="true" className="h-9 w-[80px] xl:w-[95px] rounded-full bg-electric-indigo/40" />
                                         </div>
                                     )
                                 ) : user ? (
                                     <div className="flex items-center gap-2 xl:gap-3">
                                         <Link href="/add-tool">
-                                            <Button className="nav-cta-magnetic bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all duration-300 hover:shadow-xl hover:shadow-safety-orange/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md active:shadow-safety-orange/20">
+                                            <Button className="nav-cta-magnetic bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 shadow-lg shadow-electric-indigo/20 transition-all duration-300 hover:shadow-xl hover:shadow-electric-indigo/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md active:shadow-electric-indigo/20">
                                                 + List a Tool
                                             </Button>
                                         </Link>
 
                                         <Link href="/dashboard">
                                             <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 transition-all duration-300 ${isScrolled
-                                                ? "bg-white/10 text-white border border-white/20 hover:border-safety-orange/60 hover:bg-safety-orange/10 hover:text-safety-orange hover:shadow-[0_0_12px_rgba(255,107,0,0.15)]"
-                                                : "bg-white/10 text-white border border-white/20 hover:border-safety-orange/60 hover:bg-safety-orange/10 hover:text-safety-orange hover:shadow-[0_0_12px_rgba(255,107,0,0.15)]"
+                                                ? "bg-white/10 text-white border border-white/20 hover:border-electric-indigo/60 hover:bg-electric-indigo/10 hover:text-electric-indigo hover:shadow-[0_0_12px_rgba(91,110,174,0.15)]"
+                                                : "bg-midnight-navy/5 text-midnight-navy border border-midnight-navy/20 hover:border-electric-indigo/60 hover:bg-electric-indigo/10 hover:text-electric-indigo hover:shadow-[0_0_12px_rgba(91,110,174,0.15)]"
                                                 }`}>
                                                 Dashboard
                                             </Button>
@@ -249,8 +249,8 @@ export function Navbar() {
                                                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsMenuOpen(!isMenuOpen); }}
                                             >
                                                 <div suppressHydrationWarning className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 relative ${isScrolled
-                                                    ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/60 hover:ring-offset-2 hover:ring-offset-charcoal hover:shadow-[0_0_16px_rgba(255,107,0,0.25)]"
-                                                    : "bg-white/10 border border-white/20 hover:ring-2 hover:ring-safety-orange/60 hover:ring-offset-2 hover:ring-offset-transparent hover:shadow-[0_0_16px_rgba(255,107,0,0.25)]"
+                                                    ? "bg-white/10 border border-white/20 hover:ring-2 hover:ring-electric-indigo/60 hover:ring-offset-2 hover:ring-offset-deep-charcoal hover:shadow-[0_0_16px_rgba(91,110,174,0.25)]"
+                                                    : "bg-midnight-navy/10 border border-midnight-navy/20 hover:ring-2 hover:ring-electric-indigo/60 hover:ring-offset-2 hover:ring-offset-transparent hover:shadow-[0_0_16px_rgba(91,110,174,0.25)]"
                                                     }`}>
                                                     {avatarUrl ? (
                                                         <Image
@@ -261,14 +261,14 @@ export function Navbar() {
                                                             sizes="32px"
                                                         />
                                                     ) : (
-                                                        <span className="font-bold text-sm text-white">
+                                                        <span className={`font-bold text-sm ${isScrolled ? "text-white" : "text-midnight-navy"}`}>
                                                             {getUserDisplayName(user, fullName).charAt(0).toUpperCase()}
                                                         </span>
                                                     )}
                                                 </div>
                                                 {unreadCount > 0 && (
                                                     <Badge
-                                                        className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-safety-orange hover:bg-safety-orange text-white border-charcoal border-2 text-[10px]"
+                                                        className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-electric-indigo hover:bg-electric-indigo text-white border-deep-charcoal border-2 text-[10px]"
                                                     >
                                                         {unreadCount}
                                                     </Badge>
@@ -281,9 +281,9 @@ export function Navbar() {
                                                         className="fixed inset-0 z-[49]"
                                                         onClick={() => setIsMenuOpen(false)}
                                                     />
-                                                    <div className="absolute right-0 top-[calc(100%+20px)] w-56 bg-charcoal/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 p-1.5 border border-safety-orange/20 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
+                                                    <div className="absolute right-0 top-[calc(100%+20px)] w-56 bg-deep-charcoal/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 p-1.5 border border-electric-indigo/20 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
                                                         <div className="px-3 py-2.5 mb-1.5 border-b border-white/10">
-                                                            <p className="text-[10px] font-mono font-bold text-concrete/40 uppercase tracking-[0.2em] mb-1">
+                                                            <p className="text-[10px] font-mono font-bold text-signal-white/40 uppercase tracking-[0.2em] mb-1">
                                                                 Sys_User
                                                             </p>
                                                             <p className="text-sm font-bold text-white truncate">
@@ -292,31 +292,31 @@ export function Navbar() {
                                                         </div>
                                                         <Link
                                                             href="/profile"
-                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
+                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             Profile
                                                         </Link>
                                                         <Link
                                                             href="/messages"
-                                                            className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
+                                                            className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             <span>Messages</span>
                                                             {unreadCount > 0 && (
-                                                                <Badge className="bg-safety-orange hover:bg-safety-orange text-white border-0 text-[10px] w-5 h-5 flex items-center justify-center p-0 rounded-full">{unreadCount}</Badge>
+                                                                <Badge className="bg-electric-indigo hover:bg-electric-indigo text-white border-0 text-[10px] w-5 h-5 flex items-center justify-center p-0 rounded-full">{unreadCount}</Badge>
                                                             )}
                                                         </Link>
                                                         <Link
                                                             href="/my-rentals"
-                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
+                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             My Rentals
                                                         </Link>
                                                         <Link
                                                             href="/favorites"
-                                                            className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-concrete hover:text-safety-orange hover:bg-safety-orange/10 rounded-xl transition-colors"
+                                                            className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             <Heart className="h-4 w-4" />
@@ -346,15 +346,15 @@ export function Navbar() {
                                             <Button
                                                 variant="ghost"
                                                 className={`font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 ${isScrolled
-                                                    ? "text-concrete hover:text-white hover:bg-white/10"
-                                                    : "text-white/80 hover:text-white hover:bg-white/10"
+                                                    ? "text-signal-white hover:text-white hover:bg-white/10"
+                                                    : "text-midnight-navy/80 hover:text-midnight-navy hover:bg-midnight-navy/10"
                                                     }`}
                                             >
                                                 Log In
                                             </Button>
                                         </Link>
                                         <Link href="/signup">
-                                            <Button className="bg-safety-orange hover:bg-safety-orange-hover text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
+                                            <Button className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-electric-indigo/20 transition-all hover:shadow-electric-indigo/40 hover:scale-105">
                                                 Sign Up
                                             </Button>
                                         </Link>
@@ -364,7 +364,7 @@ export function Navbar() {
 
                             {/* Mobile Hamburger */}
                             <button
-                                className={`lg:hidden p-2 relative transition-colors ${isScrolled ? "text-concrete hover:text-white" : "text-white/80 hover:text-white"
+                                className={`lg:hidden p-2 relative transition-colors ${isScrolled ? "text-signal-white hover:text-white" : "text-midnight-navy/80 hover:text-midnight-navy"
                                     }`}
                                 onClick={() => setIsMobileMenuOpen(true)}
                                 aria-label="Open menu"
@@ -373,7 +373,7 @@ export function Navbar() {
                             >
                                 <Menu className="h-5 w-5" />
                                 {user && unreadCount > 0 && (
-                                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-safety-orange" />
+                                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-electric-indigo" />
                                 )}
                             </button>
                         </div>
@@ -388,16 +388,16 @@ export function Navbar() {
                             onClick={() => setIsMobileMenuOpen(false)}
                         />
 
-                        <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-charcoal shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col h-full animate-in slide-in-from-right">
+                        <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-deep-charcoal shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col h-full animate-in slide-in-from-right">
                             {/* Drawer Header */}
                             <div className="flex items-center justify-between p-4 border-b border-white/10">
                                 <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 rounded-full bg-safety-orange animate-pulse-operational" />
-                                    <span className="text-sm font-bold uppercase tracking-wider text-concrete">Menu</span>
+                                    <div className="h-2 w-2 rounded-full bg-electric-indigo animate-pulse-operational" />
+                                    <span className="text-sm font-bold uppercase tracking-wider text-signal-white">Menu</span>
                                 </div>
                                 <button
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="p-2 text-concrete/60 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                                    className="p-2 text-signal-white/60 hover:text-white hover:bg-white/5 rounded-full transition-colors"
                                     aria-label="Close menu"
                                     tabIndex={0}
                                     onKeyDown={(e) => { if (e.key === "Enter") setIsMobileMenuOpen(false); }}
@@ -420,14 +420,14 @@ export function Navbar() {
                                                     </div>
                                                 </div>
                                                 <div className="space-y-3">
-                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-safety-orange/40" />
+                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-electric-indigo/40" />
                                                     <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-white/10" />
                                                 </div>
                                             </>
                                         ) : (
                                             <>
                                                 <div className="space-y-4 pb-6 border-b border-white/10">
-                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-safety-orange/40" />
+                                                    <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-electric-indigo/40" />
                                                     <Skeleton aria-hidden="true" className="h-12 w-full rounded-xl bg-white/5" />
                                                 </div>
                                                 <div className="flex flex-col gap-4 pt-2">
@@ -459,7 +459,7 @@ export function Navbar() {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-bold text-white truncate">{getUserDisplayName(user, fullName)}</p>
-                                                <p className="text-sm text-concrete/60 truncate">{user.email}</p>
+                                                <p className="text-sm text-signal-white/60 truncate">{user.email}</p>
                                             </div>
                                         </div>
 
@@ -468,7 +468,7 @@ export function Navbar() {
                                             <Link
                                                 href="/add-tool"
                                                 onClick={() => setIsMobileMenuOpen(false)}
-                                                className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-12 text-base shadow-lg shadow-safety-orange/20 rounded-xl uppercase tracking-wider" })}
+                                                className={buttonVariants({ className: "w-full bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-12 text-base shadow-lg shadow-electric-indigo/20 rounded-xl uppercase tracking-wider" })}
                                             >
                                                 + List a Tool
                                             </Link>
@@ -483,29 +483,29 @@ export function Navbar() {
 
                                         {/* Navigation Links */}
                                         <div className="flex flex-col">
-                                            <Link href="/listings" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/listings" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Listings
                                             </Link>
-                                            <Link href="/messages" className="flex items-center justify-between py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/messages" className="flex items-center justify-between py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 <span>Messages</span>
                                                 {unreadCount > 0 && (
-                                                    <Badge className="bg-safety-orange hover:bg-safety-orange text-[10px]">{unreadCount}</Badge>
+                                                    <Badge className="bg-electric-indigo hover:bg-electric-indigo text-[10px]">{unreadCount}</Badge>
                                                 )}
                                             </Link>
-                                            <Link href="/my-rentals" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/my-rentals" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 My Rentals
                                             </Link>
-                                            <Link href="/favorites" className="flex items-center gap-2 py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/favorites" className="flex items-center gap-2 py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 <Heart className="h-4 w-4 text-red-400" />
                                                 My Favorites
                                             </Link>
-                                            <Link href="/profile" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/profile" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Profile
                                             </Link>
-                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 How it Works
                                             </Link>
-                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Peace Fund
                                             </Link>
                                         </div>
@@ -528,27 +528,27 @@ export function Navbar() {
                                             <Link
                                                 href="/signup"
                                                 onClick={() => setIsMobileMenuOpen(false)}
-                                                className={buttonVariants({ className: "w-full bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-12 text-lg shadow-lg shadow-safety-orange/20 rounded-xl uppercase tracking-wider" })}
+                                                className={buttonVariants({ className: "w-full bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-12 text-lg shadow-lg shadow-electric-indigo/20 rounded-xl uppercase tracking-wider" })}
                                             >
                                                 Sign Up
                                             </Link>
                                             <Link
                                                 href="/auth"
                                                 onClick={() => setIsMobileMenuOpen(false)}
-                                                className={buttonVariants({ variant: "ghost", className: "w-full text-concrete hover:text-white font-bold text-base hover:bg-white/5 rounded-xl" })}
+                                                className={buttonVariants({ variant: "ghost", className: "w-full text-signal-white hover:text-white font-bold text-base hover:bg-white/5 rounded-xl" })}
                                             >
                                                 Log In
                                             </Link>
                                         </div>
 
                                         <div className="flex flex-col">
-                                            <Link href="/listings" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/listings" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Listings
                                             </Link>
-                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 How it Works
                                             </Link>
-                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-concrete hover:text-safety-orange border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Peace Fund
                                             </Link>
                                         </div>
@@ -565,3 +565,4 @@ export function Navbar() {
         </>
     );
 }
+

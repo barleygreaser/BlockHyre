@@ -15,7 +15,7 @@ function AvailabilityHeatmap() {
 
     return (
         <div
-            className="group h-full flex flex-col relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden cursor-pointer transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
+            className="group h-full flex flex-col relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden cursor-pointer transition-all duration-500 hover:border-electric-indigo/40 hover:shadow-xl shadow-sm"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             role="article"
@@ -27,14 +27,14 @@ function AvailabilityHeatmap() {
             {/* Scanner Line */}
             {isHovered && (
                 <div
-                    className="absolute top-0 w-[2px] h-full bg-gradient-to-b from-transparent via-safety-orange to-transparent z-20 animate-scanner"
-                    style={{ boxShadow: "0 0 20px 4px rgba(255, 107, 0, 0.2)" }}
+                    className="absolute top-0 w-[2px] h-full bg-gradient-to-b from-transparent via-electric-indigo to-transparent z-20 animate-scanner"
+                    style={{ boxShadow: "0 0 20px 4px rgba(91, 110, 174, 0.2)" }}
                 />
             )}
 
             <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 rounded-xl bg-safety-orange/10 flex items-center justify-center">
-                    <Activity className="h-5 w-5 text-safety-orange" />
+                <div className="h-10 w-10 rounded-xl bg-electric-indigo/10 flex items-center justify-center">
+                    <Activity className="h-5 w-5 text-electric-indigo" />
                 </div>
                 <div>
                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Availability Heatmap</h3>
@@ -57,7 +57,7 @@ function AvailabilityHeatmap() {
                             <div
                                 key={colIdx}
                                 className={`h-8 rounded-lg transition-all duration-300 ${available
-                                    ? "bg-safety-orange/10 border border-safety-orange/20 group-hover:bg-safety-orange/25 group-hover:border-safety-orange/40"
+                                    ? "bg-electric-indigo/10 border border-electric-indigo/20 group-hover:bg-electric-indigo/25 group-hover:border-electric-indigo/40"
                                     : "bg-slate-50 border border-slate-100"
                                     }`}
                                 style={{
@@ -71,7 +71,7 @@ function AvailabilityHeatmap() {
 
             <div className="flex items-center gap-4 mt-auto pt-5 text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 <div className="flex items-center gap-1.5">
-                    <div className="h-2.5 w-2.5 rounded bg-safety-orange/20 border border-safety-orange/30" />
+                    <div className="h-2.5 w-2.5 rounded bg-electric-indigo/20 border border-electric-indigo/30" />
                     Available
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -110,14 +110,14 @@ function ListingShuffler() {
 
     return (
         <div
-            className="relative h-full flex flex-col bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
+            className="relative h-full flex flex-col bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-electric-indigo/40 hover:shadow-xl shadow-sm"
             role="article"
             aria-label="Tool Listing Shuffler"
             tabIndex={0}
         >
             <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 rounded-xl bg-safety-orange/10 flex items-center justify-center">
-                    <Layers className="h-5 w-5 text-safety-orange" />
+                <div className="h-10 w-10 rounded-xl bg-electric-indigo/10 flex items-center justify-center">
+                    <Layers className="h-5 w-5 text-electric-indigo" />
                 </div>
                 <div>
                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Listing Shuffler</h3>
@@ -147,12 +147,12 @@ function ListingShuffler() {
                                         <p className="text-sm font-bold text-slate-900 leading-tight">{tool.name}</p>
                                         <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-1 font-mono">{tool.category}</p>
                                     </div>
-                                    <span className="text-[10px] font-mono font-bold text-safety-orange bg-safety-orange/10 px-2.5 py-1 rounded-full border border-safety-orange/20">
+                                    <span className="text-[10px] font-mono font-bold text-electric-indigo bg-electric-indigo/10 px-2.5 py-1 rounded-full border border-electric-indigo/20">
                                         {tool.tier}
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xl font-bold text-safety-orange font-mono">{tool.price}</span>
+                                    <span className="text-xl font-bold text-midnight-navy font-mono">{tool.price}</span>
                                     <div className="flex items-center gap-1.5">
                                         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                                         <span className="text-[10px] text-emerald-600 font-mono uppercase">Available</span>
@@ -173,7 +173,7 @@ function ListingShuffler() {
                             setCurrentIndex(idx);
                             startCycle();
                         }}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-6 bg-safety-orange" : "w-1.5 bg-slate-200 hover:bg-slate-300"
+                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-6 bg-electric-indigo" : "w-1.5 bg-slate-200 hover:bg-slate-300"
                             }`}
                         aria-label={`View tool ${idx + 1}`}
                         tabIndex={0}
@@ -230,14 +230,14 @@ function PeaceFundTelemetry() {
 
     return (
         <div
-            className="relative h-full flex flex-col bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-safety-orange/40 hover:shadow-xl shadow-sm"
+            className="relative h-full flex flex-col bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 overflow-hidden transition-all duration-500 hover:border-electric-indigo/40 hover:shadow-xl shadow-sm"
             role="article"
             aria-label="Peace Fund Telemetry Feed"
             tabIndex={0}
         >
             <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 rounded-xl bg-safety-orange/10 flex items-center justify-center">
-                    <Shield className="h-5 w-5 text-safety-orange" />
+                <div className="h-10 w-10 rounded-xl bg-electric-indigo/10 flex items-center justify-center">
+                    <Shield className="h-5 w-5 text-electric-indigo" />
                 </div>
                 <div className="flex-1">
                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Peace Fund Telemetry</h3>
@@ -324,8 +324,8 @@ export function IndustrialArtifacts() {
             {/* Section Header */}
             <div className="container mx-auto px-4 md:px-8 mb-14">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="h-px flex-1 max-w-[60px] bg-safety-orange/40" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-safety-orange">
+                    <div className="h-px flex-1 max-w-[60px] bg-midnight-navy/40" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-midnight-navy">
                         Industrial Artifacts
                     </span>
                 </div>
@@ -351,3 +351,4 @@ export function IndustrialArtifacts() {
         </section>
     );
 }
+

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/app
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/app/components/ui/dialog";
 import { AvatarUpload } from "@/app/components/profile/avatar-upload";
-import { User, Shield, CreditCard, Activity, CheckCircle, ExternalLink, MapPin } from "lucide-react";
+import { User, Shield, CreditCard, Activity, CheckCircle, ExternalLink, MapPin, Settings, Lock } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { NeighborhoodMap } from "@/app/components/neighborhood-map";
@@ -28,6 +28,36 @@ export default function ProfilePage() {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [saveLoading, setSaveLoading] = useState(false);
+    const [resetLoading, setResetLoading] = useState(false);
+
+    const handleResetPassword = async () => {
+        if (!user?.email) return;
+        
+        setResetLoading(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+
+            const response = await fetch("/api/auth/reset-password", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.success("Password reset email sent via Resend!");
+            } else {
+                toast.error(data.error || "Failed to send reset email.");
+            }
+        } catch (error) {
+            console.error("Reset Password Error:", error);
+            toast.error("An error occurred. Check console for details.");
+        } finally {
+            setResetLoading(false);
+        }
+    };
 
     const handleSaveProfile = async () => {
         setSaveLoading(true);
@@ -166,11 +196,12 @@ export default function ProfilePage() {
                 </div>
 
                 <Tabs defaultValue="identity" className="w-full space-y-6">
-                    <TabsList className="grid w-full grid-cols-4 bg-slate-200 p-1 rounded-lg">
+                    <TabsList className="grid w-full grid-cols-5 bg-slate-200 p-1 rounded-lg">
                         <TabsTrigger value="identity" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Identity & Trust</TabsTrigger>
                         <TabsTrigger value="activity" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Activity</TabsTrigger>
                         <TabsTrigger value="financials" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Financials</TabsTrigger>
                         <TabsTrigger value="protection" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Protection</TabsTrigger>
+                        <TabsTrigger value="admin" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Admin</TabsTrigger>
                     </TabsList>
 
                     {/* IDENTITY TAB */}
@@ -398,6 +429,57 @@ export default function ProfilePage() {
                                 <div className="text-center py-8 text-slate-500">
                                     <Shield className="h-12 w-12 mx-auto mb-3 opacity-20" />
                                     <p>Your rentals are protected by the community Peace Fund.</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* ADMIN TAB */}
+                    <TabsContent value="admin">
+                        <Card className="border-slate-200 shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Settings className="h-5 w-5 text-safety-orange" />
+                                    Account Security
+                                </CardTitle>
+                                <CardDescription>Manage your account credentials and security settings.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="p-6 border rounded-xl bg-white shadow-sm border-slate-100">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="space-y-1">
+                                            <h4 className="font-bold text-slate-900">Reset Password</h4>
+                                            <p className="text-sm text-slate-500 leading-relaxed">
+                                                Receive a secure link via email to update your password. This email will be sent using our primary notification system (Resend).
+                                            </p>
+                                        </div>
+                                        <Button 
+                                            variant="outline" 
+                                            onClick={handleResetPassword}
+                                            disabled={resetLoading}
+                                            className="border-slate-200 hover:bg-slate-50 min-w-[140px]"
+                                        >
+                                            {resetLoading ? "Sending..." : "Send Reset Email"}
+                                        </Button>
+                                    </div>
+
+                                    {user?.app_metadata.provider !== 'email' && (
+                                        <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                                            <p className="text-xs text-blue-700">
+                                                <strong>Note:</strong> You are currently signed in via <strong>{user?.app_metadata.provider}</strong>. Password reset is intended for email-based accounts.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="p-6 border rounded-xl bg-slate-50 border-dashed border-slate-300">
+                                    <div className="flex items-center gap-2 text-slate-400 mb-2">
+                                        <Lock className="h-4 w-4" />
+                                        <span className="text-xs font-mono font-bold uppercase tracking-wider">Advanced Settings</span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 italic">
+                                        Additional security features like 2FA and login history are coming soon in the next platform update.
+                                    </p>
                                 </div>
                             </CardContent>
                         </Card>

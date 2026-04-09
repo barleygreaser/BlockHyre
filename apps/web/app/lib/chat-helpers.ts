@@ -73,6 +73,22 @@ export async function sendSystemMessage(
             if (renterErr) console.error('Error inserting renter system message:', renterErr);
         }
 
+        // 6. Dispatch email notification (non-blocking)
+        // The API route maintains a skip-list for events already handled
+        // by dedicated Resend flows (e.g. BOOKING_CONFIRMED, RENTAL_REQUEST_SUBMITTED).
+        fetch('/api/notifications/system-message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                eventName,
+                ownerId,
+                renterId,
+                context,
+            }),
+        }).catch((fetchErr) => {
+            console.error('Email notification dispatch failed (non-critical):', fetchErr);
+        });
+
     } catch (error) {
         console.error('System message generation failed:', error);
     }
