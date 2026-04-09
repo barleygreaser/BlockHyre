@@ -569,7 +569,9 @@ function RequestRentalContent() {
 
                     <Animated.View entering={FadeIn.delay(600).duration(500)} style={styles.confirmationActions}>
                         <TouchableOpacity style={styles.continueButton} onPress={() => {
-                            router.dismiss();
+                            if (router.canDismiss()) {
+                                router.dismiss();
+                            }
                             router.replace('/(tabs)/rentals');
                         }}>
                             <Text style={styles.continueButtonText}>View My Rentals</Text>
