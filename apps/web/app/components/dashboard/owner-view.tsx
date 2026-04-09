@@ -265,7 +265,7 @@ export function OwnerDashboardView() {
         setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
         toast.message(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] Action logged. Details processing...`, {
             description: `Approving ${rental.listing.title}`,
-            className: "font-mono border-l-4 border-l-safety-orange rounded-none",
+            className: "font-serif border-l-4 border-l-safety-orange rounded-none",
         });
 
         try {
@@ -276,7 +276,7 @@ export function OwnerDashboardView() {
 
             if (error) {
                 toast.error(`[SYSTEM ERROR] Failed to approve: ${error.message}`, {
-                    className: "font-mono border-l-4 border-l-red-500 rounded-none bg-charcoal text-white",
+                    className: "font-serif border-l-4 border-l-red-500 rounded-none bg-charcoal text-white",
                 });
                 // Revert optimistic update gracefully
                 setRentalRequests(prev => [rental, ...prev]);
@@ -390,7 +390,7 @@ export function OwnerDashboardView() {
 
             toast.success(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] RENTAL APPROVED`, {
                 description: `${rental.listing.title} marked active for ${rental.renter.full_name}`,
-                className: "font-mono border-l-4 border-l-emerald-500 rounded-none bg-charcoal text-emerald-400",
+                className: "font-serif border-l-4 border-l-emerald-500 rounded-none bg-charcoal text-emerald-400",
             });
         } catch (err) {
             console.error("Approval failed:", err);
@@ -621,11 +621,11 @@ export function OwnerDashboardView() {
                 <Link href="/dashboard/owner/bookings" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                         <div>
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tool Bookings</p>
+                            <p className="text-[9px] sm:text-[10px] font-serif font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tool Bookings</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
-                                <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.activeRentals}</h3>
+                                <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-serif tabular-nums">{kpis.activeRentals}</h3>
                             )}
                         </div>
                         <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
@@ -648,11 +648,11 @@ export function OwnerDashboardView() {
                             <Link href="/dashboard/owner/transactions" className="block group active:translate-y-[2px] transition-transform">
                                 <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                                     <div className="min-w-0">
-                                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Net Earnings (30d)</p>
+                                        <p className="text-[9px] sm:text-[10px] font-serif font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Net Earnings (30d)</p>
                                         {kpiLoading ? (
                                             <div className="h-7 w-16 bg-slate-100 animate-pulse rounded-lg mt-1" />
                                         ) : (
-                                            <h3 className="text-xl sm:text-3xl font-bold text-emerald-600 font-mono tabular-nums truncate">{formatCurrency(kpis.earnings30d)}</h3>
+                                            <h3 className="text-xl sm:text-3xl font-bold text-emerald-600 font-serif tabular-nums truncate">{formatCurrency(kpis.earnings30d)}</h3>
                                         )}
                                     </div>
                                     <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 group-hover:bg-emerald-100 transition-colors">
@@ -663,7 +663,7 @@ export function OwnerDashboardView() {
                             </Link>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="bg-charcoal text-white p-3 rounded-xl max-w-[220px]">
-                            <div className="space-y-1.5 text-[11px] font-mono">
+                            <div className="space-y-1.5 text-[11px] font-serif">
                                 <div className="flex justify-between gap-4">
                                     <span className="text-concrete/60">Gross Revenue</span>
                                     <span className="font-bold">{formatCurrency(kpis.grossRevenue30d)}</span>
@@ -684,11 +684,11 @@ export function OwnerDashboardView() {
                 <Link href="/dashboard/inventory" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                         <div>
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tools Listed</p>
+                            <p className="text-[9px] sm:text-[10px] font-serif font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tools Listed</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
-                                <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{kpis.toolsListed}</h3>
+                                <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-serif tabular-nums">{kpis.toolsListed}</h3>
                             )}
                         </div>
                         <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-safety-orange flex-shrink-0 group-hover:bg-orange-100 transition-colors">
@@ -716,8 +716,8 @@ export function OwnerDashboardView() {
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
-                                                <Badge className="bg-safety-orange/10 text-safety-orange border border-safety-orange/20 text-[10px] font-mono font-bold uppercase tracking-wider rounded-full px-3">Returned</Badge>
-                                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Needs Inspection</span>
+                                                <Badge className="bg-safety-orange/10 text-safety-orange border border-safety-orange/20 text-[10px] font-serif font-bold uppercase tracking-wider rounded-full px-3">Returned</Badge>
+                                                <span className="text-[10px] font-serif text-slate-400 uppercase tracking-wider">Needs Inspection</span>
                                             </div>
                                             <h4 className="font-bold text-slate-900 text-base">{item.listing.title}</h4>
                                             <p className="text-sm text-slate-500">Returned by <span className="font-medium text-slate-700">{item.renter.full_name || 'Renter'}</span></p>
@@ -771,20 +771,20 @@ export function OwnerDashboardView() {
 
                                         <div className="grid grid-cols-2 gap-3 bg-white/5 rounded-2xl p-4 mb-4 border border-white/10">
                                             <div>
-                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">Current End</p>
-                                                <p className="font-bold text-white font-mono text-sm">{formatDate(ext.current_end_date)}</p>
+                                                <p className="text-[10px] font-serif text-concrete/50 uppercase tracking-wider mb-1">Current End</p>
+                                                <p className="font-bold text-white font-serif text-sm">{formatDate(ext.current_end_date)}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">New End</p>
-                                                <p className="font-bold text-safety-orange font-mono text-sm">{formatDate(ext.new_end_date)}</p>
+                                                <p className="text-[10px] font-serif text-concrete/50 uppercase tracking-wider mb-1">New End</p>
+                                                <p className="font-bold text-safety-orange font-serif text-sm">{formatDate(ext.new_end_date)}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">Extra Days</p>
-                                                <p className="font-bold text-white font-mono text-sm">+{ext.extra_days}</p>
+                                                <p className="text-[10px] font-serif text-concrete/50 uppercase tracking-wider mb-1">Extra Days</p>
+                                                <p className="font-bold text-white font-serif text-sm">+{ext.extra_days}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-mono text-concrete/50 uppercase tracking-wider mb-1">Extra Earnings</p>
-                                                <p className="font-bold text-emerald-400 font-mono text-sm">
+                                                <p className="text-[10px] font-serif text-concrete/50 uppercase tracking-wider mb-1">Extra Earnings</p>
+                                                <p className="font-bold text-emerald-400 font-serif text-sm">
                                                     {formatCurrency(calculateOwnerRevenue(ext.additional_rental_fee))}
                                                 </p>
                                             </div>
@@ -823,7 +823,7 @@ export function OwnerDashboardView() {
                                                     <div>
                                                         <h4 className="font-bold text-slate-900 flex items-center gap-2">
                                                             {request.renter.full_name || 'Unknown User'}
-                                                            <span className="flex items-center text-[10px] font-mono font-normal text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
+                                                            <span className="flex items-center text-[10px] font-serif font-normal text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
                                                                 <span className="text-yellow-400 mr-1">★</span>
                                                                 5.0
                                                             </span>
@@ -831,7 +831,7 @@ export function OwnerDashboardView() {
                                                         <p className="text-sm text-slate-500">wants to rent <span className="font-medium text-slate-900">{request.listing.title}</span></p>
 
                                                         {/* Specs Grid */}
-                                                        <div className="flex items-center gap-3 mt-2 text-[10px] font-mono uppercase tracking-wider">
+                                                        <div className="flex items-center gap-3 mt-2 text-[10px] font-serif uppercase tracking-wider">
                                                             <span className="bg-slate-50 px-2.5 py-1 rounded-full text-slate-500 border border-slate-100">
                                                                 {formatDate(request.start_date)} – {formatDate(request.end_date)}
                                                             </span>
@@ -849,7 +849,7 @@ export function OwnerDashboardView() {
                                                                                 </span>
                                                                             </TooltipTrigger>
                                                                             <TooltipContent side="top" className="bg-charcoal text-white p-3 max-w-xs rounded-xl border border-white/10">
-                                                                                <div className="space-y-1 text-xs font-mono">
+                                                                                <div className="space-y-1 text-xs font-serif">
                                                                                     <div className="flex justify-between gap-4">
                                                                                         <span className="text-concrete/60">Rental Fee:</span>
                                                                                         <span className="font-semibold">{formatCurrency(request.rental_fee)}</span>
@@ -878,7 +878,7 @@ export function OwnerDashboardView() {
                                                             const isUrgent = timeInfo.isUrgent;
 
                                                             return (
-                                                                <div className={`flex items-center gap-1.5 mt-3 text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1.5 rounded-full w-fit ${isUrgent
+                                                                <div className={`flex items-center gap-1.5 mt-3 text-[10px] font-serif font-bold uppercase tracking-wider px-3 py-1.5 rounded-full w-fit ${isUrgent
                                                                     ? 'bg-red-50 text-red-600 border border-red-200'
                                                                     : 'bg-amber-50 text-amber-600 border border-amber-200'
                                                                     }`}>
@@ -960,7 +960,7 @@ export function OwnerDashboardView() {
                                 {activeDisputes.slice(0, 3).map(dispute => (
                                     <div key={dispute.dispute_id} className="border-b border-red-200 pb-3 last:border-0 last:pb-0">
                                         <p className="text-red-900 font-medium text-sm truncate">{dispute.listing_title}</p>
-                                        <p className="text-red-600 text-xs mt-1 lowercase opacity-80 font-mono">
+                                        <p className="text-red-600 text-xs mt-1 lowercase opacity-80 font-serif">
                                             {dispute.dispute_type.replace('_', ' ')} • {formatDate(dispute.created_at)}
                                         </p>
                                     </div>
@@ -975,7 +975,7 @@ export function OwnerDashboardView() {
                     ) : (
                         <div className="bg-white rounded-[2rem] border border-slate-200 p-5 flex items-center justify-between shadow-sm">
                             <span className="font-serif text-slate-900 font-medium text-sm">Disputes</span>
-                            <div className="flex items-center gap-2 text-emerald-600 text-[10px] font-mono font-bold uppercase tracking-wider">
+                            <div className="flex items-center gap-2 text-emerald-600 text-[10px] font-serif font-bold uppercase tracking-wider">
                                 <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                                 No active disputes
                             </div>
@@ -987,7 +987,7 @@ export function OwnerDashboardView() {
                         <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-base font-bold font-serif text-slate-900">Recent Payouts</h3>
-                                <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 text-[10px] font-mono uppercase tracking-wider">
+                                <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 text-[10px] font-serif uppercase tracking-wider">
                                     Stripe: Connected ●
                                 </Badge>
                             </div>
@@ -1012,15 +1012,15 @@ export function OwnerDashboardView() {
                                                         : new Date(payout.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                                                     }
                                                 </p>
-                                                <p className="text-[10px] font-mono text-slate-400">
+                                                <p className="text-[10px] font-serif text-slate-400">
                                                     {payout.bankLast4 ? `To: ****${payout.bankLast4}` : `Status: ${payout.status}`}
                                                 </p>
                                             </div>
-                                            <span className="text-emerald-600 font-bold font-mono">+${payout.amount.toFixed(2)}</span>
+                                            <span className="text-emerald-600 font-bold font-serif">+${payout.amount.toFixed(2)}</span>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-slate-400 font-mono">No payouts yet</p>
+                                    <p className="text-sm text-slate-400 font-serif">No payouts yet</p>
                                 )}
                                 <Link href="/dashboard/owner/transactions">
                                     <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-safety-orange/80">
