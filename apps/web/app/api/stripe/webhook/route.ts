@@ -14,6 +14,8 @@ const supabaseAdmin = createClient(
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+const dateFormatter = new Intl.DateTimeFormat('en-US');
+
 export async function POST(req: Request) {
     const body = await req.text();
     const signature = (await headers()).get("stripe-signature") as string;
@@ -125,8 +127,8 @@ export async function POST(req: Request) {
                 }
 
                 // 3. Send Notifications via Resend
-                const startDateStr = new Date(item.start_date).toLocaleDateString();
-                const endDateStr = new Date(item.end_date).toLocaleDateString();
+                const startDateStr = dateFormatter.format(new Date(item.start_date));
+                const endDateStr = dateFormatter.format(new Date(item.end_date));
                 const toolName = listing.tools?.name || "a tool";
                 
                 // Calculate owner earnings (gross - platform fee)

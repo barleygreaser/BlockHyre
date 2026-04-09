@@ -12,6 +12,9 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
+const monthFormatter = new Intl.DateTimeFormat(undefined, { month: "short" });
+const dayFormatter = new Intl.DateTimeFormat(undefined);
+
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
     blockedDates?: Date[];
     minDate?: Date | null;
@@ -103,8 +106,7 @@ function Calendar({
             )}
             captionLayout={captionLayout}
             formatters={{
-                formatMonthDropdown: (date) =>
-                    date.toLocaleString("default", { month: "short" }),
+                formatMonthDropdown: (date) => monthFormatter.format(date),
                 ...formatters,
             }}
             classNames={{
@@ -260,7 +262,7 @@ function CalendarDayButton({
             ref={ref}
             variant="ghost"
             size="icon"
-            data-day={day.date.toLocaleDateString()}
+            data-day={dayFormatter.format(day.date)}
             data-selected-single={
                 modifiers.selected &&
                 !modifiers.range_start &&
