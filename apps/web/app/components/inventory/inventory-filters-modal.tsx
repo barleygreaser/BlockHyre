@@ -131,7 +131,8 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
         showDistanceFilter = true
     } = props;
 
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    // Categories are expected to be pre-sorted by the parent to avoid redundant sorting on every render
+    const sortedCategories = categories;
 
     return (
         <div className={cn("p-5 space-y-5", isDesktop ? "flex-1 overflow-y-auto" : "")}>

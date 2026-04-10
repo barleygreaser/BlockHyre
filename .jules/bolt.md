@@ -74,3 +74,7 @@
 ## 2024-04-04 - [Performance] Pre-initialize Intl.DateTimeFormat object
 **Learning:** `Intl.DateTimeFormat` object is being instantiated repeatedly inside React components or helper functions during format string operations causing unnecessary re-renders.
 **Action:** Always pre-initialize `Intl.DateTimeFormat` objects at the module level when options are static. Replace repeated formatters with pre-initialized instance for the specific format.
+
+## 2025-02-28 - Unnecessary Prop Sorting Optimization
+**Learning:** Found an instance where a parent component (`apps/web/app/listings/page.tsx`) correctly sorted an array of categories and passed it down to a modal component (`InventoryFiltersModal`). The modal component then redundantly re-sorted the exact same array on every render, wasting CPU cycles on unnecessary O(N log N) string comparisons.
+**Action:** Always trust that data structures passed down via props maintain their sorting unless explicitly modified. Avoid re-sorting arrays in child components if the parent is already responsible for that data transformation.
