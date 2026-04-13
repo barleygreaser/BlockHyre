@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/app/components/ui/button";
@@ -74,12 +74,15 @@ export default function OwnerBookingsPage() {
         return 'active';
     };
 
-    const filteredRentals = activeRentals.filter(rental => {
-        if (activeFilter === 'all') return true;
-        const category = categorizeRental(rental);
-        if (activeFilter === 'archived') return category === 'completed';
-        return category === activeFilter;
-    });
+    // ⚡ Bolt Optimization: Wrap filter logic in useMemo to prevent unnecessary re-renders
+    const filteredRentals = useMemo(() => {
+        return activeRentals.filter(rental => {
+            if (activeFilter === 'all') return true;
+            const category = categorizeRental(rental);
+            if (activeFilter === 'archived') return category === 'completed';
+            return category === activeFilter;
+        });
+    }, [activeRentals, activeFilter]);
 
     const getCounts = () => {
         const counts = { all: activeRentals.length, upcoming: 0, active: 0, overdue: 0, completed: 0 };
