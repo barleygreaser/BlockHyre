@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -193,10 +193,13 @@ export default function TransactionsPage() {
         fetchAll();
     }, [user]);
 
-    const filteredPayouts = payouts.filter(p => {
-        if (activeFilter === "all") return true;
-        return p.status === activeFilter;
-    });
+    // ⚡ Bolt Optimization: Wrap filter logic in useMemo to prevent unnecessary re-renders
+    const filteredPayouts = useMemo(() => {
+        return payouts.filter(p => {
+            if (activeFilter === "all") return true;
+            return p.status === activeFilter;
+        });
+    }, [payouts, activeFilter]);
 
     const filterConfig = [
         { key: "all" as FilterKey, label: "All", count: payouts.length },

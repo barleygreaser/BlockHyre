@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
@@ -118,14 +118,18 @@ export default function InventoryPage() {
     fetchInventory();
   }, [user]);
 
-  const filteredInventory = inventory.filter((item) => {
-    if (statusFilter !== "all" && item.status !== statusFilter) return false;
+  // ⚡ Bolt Optimization: Wrap filter logic in useMemo to prevent unnecessary re-renders
+  const filteredInventory = useMemo(() => {
+    // ⚡ Bolt Optimization: Compute lowercase search term once instead of inside the filter loop
     const q = searchTerm.toLowerCase();
-    return (
-      item.tool_title.toLowerCase().includes(q) ||
-      (item.current_renter_name?.toLowerCase().includes(q) ?? false)
-    );
-  });
+    return inventory.filter((item) => {
+      if (statusFilter !== "all" && item.status !== statusFilter) return false;
+      return (
+        item.tool_title.toLowerCase().includes(q) ||
+        (item.current_renter_name?.toLowerCase().includes(q) ?? false)
+      );
+    });
+  }, [inventory, statusFilter, searchTerm]);
 
   return (
     <div className="pt-4">
