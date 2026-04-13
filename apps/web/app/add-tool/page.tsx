@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -105,7 +105,9 @@ export default function AddToolPage() {
     }, [selectedCategory]);
 
     // Sort categories alphabetically
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    const sortedCategories = useMemo(() => {
+        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    }, [categories]);
 
     // Auto-calculate Risk/Deposit based on Hybrid Tier (override > default)
     const currentTier = financials.currentTier;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/app/components/ui/drawer";
 import { Button } from "@/app/components/ui/button";
@@ -131,7 +132,9 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
         showDistanceFilter = true
     } = props;
 
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    const sortedCategories = useMemo(() => {
+        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    }, [categories]);
 
     return (
         <div className={cn("p-5 space-y-5", isDesktop ? "flex-1 overflow-y-auto" : "")}>

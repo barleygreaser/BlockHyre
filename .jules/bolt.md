@@ -74,3 +74,7 @@
 ## 2024-04-04 - [Performance] Pre-initialize Intl.DateTimeFormat object
 **Learning:** `Intl.DateTimeFormat` object is being instantiated repeatedly inside React components or helper functions during format string operations causing unnecessary re-renders.
 **Action:** Always pre-initialize `Intl.DateTimeFormat` objects at the module level when options are static. Replace repeated formatters with pre-initialized instance for the specific format.
+
+## 2025-02-28 - Avoid Redundant Sorting in React Renders
+**Learning:** Performing `String.prototype.localeCompare` to sort string arrays (e.g. categories) inside a functional component body causes O(N log N) overhead on every single re-render. Passing pre-sorted arrays as props still resulted in child components unnecessarily re-sorting them.
+**Action:** Use `useMemo` to cache sorting operations when the source array is stable. Additionally, do not re-sort arrays in child components (e.g. Filter Modals) if the parent already pre-sorted them.
