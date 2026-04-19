@@ -78,3 +78,7 @@
 ## 2025-02-28 - Avoid Redundant Sorting in React Renders
 **Learning:** Performing `String.prototype.localeCompare` to sort string arrays (e.g. categories) inside a functional component body causes O(N log N) overhead on every single re-render. Passing pre-sorted arrays as props still resulted in child components unnecessarily re-sorting them.
 **Action:** Use `useMemo` to cache sorting operations when the source array is stable. Additionally, do not re-sort arrays in child components (e.g. Filter Modals) if the parent already pre-sorted them.
+
+## 2025-02-28 - Optimizing API Prefix Searching
+**Learning:** Using `Array.prototype.sort()` with `String.prototype.startsWith()` to prioritize prefix matches is highly inefficient, leading to O(N log N) time complexity.
+**Action:** Replace prefix prioritization sorting logic with O(N) array partitioning, explicitly separating matching and non-matching entries into separate arrays, and combining them later.
