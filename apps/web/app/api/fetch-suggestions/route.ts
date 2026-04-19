@@ -66,14 +66,20 @@ export async function GET(request: Request) {
             }
 
             // Sort: prioritize results that START with the query
-            const sortedData = result.data.sort((a: { name: string }, b: { name: string }) => {
-                const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
-                const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+            // Optimization: O(N) partitioning instead of O(N log N) sorting for prefix prioritization
+            const exactMatches: { name: string; tier_suggestion?: string; category_path?: string }[] = [];
+            const partialMatches: { name: string; tier_suggestion?: string; category_path?: string }[] = [];
+            const lowerQuery = query.toLowerCase();
 
-                if (aStartsWith && !bStartsWith) return -1;
-                if (!aStartsWith && bStartsWith) return 1;
-                return 0; // Keep alphabetical order for same priority
-            });
+            for (const item of result.data) {
+                if (item.name.toLowerCase().startsWith(lowerQuery)) {
+                    exactMatches.push(item);
+                } else {
+                    partialMatches.push(item);
+                }
+            }
+
+            const sortedData = [...exactMatches, ...partialMatches];
 
             // Map to expected format
             data = sortedData.map((item: { name: string }) => ({ brand: item.name }));
@@ -108,14 +114,20 @@ export async function GET(request: Request) {
 
             if (result.data) {
                 // Sort: prioritize results that START with the query
-                const sortedData = result.data.sort((a: { name: string }, b: { name: string }) => {
-                    const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
-                    const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+                // Optimization: O(N) partitioning instead of O(N log N) sorting for prefix prioritization
+            const exactMatches: { name: string; tier_suggestion?: string; category_path?: string }[] = [];
+            const partialMatches: { name: string; tier_suggestion?: string; category_path?: string }[] = [];
+            const lowerQuery = query.toLowerCase();
 
-                    if (aStartsWith && !bStartsWith) return -1;
-                    if (!aStartsWith && bStartsWith) return 1;
-                    return 0; // Keep alphabetical order for same priority
-                });
+            for (const item of result.data) {
+                if (item.name.toLowerCase().startsWith(lowerQuery)) {
+                    exactMatches.push(item);
+                } else {
+                    partialMatches.push(item);
+                }
+            }
+
+            const sortedData = [...exactMatches, ...partialMatches];
 
                 // Map to expected format
                 data = sortedData.map((item: { name: string; tier_suggestion?: string; category_path?: string }) => ({
