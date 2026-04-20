@@ -181,7 +181,7 @@ export function useMessages() {
                     content: content.trim(),
                     message_type: 'text' // explicit type
                 })
-                .select()
+                .select('id, chat_id, sender_id, content, is_read, created_at, message_type')
                 .single();
 
             if (sendError) throw sendError;
