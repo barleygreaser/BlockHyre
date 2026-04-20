@@ -65,18 +65,22 @@ export async function GET(request: Request) {
                 return NextResponse.json({ error: "Failed to fetch suggestions" }, { status: 500 });
             }
 
-            // Sort: prioritize results that START with the query
-            const sortedData = result.data.sort((a: { name: string }, b: { name: string }) => {
-                const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
-                const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+            // ⚡ Bolt Optimization: Use O(N) partitioning instead of O(N log N) sort to prioritize prefix matches
+            // Since result.data is already alphabetically sorted from the DB query, splitting and merging preserves the sub-sort.
+            const queryLower = query.toLowerCase();
+            const exactMatches: { name: string }[] = [];
+            const partialMatches: { name: string }[] = [];
 
-                if (aStartsWith && !bStartsWith) return -1;
-                if (!aStartsWith && bStartsWith) return 1;
-                return 0; // Keep alphabetical order for same priority
-            });
+            for (const item of result.data) {
+                if (item.name.toLowerCase().startsWith(queryLower)) {
+                    exactMatches.push(item);
+                } else {
+                    partialMatches.push(item);
+                }
+            }
 
             // Map to expected format
-            data = sortedData.map((item: { name: string }) => ({ brand: item.name }));
+            data = [...exactMatches, ...partialMatches].map((item: { name: string }) => ({ brand: item.name }));
         }
 
     } else {
@@ -107,18 +111,22 @@ export async function GET(request: Request) {
             error = result.error;
 
             if (result.data) {
-                // Sort: prioritize results that START with the query
-                const sortedData = result.data.sort((a: { name: string }, b: { name: string }) => {
-                    const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
-                    const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+                // ⚡ Bolt Optimization: Use O(N) partitioning instead of O(N log N) sort to prioritize prefix matches
+                // Since result.data is already alphabetically sorted from the DB query, splitting and merging preserves the sub-sort.
+                const queryLower = query.toLowerCase();
+                const exactMatches: { name: string; tier_suggestion?: string; category_path?: string }[] = [];
+                const partialMatches: { name: string; tier_suggestion?: string; category_path?: string }[] = [];
 
-                    if (aStartsWith && !bStartsWith) return -1;
-                    if (!aStartsWith && bStartsWith) return 1;
-                    return 0; // Keep alphabetical order for same priority
-                });
+                for (const item of result.data) {
+                    if (item.name.toLowerCase().startsWith(queryLower)) {
+                        exactMatches.push(item);
+                    } else {
+                        partialMatches.push(item);
+                    }
+                }
 
                 // Map to expected format
-                data = sortedData.map((item: { name: string; tier_suggestion?: string; category_path?: string }) => ({
+                data = [...exactMatches, ...partialMatches].map((item: { name: string; tier_suggestion?: string; category_path?: string }) => ({
                     tool_name: item.name,
                     tier_suggestion: item.tier_suggestion,
                     category_path: item.category_path
