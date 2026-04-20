@@ -224,17 +224,11 @@ export default function ListingDetailScreen() {
 
         // Prevent RPC crashes for Mock data
         if (listingId.length < 20 || ownerId === 'mock-owner-id') {
-            router.push({
-                pathname: '/request-rental',
-                params: {
-                    id: listing.id,
-                    title: listing.title,
-                    price: listing.price,
-                    image: listing.image_url,
-                    startDate: dateRange.start?.toISOString().split('T')[0],
-                    endDate: dateRange.end?.toISOString().split('T')[0],
-                }
-            });
+            Alert.alert(
+                'Mock Listing',
+                'Cannot message the owner of a mock listing. Please find a real listing.',
+                [{ text: 'OK' }]
+            );
             return;
         }
 
