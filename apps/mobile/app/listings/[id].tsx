@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Image } from 'expo-image';
 import {
     View,
@@ -599,8 +599,8 @@ export default function ListingDetailScreen() {
                         decelerationRate="fast"
                         viewabilityConfig={viewabilityConfig}
                         onViewableItemsChanged={onViewableItemsChanged}
-                        keyExtractor={(item, index) => `image-${index}`}
-                        renderItem={({ item }) => (
+                        keyExtractor={useCallback((item, index) => `image-${index}`, [])}
+                        renderItem={useCallback(({ item }) => (
                             <View style={[styles.imageSlide, { width }]}>
                                 <Image
                                     source={item}
@@ -609,7 +609,7 @@ export default function ListingDetailScreen() {
                                     transition={200}
                                 />
                             </View>
-                        )}
+                        ), [width])}
                     />
                     {/* Gradient overlay for better button visibility */}
                     <LinearGradient

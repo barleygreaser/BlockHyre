@@ -95,7 +95,7 @@ export default function HowItWorksScreen() {
         [TOTAL_STEPS]
     );
 
-    const renderItem = ({ item }: { item: typeof STEPS[0] }) => {
+    const renderItem = useCallback(({ item }: { item: typeof STEPS[0] }) => {
         return (
             <View style={[styles.stepContainer, { width }]}>
                 <View style={styles.stepContent}>
@@ -150,7 +150,7 @@ export default function HowItWorksScreen() {
                 </View>
             </View>
         );
-    };
+    }, [width]);
 
     return (
         <View style={styles.container}>
@@ -169,7 +169,7 @@ export default function HowItWorksScreen() {
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={useCallback((item) => item.id, [])}
                         onViewableItemsChanged={onViewableItemsChanged}
                         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
                         scrollEventThrottle={16}

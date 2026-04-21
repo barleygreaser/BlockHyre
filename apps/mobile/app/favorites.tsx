@@ -108,7 +108,7 @@ export default function FavoritesScreen() {
         }
     };
 
-    const renderFavoriteItem = ({ item }: { item: FavoriteItem }) => {
+    const renderFavoriteItem = useCallback(({ item }: { item: FavoriteItem }) => {
         const listing = item.listing;
         const imageUrl = listing.images && listing.images.length > 0
             ? listing.images[0]
@@ -148,7 +148,7 @@ export default function FavoritesScreen() {
                 </View>
             </TouchableOpacity>
         );
-    };
+    }, [router, handleRemoveFavorite]);
 
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
@@ -188,7 +188,7 @@ export default function FavoritesScreen() {
                 <FlatList
                     data={favorites}
                     renderItem={renderFavoriteItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={useCallback((item) => item.id, [])}
                     numColumns={2}
                     columnWrapperStyle={styles.row}
                     contentContainerStyle={[
