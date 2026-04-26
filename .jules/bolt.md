@@ -81,3 +81,7 @@
 ## 2024-04-05 - [Performance] Optimize API suggestion prefix matching using O(N) partitioning
 **Learning:** Using `Array.prototype.sort()` to prioritize items (e.g., prefix matches vs. partial matches) recalculates expensive operations like `toLowerCase()` and `startsWith()` repeatedly (`O(N log N)` times) and is unnecessarily slow when the source array is already pre-sorted (e.g., alphabetically from a DB query).
 **Action:** Replace `sort()` with an O(N) traversal that partitions the items into separate arrays based on priority, calculating derived values exactly once per item, and concatenate them to preserve the original sub-sorting and reduce computational overhead.
+
+## 2024-06-04 - Pre-calculating Derived Data for Filtering
+**Learning:** Performing string normalization (e.g. `toLowerCase().trim()`) inside a filter loop causes O(N*M) complexity on every keystroke.
+**Action:** Use `useMemo` to pre-calculate normalized fields (e.g. `normTitle`) for the entire dataset once when it changes, reducing filter complexity to O(N) comparisons. Furthermore, ALWAYS hoist loop-invariant values (like the search query normalization) outside of the `.filter()` loop.

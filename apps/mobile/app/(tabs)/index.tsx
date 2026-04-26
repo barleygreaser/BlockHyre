@@ -162,8 +162,10 @@ export default function ExploreScreen() {
 
   // --- Filtering & Sorting ---
   const filteredTools = useMemo(() => {
+    // ⚡ Bolt Optimization: Cache the lowercase search query outside the loop to prevent O(N) recalculations
+    const searchLower = searchQuery.toLowerCase();
     return tools.filter(tool => {
-      const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = tool.title.toLowerCase().includes(searchLower);
       const matchesCategory = activeCategory === 'All' ? true : tool.category === activeCategory;
       return matchesSearch && matchesCategory;
     }).sort((a, b) => {
