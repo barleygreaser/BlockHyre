@@ -118,9 +118,25 @@ export default function InventoryPage() {
     fetchInventory();
   }, [user]);
 
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: inventory.length };
+    // Initialize specific status counts
+    STATUS_TABS.forEach(status => {
+      if (status !== 'all') counts[status] = 0;
+    });
+
+    for (let i = 0; i < inventory.length; i++) {
+      const status = inventory[i].status;
+      if (counts[status] !== undefined) {
+        counts[status]++;
+      }
+    }
+    return counts;
+  }, [inventory]);
+
+  const q = searchTerm.toLowerCase();
   const filteredInventory = inventory.filter((item) => {
     if (statusFilter !== "all" && item.status !== statusFilter) return false;
-    const q = searchTerm.toLowerCase();
     return (
       item.tool_title.toLowerCase().includes(q) ||
       (item.current_renter_name?.toLowerCase().includes(q) ?? false)
@@ -168,9 +184,7 @@ export default function InventoryPage() {
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
               <span className="ml-2 opacity-60">
-                {status === "all"
-                  ? inventory.length
-                  : inventory.filter((i) => i.status === status).length}
+                {statusCounts[status] || 0}
               </span>
             </button>
           ))}

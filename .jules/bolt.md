@@ -85,3 +85,6 @@
 ## 2024-06-04 - Pre-calculating Derived Data for Filtering
 **Learning:** Performing string normalization (e.g. `toLowerCase().trim()`) inside a filter loop causes O(N*M) complexity on every keystroke.
 **Action:** Use `useMemo` to pre-calculate normalized fields (e.g. `normTitle`) for the entire dataset once when it changes, reducing filter complexity to O(N) comparisons. Furthermore, ALWAYS hoist loop-invariant values (like the search query normalization) outside of the `.filter()` loop.
+## 2025-03-02 - O(N*M) Operations in JSX mapping
+**Learning:** Performing array operations like `.filter(...).length` inside a `.map()` block in JSX for deriving counts causes O(N*M) complexity on every render, which is exacerbated when the underlying list is large.
+**Action:** Use `useMemo` to pre-calculate tab counts (or similar aggregations) with a single O(N) array traversal, avoiding redundant iterations per mapped item.
