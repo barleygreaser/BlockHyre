@@ -85,3 +85,7 @@
 ## 2024-06-04 - Pre-calculating Derived Data for Filtering
 **Learning:** Performing string normalization (e.g. `toLowerCase().trim()`) inside a filter loop causes O(N*M) complexity on every keystroke.
 **Action:** Use `useMemo` to pre-calculate normalized fields (e.g. `normTitle`) for the entire dataset once when it changes, reducing filter complexity to O(N) comparisons. Furthermore, ALWAYS hoist loop-invariant values (like the search query normalization) outside of the `.filter()` loop.
+
+## 2025-03-02 - Optimize List Filtering and Derived Counts in Render loops
+**Learning:** Performing multiple array `.filter()` traversals to derive category counts or recalculating filtered lists on every render (without `useMemo`) creates an O(N * M) performance bottleneck, especially when loop-invariant operations like string normalization (`toLowerCase()`) are placed inside the loop.
+**Action:** Always wrap derived lists in `useMemo`, hoist loop-invariant operations like search normalization outside the loop, and use an O(N) array reduction/traversal to pre-calculate category counts once rather than filtering repeatedly.

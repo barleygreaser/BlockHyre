@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
@@ -118,14 +118,25 @@ export default function InventoryPage() {
     fetchInventory();
   }, [user]);
 
-  const filteredInventory = inventory.filter((item) => {
-    if (statusFilter !== "all" && item.status !== statusFilter) return false;
-    const q = searchTerm.toLowerCase();
-    return (
-      item.tool_title.toLowerCase().includes(q) ||
-      (item.current_renter_name?.toLowerCase().includes(q) ?? false)
-    );
-  });
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: inventory.length };
+    inventory.forEach((item) => {
+      counts[item.status] = (counts[item.status] || 0) + 1;
+    });
+    return counts;
+  }, [inventory]);
+
+  const filteredInventory = useMemo(() => {
+    const q = searchTerm.toLowerCase().trim();
+    return inventory.filter((item) => {
+      if (statusFilter !== "all" && item.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
+        item.tool_title.toLowerCase().includes(q) ||
+        (item.current_renter_name?.toLowerCase().includes(q) ?? false)
+      );
+    });
+  }, [inventory, statusFilter, searchTerm]);
 
   return (
     <div className="pt-4">
@@ -168,9 +179,7 @@ export default function InventoryPage() {
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
               <span className="ml-2 opacity-60">
-                {status === "all"
-                  ? inventory.length
-                  : inventory.filter((i) => i.status === status).length}
+                {statusCounts[status] || 0}
               </span>
             </button>
           ))}
