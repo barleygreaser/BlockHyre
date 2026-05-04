@@ -89,3 +89,7 @@
 ## 2025-03-02 - Optimize List Filtering and Derived Counts in Render loops
 **Learning:** Performing multiple array `.filter()` traversals to derive category counts or recalculating filtered lists on every render (without `useMemo`) creates an O(N * M) performance bottleneck, especially when loop-invariant operations like string normalization (`toLowerCase()`) are placed inside the loop.
 **Action:** Always wrap derived lists in `useMemo`, hoist loop-invariant operations like search normalization outside the loop, and use an O(N) array reduction/traversal to pre-calculate category counts once rather than filtering repeatedly.
+
+## 2024-05-24 - Pre-calculate Category Counts in Render Flow
+**Learning:** In React components that render tabs or categories based on an array's contents, using multiple `.filter(...).length` calls inline in the render cycle (or right before) leads to O(N * M) performance complexity where M is the number of categories. This causes redundant array traversals on every render.
+**Action:** Always pre-calculate required counts with a single O(N) array pass (using `.forEach` or a `for...of` loop) wrapped in a `useMemo` block. This way, we process the array just once when data changes, storing counts in an object, preventing unnecessary computations during UI updates.

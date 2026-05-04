@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -198,11 +198,22 @@ export default function TransactionsPage() {
         return p.status === activeFilter;
     });
 
+    // ⚡ Bolt Optimization: Pre-calculate counts with an O(N) array traversal instead of O(N*M) multiple .filter().length passes
+    const payoutCounts = useMemo(() => {
+        const counts = { all: payouts.length, paid: 0, pending: 0, in_transit: 0 };
+        payouts.forEach(p => {
+            if (counts[p.status as keyof typeof counts] !== undefined) {
+                counts[p.status as keyof typeof counts]++;
+            }
+        });
+        return counts;
+    }, [payouts]);
+
     const filterConfig = [
-        { key: "all" as FilterKey, label: "All", count: payouts.length },
-        { key: "paid" as FilterKey, label: "Paid", count: payouts.filter(p => p.status === "paid").length },
-        { key: "pending" as FilterKey, label: "Pending", count: payouts.filter(p => p.status === "pending").length },
-        { key: "in_transit" as FilterKey, label: "In Transit", count: payouts.filter(p => p.status === "in_transit").length },
+        { key: "all" as FilterKey, label: "All", count: payoutCounts.all },
+        { key: "paid" as FilterKey, label: "Paid", count: payoutCounts.paid },
+        { key: "pending" as FilterKey, label: "Pending", count: payoutCounts.pending },
+        { key: "in_transit" as FilterKey, label: "In Transit", count: payoutCounts.in_transit },
     ];
 
     const totalGross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
