@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -193,21 +193,39 @@ export default function TransactionsPage() {
         fetchAll();
     }, [user]);
 
-    const filteredPayouts = payouts.filter(p => {
+    // ⚡ Bolt Optimization: Memoize the derived filtered list to avoid O(N) recalculation on render
+    const filteredPayouts = useMemo(() => payouts.filter(p => {
         if (activeFilter === "all") return true;
         return p.status === activeFilter;
-    });
+    }), [payouts, activeFilter]);
 
-    const filterConfig = [
-        { key: "all" as FilterKey, label: "All", count: payouts.length },
-        { key: "paid" as FilterKey, label: "Paid", count: payouts.filter(p => p.status === "paid").length },
-        { key: "pending" as FilterKey, label: "Pending", count: payouts.filter(p => p.status === "pending").length },
-        { key: "in_transit" as FilterKey, label: "In Transit", count: payouts.filter(p => p.status === "in_transit").length },
-    ];
+    // ⚡ Bolt Optimization: Derive counts in a single pass rather than multiple O(N) .filter() calls
+    const filterConfig = useMemo(() => {
+        const counts = { all: payouts.length, paid: 0, pending: 0, in_transit: 0 };
+        payouts.forEach(p => {
+            if (p.status === "paid") counts.paid++;
+            else if (p.status === "pending") counts.pending++;
+            else if (p.status === "in_transit") counts.in_transit++;
+        });
 
-    const totalGross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
-    const totalFees = totalGross * (sellerFeePercent / 100);
-    const totalEarnings = totalGross - totalFees;
+        return [
+            { key: "all" as FilterKey, label: "All", count: counts.all },
+            { key: "paid" as FilterKey, label: "Paid", count: counts.paid },
+            { key: "pending" as FilterKey, label: "Pending", count: counts.pending },
+            { key: "in_transit" as FilterKey, label: "In Transit", count: counts.in_transit },
+        ];
+    }, [payouts]);
+
+    // ⚡ Bolt Optimization: Memoize financial calculations to avoid reducing a large list on render
+    const { totalGross, totalFees, totalEarnings } = useMemo(() => {
+        const gross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
+        const fees = gross * (sellerFeePercent / 100);
+        return {
+            totalGross: gross,
+            totalFees: fees,
+            totalEarnings: gross - fees
+        };
+    }, [rentalTransactions, sellerFeePercent]);
 
     return (
         <div className="pt-4">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
@@ -102,10 +102,25 @@ export default function MyRentalsPage() {
         fetchRentalData();
     }, []);
 
-    // Categorize active rentals
-    const overdueRentals = activeRentals.filter(r => r.dashboard_status === 'overdue');
-    const dueTodayRentals = activeRentals.filter(r => r.dashboard_status === 'due_today');
-    const activeOnlyRentals = activeRentals.filter(r => r.dashboard_status === 'active');
+    // ⚡ Bolt Optimization: Calculate derived lists in a single O(N) pass and memoize
+    // to prevent redundant array traversals on every render
+    const { overdueRentals, dueTodayRentals, activeOnlyRentals } = useMemo(() => {
+        const overdue: ActiveRental[] = [];
+        const dueToday: ActiveRental[] = [];
+        const active: ActiveRental[] = [];
+
+        activeRentals.forEach(r => {
+            if (r.dashboard_status === 'overdue') overdue.push(r);
+            else if (r.dashboard_status === 'due_today') dueToday.push(r);
+            else if (r.dashboard_status === 'active') active.push(r);
+        });
+
+        return {
+            overdueRentals: overdue,
+            dueTodayRentals: dueToday,
+            activeOnlyRentals: active
+        };
+    }, [activeRentals]);
 
     return (
         <main className="min-h-screen bg-slate-50">
