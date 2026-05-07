@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/app/components/ui/button";
@@ -275,20 +275,21 @@ export default function RenterRentalsPage() {
         fetchRentals();
     }, [user]);
 
-    const filteredRentals = rentals.filter((rental) => {
-        if (activeFilter === "all") return true;
-        return categorizeRental(rental) === activeFilter;
-    });
+    const filteredRentals = useMemo(() => {
+        return rentals.filter((rental) => {
+            if (activeFilter === "all") return true;
+            return categorizeRental(rental) === activeFilter;
+        });
+    }, [rentals, activeFilter]);
 
-    const getCounts = () => {
+    const counts = useMemo(() => {
         const result = { all: rentals.length, active: 0, upcoming: 0, pending: 0, completed: 0, cancelled: 0 };
         rentals.forEach((rental) => {
             const cat = categorizeRental(rental);
             result[cat]++;
         });
         return result;
-    };
-    const counts = getCounts();
+    }, [rentals]);
 
     const filterConfig: { key: FilterKey; label: string; color: string }[] = [
         { key: "all", label: "All", color: "bg-safety-orange" },
