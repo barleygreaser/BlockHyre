@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -193,17 +193,34 @@ export default function TransactionsPage() {
         fetchAll();
     }, [user]);
 
-    const filteredPayouts = payouts.filter(p => {
-        if (activeFilter === "all") return true;
-        return p.status === activeFilter;
-    });
+    const filteredPayouts = useMemo(() => {
+        return payouts.filter(p => {
+            if (activeFilter === "all") return true;
+            return p.status === activeFilter;
+        });
+    }, [payouts, activeFilter]);
 
-    const filterConfig = [
-        { key: "all" as FilterKey, label: "All", count: payouts.length },
-        { key: "paid" as FilterKey, label: "Paid", count: payouts.filter(p => p.status === "paid").length },
-        { key: "pending" as FilterKey, label: "Pending", count: payouts.filter(p => p.status === "pending").length },
-        { key: "in_transit" as FilterKey, label: "In Transit", count: payouts.filter(p => p.status === "in_transit").length },
-    ];
+    // ⚡ Bolt Optimization: Use useMemo with a single O(N) reduction to calculate status counts
+    // rather than calling payouts.filter(...) multiple times in the render cycle.
+    const filterConfig = useMemo(() => {
+        const counts = payouts.reduce(
+            (acc, p) => {
+                const status = p.status as keyof typeof acc;
+                if (acc[status] !== undefined) {
+                    acc[status]++;
+                }
+                return acc;
+            },
+            { paid: 0, pending: 0, in_transit: 0 }
+        );
+
+        return [
+            { key: "all" as FilterKey, label: "All", count: payouts.length },
+            { key: "paid" as FilterKey, label: "Paid", count: counts.paid },
+            { key: "pending" as FilterKey, label: "Pending", count: counts.pending },
+            { key: "in_transit" as FilterKey, label: "In Transit", count: counts.in_transit },
+        ];
+    }, [payouts]);
 
     const totalGross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
     const totalFees = totalGross * (sellerFeePercent / 100);

@@ -132,9 +132,9 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
         showDistanceFilter = true
     } = props;
 
-    const sortedCategories = useMemo(() => {
-        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
-    }, [categories]);
+    // ⚡ Bolt Optimization: Removed redundant sorting.
+    // The `categories` prop passed to this modal is already pre-sorted in the parent component.
+    // Sorting it again here via `a.name.localeCompare(b.name)` wastes O(N log N) time on every change.
 
     return (
         <div className={cn("p-5 space-y-5", isDesktop ? "flex-1 overflow-y-auto" : "")}>
@@ -180,7 +180,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             <section className="bg-white p-4 rounded-xl border border-workshop-gray/10">
                 <Label className="font-bold font-serif text-charcoal mb-4 block">Categories</Label>
                 <div className="flex flex-wrap gap-2">
-                    {sortedCategories.map(cat => (
+                    {categories.map(cat => (
                         <button
                             key={cat.id}
                             className={cn(
