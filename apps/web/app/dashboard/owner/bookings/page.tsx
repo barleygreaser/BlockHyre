@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/app/components/ui/button";
@@ -62,7 +62,7 @@ export default function OwnerBookingsPage() {
         return rentalFee - rentalFee * (sellerFeePercent / 100);
     };
 
-    const categorizeRental = (rental: any) => {
+    const categorizeRental = useCallback((rental: any) => {
         const now = new Date();
         const startDate = new Date(rental.start_date);
         const endDate = new Date(rental.end_date);
@@ -72,24 +72,30 @@ export default function OwnerBookingsPage() {
         if (endDate < now && status !== 'returned' && status !== 'completed') return 'overdue';
         if (startDate <= now && endDate >= now) return 'active';
         return 'active';
-    };
+    }, []);
 
-    const filteredRentals = activeRentals.filter(rental => {
-        if (activeFilter === 'all') return true;
-        const category = categorizeRental(rental);
-        if (activeFilter === 'archived') return category === 'completed';
-        return category === activeFilter;
-    });
-
-    const getCounts = () => {
-        const counts = { all: activeRentals.length, upcoming: 0, active: 0, overdue: 0, completed: 0 };
-        activeRentals.forEach(rental => {
+    // ⚡ Bolt Optimization: Memoize derived filtered list to avoid O(N) traversal and Date object creation on every render
+    const filteredRentals = useMemo(() => {
+        return activeRentals.filter(rental => {
+            if (activeFilter === 'all') return true;
             const category = categorizeRental(rental);
-            if (counts[category as keyof typeof counts] !== undefined) counts[category as keyof typeof counts]++;
+            if (activeFilter === 'archived') return category === 'completed';
+            return category === activeFilter;
         });
-        return counts;
-    };
-    const counts = getCounts();
+    }, [activeRentals, activeFilter, categorizeRental]);
+
+    // ⚡ Bolt Optimization: Memoize counts derived from an O(N) traversal.
+    // This avoids recalculating the categories and recreating Date objects on every render.
+    const counts = useMemo(() => {
+        const result = { all: activeRentals.length, upcoming: 0, active: 0, overdue: 0, completed: 0 };
+        for (const rental of activeRentals) {
+            const category = categorizeRental(rental);
+            if (result[category as keyof typeof result] !== undefined) {
+                result[category as keyof typeof result]++;
+            }
+        }
+        return result;
+    }, [activeRentals, categorizeRental]);
 
     useEffect(() => {
         if (!user) return;
