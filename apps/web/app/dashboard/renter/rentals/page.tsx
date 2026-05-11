@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/app/components/ui/button";
@@ -142,7 +142,7 @@ export default function RenterRentalsPage() {
         return dateFormatterShort.format(new Date(dateStr));
     };
 
-    const categorizeRental = (rental: RenterRental): FilterKey => {
+    const categorizeRental = useCallback((rental: RenterRental): FilterKey => {
         const now = new Date();
         const startDate = new Date(rental.start_date);
         const endDate = new Date(rental.end_date);
@@ -154,7 +154,7 @@ export default function RenterRentalsPage() {
         if (status === "active" || (status === "approved" && startDate <= now)) return "active";
         if (status === "pending") return "pending";
         return "active";
-    };
+    }, []);
 
     const getDaysContext = (rental: RenterRental) => {
         const now = new Date();
@@ -275,20 +275,24 @@ export default function RenterRentalsPage() {
         fetchRentals();
     }, [user]);
 
-    const filteredRentals = rentals.filter((rental) => {
-        if (activeFilter === "all") return true;
-        return categorizeRental(rental) === activeFilter;
-    });
+    // ⚡ Bolt Optimization: Memoize derived filtered list to avoid O(N) traversal and Date object creation on every render
+    const filteredRentals = useMemo(() => {
+        return rentals.filter((rental) => {
+            if (activeFilter === "all") return true;
+            return categorizeRental(rental) === activeFilter;
+        });
+    }, [rentals, activeFilter, categorizeRental]);
 
-    const getCounts = () => {
+    // ⚡ Bolt Optimization: Memoize counts derived from an O(N) traversal.
+    // This avoids recalculating the categories and recreating Date objects on every render.
+    const counts = useMemo(() => {
         const result = { all: rentals.length, active: 0, upcoming: 0, pending: 0, completed: 0, cancelled: 0 };
-        rentals.forEach((rental) => {
+        for (const rental of rentals) {
             const cat = categorizeRental(rental);
             result[cat]++;
-        });
+        }
         return result;
-    };
-    const counts = getCounts();
+    }, [rentals, categorizeRental]);
 
     const filterConfig: { key: FilterKey; label: string; color: string }[] = [
         { key: "all", label: "All", color: "bg-safety-orange" },
