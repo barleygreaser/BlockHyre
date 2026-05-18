@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/app/components/ui/button";
@@ -57,12 +57,12 @@ export default function OwnerBookingsPage() {
         return dateFormatter.format(new Date(dateStr));
     };
 
-    const calculateOwnerRevenue = (rentalFee: number) => {
+    const calculateOwnerRevenue = useCallback((rentalFee: number) => {
         if (!rentalFee || !sellerFeePercent) return rentalFee || 0;
         return rentalFee - rentalFee * (sellerFeePercent / 100);
-    };
+    }, [sellerFeePercent]);
 
-    const categorizeRental = (rental: any) => {
+    const categorizeRental = useCallback((rental: any) => {
         const now = new Date();
         const startDate = new Date(rental.start_date);
         const endDate = new Date(rental.end_date);
@@ -72,24 +72,25 @@ export default function OwnerBookingsPage() {
         if (endDate < now && status !== 'returned' && status !== 'completed') return 'overdue';
         if (startDate <= now && endDate >= now) return 'active';
         return 'active';
-    };
+    }, []);
 
-    const filteredRentals = activeRentals.filter(rental => {
-        if (activeFilter === 'all') return true;
-        const category = categorizeRental(rental);
-        if (activeFilter === 'archived') return category === 'completed';
-        return category === activeFilter;
-    });
+    const filteredRentals = useMemo(() => {
+        return activeRentals.filter(rental => {
+            if (activeFilter === 'all') return true;
+            const category = categorizeRental(rental);
+            if (activeFilter === 'archived') return category === 'completed';
+            return category === activeFilter;
+        });
+    }, [activeRentals, activeFilter, categorizeRental]);
 
-    const getCounts = () => {
-        const counts = { all: activeRentals.length, upcoming: 0, active: 0, overdue: 0, completed: 0 };
+    const counts = useMemo(() => {
+        const _counts = { all: activeRentals.length, upcoming: 0, active: 0, overdue: 0, completed: 0 };
         activeRentals.forEach(rental => {
             const category = categorizeRental(rental);
-            if (counts[category as keyof typeof counts] !== undefined) counts[category as keyof typeof counts]++;
+            if (_counts[category as keyof typeof _counts] !== undefined) _counts[category as keyof typeof _counts]++;
         });
-        return counts;
-    };
-    const counts = getCounts();
+        return _counts;
+    }, [activeRentals, categorizeRental]);
 
     useEffect(() => {
         if (!user) return;

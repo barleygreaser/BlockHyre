@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -193,21 +193,30 @@ export default function TransactionsPage() {
         fetchAll();
     }, [user]);
 
-    const filteredPayouts = payouts.filter(p => {
-        if (activeFilter === "all") return true;
-        return p.status === activeFilter;
-    });
+    const filteredPayouts = useMemo(() => {
+        return payouts.filter(p => {
+            if (activeFilter === "all") return true;
+            return p.status === activeFilter;
+        });
+    }, [payouts, activeFilter]);
 
-    const filterConfig = [
-        { key: "all" as FilterKey, label: "All", count: payouts.length },
-        { key: "paid" as FilterKey, label: "Paid", count: payouts.filter(p => p.status === "paid").length },
-        { key: "pending" as FilterKey, label: "Pending", count: payouts.filter(p => p.status === "pending").length },
-        { key: "in_transit" as FilterKey, label: "In Transit", count: payouts.filter(p => p.status === "in_transit").length },
-    ];
+    const filterConfig = useMemo(() => {
+        const counts = payouts.reduce((acc, p) => {
+            acc[p.status] = (acc[p.status] || 0) + 1;
+            return acc;
+        }, { paid: 0, pending: 0, in_transit: 0 } as Record<string, number>);
 
-    const totalGross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
-    const totalFees = totalGross * (sellerFeePercent / 100);
-    const totalEarnings = totalGross - totalFees;
+        return [
+            { key: "all" as FilterKey, label: "All", count: payouts.length },
+            { key: "paid" as FilterKey, label: "Paid", count: counts.paid },
+            { key: "pending" as FilterKey, label: "Pending", count: counts.pending },
+            { key: "in_transit" as FilterKey, label: "In Transit", count: counts.in_transit },
+        ];
+    }, [payouts]);
+
+    const totalGross = useMemo(() => rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0), [rentalTransactions]);
+    const totalFees = useMemo(() => totalGross * (sellerFeePercent / 100), [totalGross, sellerFeePercent]);
+    const totalEarnings = useMemo(() => totalGross - totalFees, [totalGross, totalFees]);
 
     return (
         <div className="pt-4">
