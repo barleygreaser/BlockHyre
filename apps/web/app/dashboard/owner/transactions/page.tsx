@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -193,16 +193,27 @@ export default function TransactionsPage() {
         fetchAll();
     }, [user]);
 
-    const filteredPayouts = payouts.filter(p => {
+    const filteredPayouts = useMemo(() => payouts.filter(p => {
         if (activeFilter === "all") return true;
         return p.status === activeFilter;
-    });
+    }), [payouts, activeFilter]);
+
+    // ⚡ Bolt Optimization: Use a single O(N) pass to count all statuses instead of multiple O(N) filters
+    const payoutCounts = useMemo(() => {
+        const counts = { all: payouts.length, paid: 0, pending: 0, in_transit: 0 };
+        for (const p of payouts) {
+            if (p.status === "paid") counts.paid++;
+            else if (p.status === "pending") counts.pending++;
+            else if (p.status === "in_transit") counts.in_transit++;
+        }
+        return counts;
+    }, [payouts]);
 
     const filterConfig = [
-        { key: "all" as FilterKey, label: "All", count: payouts.length },
-        { key: "paid" as FilterKey, label: "Paid", count: payouts.filter(p => p.status === "paid").length },
-        { key: "pending" as FilterKey, label: "Pending", count: payouts.filter(p => p.status === "pending").length },
-        { key: "in_transit" as FilterKey, label: "In Transit", count: payouts.filter(p => p.status === "in_transit").length },
+        { key: "all" as FilterKey, label: "All", count: payoutCounts.all },
+        { key: "paid" as FilterKey, label: "Paid", count: payoutCounts.paid },
+        { key: "pending" as FilterKey, label: "Pending", count: payoutCounts.pending },
+        { key: "in_transit" as FilterKey, label: "In Transit", count: payoutCounts.in_transit },
     ];
 
     const totalGross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
