@@ -89,3 +89,6 @@
 ## 2025-03-02 - Optimize List Filtering and Derived Counts in Render loops
 **Learning:** Performing multiple array `.filter()` traversals to derive category counts or recalculating filtered lists on every render (without `useMemo`) creates an O(N * M) performance bottleneck, especially when loop-invariant operations like string normalization (`toLowerCase()`) are placed inside the loop.
 **Action:** Always wrap derived lists in `useMemo`, hoist loop-invariant operations like search normalization outside the loop, and use an O(N) array reduction/traversal to pre-calculate category counts once rather than filtering repeatedly.
+## 2026-05-19 - Optimize Filter Counting Logic
+**Learning:** Replacing multiple `.filter().length` array passes with a single `useMemo` block containing an O(N) traversal significantly improves performance for data arrays without changing layout logic.
+**Action:** Use an explicit single-pass loop or `reduce()` over an array whenever multiple count metrics need to be derived from the same source data, to avoid O(N*M) bottlenecks.
