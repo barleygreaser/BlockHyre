@@ -108,7 +108,8 @@ export default function FavoritesScreen() {
         }
     };
 
-    const renderFavoriteItem = ({ item }: { item: FavoriteItem }) => {
+    // Optimization: Wrapped in useCallback to prevent FlatList from unnecessarily re-rendering all items when parent updates
+    const renderFavoriteItem = useCallback(({ item }: { item: FavoriteItem }) => {
         const listing = item.listing;
         const imageUrl = listing.images && listing.images.length > 0
             ? listing.images[0]
@@ -148,7 +149,7 @@ export default function FavoritesScreen() {
                 </View>
             </TouchableOpacity>
         );
-    };
+    }, [handleRemoveFavorite, router]);
 
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
