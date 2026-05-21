@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { StyleSheet, View, Text, FlatList, Dimensions, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -63,7 +63,8 @@ export default function OnboardingSlides() {
         itemVisiblePercentThreshold: 50,
     }).current;
 
-    const renderItem = ({ item }: { item: typeof SLIDES[0] }) => {
+    // Optimization: Wrapped in useCallback to prevent FlatList from unnecessarily re-rendering all items when parent updates
+    const renderItem = useCallback(({ item }: { item: typeof SLIDES[0] }) => {
         return (
             <View style={styles.slide}>
                 <View style={styles.iconContainer}>
@@ -73,7 +74,7 @@ export default function OnboardingSlides() {
                 <Text style={styles.description}>{item.description}</Text>
             </View>
         );
-    };
+    }, []);
 
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
