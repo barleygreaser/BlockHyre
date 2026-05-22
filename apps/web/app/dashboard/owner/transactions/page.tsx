@@ -14,7 +14,6 @@ import {
     XCircle,
     ArrowDownRight,
     Banknote,
-    Loader2,
 } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
@@ -74,11 +73,6 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
 });
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-});
 const dateFormatterShort = new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
@@ -96,11 +90,6 @@ export default function TransactionsPage() {
     const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
 
     const formatCurrency = (amount: number) => currencyFormatter.format(amount);
-
-    const formatDate = (dateStr: string) => {
-        if (!dateStr) return "";
-        return dateFormatter.format(new Date(dateStr));
-    };
 
     const formatDateShort = (dateStr: string) => {
         if (!dateStr) return "";
@@ -169,6 +158,7 @@ export default function TransactionsPage() {
                         .limit(50);
 
                     if (fallbackData) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const mapped = fallbackData.map((r: any) => ({
                             id: r.id,
                             listing_title: r.listing?.title || "Unknown Tool",
@@ -193,17 +183,33 @@ export default function TransactionsPage() {
         fetchAll();
     }, [user]);
 
-    const filteredPayouts = payouts.filter(p => {
-        if (activeFilter === "all") return true;
-        return p.status === activeFilter;
-    });
+    const filteredPayouts = useMemo(() => {
+        return payouts.filter(p => {
+            if (activeFilter === "all") return true;
+            return p.status === activeFilter;
+        });
+    }, [payouts, activeFilter]);
 
-    const filterConfig = [
+    // ⚡ Bolt Optimization: Calculate status counts in a single O(N) pass instead of O(N*M) with multiple filters
+    const payoutCounts = useMemo(() => {
+        return payouts.reduce(
+            (acc, p) => {
+                const status = p.status as keyof typeof acc;
+                if (acc[status] !== undefined) {
+                    acc[status]++;
+                }
+                return acc;
+            },
+            { paid: 0, pending: 0, in_transit: 0 } as Record<"paid" | "pending" | "in_transit", number>
+        );
+    }, [payouts]);
+
+    const filterConfig = useMemo(() => [
         { key: "all" as FilterKey, label: "All", count: payouts.length },
-        { key: "paid" as FilterKey, label: "Paid", count: payouts.filter(p => p.status === "paid").length },
-        { key: "pending" as FilterKey, label: "Pending", count: payouts.filter(p => p.status === "pending").length },
-        { key: "in_transit" as FilterKey, label: "In Transit", count: payouts.filter(p => p.status === "in_transit").length },
-    ];
+        { key: "paid" as FilterKey, label: "Paid", count: payoutCounts.paid },
+        { key: "pending" as FilterKey, label: "Pending", count: payoutCounts.pending },
+        { key: "in_transit" as FilterKey, label: "In Transit", count: payoutCounts.in_transit },
+    ], [payouts.length, payoutCounts]);
 
     const totalGross = rentalTransactions.reduce((sum, t) => sum + (t.rental_fee || 0), 0);
     const totalFees = totalGross * (sellerFeePercent / 100);
@@ -392,7 +398,6 @@ export default function TransactionsPage() {
                             <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm divide-y divide-slate-100">
                                 {filteredPayouts.map((payout, index) => {
                                     const statusConfig = PAYOUT_STATUS_CONFIG[payout.status] || PAYOUT_STATUS_CONFIG.pending;
-                                    const StatusIcon = statusConfig.icon;
 
                                     return (
                                         <div
