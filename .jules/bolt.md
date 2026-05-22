@@ -89,3 +89,7 @@
 ## 2025-03-02 - Optimize List Filtering and Derived Counts in Render loops
 **Learning:** Performing multiple array `.filter()` traversals to derive category counts or recalculating filtered lists on every render (without `useMemo`) creates an O(N * M) performance bottleneck, especially when loop-invariant operations like string normalization (`toLowerCase()`) are placed inside the loop.
 **Action:** Always wrap derived lists in `useMemo`, hoist loop-invariant operations like search normalization outside the loop, and use an O(N) array reduction/traversal to pre-calculate category counts once rather than filtering repeatedly.
+
+## 2024-05-23 - Optimize Array Filtering for Status Counts
+**Learning:** In derived state for dashboards (like transaction history), applying `.filter().length` repeatedly for different status badges causes an O(N * M) performance bottleneck on every render (where N is the number of items and M is the number of statuses).
+**Action:** Always pre-calculate derived item counts for different states/statuses in a single pass O(N) using `reduce` and `useMemo`, rather than repeatedly filtering the original array directly in the render logic.
