@@ -89,3 +89,7 @@
 ## 2025-03-02 - Optimize List Filtering and Derived Counts in Render loops
 **Learning:** Performing multiple array `.filter()` traversals to derive category counts or recalculating filtered lists on every render (without `useMemo`) creates an O(N * M) performance bottleneck, especially when loop-invariant operations like string normalization (`toLowerCase()`) are placed inside the loop.
 **Action:** Always wrap derived lists in `useMemo`, hoist loop-invariant operations like search normalization outside the loop, and use an O(N) array reduction/traversal to pre-calculate category counts once rather than filtering repeatedly.
+
+## 2024-05-18 - Optimize payout count rendering with useMemo
+**Learning:** In dashboards, deriving counts using multiple `.filter(...).length` iterations inside render functions results in an O(N * M) bottleneck (where N is the array size and M is the number of filters). This severely impacts UI frame rates as the number of items grows.
+**Action:** Always prefer a single O(N) array traversal (e.g., using `reduce`) coupled with `useMemo` to compute multi-category counts efficiently to prevent unnecessary multi-pass iteration on every render.
