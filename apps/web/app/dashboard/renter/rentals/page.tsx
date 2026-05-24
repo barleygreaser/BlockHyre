@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/app/components/ui/button";
@@ -142,7 +142,7 @@ export default function RenterRentalsPage() {
         return dateFormatterShort.format(new Date(dateStr));
     };
 
-    const categorizeRental = (rental: RenterRental): FilterKey => {
+    const categorizeRental = useCallback((rental: RenterRental): FilterKey => {
         const now = new Date();
         const startDate = new Date(rental.start_date);
         const endDate = new Date(rental.end_date);
@@ -154,7 +154,7 @@ export default function RenterRentalsPage() {
         if (status === "active" || (status === "approved" && startDate <= now)) return "active";
         if (status === "pending") return "pending";
         return "active";
-    };
+    }, []);
 
     const getDaysContext = (rental: RenterRental) => {
         const now = new Date();
@@ -275,29 +275,32 @@ export default function RenterRentalsPage() {
         fetchRentals();
     }, [user]);
 
-    const filteredRentals = rentals.filter((rental) => {
-        if (activeFilter === "all") return true;
-        return categorizeRental(rental) === activeFilter;
-    });
+    const filteredRentals = useMemo(() => {
+        return rentals.filter((rental) => {
+            if (activeFilter === "all") return true;
+            return categorizeRental(rental) === activeFilter;
+        });
+    }, [rentals, activeFilter, categorizeRental]);
 
-    const getCounts = () => {
+    const counts = useMemo(() => {
         const result = { all: rentals.length, active: 0, upcoming: 0, pending: 0, completed: 0, cancelled: 0 };
         rentals.forEach((rental) => {
             const cat = categorizeRental(rental);
             result[cat]++;
         });
         return result;
-    };
-    const counts = getCounts();
+    }, [rentals, categorizeRental]);
 
-    const filterConfig: { key: FilterKey; label: string; color: string }[] = [
-        { key: "all", label: "All", color: "bg-safety-orange" },
-        { key: "active", label: "Active", color: "bg-emerald-500" },
-        { key: "upcoming", label: "Upcoming", color: "bg-blue-500" },
-        { key: "pending", label: "Pending", color: "bg-amber-500" },
-        { key: "completed", label: "Completed", color: "bg-slate-600" },
-        { key: "cancelled", label: "Cancelled", color: "bg-red-500" },
-    ];
+    const filterConfig = useMemo(() => {
+        return [
+            { key: "all" as FilterKey, label: "All", color: "bg-safety-orange" },
+            { key: "active" as FilterKey, label: "Active", color: "bg-emerald-500" },
+            { key: "upcoming" as FilterKey, label: "Upcoming", color: "bg-blue-500" },
+            { key: "pending" as FilterKey, label: "Pending", color: "bg-amber-500" },
+            { key: "completed" as FilterKey, label: "Completed", color: "bg-slate-600" },
+            { key: "cancelled" as FilterKey, label: "Cancelled", color: "bg-red-500" },
+        ];
+    }, []);
 
     return (
         <div className="pt-4">
