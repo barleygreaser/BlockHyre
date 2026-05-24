@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { useAuth, type UserProfile } from "@/app/context/auth-context";
+import { useAuth } from "@/app/context/auth-context";
 
 export interface Chat {
     id: string;
@@ -56,10 +56,13 @@ export function useMessages() {
                     *,
                     listing:listing_id(title),
                     owner:owner_id(id, full_name, profile_photo_url),
-                    renter:renter_id(id, full_name, profile_photo_url)
+                    renter:renter_id(id, full_name, profile_photo_url),
+                    messages(content, created_at, recipient_id)
                 `)
                 .or(`owner_id.eq.${userId},renter_id.eq.${userId}`)
-                .order('last_message_at', { ascending: false, nullsFirst: false });
+                .order('last_message_at', { ascending: false, nullsFirst: false })
+                .order('created_at', { ascending: false, foreignTable: 'messages' })
+                .limit(10, { foreignTable: 'messages' }); // Fetch enough to find the first visible, but don't fetch all
 
             if (chatsError) {
                 console.error('Chats error details:', chatsError);
@@ -85,39 +88,35 @@ export function useMessages() {
                 }
             }
 
-            // Fetch last message for each chat
-            const enrichedChats = await Promise.all(
-                (chats || []).map(async (chat) => {
-                    const { data: lastMessage } = await supabase
-                        .from('messages')
-                        .select('content, created_at')
-                        .eq('chat_id', chat.id)
-                        .or(`recipient_id.is.null,recipient_id.eq.${userId}`)
-                        .order('created_at', { ascending: false })
-                        .limit(1)
-                        .single();
+            // Map the last visible message for each chat directly from embedded relation
+            const enrichedChats = (chats || []).map((chat) => {
+                const unreadCount = unreadCountsMap.get(chat.id) || 0;
+                const otherUser = chat.owner_id === userId ? chat.renter : chat.owner;
 
-                    const unreadCount = unreadCountsMap.get(chat.id) || 0;
-                    const otherUser = chat.owner_id === userId ? chat.renter : chat.owner;
+                // Find the first message that is either broadcast or directed to this user
+                // The array is already sorted descending by created_at thanks to the query
+                const chatMessages = (chat.messages as unknown as { content: string; created_at: string; recipient_id?: string }[]) || [];
+                const lastMessage = chatMessages.find(
+                    (msg) => msg.recipient_id === null || msg.recipient_id === userId
+                );
 
-                    return {
-                        id: chat.id,
-                        listing_id: chat.listing_id,
-                        created_at: chat.created_at,
-                        updated_at: chat.updated_at,
-                        listing_title: chat.listing?.title,
-                        other_user_name: otherUser?.full_name || 'Unknown User',
-                        other_user_photo: otherUser?.profile_photo_url,
-                        last_message_content: lastMessage?.content,
-                        last_message_time: lastMessage?.created_at,
-                        unread_count: unreadCount,
-                    };
-                })
-            );
+                return {
+                    id: chat.id,
+                    listing_id: chat.listing_id,
+                    created_at: chat.created_at,
+                    updated_at: chat.updated_at,
+                    listing_title: chat.listing?.title,
+                    other_user_name: otherUser?.full_name || 'Unknown User',
+                    other_user_photo: otherUser?.profile_photo_url,
+                    last_message_content: lastMessage?.content,
+                    last_message_time: lastMessage?.created_at,
+                    unread_count: unreadCount,
+                };
+            });
 
             return enrichedChats;
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Unknown error");
             return [];
         } finally {
             setLoading(false);
@@ -146,8 +145,8 @@ export function useMessages() {
 
             if (messagesError) throw messagesError;
             return data || [];
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Unknown error");
             return [];
         } finally {
             setLoading(false);
@@ -176,8 +175,8 @@ export function useMessages() {
 
             if (sendError) throw sendError;
             return data;
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Unknown error");
             return null;
         }
     }, [user]);
@@ -185,7 +184,7 @@ export function useMessages() {
     const markMessagesAsRead = useCallback(async (chatId: string) => {
         try {
             await supabase.rpc('mark_messages_read', { p_chat_id: chatId });
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error marking messages as read:', err);
         }
     }, []);
