@@ -19,6 +19,8 @@ import { FavoritesSkeletonGrid } from '../components/FavoritesSkeleton';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 48 - 16) / 2; // (Screen - 24*2 padding - 16 gap) / 2
 
+const keyExtractor = (item: FavoriteItem) => item.id;
+
 interface FavoriteItem {
     id: string; // favorite_id
     listing: {
@@ -89,26 +91,27 @@ export default function FavoritesScreen() {
         fetchFavorites();
     }, []);
 
-    const handleRemoveFavorite = async (favoriteId: string, listingId: string) => {
+    const handleRemoveFavorite = useCallback(async (favoriteId: string, listingId: string) => {
         // Optimistic update
-        const previousFavorites = [...favorites];
-        setFavorites(prev => prev.filter(item => item.id !== favoriteId));
+        let previousFavorites: FavoriteItem[] = [];
+        setFavorites(prev => {
+            previousFavorites = [...prev]; // Capture the previous state
+            return prev.filter(item => item.id !== favoriteId);
+        });
 
-        try {
-            const { error } = await supabase
-                .from('favorites')
-                .delete()
-                .eq('id', favoriteId);
+        const { error } = await supabase
+            .from('favorites')
+            .delete()
+            .eq('id', favoriteId);
 
-            if (error) throw error;
-        } catch (e) {
-            console.error('Error removing favorite:', e);
+        if (error) {
+            console.error('Error removing favorite:', error);
             Alert.alert('Error', 'Failed to remove favorite');
             setFavorites(previousFavorites); // Revert
         }
-    };
+    }, []);
 
-    const renderFavoriteItem = ({ item }: { item: FavoriteItem }) => {
+    const renderFavoriteItem = useCallback(({ item }: { item: FavoriteItem }) => {
         const listing = item.listing;
         const imageUrl = listing.images && listing.images.length > 0
             ? listing.images[0]
@@ -148,9 +151,9 @@ export default function FavoritesScreen() {
                 </View>
             </TouchableOpacity>
         );
-    };
+    }, [router, handleRemoveFavorite]);
 
-    const renderEmpty = () => (
+    const renderEmpty = useCallback(() => (
         <View style={styles.emptyContainer}>
             <Heart size={64} color="#E5E7EB" />
             <Text style={styles.emptyTitle}>No Favorites Yet</Text>
@@ -168,7 +171,7 @@ export default function FavoritesScreen() {
                 <Text style={styles.exploreButtonText}>Explore Tools</Text>
             </TouchableOpacity>
         </View>
-    );
+    ), [router]);
 
     return (
         <View style={styles.container}>
@@ -188,7 +191,7 @@ export default function FavoritesScreen() {
                 <FlatList
                     data={favorites}
                     renderItem={renderFavoriteItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={keyExtractor}
                     numColumns={2}
                     columnWrapperStyle={styles.row}
                     contentContainerStyle={[
