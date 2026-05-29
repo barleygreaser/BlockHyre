@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -241,8 +241,21 @@ export function RenterDashboardView() {
     };
 
     const totalActive = activeRentals.length;
-    const urgentCount = activeRentals.filter(r => r.dashboard_status === 'overdue' || r.dashboard_status === 'due_today').length;
-    const overdueCount = activeRentals.filter(r => r.dashboard_status === 'overdue').length;
+
+    // ⚡ Bolt: Consolidated multiple .filter() passes into a single O(N) reduce operation
+    // and memoized the result to prevent unnecessary recalculations on every render.
+    const { urgentCount, overdueCount } = useMemo(() => {
+        return activeRentals.reduce((acc, rental) => {
+            const status = rental.dashboard_status;
+            if (status === 'overdue') {
+                acc.overdueCount++;
+                acc.urgentCount++;
+            } else if (status === 'due_today') {
+                acc.urgentCount++;
+            }
+            return acc;
+        }, { urgentCount: 0, overdueCount: 0 });
+    }, [activeRentals]);
 
     if (loading) {
         return <RenterDashboardSkeleton />;
