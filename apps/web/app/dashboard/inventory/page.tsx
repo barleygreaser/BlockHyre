@@ -126,17 +126,26 @@ export default function InventoryPage() {
     return counts;
   }, [inventory]);
 
+  // ⚡ Bolt Optimization: Pre-calculate normalized fields to prevent O(N*M) string operations during typing/filtering
+  const normalizedInventory = useMemo(() => {
+    return inventory.map(item => ({
+      ...item,
+      _searchTitle: item.tool_title.toLowerCase(),
+      _searchRenter: item.current_renter_name?.toLowerCase() || ""
+    }));
+  }, [inventory]);
+
   const filteredInventory = useMemo(() => {
     const q = searchTerm.toLowerCase().trim();
-    return inventory.filter((item) => {
+    return normalizedInventory.filter((item) => {
       if (statusFilter !== "all" && item.status !== statusFilter) return false;
       if (!q) return true;
       return (
-        item.tool_title.toLowerCase().includes(q) ||
-        (item.current_renter_name?.toLowerCase().includes(q) ?? false)
+        item._searchTitle.includes(q) ||
+        item._searchRenter.includes(q)
       );
     });
-  }, [inventory, statusFilter, searchTerm]);
+  }, [normalizedInventory, statusFilter, searchTerm]);
 
   return (
     <div className="pt-4">
