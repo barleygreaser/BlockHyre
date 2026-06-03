@@ -126,17 +126,26 @@ export default function InventoryPage() {
     return counts;
   }, [inventory]);
 
+  // Pre-calculate normalized fields to reduce time complexity from O(N*M) to O(N) during rapid state changes (e.g. search keystrokes)
+  const normalizedInventory = useMemo(() => {
+    return inventory.map((item) => ({
+      ...item,
+      _search_title: item.tool_title.toLowerCase(),
+      _search_renter: item.current_renter_name?.toLowerCase() ?? "",
+    }));
+  }, [inventory]);
+
   const filteredInventory = useMemo(() => {
     const q = searchTerm.toLowerCase().trim();
-    return inventory.filter((item) => {
+    return normalizedInventory.filter((item) => {
       if (statusFilter !== "all" && item.status !== statusFilter) return false;
       if (!q) return true;
       return (
-        item.tool_title.toLowerCase().includes(q) ||
-        (item.current_renter_name?.toLowerCase().includes(q) ?? false)
+        item._search_title.includes(q) ||
+        item._search_renter.includes(q)
       );
     });
-  }, [inventory, statusFilter, searchTerm]);
+  }, [normalizedInventory, statusFilter, searchTerm]);
 
   return (
     <div className="pt-4">
