@@ -93,3 +93,6 @@
 ## 2025-03-02 - Supabase N+1 Queries with Promise.all
 **Learning:** Mapping over an array of parent records (e.g., chats) and doing a `await supabase.from('child').select(...).eq('parent_id', chat.id)` inside a `Promise.all` `.map` loop executes N additional DB queries. This severely degrades performance. Supabase supports Resource Embedding using PostgREST's foreign key definitions.
 **Action:** Replace `Promise.all` loops with embedded resource selects in the initial query (e.g., `.select('*, child_table(columns)')`). Be sure to apply ordering and limits to the embedded resource directly in the main query via foreign table options (e.g., `.order('created_at', { foreignTable: 'child_table' })`).
+## 2024-06-03 - Optimize list filtering on inventory page
+**Learning:** Performing per-item string operations (like `.toLowerCase()`) inside `.filter()` blocks bound to keystroke state changes causes unnecessary O(N*M) recalculation overhead on the frontend during search.
+**Action:** When filtering derived lists based on user input, extract string normalizations to a pre-calculated dataset memoized against the base array, reducing filtering overhead to O(N) when the search term updates.
