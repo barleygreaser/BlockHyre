@@ -126,17 +126,26 @@ export default function InventoryPage() {
     return counts;
   }, [inventory]);
 
+  // ⚡ Bolt Performance Optimization
+  // Pre-calculate normalized string fields for the inventory dataset once when the data changes.
+  // This reduces string normalization overhead during filtering from O(N * M) to O(N).
+  // Impact: Reduces CPU cost and prevents UI stuttering during keystrokes in the search input.
+  const normalizedInventory = useMemo(() => {
+    return inventory.map((item) => ({
+      ...item,
+      normTitle: item.tool_title.toLowerCase(),
+      normRenter: item.current_renter_name?.toLowerCase() ?? "",
+    }));
+  }, [inventory]);
+
   const filteredInventory = useMemo(() => {
     const q = searchTerm.toLowerCase().trim();
-    return inventory.filter((item) => {
+    return normalizedInventory.filter((item) => {
       if (statusFilter !== "all" && item.status !== statusFilter) return false;
       if (!q) return true;
-      return (
-        item.tool_title.toLowerCase().includes(q) ||
-        (item.current_renter_name?.toLowerCase().includes(q) ?? false)
-      );
+      return item.normTitle.includes(q) || item.normRenter.includes(q);
     });
-  }, [inventory, statusFilter, searchTerm]);
+  }, [normalizedInventory, statusFilter, searchTerm]);
 
   return (
     <div className="pt-4">
