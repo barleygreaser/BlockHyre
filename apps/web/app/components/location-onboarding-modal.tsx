@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Button } from "./ui/button";
@@ -77,10 +77,16 @@ export function LocationOnboardingModal() {
     };
 
     // Mock "Google Places Autocomplete" behavior
-    const filteredNeighborhoods = neighborhoods.filter(n =>
-        n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        "Woodstock, GA".toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredNeighborhoods = useMemo(() => {
+        const query = searchTerm.toLowerCase().trim();
+        if (!query) return neighborhoods;
+
+        const woodstockMatch = "woodstock, ga".includes(query);
+
+        return neighborhoods.filter(n =>
+            woodstockMatch || n.name.toLowerCase().includes(query)
+        );
+    }, [neighborhoods, searchTerm]);
 
     const handleConfirm = async () => {
         if (!user || !selectedNeighborhood) return;
@@ -119,7 +125,7 @@ export function LocationOnboardingModal() {
                             Welcome to BlockHyre!
                         </span>
                         <span className="text-slate-900 text-xl">
-                            We're currently piloting in {neighborhoods.length > 0 ? neighborhoods.length : 'select'} neighborhoods.
+                            We&apos;re currently piloting in {neighborhoods.length > 0 ? neighborhoods.length : 'select'} neighborhoods.
                         </span>
                     </h2>
                     <p className="text-slate-600">
@@ -176,7 +182,7 @@ export function LocationOnboardingModal() {
                                     ))
                                 ) : (
                                     <div className="px-4 py-3 text-sm text-slate-500">
-                                        No pilot neighborhoods found matching "{searchTerm}".
+                                        No pilot neighborhoods found matching &quot;{searchTerm}&quot;.
                                     </div>
                                 )}
                             </div>
