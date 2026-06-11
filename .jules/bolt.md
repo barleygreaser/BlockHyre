@@ -93,3 +93,6 @@
 ## 2025-03-02 - Supabase N+1 Queries with Promise.all
 **Learning:** Mapping over an array of parent records (e.g., chats) and doing a `await supabase.from('child').select(...).eq('parent_id', chat.id)` inside a `Promise.all` `.map` loop executes N additional DB queries. This severely degrades performance. Supabase supports Resource Embedding using PostgREST's foreign key definitions.
 **Action:** Replace `Promise.all` loops with embedded resource selects in the initial query (e.g., `.select('*, child_table(columns)')`). Be sure to apply ordering and limits to the embedded resource directly in the main query via foreign table options (e.g., `.order('created_at', { foreignTable: 'child_table' })`).
+## 2025-03-02 - Optimize Multiple Array Filter Derived Counts
+**Learning:** Running multiple `.filter(condition).length` calls on an array inside a React render loop executes multiple full passes over the array. If the array is large or the component re-renders frequently, this creates an `O(N * M)` bottleneck.
+**Action:** When calculating derived counts for different subsets of an array, use a single O(N) array iteration with a standard `for` loop or `.reduce()` wrapped in a `useMemo` to pre-calculate all necessary counts in a single pass.
