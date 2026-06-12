@@ -93,3 +93,7 @@
 ## 2025-03-02 - Supabase N+1 Queries with Promise.all
 **Learning:** Mapping over an array of parent records (e.g., chats) and doing a `await supabase.from('child').select(...).eq('parent_id', chat.id)` inside a `Promise.all` `.map` loop executes N additional DB queries. This severely degrades performance. Supabase supports Resource Embedding using PostgREST's foreign key definitions.
 **Action:** Replace `Promise.all` loops with embedded resource selects in the initial query (e.g., `.select('*, child_table(columns)')`). Be sure to apply ordering and limits to the embedded resource directly in the main query via foreign table options (e.g., `.order('created_at', { foreignTable: 'child_table' })`).
+
+## 2025-03-02 - Optimize Search Input Filtering
+**Learning:** Performing multiple array traversals or doing string normalization (e.g., `toLowerCase()`) inside `.filter()` operations scales poorly in React renders since these filters evaluate on every keystroke.
+**Action:** When filtering objects by text fields, always calculate normalized search strings exactly once by mapping the array to append `.toLowerCase()` fields (within a `useMemo` depending only on the base dataset). The filtering iteration then does simple O(1) checks (like `.includes(searchQuery.toLowerCase())`), rather than recalculating the search field normalizations dynamically.
