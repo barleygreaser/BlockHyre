@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
-import { Search, Calendar, Check, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X, Package } from "lucide-react";
+import { Search, Calendar, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X, Package } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { formatDistanceToNow, format } from "date-fns";
+import { format } from "date-fns";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
 import { RescheduleModal } from "@/app/components/reschedule-modal";
 import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
@@ -167,7 +167,15 @@ export function RenterDashboardView() {
                     if (pendingError) {
                         console.error('Pending requests error:', pendingError);
                     } else if (pendingData) {
-                        const mapped: PendingRequest[] = pendingData.map((r: any) => ({
+                        const mapped: PendingRequest[] = pendingData.map((r: {
+                            id: string;
+                            listing_id: string;
+                            listing: { title: string; images: string[] | null; owner: { full_name: string } | null } | null;
+                            start_date: string;
+                            end_date: string;
+                            total_days: number;
+                            created_at: string;
+                        }) => ({
                             rental_id: r.id,
                             listing_id: r.listing_id,
                             listing_title: r.listing?.title || 'Unknown',
@@ -188,7 +196,7 @@ export function RenterDashboardView() {
                         .eq('status', 'pending');
 
                     if (extensionsData && extensionsData.length > 0) {
-                        setPendingExtensionRentalIds(new Set(extensionsData.map((e: any) => e.rental_id)));
+                        setPendingExtensionRentalIds(new Set(extensionsData.map((e: { rental_id: string }) => e.rental_id)));
                     }
                 }
 
@@ -241,8 +249,20 @@ export function RenterDashboardView() {
     };
 
     const totalActive = activeRentals.length;
-    const urgentCount = activeRentals.filter(r => r.dashboard_status === 'overdue' || r.dashboard_status === 'due_today').length;
-    const overdueCount = activeRentals.filter(r => r.dashboard_status === 'overdue').length;
+    // Bolt Optimization: Calculate counts in a single O(N) pass and memoize to avoid unnecessary N*M computations on every render
+    const { urgentCount, overdueCount } = useMemo(() => {
+        let urgent = 0;
+        let overdue = 0;
+        for (const r of activeRentals) {
+            if (r.dashboard_status === 'overdue') {
+                urgent++;
+                overdue++;
+            } else if (r.dashboard_status === 'due_today') {
+                urgent++;
+            }
+        }
+        return { urgentCount: urgent, overdueCount: overdue };
+    }, [activeRentals]);
 
     if (loading) {
         return <RenterDashboardSkeleton />;
@@ -668,7 +688,12 @@ export function RenterDashboardView() {
                                 Action Required
                             </h3>
                             <div className="space-y-4">
-                                {activeDisputes.slice(0, 3).map((dispute: any) => (
+                                {activeDisputes.slice(0, 3).map((dispute: {
+                                    dispute_id: string;
+                                    listing_title: string;
+                                    dispute_type: string;
+                                    created_at: string;
+                                }) => (
                                     <div key={dispute.dispute_id} className="border-b border-red-200 pb-3 last:border-0 last:pb-0">
                                         <p className="text-red-900 font-medium text-sm truncate">{dispute.listing_title}</p>
                                         <p className="text-red-600 text-xs mt-1 lowercase opacity-80 font-mono">
