@@ -97,3 +97,7 @@
 ## 2025-03-02 - Optimize Search Input Filtering
 **Learning:** Performing multiple array traversals or doing string normalization (e.g., `toLowerCase()`) inside `.filter()` operations scales poorly in React renders since these filters evaluate on every keystroke.
 **Action:** When filtering objects by text fields, always calculate normalized search strings exactly once by mapping the array to append `.toLowerCase()` fields (within a `useMemo` depending only on the base dataset). The filtering iteration then does simple O(1) checks (like `.includes(searchQuery.toLowerCase())`), rather than recalculating the search field normalizations dynamically.
+
+## 2025-03-02 - Optimize Derived Counts in React Renders
+**Learning:** Performing multiple array traversals (e.g. chaining `.filter(condition).length`) to calculate independent derived counts (like `urgentCount` and `overdueCount`) creates unnecessary O(N * M) overhead. While small arrays might be fast enough, it's an anti-pattern.
+**Action:** Use a single O(N) `.reduce()` traversal to calculate multiple derived state variables simultaneously. If the component re-renders frequently from other state changes, wrap the calculation in `useMemo` to eliminate unnecessary execution.
