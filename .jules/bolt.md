@@ -97,3 +97,7 @@
 ## 2025-03-02 - Optimize Search Input Filtering
 **Learning:** Performing multiple array traversals or doing string normalization (e.g., `toLowerCase()`) inside `.filter()` operations scales poorly in React renders since these filters evaluate on every keystroke.
 **Action:** When filtering objects by text fields, always calculate normalized search strings exactly once by mapping the array to append `.toLowerCase()` fields (within a `useMemo` depending only on the base dataset). The filtering iteration then does simple O(1) checks (like `.includes(searchQuery.toLowerCase())`), rather than recalculating the search field normalizations dynamically.
+
+## 2024-06-16 - Optimize Renter Dashboard
+**Learning:** Found multiple independent O(N) array filter passes (`.filter(...).length`) within a React component (`apps/web/app/components/dashboard/renter-view.tsx`) that can be optimized. Deriving multiple counts from the same dataset should be combined into a single O(N) reduction, which is then memoized via `useMemo` to prevent re-calculations during renders unless the underlying dataset changes.
+**Action:** When deriving multiple state variables (like different status counts) from an array in a render function, always use `useMemo` combined with `.reduce()` instead of chaining multiple `.filter(...).length` statements.
