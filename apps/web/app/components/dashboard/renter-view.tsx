@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -241,8 +241,23 @@ export function RenterDashboardView() {
     };
 
     const totalActive = activeRentals.length;
-    const urgentCount = activeRentals.filter(r => r.dashboard_status === 'overdue' || r.dashboard_status === 'due_today').length;
-    const overdueCount = activeRentals.filter(r => r.dashboard_status === 'overdue').length;
+
+    // ⚡ Bolt Performance: Calculate counts in a single O(N) pass and memoize to prevent O(N * 2) recalculations on every render
+    const { urgentCount, overdueCount } = useMemo(() => {
+        return activeRentals.reduce(
+            (acc, r) => {
+                const status = r.dashboard_status;
+                if (status === 'overdue') {
+                    acc.urgentCount++;
+                    acc.overdueCount++;
+                } else if (status === 'due_today') {
+                    acc.urgentCount++;
+                }
+                return acc;
+            },
+            { urgentCount: 0, overdueCount: 0 }
+        );
+    }, [activeRentals]);
 
     if (loading) {
         return <RenterDashboardSkeleton />;

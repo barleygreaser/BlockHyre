@@ -97,3 +97,7 @@
 ## 2025-03-02 - Optimize Search Input Filtering
 **Learning:** Performing multiple array traversals or doing string normalization (e.g., `toLowerCase()`) inside `.filter()` operations scales poorly in React renders since these filters evaluate on every keystroke.
 **Action:** When filtering objects by text fields, always calculate normalized search strings exactly once by mapping the array to append `.toLowerCase()` fields (within a `useMemo` depending only on the base dataset). The filtering iteration then does simple O(1) checks (like `.includes(searchQuery.toLowerCase())`), rather than recalculating the search field normalizations dynamically.
+
+## 2025-03-02 - Optimize List Filtering and Derived Counts in Render loops
+**Learning:** Performing multiple array `.filter()` traversals to derive category counts or recalculating filtered lists on every render (without `useMemo`) creates an O(N * M) performance bottleneck, especially when loop-invariant operations like string normalization (`toLowerCase()`) are placed inside the loop. In component render paths, deriving counts like `urgentCount` and `overdueCount` by calling `.filter().length` twice is O(N * 2).
+**Action:** Always wrap derived lists in `useMemo`, hoist loop-invariant operations like search normalization outside the loop, and use an O(N) array reduction/traversal to pre-calculate category counts once rather than filtering repeatedly.
