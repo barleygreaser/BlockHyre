@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Image } from 'expo-image';
 import {
     View,
@@ -90,6 +90,20 @@ export default function ListingDetailScreen() {
             setCurrentImageIndex(viewableItems[0].index);
         }
     }).current;
+
+    // ⚡ Bolt Optimization: Wrap renderItem in useCallback to prevent unnecessary list re-renders
+    const renderImageItem = useCallback(({ item }: { item: any }) => (
+        <View style={[styles.imageSlide, { width }]}>
+            <Image
+                source={item}
+                style={styles.heroImage}
+                contentFit="cover"
+                transition={200}
+            />
+        </View>
+    ), [width]);
+
+    const keyExtractor = useCallback((item: any, index: number) => `image-${index}`, []);
 
     // Optimized scroll handler running on UI thread
     const scrollHandler = useAnimatedScrollHandler({
@@ -599,17 +613,8 @@ export default function ListingDetailScreen() {
                         decelerationRate="fast"
                         viewabilityConfig={viewabilityConfig}
                         onViewableItemsChanged={onViewableItemsChanged}
-                        keyExtractor={(item, index) => `image-${index}`}
-                        renderItem={({ item }) => (
-                            <View style={[styles.imageSlide, { width }]}>
-                                <Image
-                                    source={item}
-                                    style={styles.heroImage}
-                                    contentFit="cover"
-                                    transition={200}
-                                />
-                            </View>
-                        )}
+                        keyExtractor={keyExtractor}
+                        renderItem={renderImageItem}
                     />
                     {/* Gradient overlay for better button visibility */}
                     <LinearGradient
