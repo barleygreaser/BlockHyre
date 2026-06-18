@@ -39,7 +39,7 @@ export default function FavoritesScreen() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
-    const fetchFavorites = async () => {
+    const fetchFavorites = useCallback(async () => {
         try {
             if (!refreshing) setLoading(true);
 
@@ -78,7 +78,7 @@ export default function FavoritesScreen() {
             setLoading(false);
             setRefreshing(false);
         }
-    };
+    }, [refreshing]);
 
     useEffect(() => {
         fetchFavorites();
@@ -89,9 +89,12 @@ export default function FavoritesScreen() {
         fetchFavorites();
     }, []);
 
-    const handleRemoveFavorite = async (favoriteId: string, listingId: string) => {
+    const handleRemoveFavorite = useCallback(async (favoriteId: string, listingId: string) => {
         // Optimistic update
-        const previousFavorites = [...favorites];
+        // We use functional state update `setFavorites(prev => ...)` to remove the item without
+        // needing the current `favorites` array in the dependency list.
+        // If the API call fails, we rely on refetching or just letting the user refresh,
+        // or we could use a ref to track the full state. For simplicity, we just filter it.
         setFavorites(prev => prev.filter(item => item.id !== favoriteId));
 
         try {
@@ -104,11 +107,15 @@ export default function FavoritesScreen() {
         } catch (e) {
             console.error('Error removing favorite:', e);
             Alert.alert('Error', 'Failed to remove favorite');
-            setFavorites(previousFavorites); // Revert
+            // If it fails, revert by refetching everything to ensure state is clean
+            fetchFavorites();
         }
-    };
+    }, [fetchFavorites]);
 
-    const renderFavoriteItem = ({ item }: { item: FavoriteItem }) => {
+    // ⚡ Bolt Optimization: Wrap FlatList components in useCallback to prevent them from re-rendering
+    // all list items whenever the parent component state (e.g. refreshing, loading) changes.
+    // This improves scrolling and interaction performance significantly.
+    const renderFavoriteItem = useCallback(({ item }: { item: FavoriteItem }) => {
         const listing = item.listing;
         const imageUrl = listing.images && listing.images.length > 0
             ? listing.images[0]
@@ -148,9 +155,9 @@ export default function FavoritesScreen() {
                 </View>
             </TouchableOpacity>
         );
-    };
+    }, [handleRemoveFavorite, router]);
 
-    const renderEmpty = () => (
+    const renderEmpty = useCallback(() => (
         <View style={styles.emptyContainer}>
             <Heart size={64} color="#E5E7EB" />
             <Text style={styles.emptyTitle}>No Favorites Yet</Text>
@@ -168,7 +175,9 @@ export default function FavoritesScreen() {
                 <Text style={styles.exploreButtonText}>Explore Tools</Text>
             </TouchableOpacity>
         </View>
-    );
+    ), [router]);
+
+    const keyExtractor = useCallback((item: FavoriteItem) => item.id, []);
 
     return (
         <View style={styles.container}>
@@ -188,7 +197,7 @@ export default function FavoritesScreen() {
                 <FlatList
                     data={favorites}
                     renderItem={renderFavoriteItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={keyExtractor}
                     numColumns={2}
                     columnWrapperStyle={styles.row}
                     contentContainerStyle={[
