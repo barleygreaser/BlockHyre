@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Button } from "./ui/button";
@@ -77,10 +77,16 @@ export function LocationOnboardingModal() {
     };
 
     // Mock "Google Places Autocomplete" behavior
-    const filteredNeighborhoods = neighborhoods.filter(n =>
-        n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        "Woodstock, GA".toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // ⚡ Bolt Optimization: Pre-calculate string operations outside the filter loop and memoize
+    const filteredNeighborhoods = useMemo(() => {
+        const searchLower = searchTerm.toLowerCase();
+        // Pre-compute fallback match to avoid checking it per item
+        const fallbackMatch = "woodstock, ga".includes(searchLower);
+
+        return neighborhoods.filter(n =>
+            fallbackMatch || n.name.toLowerCase().includes(searchLower)
+        );
+    }, [neighborhoods, searchTerm]);
 
     const handleConfirm = async () => {
         if (!user || !selectedNeighborhood) return;
