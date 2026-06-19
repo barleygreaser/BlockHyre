@@ -101,3 +101,7 @@
 ## 2024-06-16 - Optimize Renter Dashboard
 **Learning:** Found multiple independent O(N) array filter passes (`.filter(...).length`) within a React component (`apps/web/app/components/dashboard/renter-view.tsx`) that can be optimized. Deriving multiple counts from the same dataset should be combined into a single O(N) reduction, which is then memoized via `useMemo` to prevent re-calculations during renders unless the underlying dataset changes.
 **Action:** When deriving multiple state variables (like different status counts) from an array in a render function, always use `useMemo` combined with `.reduce()` instead of chaining multiple `.filter(...).length` statements.
+
+## 2024-06-19 - [Performance Optimization: Hoisting operations from array filter]
+**Learning:** Performing `String.toLowerCase()` and testing fallback strings inside a React rendering `.filter()` loop has an $O(N \times M)$ overhead due to repetitive computation that ignores loop invariance.
+**Action:** Always hoist loop-invariant operations like string normalization outside of `.filter()` arrays and memoize the outcome using `useMemo` to dramatically cut processing time to pure $O(N)$ lookup.
