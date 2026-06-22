@@ -6,6 +6,7 @@ import { useCart } from "@/app/context/cart-context";
 import { Button } from "@/app/components/ui/button";
 import { Trash2, Calendar as CalendarIcon, AlertCircle, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -15,21 +16,35 @@ export default function CartPage() {
     const router = useRouter();
 
     // Detect mixed-owner cart (guarded at add time, but also guard at render for stale localStorage)
-    const uniqueOwnerIds = new Set(cart.map((item) => item.owner_id));
-    const hasMultipleOwners = uniqueOwnerIds.size > 1;
+    // ⚡ Bolt Optimization: Consolidate multiple O(N) traversals (map + 3x reduce) into a single O(N) useMemo block
+    const {
+        hasMultipleOwners,
+        subtotal,
+        peaceFundTotal,
+        depositTotal,
+        finalTotal
+    } = useMemo(() => {
+        const uniqueOwnerIds = new Set<string>();
+        let subtotalAcc = 0;
+        let peaceFundTotalAcc = 0;
+        let depositTotalAcc = 0;
 
-    const subtotal = cart.reduce((acc, item) => {
-        const { subtotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
-        return acc + subtotal;
-    }, 0);
+        for (const item of cart) {
+            uniqueOwnerIds.add(item.owner_id);
+            const { subtotal, peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
+            subtotalAcc += subtotal;
+            peaceFundTotalAcc += peaceFundTotal;
+            depositTotalAcc += item.price.deposit;
+        }
 
-    const peaceFundTotal = cart.reduce((acc, item) => {
-        const { peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
-        return acc + peaceFundTotal;
-    }, 0);
-
-    const depositTotal = cart.reduce((acc, item) => acc + item.price.deposit, 0);
-    const finalTotal = subtotal + peaceFundTotal + depositTotal;
+        return {
+            hasMultipleOwners: uniqueOwnerIds.size > 1,
+            subtotal: subtotalAcc,
+            peaceFundTotal: peaceFundTotalAcc,
+            depositTotal: depositTotalAcc,
+            finalTotal: subtotalAcc + peaceFundTotalAcc + depositTotalAcc,
+        };
+    }, [cart]);
 
     return (
         <main className="min-h-screen bg-slate-50">
