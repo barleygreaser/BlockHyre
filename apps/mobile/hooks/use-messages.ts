@@ -53,7 +53,12 @@ export function useMessages() {
             const { data: chats, error: chatsError } = await supabase
                 .from('chats')
                 .select(`
-                    *,
+                    id,
+                    listing_id,
+                    owner_id,
+                    renter_id,
+                    created_at,
+                    updated_at,
                     listing:listing_id(title),
                     owner:owner_id(id, full_name, profile_photo_url),
                     renter:renter_id(id, full_name, profile_photo_url)
@@ -149,7 +154,14 @@ export function useMessages() {
             const { data, error: messagesError } = await supabase
                 .from('messages')
                 .select(`
-                    *,
+                    id,
+                    chat_id,
+                    sender_id,
+                    content,
+                    is_read,
+                    created_at,
+                    message_type,
+                    recipient_id,
                     sender:sender_id(id, full_name, profile_photo_url)
                 `)
                 .eq('chat_id', chatId)
