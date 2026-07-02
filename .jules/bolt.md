@@ -101,3 +101,6 @@
 ## 2024-06-16 - Optimize Renter Dashboard
 **Learning:** Found multiple independent O(N) array filter passes (`.filter(...).length`) within a React component (`apps/web/app/components/dashboard/renter-view.tsx`) that can be optimized. Deriving multiple counts from the same dataset should be combined into a single O(N) reduction, which is then memoized via `useMemo` to prevent re-calculations during renders unless the underlying dataset changes.
 **Action:** When deriving multiple state variables (like different status counts) from an array in a render function, always use `useMemo` combined with `.reduce()` instead of chaining multiple `.filter(...).length` statements.
+## 2025-03-02 - Mobile Search Optimization
+**Learning:** Performing `toLowerCase()` directly on item fields inside a `.filter()` array method executed on every keystroke forces an O(N * M) string computation overhead in React Native flatlists, degrading UI responsiveness.
+**Action:** Always pre-calculate search string normalizations in a top-level `useMemo` dependent only on the original data source array, so the search filter traversal uses simple O(1) matching.
