@@ -95,7 +95,8 @@ export default function HowItWorksScreen() {
         [TOTAL_STEPS]
     );
 
-    const renderItem = ({ item }: { item: typeof STEPS[0] }) => {
+    // ⚡ Bolt Optimization: Wrap renderItem in useCallback to prevent unnecessary list re-renders when parent state updates
+    const renderItem = useCallback(({ item }: { item: typeof STEPS[0] }) => {
         return (
             <View style={[styles.stepContainer, { width }]}>
                 <View style={styles.stepContent}>
@@ -150,7 +151,7 @@ export default function HowItWorksScreen() {
                 </View>
             </View>
         );
-    };
+    }, [width]);
 
     return (
         <View style={styles.container}>

@@ -101,3 +101,7 @@
 ## 2024-06-16 - Optimize Renter Dashboard
 **Learning:** Found multiple independent O(N) array filter passes (`.filter(...).length`) within a React component (`apps/web/app/components/dashboard/renter-view.tsx`) that can be optimized. Deriving multiple counts from the same dataset should be combined into a single O(N) reduction, which is then memoized via `useMemo` to prevent re-calculations during renders unless the underlying dataset changes.
 **Action:** When deriving multiple state variables (like different status counts) from an array in a render function, always use `useMemo` combined with `.reduce()` instead of chaining multiple `.filter(...).length` statements.
+
+## $(date +%Y-%m-%d) - Optimize FlatList in HowItWorksScreen
+**Learning:** Missed dependency arrays in `useCallback` inside render loops can lead to stale closures even for constants that might change during lifecycle like `Dimensions.get('window').width`. Linting with `eslint-plugin-react-hooks` is crucial to catch this.
+**Action:** Always verify `exhaustive-deps` manually if automatic linting for mobile packages is broken. Even if something looks like a constant outside the component (`const { width } = Dimensions.get('window')`), it should be included in the dependency array to satisfy lint rules and prevent subtle re-rendering bugs.
