@@ -101,3 +101,7 @@
 ## 2024-06-16 - Optimize Renter Dashboard
 **Learning:** Found multiple independent O(N) array filter passes (`.filter(...).length`) within a React component (`apps/web/app/components/dashboard/renter-view.tsx`) that can be optimized. Deriving multiple counts from the same dataset should be combined into a single O(N) reduction, which is then memoized via `useMemo` to prevent re-calculations during renders unless the underlying dataset changes.
 **Action:** When deriving multiple state variables (like different status counts) from an array in a render function, always use `useMemo` combined with `.reduce()` instead of chaining multiple `.filter(...).length` statements.
+
+## 2024-05-18 - Missing Image Lazy Loading Optimization
+**Learning:** Found unoptimized `<img>` tags without lazy loading in list views, specifically `apps/web/app/dashboard/inventory/page.tsx`. Next.js `<Image>` component handles this automatically and improves performance significantly. Also learned that when using `fill` on Next.js `<Image>`, the parent container must be `relative`, `absolute`, or `fixed`.
+**Action:** Always check other list pages for similar unoptimized `<img>` tags and replace them with Next.js `<Image>` component, ensuring the parent element has the `relative` class.

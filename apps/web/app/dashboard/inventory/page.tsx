@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
@@ -25,10 +26,13 @@ const ListingThumbnail = ({ title, src }: { title: string; src?: string }) => {
   const [error, setError] = useState(false);
   if (src && !error) {
     return (
-      <img
+      // ⚡ Bolt Optimization: Replaced unoptimized <img> tag with next/image for automatic sizing and format conversion
+      <Image
         src={src}
         alt={title}
-        className="w-full h-full object-cover"
+        fill
+        sizes="48px"
+        className="object-cover"
         onError={() => setError(true)}
       />
     );
@@ -232,7 +236,7 @@ export default function InventoryPage() {
                   href={`/listings/${item.listing_id}/${item.tool_title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                   className="flex items-center gap-4 nav-bracket"
                 >
-                  <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0 text-slate-400 overflow-hidden border border-slate-100 group-hover:border-safety-orange/30 transition-colors">
+                  <div className="relative h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0 text-slate-400 overflow-hidden border border-slate-100 group-hover:border-safety-orange/30 transition-colors">
                     <ListingThumbnail
                       title={item.tool_title}
                       src={item.image_url}
