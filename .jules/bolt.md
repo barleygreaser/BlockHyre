@@ -101,3 +101,7 @@
 ## 2024-06-16 - Optimize Renter Dashboard
 **Learning:** Found multiple independent O(N) array filter passes (`.filter(...).length`) within a React component (`apps/web/app/components/dashboard/renter-view.tsx`) that can be optimized. Deriving multiple counts from the same dataset should be combined into a single O(N) reduction, which is then memoized via `useMemo` to prevent re-calculations during renders unless the underlying dataset changes.
 **Action:** When deriving multiple state variables (like different status counts) from an array in a render function, always use `useMemo` combined with `.reduce()` instead of chaining multiple `.filter(...).length` statements.
+
+## 2024-06-25 - [Optimize Cart Calculation]
+**Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
+**Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
