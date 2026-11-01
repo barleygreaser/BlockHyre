@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { useCart } from "@/app/context/cart-context";
@@ -18,18 +19,22 @@ export default function CartPage() {
     const uniqueOwnerIds = new Set(cart.map((item) => item.owner_id));
     const hasMultipleOwners = uniqueOwnerIds.size > 1;
 
-    const subtotal = cart.reduce((acc, item) => {
-        const { subtotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
-        return acc + subtotal;
-    }, 0);
+    // ⚡ Bolt Optimization: Combined 3 separate .reduce() traversals into a single O(N) traversal
+    // and memoized the result to prevent recalculations on every render
+    const { subtotal, peaceFundTotal, depositTotal, finalTotal } = useMemo(() => {
+        const totals = cart.reduce((acc, item) => {
+            const { subtotal, peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
+            acc.subtotal += subtotal;
+            acc.peaceFundTotal += peaceFundTotal;
+            acc.depositTotal += item.price.deposit;
+            return acc;
+        }, { subtotal: 0, peaceFundTotal: 0, depositTotal: 0 });
 
-    const peaceFundTotal = cart.reduce((acc, item) => {
-        const { peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
-        return acc + peaceFundTotal;
-    }, 0);
-
-    const depositTotal = cart.reduce((acc, item) => acc + item.price.deposit, 0);
-    const finalTotal = subtotal + peaceFundTotal + depositTotal;
+        return {
+            ...totals,
+            finalTotal: totals.subtotal + totals.peaceFundTotal + totals.depositTotal
+        };
+    }, [cart]);
 
     return (
         <main className="min-h-screen bg-slate-50">
