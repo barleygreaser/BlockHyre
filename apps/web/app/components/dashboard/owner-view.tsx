@@ -624,7 +624,7 @@ export function OwnerDashboardView() {
                 <Link href="/dashboard/owner/bookings" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                         <div>
-                            <p className="text-[9px] sm:text-[10px] font-serif font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tool Bookings</p>
+                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tool Bookings</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
@@ -651,7 +651,7 @@ export function OwnerDashboardView() {
                             <Link href="/dashboard/owner/transactions" className="block group active:translate-y-[2px] transition-transform">
                                 <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                                     <div className="min-w-0">
-                                        <p className="text-[9px] sm:text-[10px] font-serif font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Net Earnings (30d)</p>
+                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Net Earnings (30d)</p>
                                         {kpiLoading ? (
                                             <div className="h-7 w-16 bg-slate-100 animate-pulse rounded-lg mt-1" />
                                         ) : (
@@ -687,7 +687,7 @@ export function OwnerDashboardView() {
                 <Link href="/dashboard/inventory" className="block group active:translate-y-[2px] transition-transform">
                     <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                         <div>
-                            <p className="text-[9px] sm:text-[10px] font-serif font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tools Listed</p>
+                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tools Listed</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
