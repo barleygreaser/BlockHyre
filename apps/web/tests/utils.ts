@@ -1,6 +1,7 @@
 import { BrowserContext } from '@playwright/test';
 import path from 'node:path';
 import fs from 'node:fs';
+import { createClient } from '@supabase/supabase-js';
 
 // Helper to load environment variables from a file if not already present in process.env
 function loadEnvFile(filePath: string) {
@@ -18,6 +19,28 @@ function loadEnvFile(filePath: string) {
             }
         }
     }
+}
+
+/**
+ * Creates a Supabase admin client for test setup/teardown using the service role key.
+ */
+export function createSupabaseAdmin() {
+    loadEnvFile(path.resolve(__dirname, '..', '.env.test'));
+    loadEnvFile(path.resolve(__dirname, '..', '.env.local'));
+
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !serviceKey) {
+        throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.');
+    }
+
+    return createClient(supabaseUrl, serviceKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
+    });
 }
 
 /**

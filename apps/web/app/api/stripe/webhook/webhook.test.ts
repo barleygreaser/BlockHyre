@@ -3,6 +3,7 @@ import { POST } from './route';
 import { createClient } from '@supabase/supabase-js';
 import { stripe } from '@/lib/stripe';
 import { headers } from 'next/headers';
+import { sendEmail } from '@/lib/email';
 
 // Mock everything
 const { mockSupabase } = vi.hoisted(() => ({
@@ -139,6 +140,17 @@ describe('Stripe Webhook API (POST)', () => {
     expect(mockSupabase.insert).toHaveBeenCalledWith(expect.objectContaining({
         stripe_session_id: 'cs_test_new',
         renter_id: 'user_123'
+    }));
+
+    // Verify email notifications were sent
+    expect(sendEmail).toHaveBeenCalledTimes(2);
+    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
+        to: 'owner@example.com',
+        subject: 'New Rental Request for Drill',
+    }));
+    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
+        to: 'renter@example.com',
+        subject: 'Your rental for Drill was approved!',
     }));
   });
 

@@ -1,9 +1,6 @@
 import { config } from 'dotenv';
 config({ path: '.env.local' });
 
-import { sendEmail } from '../lib/email';
-import RentalAlertEmail from '../emails/rental-alert';
-
 // Resend free tier only allows sending to the verified email address.
 const TEST_EMAIL = 'robinsonc24@gmail.com';
 
@@ -152,6 +149,8 @@ const testCases: TestCase[] = [
 ];
 
 async function runTest() {
+    const { sendEmail } = await import('../lib/email');
+    const { default: RentalAlertEmail } = await import('../emails/rental-alert');
     console.log(`\n=========================================`);
     console.log(`🚀 BlockHyre Rental Alert Email Test 🚀`);
     console.log(`=========================================`);

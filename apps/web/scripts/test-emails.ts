@@ -1,8 +1,5 @@
-import { sendEmail } from '../lib/email';
-import BookingRequestedEmail from '../emails/booking-requested';
-import BookingApprovedEmail from '../emails/booking-approved';
-import NewMessageEmail from '../emails/new-message';
-import DisputeFiledEmail from '../emails/dispute-filed';
+import { config } from 'dotenv';
+config({ path: '.env.local' });
 
 const MOCK_ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'christopher@blockhyre.com';
 
@@ -11,6 +8,11 @@ const MOCK_ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'christopher@blockhyre.com';
 const TEST_EMAIL = 'robinsonc24@gmail.com';
 
 async function runTest() {
+    const { sendEmail } = await import('../lib/email');
+    const { default: BookingRequestedEmail } = await import('../emails/booking-requested');
+    const { default: BookingApprovedEmail } = await import('../emails/booking-approved');
+    const { default: NewMessageEmail } = await import('../emails/new-message');
+    const { default: DisputeFiledEmail } = await import('../emails/dispute-filed');
     console.log(`\n=========================================`);
     console.log(`🚀 BlockHyre Notification Engine Test 🚀`);
     console.log(`=========================================`);

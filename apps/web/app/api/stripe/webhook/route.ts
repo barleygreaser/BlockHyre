@@ -127,8 +127,8 @@ export async function POST(req: Request) {
                 }
 
                 // 3. Send Notifications via Resend
-                const startDateStr = dateFormatter.format(new Date(item.start_date));
-                const endDateStr = dateFormatter.format(new Date(item.end_date));
+                const startDateStr = item.start_date && !isNaN(new Date(item.start_date).getTime()) ? dateFormatter.format(new Date(item.start_date)) : 'Flexible';
+                const endDateStr = item.end_date && !isNaN(new Date(item.end_date).getTime()) ? dateFormatter.format(new Date(item.end_date)) : 'Flexible';
                 const toolName = listing.tools?.name || "a tool";
                 
                 // Calculate owner earnings (gross - platform fee)
