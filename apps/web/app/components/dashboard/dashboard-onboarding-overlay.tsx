@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@/app/context/auth-context";
 import { usePathname } from "next/navigation";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, X, MousePointer2, Menu } from "lucide-react";
 import { useDashboard } from "@/app/context/dashboard-context";
 
@@ -126,20 +126,19 @@ function getStepsForViewport(role: "owner" | "renter"): Step[] {
 /** Resolve the best visible DOM element for a tour step. Returns null for mobile-only steps that use bottom-sheet mode. */
 function resolveElement(step: Step): HTMLElement | null {
   const isMobile = window.innerWidth < 1024;
+  const s = step as { selector?: string | null; mobileSelector?: string | null };
 
   const primarySelector = isMobile
-    ? "mobileSelector" in step
-      ? step.mobileSelector
-      : step.selector
-    : step.selector;
+    ? (s.mobileSelector ?? s.selector)
+    : s.selector;
 
-  if (!primarySelector) return null; // mobile-only step — no spotlight needed
+  if (!primarySelector) return null;
 
   let el = document.querySelector(primarySelector) as HTMLElement | null;
 
   // Last-resort: strip the aside prefix
-  if ((!el || el.offsetWidth === 0) && "selector" in step && step.selector) {
-    const stripped = step.selector.replace("aside.hidden.lg\\:flex ", "");
+  if ((!el || el.offsetWidth === 0) && s.selector) {
+    const stripped = s.selector.replace("aside.hidden.lg\\:flex ", "");
     const fallback = document.querySelector(stripped) as HTMLElement | null;
     el = fallback && fallback.offsetWidth > 0 ? fallback : null;
   }

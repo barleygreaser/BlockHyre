@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { X, CheckSquare, Square, AlertTriangle, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SafetyModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: () => void;
+    onConfirm?: () => void;
 }
 
 export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
@@ -132,7 +132,8 @@ export function SafetyModal({ isOpen, onClose, onConfirm }: SafetyModalProps) {
                     <Button
                         onClick={() => {
                             if (allChecked) {
-                                onConfirm();
+                                if (onConfirm) onConfirm();
+                                else onClose();
                             }
                         }}
                         disabled={!allChecked}

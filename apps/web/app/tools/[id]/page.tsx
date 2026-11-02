@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Calendar } from "@/app/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
 import {
     MapPin,
     Shield,
@@ -92,6 +92,7 @@ export default function ToolDetailsPage() {
             id: listing.id,
             title: listing.title,
             image: listing.images?.[0] || "/placeholder.png",
+            owner_id: listing.owner_id || listing.owner?.id || "",
             price: {
                 daily: listing.daily_price,
                 deposit: deposit,
