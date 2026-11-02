@@ -15,8 +15,8 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 function centerAspectCrop(
     mediaWidth: number,

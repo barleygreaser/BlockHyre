@@ -136,6 +136,7 @@ export const RealtimeChat = ({
       <form onSubmit={handleSendMessage} className="flex w-full gap-2 border-t border-border p-4 flex-shrink-0">
         <Input
           ref={inputRef}
+          data-testid="message-input"
           className={cn(
             'rounded-full bg-background text-base transition-all duration-300',
             !isConnected && 'opacity-60',
@@ -152,6 +153,7 @@ export const RealtimeChat = ({
           <Button
             className="aspect-square rounded-full animate-in fade-in slide-in-from-right-4 duration-300"
             type="submit"
+            data-testid="send-message-btn"
             disabled={!isConnected}
           >
             <Send className="size-4" />

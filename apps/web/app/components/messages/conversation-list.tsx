@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useMessages, type Chat, type Message } from "@/app/hooks/use-messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/app/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MessageSquare } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/auth-context";
@@ -229,7 +229,7 @@ export function ConversationList({ selectedChatId, onSelectChat }: ConversationL
 
     return (
         <ScrollArea className="h-full">
-            <div className="divide-y divide-slate-200">
+            <div data-testid="conversation-list" className="divide-y divide-slate-200">
                 {conversations.map((chat) => (
                     <ConversationListItem
                         key={chat.id}

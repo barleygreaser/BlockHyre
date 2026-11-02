@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Search, Calendar, Check, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X, Package } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatDistanceToNow, format } from "date-fns";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RescheduleModal } from "@/app/components/reschedule-modal";
 import { CancelRentalModal } from "@/app/components/cancel-rental-modal";
 import { HandoverModal } from "@/app/components/modals/handover-modal";
@@ -373,7 +373,7 @@ export function RenterDashboardView() {
                                     : `Due in ${daysLeft} Days`;
 
                             return (
-                                <div key={rental.rental_id} className={`rounded-[2rem] p-6 shadow-sm transition-all duration-300 ${styles.card}`}>
+                                <div key={rental.rental_id} data-testid="active-rental-card" className={`rounded-[2rem] p-6 shadow-sm transition-all duration-300 ${styles.card}`}>
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
@@ -430,6 +430,7 @@ export function RenterDashboardView() {
                                             )}
                                             <Button
                                                 variant="outline"
+                                                data-testid="return-tool-btn"
                                                 className="w-full border-emerald-500/30 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all"
                                                 onClick={() => {
                                                     setSelectedRental(rental);
@@ -462,7 +463,7 @@ export function RenterDashboardView() {
                                 <p className="text-slate-400 text-sm font-mono">No pending requests</p>
                             </div>
                         ) : pendingRequests.map((request) => (
-                            <div key={request.rental_id} className="bg-white rounded-[2rem] border border-amber-200/60 p-6 shadow-sm">
+                            <div key={request.rental_id} data-testid="pending-request-card" className="bg-white rounded-[2rem] border border-amber-200/60 p-6 shadow-sm">
                                 <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-4 flex-1">
                                         <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0">

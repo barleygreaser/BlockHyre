@@ -2,7 +2,7 @@
 
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";

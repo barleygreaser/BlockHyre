@@ -1,7 +1,7 @@
 "use client";
 
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/app/components/ui/drawer";
-import { Button } from "@/app/components/ui/button";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 

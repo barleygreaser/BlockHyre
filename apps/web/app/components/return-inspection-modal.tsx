@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { X, CheckCircle, AlertTriangle, MessageSquare, Loader2, Camera, Calendar } from "lucide-react";
 import confetti from "canvas-confetti";
 import Image from "next/image";
@@ -247,6 +247,7 @@ export function ReturnInspectionModal({
                         {!isDisputing ? (
                             <button
                                 onClick={() => setIsDisputing(true)}
+                                data-testid="flag-damage-btn"
                                 className="group flex items-center gap-3 text-red-600 hover:text-red-700 transition-colors"
                             >
                                 <div className="h-8 w-8 rounded-full border-2 border-red-100 flex items-center justify-center group-hover:bg-red-50 transition-all">
@@ -267,6 +268,7 @@ export function ReturnInspectionModal({
                                 </div>
                                 <textarea
                                     value={disputeReason}
+                                    data-testid="dispute-reason-textarea"
                                     onChange={(e) => setDisputeReason(e.target.value)}
                                     className="w-full h-32 p-5 rounded-2xl border-2 border-red-200 focus:outline-none focus:ring-4 focus:ring-red-500/10 text-sm font-sans placeholder:text-red-300 bg-white"
                                     placeholder="Precisely describe the issue. Reference the return photos above."
@@ -279,6 +281,7 @@ export function ReturnInspectionModal({
                                     </Button>
                                     <Button
                                         onClick={handleDispute}
+                                        data-testid="submit-dispute-btn"
                                         disabled={submitting}
                                         className="bg-red-600 hover:bg-red-700 text-white font-bold h-12 rounded-none px-8 transition-all duration-200 shadow-[0_4px_0_0_#991b1b] hover:shadow-[0_6px_0_0_#991b1b] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
                                     >
@@ -305,6 +308,7 @@ export function ReturnInspectionModal({
                     <div className="flex gap-4 w-full sm:w-auto">
                         <Button
                             onClick={handleConfirm}
+                            data-testid="finalize-return-btn"
                             disabled={submitting || isDisputing}
                             className="flex-1 sm:flex-none bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-14 rounded-none px-12 transition-all duration-200 shadow-[0_4px_0_0_#AF3D2B] hover:shadow-[0_6px_0_0_#AF3D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
                         >

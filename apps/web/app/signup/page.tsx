@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import { Checkbox } from "@/app/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { AuthGoogleButton } from "@/app/components/auth-google-button";
 import { useAuthRedirect } from "@/app/hooks/use-auth-redirect";

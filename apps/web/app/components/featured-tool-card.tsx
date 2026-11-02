@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { memo } from "react";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ShieldCheck, ArrowRight, Zap, Star } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
 import { Tool } from "@/app/components/tool-card";

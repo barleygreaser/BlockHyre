@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { Loader2, CreditCard } from "lucide-react";
 import { toast } from "sonner";

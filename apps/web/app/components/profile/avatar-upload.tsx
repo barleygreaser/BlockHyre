@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { User, Camera, AlertCircle } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface AvatarUploadProps {

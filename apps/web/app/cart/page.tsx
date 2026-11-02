@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { useCart } from "@/app/context/cart-context";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Trash2, Calendar as CalendarIcon, AlertCircle, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { calculateRentalPrice } from "@/lib/pricing";

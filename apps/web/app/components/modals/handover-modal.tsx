@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Camera, CheckCircle, Upload, X, Loader2, AlertCircle } from "lucide-react";
 import { uploadHandoverPhotos, completeHandover } from "@/lib/handover-service";
 import Image from "next/image";

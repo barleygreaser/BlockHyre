@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActiveRentalCard } from "@/app/components/rentals/ActiveRentalCard";
 import { UpcomingBookingCard } from "@/app/components/rentals/UpcomingBookingCard";
 import { RentalHistoryItem } from "@/app/components/rentals/RentalHistoryItem";

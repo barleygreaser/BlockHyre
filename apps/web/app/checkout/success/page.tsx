@@ -3,7 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { CheckCircle, ArrowRight, Calendar, Mail, ShieldCheck } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { SuccessCartClearer } from "./success-cart-clearer";
 
 export default async function SuccessPage({ searchParams }: { searchParams: Promise<{ session_id: string }> }) {

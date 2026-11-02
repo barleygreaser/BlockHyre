@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Star, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Anchor, ShieldAlert, Cpu } from "lucide-react";
 
 export default function AboutPage() {

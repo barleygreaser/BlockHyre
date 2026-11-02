@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/app/components/ui/button";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MessageCircle, Calendar, Clock, Info, Wrench } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
@@ -14,7 +14,7 @@ import {
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@/app/components/ui/tooltip";
+} from "@/components/ui/tooltip";
 import {
     Empty,
     EmptyContent,
@@ -22,8 +22,8 @@ import {
     EmptyHeader,
     EmptyMedia,
     EmptyTitle,
-} from "@/app/components/ui/empty";
-import { Skeleton } from "@/app/components/ui/skeleton";
+} from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // ⚡ Bolt Optimization: Pre-initialize formatters at module level to avoid recreation during map/render loops
 const currencyFormatter = new Intl.NumberFormat('en-US', {

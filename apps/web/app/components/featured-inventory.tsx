@@ -5,9 +5,9 @@ import { FeaturedToolCard } from "./featured-tool-card";
 import { CategoryFilter } from "./category-filter";
 import { Listing } from "@/app/hooks/use-marketplace";
 import { MapPin, Search, Globe } from "lucide-react";
-import { Input } from "@/app/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/app/context/auth-context";
-import { Skeleton } from "@/app/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FeaturedInventoryProps {
     onRentClick: () => void;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { MapPin, Check, Loader2, Navigation } from "lucide-react";
 import { cn } from "@/lib/utils";
 

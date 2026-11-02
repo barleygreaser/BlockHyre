@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Scale, Gavel, FileText, Lock, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export default function DisputesPage() {

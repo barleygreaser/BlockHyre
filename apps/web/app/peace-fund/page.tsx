@@ -4,7 +4,7 @@ import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Shield, Users, AlertOctagon, CheckCircle2, Zap, Search } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function PeaceFundPage() {
     return (

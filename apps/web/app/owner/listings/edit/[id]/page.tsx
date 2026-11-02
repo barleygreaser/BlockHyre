@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams, notFound } from "next/navigation";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
     ChevronLeft,
     Save,
@@ -30,14 +30,14 @@ import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
 import { cn, generateSlug } from "@/lib/utils";
 import { toast } from "sonner";
-import { ImageUpload } from "@/app/components/ui/image-upload";
-import { Switch } from "@/app/components/ui/switch";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { Switch } from "@/components/ui/switch";
 import { EditListingSpecs, ListingSpecValue } from "@/app/components/listings/edit-listing-specs";
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ListingCalendar } from "@/app/components/listings/listing-calendar";
 import { ImageManagerModal } from "@/app/components/listings/image-manager-modal";
-// import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
+// import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import {
@@ -47,18 +47,18 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Input } from "@/app/components/ui/input";
-import { Textarea } from "@/app/components/ui/textarea";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/app/components/ui/select";
-import { Label } from "@/app/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Sections for Sidebar
 const SECTIONS = [

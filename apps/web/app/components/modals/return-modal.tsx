@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Camera, CheckCircle, Upload, X, Loader2, AlertCircle, ArrowLeftRight } from "lucide-react";
 import { uploadReturnPhotos, initiateReturn } from "@/lib/handover-service";
 import Image from "next/image";
@@ -262,6 +262,7 @@ export function ReturnModal({
                                     <div className="relative flex items-center h-5 mt-1 border-2 border-[#333333]">
                                         <input
                                             type="checkbox"
+                                            data-testid="return-confirm-checkbox"
                                             checked={returnConfirmed}
                                             onChange={(e) => setReturnConfirmed(e.target.checked)}
                                             className="h-4 w-4 appearance-none checked:bg-safety-orange cursor-pointer"
@@ -334,6 +335,7 @@ export function ReturnModal({
                         {step === 2 && (
                             <Button
                                 onClick={handleComplete}
+                                data-testid="submit-return-btn"
                                 disabled={!returnConfirmed || completing}
                                 className="bg-safety-orange hover:bg-[#e66000] text-white font-bold h-10 px-6 rounded-none transition-all duration-200 shadow-[0_4px_0_0_#b34b00] hover:shadow-[0_6px_0_0_#b34b00] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
                             >

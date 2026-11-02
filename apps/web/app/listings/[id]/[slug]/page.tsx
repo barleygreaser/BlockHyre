@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Calendar } from "@/app/components/ui/calendar"; // Keep if needed for types or just remove? 
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar"; // Keep if needed for types or just remove? 
 import { ListingCalendar } from "@/app/components/listings/listing-calendar";
 import {
     MapPin,
@@ -37,7 +37,7 @@ import {
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@/app/components/ui/tooltip";
+} from "@/components/ui/tooltip";
 import { useAuth } from "@/app/context/auth-context";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { calculateDistance } from "@/lib/location";
@@ -632,6 +632,7 @@ export default function ListingDetailsPage() {
                                         {listing.booking_type === 'request' ? (
                                             <Button
                                                 onClick={handleRequestToRent}
+                                                data-testid="request-to-rent-btn"
                                                 className="w-full h-12 text-lg font-bold bg-safety-orange hover:bg-safety-orange/90 text-white"
                                             >
                                                 Request to Rent

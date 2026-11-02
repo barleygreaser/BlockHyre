@@ -3,7 +3,7 @@
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { useCart } from "@/app/context/cart-context";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { calculateRentalPrice } from "@/lib/pricing";

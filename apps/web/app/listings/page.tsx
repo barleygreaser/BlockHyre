@@ -5,8 +5,8 @@ import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { ToolCard, Tool } from "@/app/components/tool-card";
 import { MobileToolCard } from "@/app/components/mobile-tool-card";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Coordinates } from "@/lib/location";
 import dynamic from 'next/dynamic';
 
@@ -22,21 +22,21 @@ const SortDrawer = dynamic(() => import('@/app/components/inventory/sort-drawer'
 import { Search, Filter, X, Zap, Shield, ArrowUpDown, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarketplace } from "@/app/hooks/use-marketplace";
-import { InventorySkeleton } from "@/app/components/ui/inventory-skeleton";
-import { Skeleton } from "@/app/components/ui/skeleton";
-import { Input } from "@/app/components/ui/input";
+import { InventorySkeleton } from "@/components/ui/inventory-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/app/components/ui/select";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Label } from "@/app/components/ui/label";
-import { Switch } from "@/app/components/ui/switch";
-import { Slider } from "@/app/components/ui/slider";
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 
 import { useAuth } from "@/app/context/auth-context";
 import { useMediaQuery } from "@/app/hooks/use-media-query";

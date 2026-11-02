@@ -50,7 +50,7 @@ export function MessagesCenter() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div data-testid="messages-center" className="min-h-screen bg-slate-50">
             <Navbar />
 
             <div className="container mx-auto px-4 py-6 max-w-7xl">

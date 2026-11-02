@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { memo } from "react";
-import { Card } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { FavoriteButton } from "@/app/components/favorite-button";
 import { MapPin, AlertTriangle, Zap, Star } from "lucide-react";
 import { cn, generateSlug } from "@/lib/utils";
@@ -34,7 +34,7 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
     const hasReviews = (tool.ownerReviewCount ?? 0) > 0;
 
     return (
-        <Card className="relative overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-200 flex flex-col h-full group">
+        <Card data-testid="tool-card" className="relative overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-200 flex flex-col h-full group">
             <div className="aspect-video w-full bg-slate-100 relative">
                 <Image
                     src={tool.image}
@@ -50,7 +50,7 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                 />
                 <div className="absolute top-3 right-3 flex flex-col gap-1 items-end pointer-events-none">
                     {tool.instantBook && (
-                        <Badge className="bg-yellow-500 text-white flex items-center gap-1 border-none animate-glow pointer-events-auto px-1.5 py-0.5 text-[10px]">
+                        <Badge data-testid="instant-badge" className="bg-yellow-500 text-white flex items-center gap-1 border-none animate-glow pointer-events-auto px-1.5 py-0.5 text-[10px]">
                             <Zap className="h-3 w-3 fill-white" />
                             Instant
                         </Badge>

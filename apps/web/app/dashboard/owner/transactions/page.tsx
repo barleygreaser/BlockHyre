@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
     ArrowLeft,
     DollarSign,
@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { supabase } from "@/lib/supabase";
-import { Skeleton } from "@/app/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Empty,
     EmptyDescription,
@@ -26,7 +26,7 @@ import {
     EmptyMedia,
     EmptyTitle,
     EmptyContent,
-} from "@/app/components/ui/empty";
+} from "@/components/ui/empty";
 
 interface StripeBalance {
     available: number;

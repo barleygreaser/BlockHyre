@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { MapPin, ChevronDown, Loader2 } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { useDebounce } from "@/app/hooks/use-debounce";

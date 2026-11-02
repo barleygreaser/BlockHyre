@@ -1,5 +1,5 @@
-import { Skeleton } from "@/app/components/ui/skeleton";
-import { Card } from "@/app/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 export function InventorySkeleton() {
     return (

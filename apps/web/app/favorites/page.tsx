@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { FavoriteButton } from "@/app/components/favorite-button";
 import { useFavorites, FavoriteListing } from "@/app/hooks/use-favorites";
 import { useAuth } from "@/app/context/auth-context";

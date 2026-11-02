@@ -17,6 +17,7 @@ export const ConversationListItem = memo(({ chat, isSelected, onSelect }: Conver
     return (
         <button
             onClick={() => onSelect(chat.id)}
+            data-testid="conversation-item"
             className={cn(
                 "w-full p-4 transition-colors text-left hover:bg-slate-50",
                 isSelected && "bg-slate-100"

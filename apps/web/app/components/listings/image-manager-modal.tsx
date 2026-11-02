@@ -25,10 +25,10 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { ImageUpload } from "@/app/components/ui/image-upload";
-import { Badge } from "@/app/components/ui/badge";
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { Badge } from "@/components/ui/badge";
 import { Trash2, GripVertical, Upload, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
