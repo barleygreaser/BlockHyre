@@ -141,9 +141,10 @@ export function OwnerDashboardView() {
                     });
                 }
 
-                const { data: overdueData, error: overdueError } = await supabase
+                // ⚡ Bolt: Use head: true to only fetch the count and avoid downloading rows
+                const { count: overdueCount, error: overdueError } = await supabase
                     .from('rentals')
-                    .select('id, listing:listings!inner(owner_id)')
+                    .select('id, listing:listings!inner(owner_id)', { count: 'exact', head: true })
                     .eq('listings.owner_id', user.id)
                     .in('status', ['active', 'approved', 'Active', 'Approved'])
                     .lt('end_date', new Date().toISOString());
@@ -151,7 +152,7 @@ export function OwnerDashboardView() {
                 if (overdueError) {
                     console.error("Error fetching overdue count:", overdueError);
                 } else {
-                    setOverdueCount(overdueData?.length || 0);
+                    setOverdueCount(overdueCount || 0);
                 }
             } catch (error) {
                 console.error("Error fetching owner KPIs:", error);

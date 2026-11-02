@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2025-03-02 - Supabase Optimizing Row Count Queries
+**Learning:** Performing a `.select()` query in Supabase and only using the `.length` property from the returned array causes PostgREST to fetch and serialize all matching rows over the network, wasting bandwidth and memory on both client and server.
+**Action:** When you only need the count of records that match a condition, always use the `{ count: 'exact', head: true }` parameter in the `.select()` query (e.g. `.select('id', { count: 'exact', head: true })`). This leverages the HTTP HEAD method to only retrieve the count without fetching the actual row data. Note: If you need to filter on a joined table, you must include the inner join path in the select string (e.g., `.select('id, foreign_table!inner(id)', { count: 'exact', head: true })`) even if you don't need its data.
