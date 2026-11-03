@@ -1,3 +1,4 @@
+import { emailFontFamilies } from '@repo/tokens';
 import {
     Body,
     Container,
@@ -71,7 +72,7 @@ export default PasswordResetEmail;
 
 const main = {
     backgroundColor: '#F8FAFC',
-    fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+    fontFamily: emailFontFamilies.sans,
 };
 
 const container = {
@@ -90,7 +91,7 @@ const header = {
 const logoText = {
     color: '#F06449', // Use the safety orange brand color
     fontSize: '24px',
-    fontFamily: '"Bebas Neue", impact, sans-serif',
+    fontFamily: emailFontFamilies.display,
     fontWeight: 'bold',
     letterSpacing: '2px',
     margin: '0',
