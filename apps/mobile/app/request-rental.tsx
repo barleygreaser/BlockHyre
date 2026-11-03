@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import {
     View,
@@ -195,7 +196,7 @@ function RequestRentalContent() {
         showToast({
             title: 'Date Unavailable',
             subtitle: `${formattedDate} is blocked by the owner.`,
-            leading: () => <AlertCircle size={20} color="#FF6700" />,
+            leading: () => <AlertCircle size={20} color={brandColors.safetyOrange} />,
             autodismiss: true,
         });
     }, [showToast]);
@@ -259,7 +260,7 @@ function RequestRentalContent() {
                 showToast({
                     title: 'Selection Unavailable',
                     subtitle: 'Selected range includes blocked dates.',
-                    leading: () => <AlertCircle size={20} color="#FF6700" />,
+                    leading: () => <AlertCircle size={20} color={brandColors.safetyOrange} />,
                     autodismiss: true,
                 });
                 setPickupDate(date);
@@ -348,7 +349,7 @@ function RequestRentalContent() {
                                 <Text style={[styles.dateValueLarge, isDark && styles.dateValueLargeDark]}>
                                     {formatDate(pickupDate)}
                                 </Text>
-                                {activeField === 'pickup' && <CalendarIcon size={18} color="#FF6700" />}
+                                {activeField === 'pickup' && <CalendarIcon size={18} color={brandColors.electricIndigo} />}
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -368,7 +369,7 @@ function RequestRentalContent() {
                                 <Text style={[styles.dateValueLarge, isDark && styles.dateValueLargeDark]}>
                                     {formatDate(returnDate)}
                                 </Text>
-                                {activeField === 'return' && <CalendarIcon size={18} color="#FF6700" />}
+                                {activeField === 'return' && <CalendarIcon size={18} color={brandColors.electricIndigo} />}
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -423,9 +424,9 @@ function RequestRentalContent() {
                 <View style={[styles.summaryCard, isDark && styles.summaryCardDark]}>
                     <View style={styles.timelineContainer}>
                         <View style={styles.timelineLeft}>
-                            <View style={styles.timelineDot}><CalendarIcon size={14} color="#FF6700" /></View>
+                            <View style={styles.timelineDot}><CalendarIcon size={14} color={brandColors.electricIndigo} /></View>
                             <View style={[styles.timelineLine, isDark && styles.timelineLineDark]} />
-                            <View style={styles.timelineDot}><RotateCcw size={14} color="#FF6700" /></View>
+                            <View style={styles.timelineDot}><RotateCcw size={14} color={brandColors.electricIndigo} /></View>
                         </View>
                         <View style={styles.timelineRight}>
                             <View style={styles.timelineItem}>
@@ -446,7 +447,7 @@ function RequestRentalContent() {
                 <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Pickup & Return</Text>
                 <View style={[styles.summaryCard, isDark && styles.summaryCardDark, { gap: 10 }]}>
                     <View style={{ flexDirection: 'row', gap: 12 }}>
-                        <MapPin size={24} color="#FF6700" />
+                        <MapPin size={24} color={brandColors.electricIndigo} />
                         <View style={{ flex: 1 }}>
                             <Text style={[styles.summaryToolTitle, isDark && styles.summaryToolTitleDark, { fontSize: 16 }]}>Neighborhood View</Text>
                             <Text style={[styles.ownerName, isDark && styles.ownerNameDark, { marginTop: 2, fontSize: 13 }]}>Specific address sent upon confirmation.</Text>
@@ -677,17 +678,17 @@ const styles = StyleSheet.create({
         borderRadius: 34,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#FF6700',
+        shadowColor: brandColors.electricIndigo,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 6,
     },
     successCircleLight: {
-        backgroundColor: '#FF6700',
+        backgroundColor: brandColors.electricIndigo,
     },
     successCircleDark: {
-        backgroundColor: '#FF6700',
+        backgroundColor: brandColors.electricIndigo,
     },
     container: {
         flex: 1,
@@ -752,7 +753,7 @@ const styles = StyleSheet.create({
     resetText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#FF6700',
+        color: brandColors.midnightNavy,
     },
 
     // Scroll View
@@ -782,10 +783,10 @@ const styles = StyleSheet.create({
         borderColor: '#334155',
     },
     dateInputActive: {
-        borderColor: '#FF6700',
+        borderColor: brandColors.electricIndigo,
         ...Platform.select({
             ios: {
-                shadowColor: '#FF6700',
+                shadowColor: brandColors.electricIndigo,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.2,
                 shadowRadius: 8,
@@ -900,17 +901,17 @@ const styles = StyleSheet.create({
     finalPrice: {
         fontSize: 24,
         fontWeight: '700',
-        color: '#FF6700',
+        color: brandColors.midnightNavy,
     },
     continueButton: {
-        backgroundColor: '#FF6700',
+        backgroundColor: brandColors.electricIndigo,
         paddingVertical: 16,
-        borderRadius: 14,
+        borderRadius: radii.default,
         alignItems: 'center',
         justifyContent: 'center',
         ...Platform.select({
             ios: {
-                shadowColor: '#FF6700',
+                shadowColor: brandColors.electricIndigo,
                 shadowOffset: { width: 0, height: 6 },
                 shadowOpacity: 0.35,
                 shadowRadius: 12,
@@ -986,7 +987,7 @@ const styles = StyleSheet.create({
     timelineDot: {
         width: 28,
         height: 28,
-        borderRadius: 14,
+        borderRadius: radii.default,
         backgroundColor: 'rgba(255, 103, 0, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
@@ -1098,7 +1099,7 @@ const styles = StyleSheet.create({
     summaryTotalValue: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#FF6700',
+        color: brandColors.midnightNavy,
     },
     secureBadge: {
         flexDirection: 'row',
@@ -1233,7 +1234,7 @@ const styles = StyleSheet.create({
     receiptTotalValue: {
         fontSize: 24,
         fontWeight: '700',
-        color: '#FF6700',
+        color: brandColors.midnightNavy,
     },
     confirmationActions: {
         width: '100%',
@@ -1243,7 +1244,7 @@ const styles = StyleSheet.create({
     },
     secondaryButton: {
         paddingVertical: 16,
-        borderRadius: 14,
+        borderRadius: radii.default,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,

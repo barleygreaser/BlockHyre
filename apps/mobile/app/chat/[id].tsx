@@ -1,3 +1,4 @@
+import { brandColors } from '@/constants/theme';
 import React, { useState, useCallback, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
@@ -44,7 +45,7 @@ function GiftedChatWrapper({ messages, onSend, user }: any) {
                 {...props}
                 wrapperStyle={{
                     right: {
-                        backgroundColor: '#FF6700', // BlockHyre Orange
+                        backgroundColor: brandColors.electricIndigo,
                     },
                     left: {
                         backgroundColor: '#F3F4F6',

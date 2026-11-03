@@ -1,3 +1,4 @@
+import { brandColors } from '@/constants/theme';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -90,7 +91,7 @@ export default function SettingsScreen() {
                 <Switch
                     value={isToggled}
                     onValueChange={onToggle}
-                    trackColor={{ false: '#E2E8F0', true: '#FF6700' }}
+                    trackColor={{ false: '#E2E8F0', true: brandColors.electricIndigo }}
                     thumbColor={'#FFFFFF'}
                 />
             ) : (

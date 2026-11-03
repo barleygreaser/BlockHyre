@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     View,
@@ -136,7 +137,7 @@ export default function FavoritesScreen() {
                             handleRemoveFavorite(item.id, listing.id);
                         }}
                     >
-                        <Heart size={20} color="#FF6700" fill="#FF6700" />
+                        <Heart size={20} color={brandColors.safetyOrange} fill={brandColors.safetyOrange} />
                     </TouchableOpacity>
                 </View>
 
@@ -169,7 +170,7 @@ export default function FavoritesScreen() {
                     if (router.canDismiss()) {
                         router.dismiss();
                     }
-                    router.replace('/(tabs)/');
+                    router.replace('/(tabs)' as any);
                 }}
             >
                 <Text style={styles.exploreButtonText}>Explore Tools</Text>
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
     imageContainer: {
         width: '100%',
         aspectRatio: 1,
-        borderRadius: 16,
+        borderRadius: radii.card,
         overflow: 'hidden',
         backgroundColor: '#F3F4F6',
         marginBottom: 12,
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
     cardPrice: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#FF6700',
+        color: brandColors.midnightNavy,
     },
     cardPriceSuffix: {
         fontSize: 12,
@@ -325,10 +326,10 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     exploreButton: {
-        backgroundColor: '#FF6700',
+        backgroundColor: brandColors.electricIndigo,
         paddingHorizontal: 24,
         paddingVertical: 12,
-        borderRadius: 100,
+        borderRadius: radii.full,
     },
     exploreButtonText: {
         color: '#FFF',

@@ -18,7 +18,7 @@ export default function OnboardingPermissions() {
             if (router.canDismiss()) {
                 router.dismiss();
             }
-            router.replace('/(tabs)/');
+            router.replace('/(tabs)' as any);
         };
 
         try {

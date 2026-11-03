@@ -1,3 +1,4 @@
+import { brandColors } from '@/constants/theme';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert, ActivityIndicator, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -15,7 +16,7 @@ import BottomSheet, {
 
 // Brand Colors
 const COLORS = {
-    primary: '#2563EB',
+    primary: brandColors.electricIndigo,
     background: '#FFFFFF',
     text: '#0F172A',
     textSecondary: '#64748B',

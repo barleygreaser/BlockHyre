@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { useState, useRef } from 'react';
 import { Image } from 'expo-image';
 import {
@@ -483,7 +484,7 @@ export default function ListingDetailScreen() {
             <View style={[styles.container, isDark && styles.containerDark, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
                 <Text style={[styles.title, isDark && styles.titleDark, { textAlign: 'center' }]}>Listing Not Found</Text>
                 <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 20, padding: 10 }}>
-                    <Text style={{ color: '#FF6700', fontSize: 16 }}>Go Back</Text>
+                    <Text style={{ color: brandColors.electricIndigo, fontSize: 16 }}>Go Back</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -707,9 +708,9 @@ export default function ListingDetailScreen() {
                                 {isExpanded ? 'Read less' : 'Read more'}
                             </Text>
                             {isExpanded ? (
-                                <ChevronUp size={16} color="#FF6700" />
+                                <ChevronUp size={16} color={brandColors.electricIndigo} />
                             ) : (
-                                <ChevronDown size={16} color="#FF6700" />
+                                <ChevronDown size={16} color={brandColors.electricIndigo} />
                             )}
                         </TouchableOpacity>
                     </View>
@@ -748,7 +749,7 @@ export default function ListingDetailScreen() {
                                     <Text style={[styles.dateValueLarge, isDark && styles.dateValueLargeDark]}>
                                         {dateRange.start ? moment(dateRange.start).format('MMM D') : 'Select'}
                                     </Text>
-                                    <CalendarIcon size={18} color="#FF6700" />
+                                    <CalendarIcon size={18} color={brandColors.electricIndigo} />
                                 </View>
                             </TouchableOpacity>
 
@@ -767,7 +768,7 @@ export default function ListingDetailScreen() {
                                     <Text style={[styles.dateValueLarge, isDark && styles.dateValueLargeDark]}>
                                         {dateRange.end ? moment(dateRange.end).format('MMM D') : 'Select'}
                                     </Text>
-                                    <CalendarIcon size={18} color="#FF6700" />
+                                    <CalendarIcon size={18} color={brandColors.electricIndigo} />
                                 </View>
                             </TouchableOpacity>
                         </View>
@@ -829,8 +830,8 @@ export default function ListingDetailScreen() {
                 }
                 buttonColor={
                     (dateRange.start && dateRange.end)
-                        ? "#FF6700"
-                        : "#FFB380"
+                        ? brandColors.electricIndigo
+                        : brandColors.periwinkleBlue
                 }
             />
         </View >
@@ -1091,7 +1092,7 @@ const styles = StyleSheet.create({
     viewProfileLink: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#FF6700',
+        color: brandColors.midnightNavy,
     },
 
     // Description Section
@@ -1158,10 +1159,10 @@ const styles = StyleSheet.create({
         borderColor: '#334155',
     },
     dateInputActive: {
-        borderColor: '#FF6700',
+        borderColor: brandColors.electricIndigo,
         ...Platform.select({
             ios: {
-                shadowColor: '#FF6700',
+                shadowColor: brandColors.electricIndigo,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.2,
                 shadowRadius: 8,
@@ -1172,7 +1173,7 @@ const styles = StyleSheet.create({
         }),
     },
     dateInputFocused: {
-        borderColor: '#FF6700',
+        borderColor: brandColors.electricIndigo,
         borderWidth: 2,
         backgroundColor: '#FFF7ED',
         transform: [{ scale: 1.02 }],

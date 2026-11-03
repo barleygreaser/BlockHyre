@@ -33,7 +33,7 @@ export default function OnboardingWelcome() {
     if (router.canDismiss()) {
       router.dismiss();
     }
-    router.replace('/(tabs)/');
+    router.replace('/(tabs)' as any);
   };
 
   return (

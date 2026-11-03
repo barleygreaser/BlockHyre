@@ -1,3 +1,4 @@
+import { brandColors } from '@/constants/theme';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, Alert, ActivityIndicator, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -22,7 +23,7 @@ export default function OnboardingSignup() {
         if (router.canDismiss()) {
             router.dismiss();
         }
-        router.replace('/(tabs)/');
+        router.replace('/(tabs)' as any);
     };
 
     const handleLoginNavigation = () => {
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     primaryButton: {
-        backgroundColor: '#2563EB',
+        backgroundColor: brandColors.electricIndigo,
     },
     primaryButtonText: {
         color: '#FFFFFF',
