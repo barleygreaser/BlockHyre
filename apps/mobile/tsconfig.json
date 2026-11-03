@@ -2,16 +2,28 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "skipLibCheck": true,
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "react-native-gifted-chat": [
+        "./types/react-native-gifted-chat.d.ts"
       ]
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*",
+    "components/**/*",
+    "constants/**/*",
+    "hooks/**/*",
+    "lib/**/*",
+    "types/**/*",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "../../node_modules"
   ]
 }
