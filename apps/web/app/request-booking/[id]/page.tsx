@@ -291,7 +291,7 @@ export default function RequestBookingPage() {
                                             className="h-8 w-8 rounded-full object-cover bg-slate-100"
                                         />
                                     ) : (
-                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-safety-orange to-orange-600 flex items-center justify-center font-bold text-white text-xs">
+                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-electric-indigo to-midnight-navy flex items-center justify-center font-bold text-white text-xs">
                                             {listing.owner?.full_name ? listing.owner.full_name.charAt(0).toUpperCase() : 'O'}
                                         </div>
                                     )}

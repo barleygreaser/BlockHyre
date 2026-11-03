@@ -103,7 +103,7 @@ export default function CartPage() {
                                         <span>Peace Fund Contributions</span>
                                         <span className="font-mono font-semibold">${peaceFundTotal.toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-between text-safety-orange font-medium">
+                                    <div className="flex justify-between text-midnight-navy font-medium">
                                         <span>Refundable Deposits</span>
                                         <span>${depositTotal.toFixed(2)}</span>
                                     </div>

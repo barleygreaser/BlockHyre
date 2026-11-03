@@ -157,7 +157,7 @@ export default function CheckoutPage() {
                                     <span>Peace Fund</span>
                                     <span className="font-mono font-semibold">${peaceFundTotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-safety-orange font-mono font-semibold text-sm">
+                                <div className="flex justify-between text-midnight-navy font-mono font-semibold text-sm">
                                     <span>Deposits</span>
                                     <span>${depositTotal.toFixed(2)}</span>
                                 </div>

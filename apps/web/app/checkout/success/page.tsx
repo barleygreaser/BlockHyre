@@ -48,8 +48,8 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
                         {/* Header Section */}
                         <div className="bg-midnight-navy p-8 text-center relative overflow-hidden">
                             {/* Abstract decorative circles */}
-                            <div className="absolute -top-24 -left-24 w-64 h-64 bg-safety-orange/10 rounded-full blur-3xl" />
-                            <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-safety-orange/5 rounded-full blur-3xl" />
+                            <div className="absolute -top-24 -left-24 w-64 h-64 bg-electric-indigo/10 rounded-full blur-3xl" />
+                            <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-electric-indigo/5 rounded-full blur-3xl" />
 
                             <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-500 rounded-full mb-4 relative z-10 animate-in zoom-in duration-500">
                                 <CheckCircle className="w-12 h-12 text-white" />
@@ -115,7 +115,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
                             </div>
 
                             <p className="text-center text-xs text-slate-400">
-                                Need help? Contact us at <a href="mailto:support@blockhyre.com" className="text-safety-orange hover:underline">support@blockhyre.com</a>
+                                Need help? Contact us at <a href="mailto:support@blockhyre.com" className="text-electric-indigo hover:underline">support@blockhyre.com</a>
                             </p>
                         </div>
                     </div>

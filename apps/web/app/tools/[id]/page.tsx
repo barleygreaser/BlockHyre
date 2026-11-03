@@ -320,7 +320,7 @@ export default function ToolDetailsPage() {
                                         </div>
                                     ) : (
                                         <>
-                                            <span className="text-3xl font-bold text-safety-orange">${listing.daily_price}</span>
+                                            <span className="text-3xl font-bold text-midnight-navy">${listing.daily_price}</span>
                                             <span className="text-sm">/day</span>
                                         </>
                                     )}
@@ -360,7 +360,7 @@ export default function ToolDetailsPage() {
                                         </span>
                                         <span className="font-mono font-semibold text-slate-900">${peaceFundTotal.toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-between text-sm font-bold text-safety-orange">
+                                    <div className="flex justify-between text-sm font-bold text-midnight-navy">
                                         <span>Refundable Deposit</span>
                                         <span>${deposit.toFixed(2)}</span>
                                     </div>
@@ -377,7 +377,7 @@ export default function ToolDetailsPage() {
                                         <div className="grid grid-cols-2 gap-3">
                                             <Button
                                                 onClick={handleRentNow}
-                                                className="w-full h-12 text-base font-bold bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                                className="w-full h-12 text-base font-bold bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive"
                                             >
                                                 Rent Now
                                             </Button>
@@ -392,7 +392,7 @@ export default function ToolDetailsPage() {
                                     ) : (
                                         <Button
                                             onClick={handleRequestToRent}
-                                            className="w-full h-12 text-lg font-bold bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                            className="w-full h-12 text-lg font-bold bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive"
                                         >
                                             Request to Rent
                                         </Button>

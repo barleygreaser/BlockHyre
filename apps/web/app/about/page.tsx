@@ -13,18 +13,18 @@ export default function AboutPage() {
             <Navbar />
 
             {/* Hero Section: Charcoal Background */}
-            <section className="relative bg-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b-2 border-safety-orange -mt-20">
+            <section className="relative bg-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b border-white/10 -mt-20">
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-workshop-gray via-charcoal to-charcoal pointer-events-none" />
 
                 <div className="relative max-w-5xl mx-auto flex flex-col items-center z-10 text-center">
                     <div className="flex items-center gap-3 font-mono text-sm uppercase tracking-widest text-concrete border border-workshop-gray px-4 py-2 bg-charcoal-light mb-8">
-                        <div className="w-2 h-2 bg-safety-orange rounded-full animate-pulse-operational shadow-[0_0_8px_rgba(255,107,0,0.8)]" />
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse-operational shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
                         <span>System Architecture</span>
                     </div>
 
                     <h1 className="text-6xl md:text-8xl font-display uppercase tracking-tight mb-6 text-center leading-none">
                         About <br />
-                        <span className="text-safety-orange">BlockHyre.</span>
+                        <span className="text-electric-indigo">BlockHyre.</span>
                     </h1>
                     <p className="text-xl md:text-2xl font-sans font-light text-concrete text-center max-w-3xl mb-12">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
@@ -40,10 +40,10 @@ export default function AboutPage() {
                         {/* Photo Placeholder Area */}
                         <div className="w-full md:w-1/2 relative min-h-[500px] spec-card bg-concrete-dark/10 border-2 border-charcoal flex items-center justify-center overflow-hidden group">
                             {/* Target Corners */}
-                            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-safety-orange opacity-50 m-4" />
-                            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-safety-orange opacity-50 m-4" />
-                            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-safety-orange opacity-50 m-4" />
-                            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-safety-orange opacity-50 m-4" />
+                            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-electric-indigo opacity-50 m-4" />
+                            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-electric-indigo opacity-50 m-4" />
+                            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-electric-indigo opacity-50 m-4" />
+                            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-electric-indigo opacity-50 m-4" />
 
                             {/* ADD CREATOR PHOTO HERE */}
                             {/* <Image src="/path/to/creator-photo.jpg" alt="Creator Name" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-500" /> */}
@@ -58,13 +58,13 @@ export default function AboutPage() {
                         {/* Text Area */}
                         <div className="w-full md:w-1/2 flex flex-col justify-center space-y-8">
                             <div>
-                                <div className="font-mono text-sm uppercase tracking-widest text-safety-orange mb-4">About</div>
+                                <div className="font-mono text-sm uppercase tracking-widest text-electric-indigo mb-4">About</div>
                                 <h2 className="text-5xl md:text-6xl font-display uppercase tracking-tight text-charcoal mb-4">
                                     Christopher Robinson
                                 </h2>
                             </div>
 
-                            <div className="font-sans text-xl text-workshop-gray space-y-6 border-l-4 border-safety-orange pl-6">
+                            <div className="font-sans text-xl text-workshop-gray space-y-6 border-l-4 border-electric-indigo pl-6">
                                 <p>
                                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.
                                 </p>
@@ -96,8 +96,8 @@ export default function AboutPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
                         {/* Directive 1 */}
-                        <div className="bg-charcoal-light border border-workshop-gray p-8 spec-card hover:border-safety-orange transition-colors group">
-                            <div className="w-12 h-12 bg-charcoal border border-safety-orange flex items-center justify-center text-safety-orange mb-6 shadow-[0_0_15px_rgba(255,107,0,0.1)]">
+                        <div className="bg-charcoal-light border border-workshop-gray p-8 spec-card hover:border-electric-indigo transition-colors group">
+                            <div className="w-12 h-12 bg-charcoal border border-electric-indigo flex items-center justify-center text-electric-indigo mb-6 shadow-[0_0_15px_rgba(255,107,0,0.1)]">
                                 <Anchor className="w-6 h-6" />
                             </div>
                             <h3 className="font-display text-3xl uppercase tracking-tight text-signal-white mb-4">Base Reliability</h3>
@@ -107,8 +107,8 @@ export default function AboutPage() {
                         </div>
 
                         {/* Directive 2 */}
-                        <div className="bg-charcoal-light border border-workshop-gray p-8 spec-card hover:border-safety-orange transition-colors group">
-                            <div className="w-12 h-12 bg-charcoal border border-safety-orange flex items-center justify-center text-safety-orange mb-6 shadow-[0_0_15px_rgba(255,107,0,0.1)]">
+                        <div className="bg-charcoal-light border border-workshop-gray p-8 spec-card hover:border-electric-indigo transition-colors group">
+                            <div className="w-12 h-12 bg-charcoal border border-electric-indigo flex items-center justify-center text-electric-indigo mb-6 shadow-[0_0_15px_rgba(255,107,0,0.1)]">
                                 <ShieldAlert className="w-6 h-6" />
                             </div>
                             <h3 className="font-display text-3xl uppercase tracking-tight text-signal-white mb-4">Absolute Security</h3>
@@ -121,7 +121,7 @@ export default function AboutPage() {
             </section>
 
             {/* CTA Terminal */}
-            <section className="py-24 px-6 bg-safety-orange text-charcoal relative overflow-hidden text-center">
+            <section className="py-24 px-6 bg-electric-indigo text-white relative overflow-hidden text-center">
                 <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #1A1A1A 0, #1A1A1A 4px, transparent 4px, transparent 16px)' }} />
 
                 <div className="relative max-w-4xl mx-auto z-10 flex flex-col items-center">
@@ -130,7 +130,7 @@ export default function AboutPage() {
                     </h2>
                     <div className="flex justify-center w-full">
                         <Link href="/listings" className="w-full sm:w-auto">
-                            <Button size="lg" className="w-full sm:w-auto bg-charcoal text-signal-white hover:bg-black font-bold uppercase tracking-widest px-10 py-8 text-lg rounded-none magnetic-btn shadow-[8px_8px_0_rgba(255,255,255,0.4)] border-2 border-charcoal">
+                            <Button size="lg" className="w-full sm:w-auto bg-charcoal text-signal-white hover:bg-black font-bold uppercase tracking-widest px-10 py-8 text-lg rounded-interactive magnetic-btn shadow-[8px_8px_0_rgba(255,255,255,0.4)] border-2 border-charcoal">
                                 Find Tools in Your Neighborhood
                             </Button>
                         </Link>

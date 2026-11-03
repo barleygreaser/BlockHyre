@@ -16,7 +16,7 @@ export default function DisputesPage() {
                 <div className="container mx-auto px-4 relative z-10 text-center max-w-3xl">
                     <div className="mb-6 flex justify-center">
                         <div className="h-16 w-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                            <Scale className="h-8 w-8 text-safety-orange" />
+                            <Scale className="h-8 w-8 text-electric-indigo" />
                         </div>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">The Dispute Tribunal</h1>
@@ -61,7 +61,7 @@ export default function DisputesPage() {
                             <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 mx-auto md:mx-0">
                                 {idx + 1}
                             </div>
-                            <step.icon className="h-8 w-8 text-safety-orange mb-4" />
+                            <step.icon className="h-8 w-8 text-electric-indigo mb-4" />
                             <h3 className="font-bold text-lg text-slate-900 mb-2">{step.title}</h3>
                             <p className="text-sm text-slate-600">{step.desc}</p>
                         </div>
@@ -84,7 +84,7 @@ export default function DisputesPage() {
                             </p>
 
                             <div className="mb-6">
-                                <Link href="/peace-fund" className="text-safety-orange font-bold hover:underline inline-flex items-center gap-1">
+                                <Link href="/peace-fund" className="text-electric-indigo font-bold hover:underline inline-flex items-center gap-1">
                                     Read detailed breakdown of the Peace Fund &rarr;
                                 </Link>
                             </div>
@@ -95,7 +95,7 @@ export default function DisputesPage() {
                                     "Protects against theft during verified rentals",
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3">
-                                        <CheckCircle2 className="h-5 w-5 text-safety-orange flex-shrink-0" />
+                                        <CheckCircle2 className="h-5 w-5 text-electric-indigo flex-shrink-0" />
                                         <span className="text-slate-700 font-medium">{item}</span>
                                     </li>
                                 ))}
@@ -132,7 +132,7 @@ export default function DisputesPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link href="/my-rentals">
-                            <Button className="bg-safety-orange hover:bg-orange-600 text-white font-bold h-12 px-8">
+                            <Button className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-12 px-8 rounded-interactive">
                                 Go to My Rentals
                             </Button>
                         </Link>

@@ -89,7 +89,7 @@ export default function FavoritesPage() {
                         <div className="flex gap-3">
                             <Button
                                 onClick={() => router.push("/auth")}
-                                className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 px-8"
+                                className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-12 px-8 rounded-interactive"
                             >
                                 Sign In
                             </Button>
@@ -107,7 +107,7 @@ export default function FavoritesPage() {
                 {/* Loading State */}
                 {loading && user && (
                     <div className="flex items-center justify-center py-24">
-                        <Loader2 className="h-8 w-8 animate-spin text-safety-orange" />
+                        <Loader2 className="h-8 w-8 animate-spin text-electric-indigo" />
                     </div>
                 )}
 
@@ -125,7 +125,7 @@ export default function FavoritesPage() {
                         </p>
                         <Button
                             onClick={() => router.push("/listings")}
-                            className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 px-8"
+                            className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-12 px-8 rounded-interactive"
                         >
                             Browse Tools
                             <ArrowRight className="ml-2 h-4 w-4" />
@@ -170,7 +170,7 @@ export default function FavoritesPage() {
                                     </p>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-xl font-bold text-safety-orange">
+                                            <span className="text-xl font-bold text-midnight-navy">
                                                 ${fav.dailyPrice}
                                             </span>
                                             <span className="text-sm text-slate-500">/day</span>

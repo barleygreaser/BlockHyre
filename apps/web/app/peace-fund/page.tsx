@@ -12,7 +12,7 @@ export default function PeaceFundPage() {
             <Navbar />
 
             {/* Hero Section: Charcoal Background */}
-            <section className="relative bg-deep-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b-2 border-safety-orange -mt-20">
+            <section className="relative bg-deep-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b border-white/10 -mt-20">
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-workshop-gray via-charcoal to-charcoal pointer-events-none" />
 
                 <div className="relative max-w-5xl mx-auto flex flex-col items-center z-10">
@@ -23,7 +23,7 @@ export default function PeaceFundPage() {
 
                     <h1 className="text-6xl md:text-8xl font-display uppercase tracking-tight mb-6 text-center leading-none">
                         The Peace <br />
-                        <span className="text-safety-orange">Fund.</span>
+                        <span className="text-electric-indigo">Fund.</span>
                     </h1>
                     <p className="text-xl md:text-2xl font-sans font-light text-concrete text-center max-w-3xl mb-12">
                         A community-driven protection matrix designed to eliminate high security deposits. We pool micro-fees to cover macro risks.
@@ -31,7 +31,7 @@ export default function PeaceFundPage() {
 
                     <div className="flex flex-col sm:flex-row justify-center gap-6 items-center w-full mt-4">
                         <Link href="/listings" className="w-full sm:w-auto">
-                            <Button size="lg" className="w-full sm:w-auto bg-safety-orange hover:bg-safety-orange-hover text-signal-white font-bold px-10 py-7 text-lg rounded-interactive magnetic-btn group shadow-[0_4px_20px_rgba(255,107,0,0.3)] border border-safety-orange hover:text-white transition-all flex items-center justify-center">
+                            <Button size="lg" className="w-full sm:w-auto bg-electric-indigo hover:bg-midnight-navy text-white font-bold px-10 py-7 text-lg rounded-interactive magnetic-btn group shadow-[0_4px_20px_rgba(91,110,174,0.3)] border border-electric-indigo hover:text-white transition-all flex items-center justify-center">
                                 <Search className="w-5 h-5 mr-3" />
                                 Browse Tools
                             </Button>
@@ -46,13 +46,13 @@ export default function PeaceFundPage() {
                     <div className="flex flex-col lg:flex-row gap-16 items-center">
                         <div className="flex-1 space-y-8 animate-float-up">
                             <div>
-                                <div className="font-mono text-2xs uppercase tracking-industrial text-safety-orange mb-4">Core Philosophy</div>
+                                <div className="font-mono text-2xs uppercase tracking-industrial text-electric-indigo mb-4">Core Philosophy</div>
                                 <h2 className="text-5xl md:text-6xl font-display uppercase tracking-tight text-charcoal mb-4">
                                     The "Many Cover the Few" Protocol
                                 </h2>
                             </div>
 
-                            <div className="font-sans text-xl text-workshop-gray space-y-6 border-l-4 border-safety-orange pl-6">
+                            <div className="font-sans text-xl text-workshop-gray space-y-6 border-l-4 border-electric-indigo pl-6">
                                 <p>
                                     In a standard rental model, deploying a $2,000 piece of equipment demands a $1,000 deposit. This friction creates access barriers.
                                 </p>
@@ -71,8 +71,8 @@ export default function PeaceFundPage() {
                                 <div className="p-4 bg-charcoal border border-workshop-gray rounded-interactive">
                                     <Users className="w-8 h-8 text-signal-white" />
                                 </div>
-                                <div className="font-mono font-bold text-safety-orangetracking-widest flex items-center gap-2">
-                                    <span className="w-full h-px bg-safety-orange absolute left-0 top-1/2 -z-10" />
+                                <div className="font-mono font-bold text-electric-indigo tracking-widest flex items-center gap-2">
+                                    <span className="w-full h-px bg-electric-indigo absolute left-0 top-1/2 -z-10" />
                                     ====&gt;
                                 </div>
                                 <div className="p-4 bg-charcoal border-2 border-emerald-500 rounded-interactive shadow-[0_0_15px_rgba(16,185,129,0.3)]">
@@ -94,8 +94,8 @@ export default function PeaceFundPage() {
                                     <span>Single unit failure ($200 asset)</span>
                                 </div>
                                 <div className="flex items-center gap-4 pt-2">
-                                    <div className="w-8 h-8 rounded-subtle bg-safety-orange border border-safety-orange-hover flex items-center justify-center font-bold text-white">✔</div>
-                                    <span className="font-bold text-safety-orange uppercase tracking-wider">Fund clears liability instantly</span>
+                                    <div className="w-8 h-8 rounded-subtle bg-emerald-500 border border-emerald-600 flex items-center justify-center font-bold text-white">✔</div>
+                                    <span className="font-bold text-emerald-600 uppercase tracking-wider">Fund clears liability instantly</span>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@ export default function PeaceFundPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Tier 1 */}
                         <div className="bg-charcoal-light border border-workshop-gray p-8 spec-card focus-within:ring-2 relative rounded-card flex flex-col group">
-                            <div className="font-mono text-2xs text-workshop-gray uppercase tracking-industrial mb-1 font-bold group-hover:text-safety-orange transition-colors">Tier 1</div>
+                            <div className="font-mono text-2xs text-workshop-gray uppercase tracking-industrial mb-1 font-bold group-hover:text-electric-indigo transition-colors">Tier 1</div>
                             <h3 className="font-display text-4xl tracking-tight uppercase text-signal-white mb-6">The Basics</h3>
 
                             <div className="mb-8 pb-8 border-b border-workshop-gray">
@@ -147,9 +147,9 @@ export default function PeaceFundPage() {
                         </div>
 
                         {/* Tier 2 */}
-                        <div className="bg-charcoal-light border-2 border-safety-orange p-8 spec-card relative rounded-card overflow-hidden flex flex-col transform md:-translate-y-4 shadow-[0_10px_30px_rgba(255,107,0,0.15)] group">
-                            <div className="absolute top-0 right-0 bg-safety-orange text-charcoal font-bold font-mono text-2xs uppercase px-3 py-1 tracking-industrial border-b border-l border-safety-orange rounded-bl-subtle">Target</div>
-                            <div className="font-mono text-2xs text-safety-orange uppercase tracking-industrial mb-1 font-bold">Tier 2</div>
+                        <div className="bg-charcoal-light border-2 border-electric-indigo p-8 spec-card relative rounded-card overflow-hidden flex flex-col transform md:-translate-y-4 shadow-[0_10px_30px_rgba(91,110,174,0.2)] group">
+                            <div className="absolute top-0 right-0 bg-electric-indigo text-white font-bold font-mono text-2xs uppercase px-3 py-1 tracking-industrial border-b border-l border-electric-indigo rounded-bl-subtle">Target</div>
+                            <div className="font-mono text-2xs text-electric-indigo uppercase tracking-industrial mb-1 font-bold">Tier 2</div>
                             <h3 className="font-display text-4xl tracking-tight uppercase text-signal-white mb-6">Power Tools</h3>
 
                             <div className="mb-8 pb-8 border-b border-workshop-gray">
@@ -203,10 +203,10 @@ export default function PeaceFundPage() {
                     </div>
 
                     {/* The Free Borrow Enabler Component */}
-                    <div className="bg-charcoal-light border border-workshop-gray rounded-card overflow-hidden p-1px mt-16 flex flex-col md:flex-row items-stretch spec-card hover:border-safety-orange transition-colors">
+                    <div className="bg-charcoal-light border border-workshop-gray rounded-card overflow-hidden p-1px mt-16 flex flex-col md:flex-row items-stretch spec-card hover:border-electric-indigo transition-colors">
                         <div className="flex-1 p-10 md:p-14 border-b md:border-b-0 md:border-r border-workshop-gray">
                             <h3 className="text-4xl font-display uppercase tracking-tight text-signal-white mb-6 flex items-center gap-4">
-                                <Zap className="text-safety-orange w-8 h-8" strokeWidth={2.5} />
+                                <Zap className="text-electric-indigo w-8 h-8" strokeWidth={2.5} />
                                 The Free Borrow Engine
                             </h3>
                             <p className="font-sans text-concrete text-lg leading-relaxed mb-8">
@@ -215,7 +215,7 @@ export default function PeaceFundPage() {
                             <div className="inline-block bg-charcoal px-6 py-4 border border-workshop-gray font-mono text-sm text-concrete shadow-inner rounded-interactive">
                                 <span className="opacity-70">RENT ENTRY: $0.00 | RISK MATRIX: $3.00</span>
                                 <span className="mx-4 text-workshop-gray">=&gt;</span>
-                                <span className="text-safety-orange font-bold uppercase tracking-industrial">Deploy Check: $3.00</span>
+                                <span className="text-electric-indigo font-bold uppercase tracking-industrial">Deploy Check: $3.00</span>
                             </div>
                         </div>
                         <div className="w-full md:w-80 bg-charcoal p-8 flex border-l border-workshop-gray/50 flex-col justify-center relative shadow-inner overflow-hidden">
@@ -224,7 +224,7 @@ export default function PeaceFundPage() {
 
                             <div className="font-mono text-2xs uppercase text-workshop-gray tracking-industrial mb-4">Live Telemetry Scenario</div>
                             <div className="font-serif font-bold text-xl text-signal-white mb-2">Neighborhood Borrow: Table Saw</div>
-                            <div className="text-safety-orange font-mono font-bold text-3xl mb-8">FREE RENT</div>
+                            <div className="text-electric-indigo font-mono font-bold text-3xl mb-8">FREE RENT</div>
 
                             <div className="font-mono text-sm space-y-4 text-concrete">
                                 <div className="flex justify-between items-center border-b border-workshop-gray pb-2">
@@ -301,11 +301,11 @@ export default function PeaceFundPage() {
             </section>
 
             {/* CTA Terminal */}
-            <section className="py-24 px-6 bg-safety-orange text-charcoal relative overflow-hidden text-center">
+            <section className="py-24 px-6 bg-electric-indigo text-white relative overflow-hidden text-center">
                 <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #1A1A1A 0, #1A1A1A 4px, transparent 4px, transparent 16px)' }} />
 
                 <div className="relative max-w-4xl mx-auto z-10 flex flex-col items-center">
-                    <h2 className="text-6xl md:text-8xl font-display uppercase tracking-tight mb-8 text-charcoal">
+                    <h2 className="text-6xl md:text-8xl font-display uppercase tracking-tight mb-8 text-white">
                         Engage With <br /> <span className="text-signal-white">Confidence.</span>
                     </h2>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center w-full max-w-xl">

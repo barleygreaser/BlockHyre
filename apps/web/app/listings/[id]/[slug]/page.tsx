@@ -85,7 +85,7 @@ export default function ListingDetailsPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-safety-orange" />
+                <Loader2 className="h-8 w-8 animate-spin text-electric-indigo" />
             </div>
         );
     }
@@ -301,7 +301,7 @@ export default function ListingDetailsPage() {
                                             onClick={() => setSelectedImage(idx)}
                                             className={cn(
                                                 "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 transition-all relative",
-                                                selectedImage === idx ? "border-safety-orange ring-2 ring-safety-orange/20" : "border-transparent hover:border-slate-300"
+                                                selectedImage === idx ? "border-electric-indigo ring-2 ring-electric-indigo/20" : "border-transparent hover:border-slate-300"
                                             )}
                                         >
                                             <Image
@@ -337,7 +337,7 @@ export default function ListingDetailsPage() {
                                 </div>
                                 <div className="flex items-center gap-4 text-sm text-slate-600">
                                     <div className="flex items-center gap-1">
-                                        <MapPin className="h-4 w-4 text-safety-orange" />
+                                        <MapPin className="h-4 w-4 text-electric-indigo" />
                                         <span>
                                             {(() => {
                                                 const d = listing.distance;
@@ -370,7 +370,7 @@ export default function ListingDetailsPage() {
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <Star className={cn("h-3.5 w-3.5", listing.owner?.review_count && listing.owner.review_count > 0 ? "text-safety-orange fill-safety-orange" : "text-slate-300")} />
+                                        <Star className={cn("h-3.5 w-3.5", listing.owner?.review_count && listing.owner.review_count > 0 ? "text-amber-500 fill-amber-500" : "text-slate-300")} />
                                         <span className="font-mono text-sm font-bold text-slate-700">
                                             {listing.owner?.review_count && listing.owner.review_count > 0
                                                 ? `[${Number(listing.owner.average_rating).toFixed(1)}]`
@@ -498,8 +498,8 @@ export default function ListingDetailsPage() {
                     <div className="lg:col-span-1">
                         {user && listing.owner_id === user.id && searchParams.get('view') !== 'public' ? (
                             // OWNER VIEW
-                            <Card className="sticky top-24 border-safety-orange/50 shadow-lg overflow-hidden bg-orange-50/10">
-                                <div className="bg-safety-orange p-4 text-white text-center">
+                            <Card className="sticky top-24 border-electric-indigo/30 shadow-lg overflow-hidden bg-slate-50/30">
+                                <div className="bg-electric-indigo p-4 text-white text-center">
                                     <h3 className="flex items-center justify-center gap-2 font-bold text-lg">
                                         <Pencil className="h-5 w-5" />
                                         Manage Listing
@@ -515,7 +515,7 @@ export default function ListingDetailsPage() {
 
                                     <div className="space-y-3">
                                         <Link href={`/owner/listings/edit/${listing.id}`} className="block">
-                                            <Button className="w-full h-12 text-lg font-bold bg-safety-orange hover:bg-safety-orange/90 text-white shadow-sm">
+                                            <Button className="w-full h-12 text-lg font-bold bg-electric-indigo hover:bg-midnight-navy text-white shadow-sm rounded-interactive">
                                                 <Pencil className="mr-2 h-5 w-5" />
                                                 Edit Details
                                             </Button>
@@ -556,7 +556,7 @@ export default function ListingDetailsPage() {
                                             </div>
                                         ) : (
                                             <>
-                                                <span className="text-3xl font-bold text-safety-orange">${listing.daily_price}</span>
+                                                <span className="text-3xl font-bold text-midnight-navy">${listing.daily_price}</span>
                                                 <span className="text-sm">/day</span>
                                             </>
                                         )}
@@ -602,7 +602,7 @@ export default function ListingDetailsPage() {
                                                                 <div className="bg-slate-100 dark:bg-slate-800 rounded p-2 text-xs">
                                                                     <div className="flex justify-between mb-1">
                                                                         <span className="text-slate-600 dark:text-slate-400">Daily Rate:</span>
-                                                                        <span className="font-bold text-safety-orange">${riskTier === 3 ? '10' : riskTier === 2 ? '3' : '1'}</span>
+                                                                        <span className="font-bold text-midnight-navy">${riskTier === 3 ? '10' : riskTier === 2 ? '3' : '1'}</span>
                                                                     </div>
                                                                     <div className="flex justify-between">
                                                                         <span className="text-slate-600 dark:text-slate-400">Coverage Limit:</span>
@@ -616,7 +616,7 @@ export default function ListingDetailsPage() {
                                             </div>
                                             <span>${peaceFundTotal}</span>
                                         </div>
-                                        <div className="flex justify-between text-sm font-bold text-safety-orange">
+                                        <div className="flex justify-between text-sm font-bold text-midnight-navy">
                                             <span>Refundable Deposit</span>
                                             <span>${deposit}</span>
                                         </div>
@@ -633,7 +633,7 @@ export default function ListingDetailsPage() {
                                             <Button
                                                 onClick={handleRequestToRent}
                                                 data-testid="request-to-rent-btn"
-                                                className="w-full h-12 text-lg font-bold bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                                className="w-full h-12 text-lg font-bold bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive"
                                             >
                                                 Request to Rent
                                             </Button>
@@ -641,7 +641,7 @@ export default function ListingDetailsPage() {
                                             <div className="grid grid-cols-2 gap-3">
                                                 <Button
                                                     onClick={handleRentNow}
-                                                    className="w-full h-12 text-base font-bold bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                                    className="w-full h-12 text-base font-bold bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive"
                                                 >
                                                     Rent Now
                                                 </Button>

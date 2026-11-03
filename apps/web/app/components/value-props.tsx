@@ -21,7 +21,7 @@ export function ValueProps() {
 
                     {/* Safety */}
                     <div className="flex items-start space-x-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100 transition-all hover:bg-slate-50">
-                        <div className="mt-1 h-10 w-10 flex-shrink-0 rounded-full bg-orange-100 flex items-center justify-center text-safety-orange">
+                        <div className="mt-1 h-10 w-10 flex-shrink-0 rounded-full bg-indigo-100/70 flex items-center justify-center text-electric-indigo">
                             <HeartHandshake className="h-5 w-5" />
                         </div>
                         <div>

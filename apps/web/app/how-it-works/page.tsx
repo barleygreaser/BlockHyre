@@ -134,7 +134,7 @@ export default function HowItWorksPage() {
             <Navbar />
 
             {/* Hero Section: Command Center (Charcoal Background) */}
-            <section className="relative bg-deep-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b-2 border-safety-orange -mt-20">
+            <section className="relative bg-deep-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b border-white/10 -mt-20">
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-workshop-gray via-charcoal to-charcoal pointer-events-none" />
 
                 <div className="relative max-w-5xl mx-auto flex flex-col items-center">
@@ -146,7 +146,7 @@ export default function HowItWorksPage() {
 
                     <h1 className="text-6xl md:text-8xl font-display uppercase tracking-tight mb-6 text-center leading-none">
                         The Neighborhood <br />
-                        <span className="text-safety-orange">Factory.</span>
+                        <span className="text-electric-indigo">Factory.</span>
                     </h1>
 
                     <p className="text-xl md:text-2xl font-sans font-light text-concrete text-center max-w-3xl mb-12">
@@ -155,7 +155,7 @@ export default function HowItWorksPage() {
 
                     <div className="flex flex-col sm:flex-row justify-center gap-6 items-center w-full">
                         <Link href="/listings" className="w-full sm:w-auto">
-                            <Button size="lg" className="w-full sm:w-auto bg-safety-orange hover:bg-safety-orange-hover text-signal-white font-bold px-10 py-7 text-lg rounded-interactive magnetic-btn group shadow-[0_4px_20px_rgba(255,107,0,0.3)] border border-safety-orange hover:text-white transition-all flex items-center justify-center">
+                            <Button size="lg" className="w-full sm:w-auto bg-electric-indigo hover:bg-midnight-navy text-white font-bold px-10 py-7 text-lg rounded-interactive magnetic-btn group shadow-[0_4px_20px_rgba(91,110,174,0.3)] border border-electric-indigo hover:text-white transition-all flex items-center justify-center">
                                 <Search className="w-5 h-5 mr-3" />
                                 Browse Tools
                             </Button>
@@ -174,7 +174,7 @@ export default function HowItWorksPage() {
                     {/* Stats Telemetry */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto w-full border-t border-workshop-gray pt-8">
                         <div className="flex flex-col items-center">
-                            <div className="text-4xl md:text-5xl font-mono text-safety-orange mb-2">5 MI</div>
+                            <div className="text-4xl md:text-5xl font-mono text-electric-indigo mb-2">5 MI</div>
                             <div className="font-mono text-2xs text-concrete uppercase tracking-industrial">Local Radius</div>
                         </div>
                         <div className="flex flex-col items-center md:border-x border-workshop-gray">
@@ -203,13 +203,13 @@ export default function HowItWorksPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {steps.map((step, index) => (
-                            <div key={index} className="relative group rounded-card bg-white border border-concrete p-8 shadow-xs hover:shadow-xl hover:border-safety-orange transition-all duration-300 overflow-hidden spec-card">
+                            <div key={index} className="relative group rounded-card bg-white border border-concrete p-8 shadow-xs hover:shadow-xl hover:border-electric-indigo transition-all duration-300 overflow-hidden spec-card">
                                 {/* Scanner Sweep overlay */}
-                                <div className="absolute top-0 bottom-0 w-[2px] bg-safety-orange opacity-0 group-hover:opacity-100 group-hover:animate-scanner mix-blend-overlay pointer-events-none" />
+                                <div className="absolute top-0 bottom-0 w-[2px] bg-electric-indigo opacity-0 group-hover:opacity-100 group-hover:animate-scanner mix-blend-overlay pointer-events-none" />
 
                                 <div className="flex items-start justify-between mb-8">
-                                    <div className="w-16 h-16 rounded-interactive bg-charcoal flex items-center justify-center text-safety-orange border border-workshop-gray shadow-xs group-hover:scale-105 group-hover:border-safety-orange transition-all duration-300 relative">
-                                        <div className="absolute inset-0 bg-safety-orange/5 rounded-interactive opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <div className="w-16 h-16 rounded-interactive bg-charcoal flex items-center justify-center text-electric-indigo border border-workshop-gray shadow-xs group-hover:scale-105 group-hover:border-electric-indigo transition-all duration-300 relative">
+                                        <div className="absolute inset-0 bg-electric-indigo/5 rounded-interactive opacity-0 group-hover:opacity-100 transition-opacity" />
                                         <step.icon className="w-8 h-8 relative z-10" strokeWidth={1.5} />
                                     </div>
                                     <div className="font-mono text-6xl font-bold text-concrete-dark tracking-tighter opacity-30 select-none hidden sm:block">
@@ -251,11 +251,11 @@ export default function HowItWorksPage() {
                                 className="bg-charcoal-light border border-workshop-gray p-8 spec-card relative rounded-card overflow-hidden flex flex-col group"
                             >
                                 {/* Top accent bar */}
-                                <div className="absolute top-0 left-0 right-0 h-1 bg-workshop-gray group-hover:bg-safety-orange transition-colors" />
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-workshop-gray group-hover:bg-electric-indigo transition-colors" />
 
                                 <div className="flex justify-between items-start mb-8">
                                     <div>
-                                        <div className="font-mono text-2xs text-safety-orange uppercase tracking-industrial mb-1">{tier.id}</div>
+                                        <div className="font-mono text-2xs text-electric-indigo uppercase tracking-industrial mb-1">{tier.id}</div>
                                         <h3 className="font-display text-4xl tracking-tight uppercase text-signal-white">{tier.tier}</h3>
                                         <div className="font-sans text-sm text-concrete">{tier.label}</div>
                                     </div>
@@ -298,17 +298,17 @@ export default function HowItWorksPage() {
             <section className="py-24 px-6 bg-concrete relative">
                 <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
                     <div className="lg:w-1/2">
-                        <div className="font-mono text-2xs uppercase tracking-industrial text-safety-orange mb-4">System Integrity</div>
+                        <div className="font-mono text-2xs uppercase tracking-industrial text-electric-indigo mb-4">System Integrity</div>
                         <h2 className="text-5xl md:text-6xl font-display uppercase tracking-tight text-charcoal mb-8">
                             Trust Architecture
                         </h2>
-                        <p className="font-sans text-xl text-workshop-gray mb-12 border-l-4 border-safety-orange pl-4">
+                        <p className="font-sans text-xl text-workshop-gray mb-12 border-l-4 border-electric-indigo pl-4">
                             A production environment is only as safe as its weakest point. Our platform integrates multi-layered validation logic bridging the gap between hardware utility and verified responsibility.
                         </p>
 
                         <div className="space-y-6">
                             {trustFeatures.map((feature, index) => (
-                                <div key={index} className="bg-white border border-concrete-dark rounded-card p-6 flex gap-6 hover:border-safety-orange transition-colors duration-300 shadow-xs">
+                                <div key={index} className="bg-white border border-concrete-dark rounded-card p-6 flex gap-6 hover:border-electric-indigo transition-colors duration-300 shadow-xs">
                                     <div className="flex-shrink-0 mt-1">
                                         <feature.icon className="w-8 h-8 text-charcoal" />
                                     </div>
@@ -333,7 +333,7 @@ export default function HowItWorksPage() {
                                 <div className="absolute left-[1.4rem] top-6 bottom-6 w-[2px] bg-workshop-gray" />
 
                                 <div className="flex items-start gap-6 relative z-10 group">
-                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-safety-orange transition-colors">1</div>
+                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-electric-indigo transition-colors">1</div>
                                     <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card rounded-interactive">
                                         <div className="font-mono font-bold text-charcoal text-2xs uppercase tracking-industrial mb-1 flex items-center gap-2">
                                             <Camera className="w-4 h-4" /> Pre-Op Inspect
@@ -342,7 +342,7 @@ export default function HowItWorksPage() {
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-6 relative z-10 group">
-                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-safety-orange transition-colors">2</div>
+                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-electric-indigo transition-colors">2</div>
                                     <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card rounded-interactive">
                                         <div className="font-mono font-bold text-charcoal text-2xs uppercase tracking-industrial mb-1 flex items-center gap-2">
                                             <CheckCircle2 className="w-4 h-4" /> ID Validation
@@ -351,7 +351,7 @@ export default function HowItWorksPage() {
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-6 relative z-10 group">
-                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-safety-orange transition-colors">3</div>
+                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-electric-indigo transition-colors">3</div>
                                     <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card rounded-interactive">
                                         <div className="font-mono font-bold text-charcoal text-2xs uppercase tracking-industrial mb-1 flex items-center gap-2">
                                             <Clock className="w-4 h-4" /> Return Logic
@@ -369,7 +369,7 @@ export default function HowItWorksPage() {
             <section className="py-24 px-6 bg-signal-white text-charcoal">
                 <div className="max-w-3xl mx-auto">
                     <div className="mb-16">
-                        <div className="font-mono text-2xs uppercase tracking-industrial text-safety-orange mb-4">Knowledge Base</div>
+                        <div className="font-mono text-2xs uppercase tracking-industrial text-electric-indigo mb-4">Knowledge Base</div>
                         <h2 className="text-5xl font-display uppercase tracking-tight text-charcoal">
                             Directives & FAQ
                         </h2>
@@ -382,7 +382,7 @@ export default function HowItWorksPage() {
                                 value={`item-${index}`}
                                 className="bg-white border border-concrete px-2 rounded-card overflow-hidden hover:border-charcoal transition-colors group"
                             >
-                                <AccordionTrigger className="text-left font-serif font-bold text-lg text-charcoal px-4 py-6 hover:no-underline hover:text-safety-orange">
+                                <AccordionTrigger className="text-left font-serif font-bold text-lg text-charcoal px-4 py-6 hover:no-underline hover:text-electric-indigo">
                                     <div className="flex items-center">
                                         <span className="nav-bracket mr-2">
                                             <span className="nav-bracket-left">[</span>
@@ -403,15 +403,15 @@ export default function HowItWorksPage() {
             </section>
 
             {/* Final CTA */}
-            <section className="py-24 px-6 bg-safety-orange text-charcoal relative overflow-hidden text-center">
+            <section className="py-24 px-6 bg-electric-indigo text-white relative overflow-hidden text-center">
                 {/* Diagonal industrial stripes bg */}
                 <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #1A1A1A 0, #1A1A1A 4px, transparent 4px, transparent 16px)' }} />
 
                 <div className="relative max-w-4xl mx-auto z-10 flex flex-col items-center">
-                    <h2 className="text-6xl md:text-8xl font-display uppercase tracking-tight mb-8 text-charcoal">
+                    <h2 className="text-6xl md:text-8xl font-display uppercase tracking-tight mb-8 text-white">
                         Ready To <br /> <span className="text-signal-white">Produce?</span>
                     </h2>
-                    <p className="font-sans text-xl text-charcoal font-medium mb-12 max-w-2xl">
+                    <p className="font-sans text-xl text-white/90 font-medium mb-12 max-w-2xl">
                         Connect into the neighborhood manufacturing grid. High-end capacity without the capital expenditure.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center w-full max-w-xl">
@@ -424,7 +424,7 @@ export default function HowItWorksPage() {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="w-full sm:w-auto border-2 border-charcoal text-charcoal bg-transparent hover:bg-charcoal hover:text-safety-orange font-bold uppercase tracking-industrial px-10 py-8 text-lg rounded-interactive magnetic-btn"
+                                className="w-full sm:w-auto border-2 border-charcoal text-charcoal bg-transparent hover:bg-charcoal hover:text-electric-indigo font-bold uppercase tracking-industrial px-10 py-8 text-lg rounded-interactive magnetic-btn"
                             >
                                 Sign Up
                             </Button>
