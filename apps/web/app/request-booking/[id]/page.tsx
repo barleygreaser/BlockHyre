@@ -3,6 +3,7 @@
 import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useMarketplace, Listing } from "@/app/hooks/use-marketplace";
@@ -252,7 +253,7 @@ export default function RequestBookingPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-safety-orange" />
+                <Loader2 className="h-8 w-8 animate-spin text-electric-indigo" />
             </div>
         );
     }
@@ -264,17 +265,17 @@ export default function RequestBookingPage() {
             <Navbar />
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-2xl mx-auto">
-                    <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">Request to Rent</h1>
+                    <h1 className="text-3xl font-bold font-serif text-midnight-navy mb-2">Request to Rent</h1>
                     <p className="text-slate-600 mb-8">Send a message to the owner to request this tool.</p>
 
-                    <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-8">
+                    <div className="bg-white p-6 md:p-8 rounded-card border border-slate-200/80 shadow-sm mb-8">
                         <div className="flex gap-4 mb-6">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={listing.images?.[0]} alt={listing.title} className="w-24 h-24 object-cover rounded-md bg-slate-100" />
+                            <img src={listing.images?.[0]} alt={listing.title} className="w-24 h-24 object-cover rounded-interactive bg-slate-100 border border-slate-200/80" />
                             <div className="flex-1">
-                                <h3 className="font-bold text-lg text-slate-900">{listing.title}</h3>
-                                <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
-                                    <Calendar className="h-4 w-4" />
+                                <h3 className="font-serif font-bold text-lg text-midnight-navy">{listing.title}</h3>
+                                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-600 mt-1">
+                                    <Calendar className="h-4 w-4 text-electric-indigo" />
                                     <span>
                                         {format(parseISO(fromDate!), "MMM d")} - {format(parseISO(toDate!), "MMM d")}
                                     </span>
@@ -298,7 +299,7 @@ export default function RequestBookingPage() {
                                         <p className="text-xs text-slate-500 flex items-center gap-1">
                                             <span className="font-medium text-slate-700">{listing.owner?.full_name || "Neighbor"}</span>
                                             {listing.owner?.is_id_verified && (
-                                                <CheckCircle className="h-3 w-3 text-blue-500" />
+                                                <CheckCircle className="h-3.5 w-3.5 text-electric-indigo" />
                                             )}
                                         </p>
                                     </div>
@@ -308,9 +309,9 @@ export default function RequestBookingPage() {
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-slate-900 mb-2">Message to Owner</label>
-                                <textarea
-                                    className="w-full h-32 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-safety-orange/50 focus:border-safety-orange outline-none resize-none"
+                                <label className="block text-xs font-mono uppercase tracking-industrial font-bold text-midnight-navy mb-2">Message to Owner</label>
+                                <Textarea
+                                    className="w-full h-32 p-3.5 rounded-interactive focus-visible:ring-electric-indigo resize-none"
                                     placeholder="Hi! I'd like to rent this for a weekend project..."
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
@@ -319,23 +320,24 @@ export default function RequestBookingPage() {
                             </div>
 
                             {listing.accepts_barter && (
-                                <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-100 text-sm text-emerald-800">
+                                <div className="bg-emerald-500/10 p-4 rounded-interactive border border-emerald-500/20 text-xs font-mono text-emerald-800">
                                     <strong>🍓 Barter Available:</strong> This owner accepts barter! Mention what you can offer in your message.
                                 </div>
                             )}
 
-                            <div className="flex gap-4">
+                            <div className="flex gap-3">
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="flex-1"
+                                    className="flex-1 h-12 rounded-interactive active:translate-y-0.5 border-slate-300 text-midnight-navy hover:bg-slate-50"
                                     onClick={() => router.back()}
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="flex-1 bg-safety-orange hover:bg-safety-orange/90 text-white font-bold"
+                                    variant="default"
+                                    className="flex-1 h-12 rounded-interactive font-bold active:translate-y-0.5"
                                     disabled={submitting || sent}
                                 >
                                     {sent ? (

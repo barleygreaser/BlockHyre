@@ -4,6 +4,7 @@ import { Navbar } from "@/app/components/navbar";
 import { Footer } from "@/app/components/footer";
 import { useCart } from "@/app/context/cart-context";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { calculateRentalPrice } from "@/lib/pricing";
@@ -106,37 +107,37 @@ export default function CheckoutPage() {
         <main className="min-h-screen bg-slate-50">
             <Navbar />
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold font-serif text-slate-900 mb-8">Checkout</h1>
+                <h1 className="text-3xl font-bold font-serif text-midnight-navy mb-8">Checkout</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Billing Details */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white p-6 rounded-lg border border-slate-200">
-                            <h2 className="text-xl font-bold mb-4">Billing Information</h2>
+                        <div className="bg-white p-6 md:p-8 rounded-card border border-slate-200/80 shadow-sm">
+                            <h2 className="text-xl font-serif font-bold text-midnight-navy mb-4">Billing Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">First Name</label>
-                                    <input type="text" className="w-full p-2 border rounded" placeholder="John" />
+                                    <label className="text-xs font-mono uppercase tracking-industrial font-semibold text-slate-600">First Name</label>
+                                    <Input type="text" className="rounded-interactive focus-visible:ring-electric-indigo" placeholder="John" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Last Name</label>
-                                    <input type="text" className="w-full p-2 border rounded" placeholder="Doe" />
+                                    <label className="text-xs font-mono uppercase tracking-industrial font-semibold text-slate-600">Last Name</label>
+                                    <Input type="text" className="rounded-interactive focus-visible:ring-electric-indigo" placeholder="Doe" />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
-                                    <label className="text-sm font-medium">Email</label>
-                                    <input type="email" className="w-full p-2 border rounded" placeholder="john@example.com" />
+                                    <label className="text-xs font-mono uppercase tracking-industrial font-semibold text-slate-600">Email</label>
+                                    <Input type="email" className="rounded-interactive focus-visible:ring-electric-indigo" placeholder="john@example.com" />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
-                                    <label className="text-sm font-medium">Address</label>
-                                    <input type="text" className="w-full p-2 border rounded" placeholder="123 Main St" />
+                                    <label className="text-xs font-mono uppercase tracking-industrial font-semibold text-slate-600">Address</label>
+                                    <Input type="text" className="rounded-interactive focus-visible:ring-electric-indigo" placeholder="123 Main St" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-lg border border-slate-200">
-                            <h2 className="text-xl font-bold mb-4">Payment Details</h2>
+                        <div className="bg-white p-6 md:p-8 rounded-card border border-slate-200/80 shadow-sm">
+                            <h2 className="text-xl font-serif font-bold text-midnight-navy mb-4">Payment Details</h2>
                             <div className="space-y-4">
-                                <div className="p-4 border rounded bg-slate-50 text-slate-500 text-sm">
+                                <div className="p-4 border border-slate-200/80 rounded-interactive bg-slate-50/50 text-slate-600 text-xs font-mono">
                                     You will be redirected to Stripe to securely complete your payment.
                                 </div>
                             </div>
@@ -145,28 +146,29 @@ export default function CheckoutPage() {
 
                     {/* Order Summary */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm sticky top-24">
-                            <h3 className="font-bold text-lg text-slate-900 mb-4">Order Summary</h3>
+                        <div className="bg-white p-6 rounded-card border border-slate-200/80 shadow-sm sticky top-24">
+                            <h3 className="font-serif font-bold text-lg text-midnight-navy mb-4">Order Summary</h3>
                             <div className="space-y-3 text-sm text-slate-600">
                                 <div className="flex justify-between">
                                     <span>Subtotal</span>
-                                    <span>${subtotal.toFixed(2)}</span>
+                                    <span className="font-mono font-semibold">${subtotal.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Peace Fund</span>
-                                    <span>${peaceFundTotal.toFixed(2)}</span>
+                                    <span className="font-mono font-semibold">${peaceFundTotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-safety-orange">
+                                <div className="flex justify-between text-safety-orange font-mono font-semibold text-sm">
                                     <span>Deposits</span>
                                     <span>${depositTotal.toFixed(2)}</span>
                                 </div>
-                                <div className="border-t border-slate-200 pt-3 flex justify-between font-bold text-lg text-slate-900">
-                                    <span>Total</span>
-                                    <span>${finalTotal.toFixed(2)}</span>
+                                <div className="border-t border-slate-200 pt-3 flex justify-between font-bold text-lg text-midnight-navy">
+                                    <span className="font-serif">Total</span>
+                                    <span className="font-mono text-xl font-bold">${finalTotal.toFixed(2)}</span>
                                 </div>
                             </div>
                             <Button
-                                className="w-full mt-6 bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12"
+                                variant="default"
+                                className="w-full mt-6 h-12 text-base font-bold rounded-interactive active:translate-y-0.5"
                                 onClick={handlePaymentClick}
                                 disabled={isProcessing}
                             >

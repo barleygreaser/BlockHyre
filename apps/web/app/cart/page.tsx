@@ -40,12 +40,12 @@ export default function CartPage() {
         <main className="min-h-screen bg-slate-50">
             <Navbar />
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold font-serif text-slate-900 mb-8">Your Cart</h1>
+                <h1 className="text-3xl font-bold font-serif text-midnight-navy mb-8">Your Cart</h1>
 
                 {cart.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">
+                    <div className="text-center py-20 bg-white rounded-card border border-slate-200 border-dashed shadow-2xs">
                         <p className="text-slate-500 mb-4">Your cart is empty.</p>
-                        <Button onClick={() => router.push('/listings')}>Browse Inventory</Button>
+                        <Button onClick={() => router.push('/listings')} variant="default" className="rounded-interactive active:translate-y-0.5">Browse Inventory</Button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -54,8 +54,8 @@ export default function CartPage() {
                             {cart.map((item) => {
                                 const { finalTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
                                 return (
-                                    <div key={item.id} className="bg-white p-4 rounded-lg border border-slate-200 flex gap-4">
-                                        <div className="relative w-24 h-24 shrink-0 bg-slate-100 rounded-md overflow-hidden">
+                                    <div key={item.id} className="bg-white p-4.5 rounded-card border border-slate-200/80 flex gap-4 shadow-xs hover:border-electric-indigo/20 transition-all">
+                                        <div className="relative w-24 h-24 shrink-0 bg-slate-100 rounded-interactive overflow-hidden border border-slate-100">
                                             <Image
                                                 src={item.image || `https://placehold.co/200.png?text=${encodeURIComponent(item.title)}`}
                                                 alt={item.title}
@@ -66,18 +66,18 @@ export default function CartPage() {
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
-                                                <h3 className="font-bold text-lg text-slate-900">{item.title}</h3>
+                                                <h3 className="font-serif font-bold text-lg text-midnight-navy">{item.title}</h3>
                                                 <button onClick={() => removeFromCart(item.id)} className="text-slate-400 hover:text-red-500">
                                                     <Trash2 className="h-5 w-5" />
                                                 </button>
                                             </div>
-                                            <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
-                                                <CalendarIcon className="h-4 w-4" />
+                                            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-600 mt-1">
+                                                <CalendarIcon className="h-4 w-4 text-electric-indigo" />
                                                 <span>
                                                     {format(item.dates.from, "MMM d")} - {format(item.dates.to, "MMM d")} ({item.days} days)
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
+                                            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-600 mt-1">
                                                 <AlertCircle className="h-4 w-4 text-safety-orange" />
                                                 <span>Tier {item.price.riskTier} Peace Fund</span>
                                             </div>
@@ -92,28 +92,28 @@ export default function CartPage() {
 
                         {/* Summary */}
                         <div className="lg:col-span-1">
-                            <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm sticky top-24">
-                                <h3 className="font-bold text-lg text-slate-900 mb-4">Order Summary</h3>
+                            <div className="bg-white p-6 rounded-card border border-slate-200/80 shadow-sm sticky top-24">
+                                <h3 className="font-serif font-bold text-lg text-midnight-navy mb-4">Order Summary</h3>
                                 <div className="space-y-3 text-sm text-slate-600">
                                     <div className="flex justify-between">
                                         <span>Subtotal (Rental Fees)</span>
-                                        <span>${subtotal.toFixed(2)}</span>
+                                        <span className="font-mono font-semibold">${subtotal.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Peace Fund Contributions</span>
-                                        <span>${peaceFundTotal.toFixed(2)}</span>
+                                        <span className="font-mono font-semibold">${peaceFundTotal.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-safety-orange font-medium">
                                         <span>Refundable Deposits</span>
                                         <span>${depositTotal.toFixed(2)}</span>
                                     </div>
-                                    <div className="border-t border-slate-200 pt-3 flex justify-between font-bold text-lg text-slate-900">
-                                        <span>Total Due Now</span>
-                                        <span>${finalTotal.toFixed(2)}</span>
+                                    <div className="border-t border-slate-200 pt-3 flex justify-between font-bold text-lg text-midnight-navy">
+                                        <span className="font-serif">Total Due Now</span>
+                                        <span className="font-mono text-xl font-bold">${finalTotal.toFixed(2)}</span>
                                     </div>
                                 </div>
                                 {hasMultipleOwners && (
-                                    <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                                    <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-interactive p-4 text-xs font-mono text-amber-900">
                                         <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                                         <div>
                                             <p className="font-bold">Mixed-owner cart detected</p>
@@ -122,7 +122,8 @@ export default function CartPage() {
                                     </div>
                                 )}
                                 <Button
-                                    className="w-full mt-6 bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    variant="default"
+                                    className="w-full mt-6 h-12 text-base font-bold rounded-interactive active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                     onClick={() => router.push('/checkout')}
                                     disabled={hasMultipleOwners}
                                     aria-disabled={hasMultipleOwners}

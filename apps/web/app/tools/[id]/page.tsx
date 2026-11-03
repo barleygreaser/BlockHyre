@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import {
+    ArrowLeft,
     MapPin,
     Shield,
     AlertTriangle,
@@ -58,7 +59,7 @@ export default function ToolDetailsPage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <Loader2 className="h-8 w-8 animate-spin text-safety-orange" />
+                <Loader2 className="h-8 w-8 animate-spin text-electric-indigo" />
             </div>
         );
     }
@@ -66,8 +67,8 @@ export default function ToolDetailsPage() {
     if (!listing) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-                <h1 className="text-2xl font-bold text-slate-900 mb-4">Listing Not Found</h1>
-                <Button onClick={() => router.push('/')}>Return Home</Button>
+                <h1 className="text-2xl font-bold font-serif text-midnight-navy mb-4">Listing Not Found</h1>
+                <Button onClick={() => router.push('/')} className="rounded-interactive active:translate-y-0.5">Return Home</Button>
             </div>
         );
     }
@@ -135,8 +136,12 @@ export default function ToolDetailsPage() {
 
                 {/* Breadcrumbs / Back */}
                 <div className="mb-6">
-                    <Button variant="link" className="pl-0 text-slate-500 hover:text-slate-900" onClick={() => router.back()}>
-                        &larr; Back to Results
+                    <Button
+                        variant="ghost"
+                        className="pl-0 text-slate-500 hover:text-midnight-navy font-mono text-xs uppercase tracking-industrial font-semibold hover:bg-transparent"
+                        onClick={() => router.back()}
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2" /> Back to Results
                     </Button>
                 </div>
 
@@ -171,8 +176,8 @@ export default function ToolDetailsPage() {
                                             key={idx}
                                             onClick={() => setSelectedImage(idx)}
                                             className={cn(
-                                                "aspect-video bg-slate-100 rounded-lg overflow-hidden border-2 relative transition-all",
-                                                selectedImage === idx ? "border-safety-orange ring-2 ring-safety-orange/20" : "border-transparent hover:border-slate-300"
+                                                "aspect-video bg-slate-100 rounded-interactive overflow-hidden border-2 relative transition-all",
+                                                selectedImage === idx ? "border-electric-indigo ring-2 ring-electric-indigo/20 shadow-xs" : "border-slate-200 hover:border-slate-300"
                                             )}
                                         >
                                             <Image
@@ -192,15 +197,15 @@ export default function ToolDetailsPage() {
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-200">
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
-                                    <h1 className="text-3xl md:text-4xl font-bold font-serif text-slate-900">
+                                    <h1 className="text-3xl md:text-4xl font-bold font-serif text-midnight-navy">
                                         {listing.title}
                                     </h1>
                                     {listing.accepts_barter && (
                                         <div className="group relative">
-                                            <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200 cursor-help">
+                                            <Badge className="bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 border-emerald-500/20 rounded-full font-mono text-2xs uppercase tracking-industrial font-semibold cursor-help">
                                                 🍓 Accepts Barter
                                             </Badge>
-                                            <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-slate-900 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                            <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-midnight-navy text-white text-xs rounded-interactive shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 font-sans">
                                                 This owner is interested in trading rental time for goods created with the tool. Message them to inquire!
                                             </div>
                                         </div>
@@ -208,7 +213,7 @@ export default function ToolDetailsPage() {
                                 </div>
                                 <div className="flex items-center gap-4 text-sm text-slate-600">
                                     <div className="flex items-center gap-1">
-                                        <MapPin className="h-4 w-4 text-safety-orange" />
+                                        <MapPin className="h-4 w-4 text-electric-indigo" />
                                         <span>{listing.distance ? `${listing.distance.toFixed(1)} miles away` : "Nearby"}</span>
                                     </div>
                                     <div className="flex items-center gap-1">
@@ -219,17 +224,17 @@ export default function ToolDetailsPage() {
                             </div>
 
                             {listing.owner && (
-                                <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-3 bg-white p-3 rounded-interactive border border-slate-200/80 shadow-xs">
                                     <div className="h-10 w-10 rounded-full bg-slate-100 overflow-hidden">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img src={listing.owner.profile_photo_url || "https://placehold.co/100"} alt={listing.owner.full_name} className="w-full h-full object-cover" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-slate-900 flex items-center gap-1">
+                                        <p className="text-sm font-bold text-midnight-navy flex items-center gap-1">
                                             {listing.owner.full_name}
-                                            <CheckCircle className="h-3 w-3 text-blue-500" />
+                                            <CheckCircle className="h-3.5 w-3.5 text-electric-indigo" />
                                         </p>
-                                        <p className="text-xs text-slate-500">Verified Neighbor</p>
+                                        <p className="text-2xs font-mono uppercase tracking-industrial text-slate-500">Verified Neighbor</p>
                                     </div>
                                 </div>
                             )}
@@ -237,7 +242,7 @@ export default function ToolDetailsPage() {
 
                         {/* Description */}
                         <div>
-                            <h3 className="text-xl font-bold font-serif text-slate-900 mb-4">About this Tool</h3>
+                            <h3 className="text-xl font-bold font-serif text-midnight-navy mb-3">About this Tool</h3>
                             <div className="prose prose-slate max-w-none text-slate-600">
                                 {listing.description}
                             </div>
@@ -247,7 +252,7 @@ export default function ToolDetailsPage() {
                                         href={listing.manual_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-3 py-2 rounded-lg border border-blue-100 transition-colors"
+                                        className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-industrial font-semibold text-electric-indigo hover:text-midnight-navy bg-electric-indigo/5 hover:bg-electric-indigo/10 px-3.5 py-2 rounded-interactive border border-electric-indigo/15 transition-colors"
                                     >
                                         <BookOpen className="h-4 w-4" />
                                         View Manufacturer Manual / Guide
@@ -258,20 +263,20 @@ export default function ToolDetailsPage() {
 
                         {/* Safety Warning */}
                         {listing.is_high_powered && (
-                            <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-4">
-                                <Shield className="h-6 w-6 text-red-600 shrink-0 mt-1" />
+                            <div className="bg-safety-orange/5 border border-safety-orange/30 rounded-card p-5 flex items-start gap-4">
+                                <Shield className="h-6 w-6 text-safety-orange shrink-0 mt-0.5" />
                                 <div>
-                                    <h3 className="font-bold text-red-900">Requires Safety Gate Clearance</h3>
-                                    <p className="text-sm text-red-700 mt-1">
+                                    <h3 className="font-bold text-midnight-navy font-serif text-base">Requires Safety Gate Clearance</h3>
+                                    <p className="text-sm text-slate-600 mt-1 leading-relaxed">
                                         This is a high-power tool. You must review the manufacturer manual and pass a quick competence check during checkout.
                                     </p>
                                     {listing.manual_url ? (
-                                        <a href={listing.manual_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-red-800 mt-2 hover:underline">
+                                        <a href={listing.manual_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-industrial font-bold text-safety-orange mt-2.5 hover:underline">
                                             <BookOpen className="h-4 w-4" />
                                             View Manufacturer Manual
                                         </a>
                                     ) : (
-                                        <div className="flex items-center gap-2 text-sm text-red-800/60 mt-2 italic cursor-not-allowed">
+                                        <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-industrial text-slate-400 mt-2.5 italic cursor-not-allowed">
                                             <BookOpen className="h-4 w-4" />
                                             Manual not provided
                                         </div>
@@ -282,14 +287,14 @@ export default function ToolDetailsPage() {
 
                         {/* Tabs: Specs & Condition */}
                         <div className="space-y-6">
-                            <h3 className="text-xl font-bold font-serif text-slate-900">Technical Specifications</h3>
+                            <h3 className="text-xl font-bold font-serif text-midnight-navy">Technical Specifications</h3>
                             {Object.entries(specs).length > 0 ? (
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     {Object.entries(specs).map(([key, val], i) => (
-                                        <div key={i} className="bg-white p-4 rounded-lg border border-slate-200">
-                                            <Info className="h-5 w-5 text-slate-400 mb-2" />
-                                            <p className="text-xs text-slate-500 uppercase">{key}</p>
-                                            <p className="font-bold text-slate-900 text-sm truncate">{String(val)}</p>
+                                        <div key={i} className="bg-white p-4 rounded-interactive border border-slate-200/80 shadow-xs hover:border-electric-indigo/30 transition-colors">
+                                            <Info className="h-4 w-4 text-electric-indigo mb-2" />
+                                            <p className="text-2xs font-mono uppercase tracking-industrial text-slate-500 mb-1">{key}</p>
+                                            <p className="font-mono font-bold text-midnight-navy text-sm truncate">{String(val)}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -302,14 +307,14 @@ export default function ToolDetailsPage() {
 
                     {/* Right Column: Booking Card */}
                     <div className="lg:col-span-1">
-                        <Card className="sticky top-24 border-slate-200 shadow-lg overflow-hidden">
-                            <div className="bg-slate-900 p-4 text-white text-center">
-                                <p className="text-sm opacity-80">Daily Rate</p>
+                        <Card className="sticky top-24 border-slate-200/80 shadow-lg rounded-card overflow-hidden">
+                            <div className="bg-midnight-navy p-5 text-white text-center">
+                                <p className="text-2xs font-mono uppercase tracking-industrial text-signal-white/70 mb-1">Daily Rate</p>
                                 <div className="flex items-baseline justify-center gap-1">
                                     {listing.daily_price === 0 ? (
                                         <div className="flex flex-col items-center">
-                                            <span className="text-3xl font-bold text-green-400">Free to Borrow</span>
-                                            <span className="text-xs text-slate-400 mt-1">
+                                            <span className="text-2xl md:text-3xl font-mono font-bold text-emerald-400">Free to Borrow</span>
+                                            <span className="text-2xs font-mono text-signal-white/60 mt-1">
                                                 ${listing.category.risk_daily_fee}.00/day Peace Fund contribution required
                                             </span>
                                         </div>
@@ -326,8 +331,8 @@ export default function ToolDetailsPage() {
 
                                 {/* Date Picker */}
                                 <div className="space-y-6">
-                                    <label className="text-sm font-bold text-slate-900">Select Dates</label>
-                                    <div className="flex justify-center">
+                                    <label className="text-xs font-mono uppercase tracking-industrial font-bold text-midnight-navy block">Select Dates</label>
+                                    <div className="flex justify-center border border-slate-200/80 rounded-interactive p-2 bg-slate-50/50 shadow-2xs">
                                         <Calendar
                                             mode="range"
                                             selected={dateRange}
@@ -339,7 +344,7 @@ export default function ToolDetailsPage() {
                                             ]}
                                         />
                                     </div>
-                                    {unavailableDates.length > 0 && <p className="text-xs text-slate-500 text-center">Gray dates are unavailable.</p>}
+                                    {unavailableDates.length > 0 && <p className="text-2xs font-mono text-slate-500 text-center">Gray dates are unavailable.</p>}
                                 </div>
 
                                 {/* Cost Breakdown */}
@@ -353,7 +358,7 @@ export default function ToolDetailsPage() {
                                             Peace Fund (Tier {riskTier})
                                             <Info className="h-3 w-3 text-slate-400 cursor-help" />
                                         </span>
-                                        <span>${peaceFundTotal.toFixed(2)}</span>
+                                        <span className="font-mono font-semibold text-slate-900">${peaceFundTotal.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm font-bold text-safety-orange">
                                         <span>Refundable Deposit</span>
@@ -394,7 +399,7 @@ export default function ToolDetailsPage() {
                                     )}
                                 </div>
 
-                                <p className="text-xs text-center text-slate-400">
+                                <p className="text-2xs font-mono text-center text-slate-400">
                                     You won&apos;t be charged until the owner approves.
                                 </p>
 
