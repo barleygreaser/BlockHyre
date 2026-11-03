@@ -206,6 +206,9 @@ importers:
       '@react-email/components':
         specifier: ^1.0.10
         version: 1.0.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@repo/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
       '@supabase/ssr':
         specifier: ^0.8.0
         version: 0.8.0(@supabase/supabase-js@2.89.0)
@@ -344,6 +347,8 @@ importers:
         version: 4.1.0(@types/node@20.19.27)(jsdom@29.0.0)(vite@8.0.1(@types/node@20.19.27)(jiti@2.6.1)(terser@5.44.1)(yaml@2.8.2))
 
   packages/database: {}
+
+  packages/tokens: {}
 
 packages:
 
