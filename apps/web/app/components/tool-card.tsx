@@ -34,8 +34,13 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
     const hasReviews = (tool.ownerReviewCount ?? 0) > 0;
 
     return (
-        <Card data-testid="tool-card" className="relative overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-200 flex flex-col h-full group">
-            <div className="aspect-video w-full bg-slate-100 relative">
+        <Card
+            data-testid="tool-card"
+            variant="default"
+            padding="none"
+            className="relative overflow-hidden hover:shadow-md transition-all duration-300 border-border/80 hover:border-primary/40 flex flex-col h-full group"
+        >
+            <div className="aspect-video w-full bg-muted relative">
                 <Image
                     src={tool.image}
                     alt={tool.title}
@@ -50,7 +55,12 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                 />
                 <div className="absolute top-3 right-3 flex flex-col gap-1 items-end pointer-events-none">
                     {tool.instantBook && (
-                        <Badge data-testid="instant-badge" className="bg-yellow-500 text-white flex items-center gap-1 border-none animate-glow pointer-events-auto px-1.5 py-0.5 text-[10px]">
+                        <Badge
+                            data-testid="instant-badge"
+                            variant="urgent"
+                            shape="subtle"
+                            className="text-2xs flex items-center gap-1 border-none animate-glow pointer-events-auto"
+                        >
                             <Zap className="h-3 w-3 fill-white" />
                             Instant
                         </Badge>
@@ -58,54 +68,54 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
                 </div>
 
                 {tool.distance && (
-                    <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-medium text-white flex items-center gap-1 pointer-events-none">
+                    <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-subtle text-2xs font-mono font-medium text-signal-white flex items-center gap-1 pointer-events-none">
                         <MapPin className="h-3 w-3" />
                         {tool.distance.toFixed(1)} mi
                     </div>
                 )}
             </div>
 
-            <div className="p-3 flex flex-col flex-grow gap-1">
+            <div className="p-3.5 flex flex-col flex-grow gap-1.5">
                 <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-semibold text-base text-slate-900 line-clamp-2 leading-tight flex-1" title={tool.title}>
+                    <h3 className="font-semibold text-base text-card-foreground line-clamp-2 leading-snug flex-1" title={tool.title}>
                         {tool.title}
                     </h3>
                     <div className="flex flex-col items-end flex-shrink-0">
-                        <span className="font-bold text-lg text-slate-900">${tool.price}</span>
-                        <span className="text-[10px] text-slate-500 font-medium uppercase">/day</span>
+                        <span className="font-bold text-lg text-card-foreground">${tool.price}</span>
+                        <span className="text-2xs text-muted-foreground font-mono font-medium uppercase">/day</span>
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
                     <div className="flex items-center gap-2">
-                        <span className="font-medium bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 truncate max-w-[120px]">
+                        <span className="font-medium bg-secondary text-secondary-foreground px-2 py-0.5 rounded-subtle text-xs truncate max-w-[130px]">
                             {tool.category}
                         </span>
                         {(tool.isHeavyMachinery || tool.acceptsBarter) && (
                             <div className="flex gap-1">
-                                {tool.isHeavyMachinery && <AlertTriangle className="h-3 w-3 text-safety-orange" />}
-                                {tool.acceptsBarter && <span className="text-[10px]">🍓</span>}
+                                {tool.isHeavyMachinery && <AlertTriangle className="h-3.5 w-3.5 text-urgent" />}
+                                {tool.acceptsBarter && <span className="text-xs">🍓</span>}
                             </div>
                         )}
                     </div>
 
                     {/* Rating Pill */}
                     <div className="flex items-center gap-1 shrink-0">
-                        <Star className={cn("h-3 w-3", hasReviews ? "text-electric-indigo fill-electric-indigo" : "text-slate-300")} />
-                        <span className={cn("font-mono text-[11px] font-bold", hasReviews ? "text-slate-700" : "text-slate-400")}>
+                        <Star className={cn("h-3 w-3", hasReviews ? "text-primary fill-primary" : "text-muted-foreground/40")} />
+                        <span className={cn("font-mono text-xs font-bold", hasReviews ? "text-card-foreground" : "text-muted-foreground/60")}>
                             {hasReviews
                                 ? `${Number(tool.ownerRating).toFixed(1)}`
                                 : "New"}
                         </span>
                         {hasReviews && (
-                            <span className="text-[9px] text-slate-400 font-mono">
+                            <span className="text-2xs text-muted-foreground/60 font-mono">
                                 ({tool.ownerReviewCount})
                             </span>
                         )}
                     </div>
                 </div>
 
-                <p className="text-[10px] text-slate-400 mt-auto pt-2 border-t border-slate-100">
+                <p className="text-2xs text-muted-foreground mt-auto pt-2 border-t border-border/60 font-mono">
                     + ${tool.deposit} deposit
                 </p>
             </div>
@@ -122,4 +132,3 @@ export const ToolCard = memo(({ tool }: ToolCardProps) => {
 });
 
 ToolCard.displayName = "ToolCard";
-

@@ -20,10 +20,10 @@ export function SortDrawer({ isOpen, onClose, sortOption, setSortOption }: SortD
 
     return (
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DrawerContent className="rounded-t-[2rem] bg-signal-white border-t border-workshop-gray/10">
-                <DrawerHeader className="text-left border-b border-workshop-gray/10 px-5 py-4">
-                    <DrawerTitle className="text-xl font-bold font-serif text-charcoal flex items-center gap-2.5">
-                        <ArrowUpDown className="h-5 w-5 text-safety-orange" />
+            <DrawerContent className="rounded-t-card bg-card border-t border-border/80">
+                <DrawerHeader className="text-left border-b border-border/80 px-5 py-4">
+                    <DrawerTitle className="text-xl font-bold font-serif text-foreground flex items-center gap-2.5">
+                        <ArrowUpDown className="h-5 w-5 text-primary" />
                         Sort Results
                     </DrawerTitle>
                 </DrawerHeader>
@@ -37,10 +37,10 @@ export function SortDrawer({ isOpen, onClose, sortOption, setSortOption }: SortD
                             key={opt.label}
                             onClick={() => handleSort(opt.value as any)}
                             className={cn(
-                                "w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-200",
+                                "w-full flex items-center justify-between p-4 rounded-default border transition-all duration-200",
                                 sortOption === opt.value
-                                    ? "bg-safety-orange/5 border-safety-orange/40 shadow-[0_0_12px_rgba(255,107,0,0.08)]"
-                                    : "bg-white border-workshop-gray/10 hover:border-safety-orange/20 hover:bg-safety-orange/[0.02]"
+                                    ? "bg-primary/5 border-primary/40 shadow-[0_0_12px_rgba(91,110,174,0.12)]"
+                                    : "bg-card border-border/80 hover:border-primary/20 hover:bg-primary/[0.02]"
                             )}
                             aria-label={`Sort by ${opt.label}`}
                             tabIndex={0}
@@ -49,12 +49,12 @@ export function SortDrawer({ isOpen, onClose, sortOption, setSortOption }: SortD
                             <div className="text-left">
                                 <span className={cn(
                                     "font-semibold block text-sm",
-                                    sortOption === opt.value ? "text-charcoal" : "text-charcoal/80"
+                                    sortOption === opt.value ? "text-foreground font-bold" : "text-foreground/80"
                                 )}>{opt.label}</span>
-                                <span className="text-xs font-mono uppercase tracking-wider text-charcoal/40">{opt.sub}</span>
+                                <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">{opt.sub}</span>
                             </div>
                             {sortOption === opt.value && (
-                                <div className="h-6 w-6 rounded-full bg-safety-orange flex items-center justify-center">
+                                <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
                                     <Check className="h-3.5 w-3.5 text-white" />
                                 </div>
                             )}
@@ -65,7 +65,7 @@ export function SortDrawer({ isOpen, onClose, sortOption, setSortOption }: SortD
                     <DrawerClose asChild>
                         <Button
                             variant="outline"
-                            className="h-12 text-sm font-bold uppercase tracking-wider rounded-full border-workshop-gray/15 text-charcoal/60 hover:text-charcoal hover:border-charcoal/30"
+                            className="h-12 text-sm font-bold uppercase tracking-wider rounded-full border-border/80 text-muted-foreground hover:text-foreground hover:border-border"
                         >
                             Cancel
                         </Button>

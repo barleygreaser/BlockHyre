@@ -46,11 +46,11 @@ export function InventoryFiltersModal(props: InventoryFiltersModalProps) {
     if (isDesktop) {
         return (
             <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-                <DialogContent className="fixed inset-0 z-50 h-full w-full max-w-none rounded-none border-0 bg-signal-white p-0 shadow-none sm:max-w-none overflow-hidden flex flex-col">
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-workshop-gray/10 flex-shrink-0 bg-white">
+                <DialogContent className="fixed inset-0 z-50 h-full w-full max-w-none rounded-none border-0 bg-background p-0 shadow-none sm:max-w-none overflow-hidden flex flex-col">
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-border/80 flex-shrink-0 bg-card">
                         <div>
-                            <DialogTitle className="text-xl font-bold font-serif text-charcoal flex items-center gap-2.5">
-                                <SlidersHorizontal className="h-5 w-5 text-safety-orange" />
+                            <DialogTitle className="text-xl font-bold font-serif text-foreground flex items-center gap-2.5">
+                                <SlidersHorizontal className="h-5 w-5 text-primary" />
                                 Filter Inventory
                             </DialogTitle>
                         </div>
@@ -72,17 +72,17 @@ export function InventoryFiltersModal(props: InventoryFiltersModalProps) {
 
     return (
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DrawerContent className="h-[85vh] flex flex-col rounded-t-[2rem] bg-signal-white border-t border-workshop-gray/10">
-                <DrawerHeader className="text-left border-b border-workshop-gray/10 px-5 py-4">
-                    <DrawerTitle className="text-xl font-bold font-serif text-charcoal flex items-center gap-2.5">
-                        <SlidersHorizontal className="h-5 w-5 text-safety-orange" />
+            <DrawerContent className="h-[85vh] flex flex-col rounded-t-card bg-card border-t border-border/80">
+                <DrawerHeader className="text-left border-b border-border/80 px-5 py-4">
+                    <DrawerTitle className="text-xl font-bold font-serif text-foreground flex items-center gap-2.5">
+                        <SlidersHorizontal className="h-5 w-5 text-primary" />
                         Filter Inventory
                     </DrawerTitle>
                 </DrawerHeader>
                 <div className="flex-1 overflow-y-auto">
                     <FilterContent {...props} isDesktop={false} />
                 </div>
-                <DrawerFooter className="pt-3 pb-6 border-t border-workshop-gray/10 bg-white px-5">
+                <DrawerFooter className="pt-3 pb-6 border-t border-border/80 bg-card px-5">
                     <div className="flex items-center gap-3 w-full">
                         <Button
                             variant="ghost"
@@ -95,13 +95,13 @@ export function InventoryFiltersModal(props: InventoryFiltersModalProps) {
                                 props.setAcceptsBarterOnly(false);
                                 props.setInstantBookOnly(false);
                             }}
-                            className="flex-1 text-charcoal/50 hover:text-charcoal font-bold text-xs uppercase tracking-wider rounded-full h-12"
+                            className="flex-1 text-muted-foreground hover:text-foreground font-bold text-xs uppercase tracking-wider rounded-full h-12"
                         >
                             Reset
                         </Button>
                         <Button
                             onClick={onClose}
-                            className="flex-[2] bg-safety-orange hover:bg-safety-orange-hover h-12 text-sm font-bold uppercase tracking-wider rounded-full shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40"
+                            className="flex-[2] bg-primary hover:bg-midnight-navy h-12 text-sm font-bold uppercase tracking-wider rounded-full shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40"
                         >
                             Show Results
                         </Button>
@@ -139,25 +139,25 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
     return (
         <div className={cn("p-5 space-y-5", isDesktop ? "flex-1 overflow-y-auto" : "")}>
             {/* Search */}
-            <section className="bg-white p-4 rounded-xl border border-workshop-gray/10">
+            <section className="bg-card p-4 rounded-card border border-border/80">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-charcoal/30 z-10" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                     <Input
                         type="text"
                         placeholder="Search tools..."
                         value={props.searchQuery}
                         onChange={(e) => props.setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 bg-signal-white border-workshop-gray/10 focus-visible:ring-safety-orange/30 focus-visible:border-safety-orange/50 text-charcoal placeholder:text-charcoal/30 rounded-lg transition-all"
+                        className="w-full pl-10 pr-4 bg-background border-border/80 focus-visible:ring-ring text-foreground placeholder:text-muted-foreground rounded-subtle transition-all"
                     />
                 </div>
             </section>
 
             {/* Location / Radius */}
             {showDistanceFilter && (
-                <section className="bg-white p-4 rounded-xl border border-workshop-gray/10">
+                <section className="bg-card p-4 rounded-card border border-border/80">
                     <div className="flex items-center justify-between mb-4">
-                        <Label className="font-bold font-serif text-charcoal">Search Radius</Label>
-                        <span className="text-xs font-mono font-bold text-safety-orange bg-safety-orange/10 px-2.5 py-1 rounded-full">
+                        <Label className="font-bold font-serif text-foreground">Search Radius</Label>
+                        <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
                             {maxDistance} mi
                         </span>
                     </div>
@@ -169,7 +169,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
                         onValueChange={(val) => setMaxDistance(val[0])}
                         className="w-full"
                     />
-                    <div className="flex justify-between text-[10px] font-mono uppercase tracking-wider text-charcoal/30 mt-2">
+                    <div className="flex justify-between text-2xs font-mono uppercase tracking-wider text-muted-foreground mt-2">
                         <span>0.5 mi</span>
                         <span>20 mi</span>
                     </div>
@@ -177,8 +177,8 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             )}
 
             {/* Categories */}
-            <section className="bg-white p-4 rounded-xl border border-workshop-gray/10">
-                <Label className="font-bold font-serif text-charcoal mb-4 block">Categories</Label>
+            <section className="bg-card p-4 rounded-card border border-border/80">
+                <Label className="font-bold font-serif text-foreground mb-4 block">Categories</Label>
                 <div className="flex flex-wrap gap-2">
                     {sortedCategories.map(cat => (
                         <button
@@ -186,8 +186,8 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
                             className={cn(
                                 "flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-semibold transition-all duration-200 select-none",
                                 selectedCategories.includes(cat.name)
-                                    ? "bg-safety-orange/10 border-safety-orange/40 text-charcoal shadow-[0_0_8px_rgba(255,107,0,0.08)]"
-                                    : "bg-signal-white border-workshop-gray/15 text-charcoal/70 hover:border-safety-orange/20 hover:text-charcoal"
+                                    ? "bg-primary/10 border-primary/40 text-foreground shadow-[0_0_8px_rgba(91,110,174,0.12)]"
+                                    : "bg-background border-border/80 text-muted-foreground hover:border-primary/30 hover:text-foreground"
                             )}
                             onClick={() => toggleCategory(cat.name)}
                             aria-label={`Toggle ${cat.name} filter`}
@@ -195,7 +195,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
                             onKeyDown={(e) => { if (e.key === "Enter") toggleCategory(cat.name); }}
                         >
                             {selectedCategories.includes(cat.name) && (
-                                <span className="h-1.5 w-1.5 rounded-full bg-safety-orange flex-shrink-0" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
                             )}
                             {cat.name}
                         </button>
@@ -204,10 +204,10 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             </section>
 
             {/* Protection Tier */}
-            <section className="bg-white p-4 rounded-xl border border-workshop-gray/10">
+            <section className="bg-card p-4 rounded-card border border-border/80">
                 <div className="flex items-center gap-2 mb-4">
-                    <Shield className="h-4 w-4 text-safety-orange" />
-                    <Label className="font-bold font-serif text-charcoal">Protection Tier</Label>
+                    <Shield className="h-4 w-4 text-primary" />
+                    <Label className="font-bold font-serif text-foreground">Protection Tier</Label>
                 </div>
                 <RadioGroup value={selectedTier || ""} onValueChange={(val) => setSelectedTier(val === selectedTier ? null : val)}>
                     <div className="space-y-2.5">
@@ -221,15 +221,15 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
                                 className={cn(
                                     "flex items-center space-x-3 p-3 rounded-xl border transition-all duration-200 cursor-pointer",
                                     selectedTier === tier.id
-                                        ? "bg-safety-orange/5 border-safety-orange/30"
+                                        ? "bg-primary/5 border-primary/30"
                                         : "border-transparent hover:bg-charcoal/[0.02]"
                                 )}
                                 onClick={() => setSelectedTier(selectedTier === tier.id ? null : tier.id)}
                             >
                                 <RadioGroupItem value={tier.id} id={`mobile-tier-${tier.id}`} onClick={() => { if (selectedTier === tier.id) setSelectedTier(null) }} />
                                 <Label htmlFor={`mobile-tier-${tier.id}`} className="cursor-pointer flex-1">
-                                    <span className="text-sm font-semibold text-charcoal block leading-none">{tier.label}</span>
-                                    <span className="text-[11px] font-mono uppercase tracking-wider text-charcoal/40">{tier.sub}</span>
+                                    <span className="text-sm font-semibold text-foreground block leading-none">{tier.label}</span>
+                                    <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">{tier.sub}</span>
                                 </Label>
                             </div>
                         ))}
@@ -238,8 +238,8 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             </section>
 
             {/* Price Range */}
-            <section className="bg-white p-4 rounded-xl border border-workshop-gray/10">
-                <Label className="font-bold font-serif text-charcoal mb-4 block">Daily Price Range</Label>
+            <section className="bg-card p-4 rounded-card border border-border/80">
+                <Label className="font-bold font-serif text-foreground mb-4 block">Daily Price Range</Label>
                 <div className="px-2">
                     <Slider
                         min={0}
@@ -250,11 +250,11 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
                         className="w-full mb-4"
                     />
                     <div className="flex justify-between items-center">
-                        <div className="border border-workshop-gray/10 rounded-lg px-3 py-1.5 bg-signal-white text-charcoal/40 text-sm font-mono">
+                        <div className="border border-border/80 rounded-subtle px-3 py-1.5 bg-background text-muted-foreground text-sm font-mono">
                             $0
                         </div>
                         <span className="text-charcoal/20">—</span>
-                        <div className="border border-safety-orange/30 rounded-lg px-3 py-1.5 bg-safety-orange/5 text-charcoal font-bold text-sm font-mono">
+                        <div className="border border-primary/30 rounded-subtle px-3 py-1.5 bg-primary/5 text-foreground font-bold text-sm font-mono">
                             ${priceRange[1]}+
                         </div>
                     </div>
@@ -262,26 +262,26 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
             </section>
 
             {/* Toggles */}
-            <section className="bg-white p-4 rounded-xl border border-workshop-gray/10 space-y-0">
+            <section className="bg-card p-4 rounded-card border border-border/80 space-y-0">
                 {/* Verified Owners */}
                 <div className="flex items-center justify-between py-3.5">
-                    <Label htmlFor="mobile-verified" className="text-sm font-semibold text-charcoal cursor-pointer">Verified Owners Only</Label>
+                    <Label htmlFor="mobile-verified" className="text-sm font-semibold text-foreground cursor-pointer">Verified Owners Only</Label>
                     <Switch
                         id="mobile-verified"
                         checked={verifiedOwnersOnly}
                         onCheckedChange={setVerifiedOwnersOnly}
-                        className="data-[state=checked]:bg-emerald-500"
+                        className="data-[state=checked]:bg-peace-fund"
                     />
                 </div>
 
                 {/* Barter */}
                 <div className="flex items-center justify-between border-t border-workshop-gray/8 py-3.5">
-                    <Label htmlFor="mobile-barter" className="text-sm font-semibold text-charcoal cursor-pointer">Accepts Barter</Label>
+                    <Label htmlFor="mobile-barter" className="text-sm font-semibold text-foreground cursor-pointer">Accepts Barter</Label>
                     <Switch
                         id="mobile-barter"
                         checked={acceptsBarterOnly}
                         onCheckedChange={setAcceptsBarterOnly}
-                        className="data-[state=checked]:bg-emerald-500"
+                        className="data-[state=checked]:bg-peace-fund"
                     />
                 </div>
 
@@ -302,7 +302,7 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
 
             {/* Desktop Footer */}
             {isDesktop && (
-                <div className="p-5 border-t border-workshop-gray/10 bg-white flex items-center gap-3 flex-shrink-0 mt-4">
+                <div className="p-5 border-t border-border/80 bg-card flex items-center gap-3 flex-shrink-0 mt-4">
                     <Button
                         variant="ghost"
                         onClick={() => {
@@ -314,13 +314,13 @@ function FilterContent(props: InventoryFiltersModalProps & { isDesktop: boolean 
                             props.setAcceptsBarterOnly(false);
                             props.setInstantBookOnly(false);
                         }}
-                        className="flex-1 text-charcoal/50 hover:text-charcoal font-bold text-xs uppercase tracking-wider rounded-full h-12"
+                        className="flex-1 text-muted-foreground hover:text-foreground font-bold text-xs uppercase tracking-wider rounded-full h-12"
                     >
                         Reset
                     </Button>
                     <Button
                         onClick={props.onClose}
-                        className="flex-[2] bg-safety-orange hover:bg-safety-orange-hover h-12 text-sm font-bold uppercase tracking-wider rounded-full shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40"
+                        className="flex-[2] bg-primary hover:bg-midnight-navy h-12 text-sm font-bold uppercase tracking-wider rounded-full shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40"
                     >
                         Show Results
                     </Button>

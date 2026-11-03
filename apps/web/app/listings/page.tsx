@@ -224,7 +224,7 @@ export default function InventoryPage() {
         + (priceRange[1] < 300 ? 1 : 0);
 
     return (
-        <main className="min-h-screen bg-signal-white">
+        <main className="min-h-screen bg-background text-foreground">
             <Navbar />
             <div className="container mx-auto px-4 pt-20 pb-8 md:py-8">
                 <div className="flex flex-col md:flex-row gap-8">
@@ -237,15 +237,15 @@ export default function InventoryPage() {
 
                         {/* Current Location Context */}
                         {(maybeAuthenticated || (user && (!locationLoaded || neighborhoodName))) && (
-                            <div className="pb-4 border-b border-slate-200">
-                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">My Neighborhood</h3>
+                            <div className="pb-4 border-b border-border/80">
+                                <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">My Neighborhood</h3>
                                 {(!user || !locationLoaded) ? (
                                     <div className="flex items-center">
                                         <Skeleton className="h-5 w-3/4 rounded-sm" />
                                     </div>
                                 ) : neighborhoodName ? (
-                                    <div className="flex items-center text-slate-800 font-medium">
-                                        <MapPin className="w-4 h-4 mr-1 text-safety-orange" />
+                                    <div className="flex items-center text-foreground font-medium">
+                                        <MapPin className="w-4 h-4 mr-1 text-primary" />
                                         {neighborhoodName}
                                     </div>
                                 ) : null}
@@ -255,22 +255,22 @@ export default function InventoryPage() {
 
                         {/* Search */}
                         <div>
-                            <h3 className="font-bold font-serif text-slate-900 mb-4">Search</h3>
+                            <h3 className="font-bold font-serif text-foreground mb-4">Search</h3>
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                                 <Input
                                     type="text"
                                     placeholder="Search tools..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 bg-white border-slate-200 focus-visible:ring-safety-orange/50 focus-visible:border-safety-orange transition-all"
+                                    className="w-full pl-10 pr-4 bg-card border-border/80 focus-visible:ring-ring transition-all"
                                 />
                             </div>
                         </div>
 
                         {/* Categories */}
                         <div>
-                            <h3 className="font-bold font-serif text-slate-900 mb-4">Categories</h3>
+                            <h3 className="font-bold font-serif text-foreground mb-4">Categories</h3>
                             <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-hide">
                                 {categoriesLoading ? (
                                     // SKELETON LOADER IMPLEMENTATION
@@ -292,11 +292,11 @@ export default function InventoryPage() {
                                                 id={`category-${category.id}`}
                                                 checked={selectedCategories.includes(category.name)}
                                                 onCheckedChange={() => toggleCategory(category.name)}
-                                                className="border-slate-300 data-[state=checked]:bg-safety-orange data-[state=checked]:border-safety-orange"
+                                                className="border-border/80 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                             />
                                             <Label
                                                 htmlFor={`category-${category.id}`}
-                                                className="text-sm text-slate-600 cursor-pointer hover:text-slate-900 truncate"
+                                                className="text-sm text-muted-foreground cursor-pointer hover:text-foreground truncate"
                                             >
                                                 {category.name}
                                             </Label>
@@ -307,15 +307,15 @@ export default function InventoryPage() {
                         </div>
 
                         {/* PHASE 2: BLOCKHYRE TRUST & ACCESS */}
-                        <div className="pt-4 border-t border-slate-200">
+                        <div className="pt-4 border-t border-border/80">
                             <div className="flex items-center gap-2 mb-4">
-                                <Shield className="h-4 w-4 text-safety-orange" />
+                                <Shield className="h-4 w-4 text-primary" />
                                 <h3 className="font-bold font-serif text-slate-900">Trust & Access</h3>
                             </div>
 
                             {/* Protection Tier */}
                             <div className="mb-6">
-                                <Label className="text-sm font-semibold text-slate-700 mb-3 block">Protection Tier</Label>
+                                <Label className="text-sm font-semibold text-foreground mb-3 block">Protection Tier</Label>
                                 <RadioGroup value={selectedTier || ""} onValueChange={(val) => setSelectedTier(val === selectedTier ? null : val)}>
                                     <div className="space-y-3">
                                         {[
@@ -326,8 +326,8 @@ export default function InventoryPage() {
                                             <div key={tier.id} className="flex items-start space-x-2">
                                                 <RadioGroupItem value={tier.id} id={`tier-${tier.id}`} className="mt-0.5" />
                                                 <Label htmlFor={`tier-${tier.id}`} className="cursor-pointer">
-                                                    <span className="text-slate-700 font-medium block text-sm">{tier.label}</span>
-                                                    <span className="text-xs text-slate-500">{tier.sub}</span>
+                                                    <span className="text-foreground font-medium block text-sm">{tier.label}</span>
+                                                    <span className="text-xs text-muted-foreground">{tier.sub}</span>
                                                 </Label>
                                             </div>
                                         ))}
@@ -338,12 +338,12 @@ export default function InventoryPage() {
                             {/* Verified Owners Toggle */}
                             <div className="mb-6">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="verified-owners" className="text-sm font-semibold text-slate-700 cursor-pointer">Verified Owners Only</Label>
+                                    <Label htmlFor="verified-owners" className="text-sm font-semibold text-foreground cursor-pointer">Verified Owners Only</Label>
                                     <Switch
                                         id="verified-owners"
                                         checked={verifiedOwnersOnly}
                                         onCheckedChange={setVerifiedOwnersOnly}
-                                        className="data-[state=checked]:bg-emerald-500"
+                                        className="data-[state=checked]:bg-peace-fund"
                                     />
                                 </div>
                             </div>
@@ -352,8 +352,8 @@ export default function InventoryPage() {
                             {user && (
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
-                                        <Label className="text-sm font-semibold text-slate-700">Distance from Neighborhood</Label>
-                                        <span className="text-xs font-bold text-safety-orange bg-orange-50 px-2 py-1 rounded">
+                                        <Label className="text-sm font-semibold text-foreground">Distance from Neighborhood</Label>
+                                        <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-subtle">
                                             {maxDistance} mi
                                         </span>
                                     </div>
@@ -365,7 +365,7 @@ export default function InventoryPage() {
                                         onValueChange={(val) => setMaxDistance(val[0])}
                                         className="w-full"
                                     />
-                                    <div className="flex justify-between text-xs text-slate-400 mt-2">
+                                    <div className="flex justify-between text-xs text-muted-foreground mt-2">
                                         <span>0.5 mi</span>
                                         <span>25 mi</span>
                                     </div>
@@ -374,12 +374,12 @@ export default function InventoryPage() {
                         </div>
 
                         {/* PHASE 3: FINANCIAL & OPTIONS */}
-                        <div className="pt-4 border-t border-slate-200">
-                            <h3 className="font-bold font-serif text-slate-900 mb-4">Financial & Options</h3>
+                        <div className="pt-4 border-t border-border/80">
+                            <h3 className="font-bold font-serif text-foreground mb-4">Financial & Options</h3>
 
                             {/* Daily Rate */}
                             <div className="mb-6">
-                                <div className="flex items-center justify-between text-sm text-slate-600 mb-3">
+                                <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
                                     <Label className="font-semibold text-slate-700">Daily Rate</Label>
                                     <span>${priceRange[1]}+</span>
                                 </div>
@@ -396,12 +396,12 @@ export default function InventoryPage() {
                             {/* Barter Toggle */}
                             <div className="mb-6">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="accepts-barter" className="text-sm font-semibold text-slate-700 cursor-pointer">Accepts Barter Only</Label>
+                                    <Label htmlFor="accepts-barter" className="text-sm font-semibold text-foreground cursor-pointer">Accepts Barter Only</Label>
                                     <Switch
                                         id="accepts-barter"
                                         checked={acceptsBarterOnly}
                                         onCheckedChange={setAcceptsBarterOnly}
-                                        className="data-[state=checked]:bg-emerald-500"
+                                        className="data-[state=checked]:bg-peace-fund"
                                     />
                                 </div>
                             </div>
@@ -409,7 +409,7 @@ export default function InventoryPage() {
                             {/* Instant Book Toggle */}
                             <div>
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="instant-book" className="text-sm font-semibold text-slate-700 flex items-center gap-1 cursor-pointer">
+                                    <Label htmlFor="instant-book" className="text-sm font-semibold text-foreground flex items-center gap-1 cursor-pointer">
                                         <Zap className="h-3 w-3 text-yellow-500 fill-yellow-500" />
                                         Instant Book Only
                                     </Label>
@@ -430,10 +430,10 @@ export default function InventoryPage() {
                             {(loading || authLoading) ? (
                                 <Skeleton className="h-7 w-48" />
                             ) : (
-                                <h2 className="text-xl font-bold text-slate-900">
+                                <h2 className="text-xl font-bold text-foreground">
                                     {filteredTools.length} {filteredTools.length === 1 ? 'Tool' : 'Tools'} Found
-                                    {!user && <span className="text-sm font-normal text-slate-500 ml-2">(Everything)</span>}
-                                    {user && neighborhoodName && <span className="text-sm font-normal text-slate-500 ml-2">near {neighborhoodName}</span>}
+                                    {!user && <span className="text-sm font-normal text-muted-foreground ml-2">(Everything)</span>}
+                                    {user && neighborhoodName && <span className="text-sm font-normal text-muted-foreground ml-2">near {neighborhoodName}</span>}
                                 </h2>
                             )}
                             {/* Active Filters Summary */}
@@ -456,7 +456,7 @@ export default function InventoryPage() {
                                 value={sortOption || "default"}
                                 onValueChange={(value) => setSortOption(value === "default" ? null : value as any)}
                             >
-                                <SelectTrigger className="w-[240px] bg-white border-slate-200 text-slate-700 font-medium focus:ring-safety-orange/20 focus:border-safety-orange">
+                                <SelectTrigger className="w-[240px] bg-card border-border/80 text-foreground font-medium focus:ring-ring">
                                     <SelectValue placeholder="Sort by: Best Match (Default)" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -490,12 +490,12 @@ export default function InventoryPage() {
                                 )}
                             </>
                         ) : (
-                            <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">
-                                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Search className="h-8 w-8 text-slate-400" />
+                            <div className="text-center py-20 bg-card rounded-card border border-border/80 border-dashed">
+                                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Search className="h-8 w-8 text-muted-foreground" />
                                 </div>
-                                <h3 className="text-lg font-bold text-slate-900 mb-2">No tools found</h3>
-                                <p className="text-slate-500 max-w-md mx-auto mb-6">
+                                <h3 className="text-lg font-bold text-foreground mb-2">No tools found</h3>
+                                <p className="text-muted-foreground max-w-md mx-auto mb-6">
                                     We could not find any tools matching your criteria.
                                     Try clearing some filters.
                                 </p>
@@ -554,10 +554,10 @@ export default function InventoryPage() {
             {/* Mobile Floating Action Bar */}
             {!isDesktop && (
                 <div className="fixed top-[80px] left-4 right-4 z-40 md:hidden">
-                    <div className="bg-charcoal/80 backdrop-blur-xl border border-safety-orange/20 rounded-full shadow-2xl shadow-black/20 px-3 py-2 flex items-center gap-2">
+                    <div className="bg-deep-charcoal/95 backdrop-blur-xl border border-white/10 ring-1 ring-electric-indigo/25 rounded-full shadow-2xl shadow-black/30 px-3 py-2 flex items-center gap-2">
                         <button
                             onClick={() => setIsFiltersOpen(true)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider text-concrete hover:text-safety-orange transition-colors"
+                            className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider text-signal-white hover:text-periwinkle-blue transition-colors"
                             aria-label="Open filters"
                             tabIndex={0}
                             onKeyDown={(e) => { if (e.key === 'Enter') setIsFiltersOpen(true); }}
@@ -566,7 +566,7 @@ export default function InventoryPage() {
                             <span className="relative">
                                 Filter
                                 {activeFilterCount > 0 && (
-                                    <span className="absolute -top-2 -right-3.5 h-[16px] min-w-[16px] rounded-full bg-safety-orange text-white text-[9px] font-bold flex items-center justify-center px-0.5">
+                                    <span className="absolute -top-2 -right-3.5 h-[16px] min-w-[16px] rounded-full bg-primary text-white text-2xs font-bold flex items-center justify-center px-0.5">
                                         {activeFilterCount}
                                     </span>
                                 )}
@@ -575,7 +575,7 @@ export default function InventoryPage() {
                         <div className="w-px h-6 bg-white/15" />
                         <button
                             onClick={() => setIsSortOpen(true)}
-                            className={`flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${sortOption ? 'text-safety-orange' : 'text-concrete hover:text-safety-orange'}`}
+                            className={`flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${sortOption ? 'text-periwinkle-blue' : 'text-signal-white hover:text-periwinkle-blue'}`}
                             aria-label="Open sort options"
                             tabIndex={0}
                             onKeyDown={(e) => { if (e.key === 'Enter') setIsSortOpen(true); }}
