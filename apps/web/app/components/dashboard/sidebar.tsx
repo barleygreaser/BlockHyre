@@ -76,7 +76,7 @@ export function DashboardSidebar() {
   const totalAlerts = alerts.owner + alerts.renter + unreadCount;
 
   const navLinkClass = (active: boolean) =>
-    `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm border ${
+    `flex items-center gap-3 px-3 py-2 rounded-interactive transition-all text-sm border ${
       active
         ? "bg-white/10 text-white font-bold border-white/5"
         : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent"
@@ -104,11 +104,11 @@ export function DashboardSidebar() {
 
       {/* Role Switcher — buttons call context directly, zero router latency */}
       <div className="px-4 py-4 mb-2">
-        <div className="bg-white/5 p-1 rounded-2xl flex gap-1 relative border border-white/10 shadow-inner">
+        <div className="bg-white/5 p-1 rounded-card flex gap-1 relative border border-white/10 shadow-inner">
           <button
             data-tour="renter-toggle"
             onClick={() => handleRoleSwitch("renter")}
-            className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 relative ${
+            className={`flex-1 flex items-center justify-center py-2 rounded-interactive text-2xs font-mono font-bold uppercase tracking-industrial transition-all duration-150 relative ${
               activeRole === "renter"
                 ? "bg-signal-white text-slate-900 shadow-sm"
                 : "text-slate-400 hover:text-white"
@@ -128,9 +128,9 @@ export function DashboardSidebar() {
           <button
             data-tour="owner-toggle"
             onClick={() => handleRoleSwitch("owner")}
-            className={`flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 relative ${
+            className={`flex-1 flex items-center justify-center py-2 rounded-interactive text-2xs font-mono font-bold uppercase tracking-industrial transition-all duration-150 relative ${
               activeRole === "owner"
-                ? "bg-safety-orange text-white shadow-[0_0_15px_rgba(255,102,0,0.3)] border border-safety-orange/50"
+                ? "bg-electric-indigo text-white shadow-sm border border-electric-indigo/50"
                 : "text-slate-400 hover:text-white"
             }`}
             aria-label="Switch to Owner view"
@@ -150,7 +150,7 @@ export function DashboardSidebar() {
 
       {/* Dynamic Middle Section */}
       <div className="flex-1 px-4 overflow-y-auto space-y-1">
-        <p className="px-2 text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-3 mt-2 min-h-[15px]">
+        <p className="px-2 text-2xs font-mono text-slate-500 uppercase tracking-industrial mb-3 mt-2 min-h-[15px]">
           {activeRole === "owner" ? "Dashboard" : "Dashboard"}
         </p>
 
@@ -229,7 +229,7 @@ export function DashboardSidebar() {
 
       {/* Notice Card — placeholder for future announcements */}
       <div className="px-4 pb-3">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+        <div className="rounded-card border border-white/10 bg-white/[0.03] p-3">
           <div className="flex items-center gap-1.5 mb-1.5">
             <div className="h-1.5 w-1.5 rounded-full bg-safety-orange/50" />
             <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider">
@@ -243,7 +243,7 @@ export function DashboardSidebar() {
       </div>
 
       {/* Bottom Global Section */}
-      <div className="px-4 pb-4 pt-3 border-t border-white/10 space-y-0.5 bg-charcoal">
+      <div className="px-4 pb-4 pt-3 border-t border-white/10 space-y-0.5 bg-deep-charcoal">
         <Link
           href="/messages"
           data-tour="messages-link"
@@ -275,7 +275,7 @@ export function DashboardSidebar() {
         </Link>
         <button
           onClick={() => signOut()}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-all text-sm"
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-interactive text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-all text-sm"
           aria-label="Log out"
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
@@ -288,12 +288,12 @@ export function DashboardSidebar() {
   return (
     <>
       {/* ── DESKTOP: always-visible fixed sidebar ── */}
-      <aside className="hidden lg:flex w-64 h-screen bg-charcoal text-white flex-col fixed left-0 top-0 border-r border-white/10 z-50">
+      <aside className="hidden lg:flex w-64 h-screen bg-deep-charcoal text-white flex-col fixed left-0 top-0 border-r border-white/10 z-50">
         <SidebarContent />
       </aside>
 
       {/* ── MOBILE: Fixed top bar ── */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-charcoal border-b border-white/10 z-50 flex items-center justify-between px-4">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-deep-charcoal border-b border-white/10 z-50 flex items-center justify-between px-4">
         {/* Hamburger */}
         <button
           data-tour="mobile-nav-trigger"
@@ -323,7 +323,7 @@ export function DashboardSidebar() {
 
         {/* Active role pill */}
         <div
-          className={`text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1.5 rounded-full ${
+          className={`text-2xs font-mono font-bold uppercase tracking-industrial px-3 py-1.5 rounded-full ${
             activeRole === "owner"
               ? "bg-safety-orange text-white"
               : "bg-white/10 text-slate-300"
@@ -344,7 +344,7 @@ export function DashboardSidebar() {
 
       {/* ── MOBILE: Slide-out drawer ── */}
       <aside
-        className={`lg:hidden fixed top-0 left-0 h-full w-72 bg-charcoal text-white flex flex-col z-[70] border-r border-white/10 transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed top-0 left-0 h-full w-72 bg-deep-charcoal text-white flex flex-col z-[70] border-r border-white/10 transition-transform duration-300 ease-in-out ${
           drawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-label="Navigation drawer"

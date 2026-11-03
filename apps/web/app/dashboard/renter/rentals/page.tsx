@@ -314,14 +314,14 @@ export default function RenterRentalsPage() {
                     Back to Dashboard
                 </Link>
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="h-px w-8 bg-safety-orange" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-safety-orange">
+                    <div className="h-px w-8 bg-electric-indigo" />
+                    <span className="text-2xs font-mono font-bold uppercase tracking-industrial text-electric-indigo">
                         Rental Operations
                     </span>
                 </div>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold font-serif text-slate-900 tracking-tight">
+                        <h1 className="text-3xl font-bold font-serif text-midnight-navy tracking-tight">
                             My Rentals
                         </h1>
                         <p className="text-slate-500 mt-1 text-sm">
@@ -329,7 +329,7 @@ export default function RenterRentalsPage() {
                         </p>
                     </div>
                     <Link href="/listings">
-                        <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105 active:translate-y-[2px]">
+                        <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-xs active:translate-y-0.5">
                             <Search className="mr-2 h-4 w-4" />
                             Find Tools
                         </Button>
@@ -343,7 +343,7 @@ export default function RenterRentalsPage() {
                     <button
                         key={key}
                         onClick={() => handleFilterChange(key)}
-                        className={`px-4 py-2 rounded-full text-sm font-bold font-mono uppercase tracking-wider transition-all active:translate-y-[2px] ${activeFilter === key
+                        className={`px-3.5 py-1.5 rounded-full text-2xs font-bold font-mono uppercase tracking-industrial transition-all active:translate-y-0.5 ${activeFilter === key
                                 ? `${color} text-white shadow-lg`
                                 : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300"
                             }`}
@@ -364,7 +364,7 @@ export default function RenterRentalsPage() {
                 {loading ? (
                     <>
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="bg-white rounded-[2rem] p-6 border border-slate-200">
+                            <div key={i} className="bg-white rounded-card p-6 border border-slate-200">
                                 <Skeleton className="h-28 w-full" />
                             </div>
                         ))}
@@ -378,17 +378,17 @@ export default function RenterRentalsPage() {
                         return (
                             <div
                                 key={rental.id}
-                                className={`bg-white rounded-[2rem] border p-5 sm:p-6 shadow-sm transition-all duration-200 hover:shadow-md ${daysContext.overdue
+                                className={`bg-white rounded-card border p-5 sm:p-6 shadow-xs transition-all duration-200 hover:shadow-md ${daysContext.overdue
                                         ? "border-2 border-red-400 bg-red-50/30 animate-pulse-subtle"
                                         : daysContext.urgent && category === "active"
                                             ? "border-2 border-amber-300 bg-amber-50/20"
-                                            : "border-slate-200 hover:border-safety-orange/30"
+                                            : "border-slate-200 hover:border-electric-indigo/30"
                                     }`}
                                 style={{ animationDelay: `${index * 40}ms` }}
                             >
                                 <div className="flex gap-4">
                                     {/* Tool Image */}
-                                    <div className="w-16 h-16 sm:w-24 sm:h-24 bg-slate-100 rounded-2xl overflow-hidden flex-shrink-0 relative border border-slate-100">
+                                    <div className="w-16 h-16 sm:w-24 sm:h-24 bg-slate-100 rounded-interactive overflow-hidden flex-shrink-0 relative border border-slate-100">
                                         {rental.listing_image_url ? (
                                             <Image
                                                 src={rental.listing_image_url}
@@ -414,7 +414,7 @@ export default function RenterRentalsPage() {
                                     <div className="flex-1 min-w-0 space-y-2">
                                         <div className="flex justify-between items-start gap-2">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-base sm:text-lg text-slate-900 font-serif truncate">
+                                                <h3 className="font-bold text-base sm:text-lg text-midnight-navy font-serif truncate">
                                                     {rental.listing_title}
                                                 </h3>
                                                 <div className="flex items-center gap-1.5 mt-1">
@@ -438,7 +438,7 @@ export default function RenterRentalsPage() {
                                             </div>
 
                                             {/* Price — top right */}
-                                            <span className="font-bold text-slate-900 text-sm sm:text-base font-mono tabular-nums whitespace-nowrap">
+                                            <span className="font-bold text-midnight-navy text-sm sm:text-base font-mono tabular-nums whitespace-nowrap">
                                                 {formatCurrency(rental.total_paid || rental.rental_fee)}
                                             </span>
                                         </div>
@@ -534,7 +534,7 @@ export default function RenterRentalsPage() {
                         );
                     })
                 ) : (
-                    <Empty className="bg-white rounded-[2rem] border border-slate-200">
+                    <Empty className="bg-white rounded-card border border-slate-200">
                         <EmptyHeader>
                             <EmptyMedia variant="icon">
                                 <Package className="text-slate-300" />

@@ -119,7 +119,7 @@ export default function MyRentalsPage() {
             <div className="container mx-auto px-4 py-8 max-w-7xl">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">
+                    <h1 className="text-3xl font-bold font-serif text-midnight-navy mb-2">
                         My Rentals
                     </h1>
                     <p className="text-slate-600">
@@ -129,7 +129,7 @@ export default function MyRentalsPage() {
 
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-safety-orange"></div>
+                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-electric-indigo"></div>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -143,7 +143,7 @@ export default function MyRentalsPage() {
                                 </h2>
 
                                 {activeRentals.length === 0 ? (
-                                    <Card className="border-slate-200">
+                                    <Card className="border-slate-200/80 rounded-card shadow-xs">
                                         <CardContent className="p-12 text-center">
                                             <Package className="h-12 w-12 text-slate-300 mx-auto mb-3" />
                                             <h3 className="font-medium text-slate-900 mb-1">No Active Rentals</h3>
@@ -231,7 +231,7 @@ export default function MyRentalsPage() {
                         {/* Sidebar */}
                         <div className="space-y-6">
                             {/* Quick Stats */}
-                            <Card className="border-slate-200 shadow-sm">
+                            <Card className="border-slate-200/80 rounded-card shadow-xs">
                                 <CardHeader>
                                     <CardTitle className="text-lg font-serif">Quick Stats</CardTitle>
                                 </CardHeader>
@@ -253,7 +253,7 @@ export default function MyRentalsPage() {
 
                             {/* Rental History */}
                             {rentalHistory.length > 0 && (
-                                <Card className="border-slate-200 shadow-sm">
+                                <Card className="border-slate-200/80 rounded-card shadow-xs">
                                     <CardHeader>
                                         <CardTitle className="text-lg font-serif flex items-center gap-2">
                                             <Clock className="h-5 w-5" />
@@ -279,13 +279,13 @@ export default function MyRentalsPage() {
                             )}
 
                             {/* Help Card */}
-                            <Card className="border-blue-200 bg-blue-50">
+                            <Card className="border-electric-indigo/20 bg-electric-indigo/5 rounded-card">
                                 <CardContent className="p-6">
                                     <div className="flex items-start gap-3">
-                                        <AlertCircle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+                                        <AlertCircle className="h-5 w-5 text-electric-indigo shrink-0 mt-0.5" />
                                         <div>
-                                            <h4 className="font-bold text-blue-900 mb-1">Need Help?</h4>
-                                            <p className="text-sm text-blue-700">
+                                            <h4 className="font-serif font-bold text-midnight-navy mb-1">Need Help?</h4>
+                                            <p className="text-xs text-slate-600 leading-relaxed">
                                                 Have questions about your rental? Check out our{' '}
                                                 <a href="/how-it-works" className="underline font-medium">
                                                     How It Works

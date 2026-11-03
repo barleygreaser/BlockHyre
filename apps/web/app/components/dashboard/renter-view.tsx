@@ -265,11 +265,11 @@ export function RenterDashboardView() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold font-serif text-slate-900 tracking-tight">My Rentals</h2>
+                    <h2 className="text-2xl font-bold font-serif text-midnight-navy tracking-tight">My Rentals</h2>
                     <p className="text-sm text-slate-500 mt-1">Track your active rentals and history.</p>
                 </div>
                 <Link href="/listings" data-tour="find-tools-btn">
-                    <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
+                    <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
                         <Search className="mr-2 h-4 w-4" />
                         Find Tools
                     </Button>
@@ -279,13 +279,13 @@ export function RenterDashboardView() {
             {/* KPI Telemetry Row — always 3 columns, fixed height at all viewports */}
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 {/* Active Rentals Count */}
-                <Link href="/dashboard/renter/rentals#active" className={`bg-white rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md transition-all ${overdueCount > 0 ? 'border-2 border-red-300' : 'border-slate-200 hover:border-slate-300'
+                <Link href="/dashboard/renter/rentals#active" className={`bg-white rounded-card border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md transition-all ${overdueCount > 0 ? 'border-2 border-red-300' : 'border-slate-200 hover:border-slate-300'
                     }`}>
                     <div>
-                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Active</p>
+                        <p className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-industrial mb-1 group-hover:text-slate-500 transition-colors">Active</p>
                         <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{totalActive}</h3>
                     </div>
-                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                         <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
                         {overdueCount > 0 ? (
                             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
@@ -304,28 +304,28 @@ export function RenterDashboardView() {
                         e.preventDefault();
                         document.getElementById('active-rentals')?.scrollIntoView({ behavior: 'smooth' });
                     }}
-                    className={`text-left w-full rounded-[2rem] border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group transition-all hover:shadow-md ${urgentCount > 0
+                    className={`text-left w-full rounded-card border p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group transition-all hover:shadow-md ${urgentCount > 0
                     ? 'bg-red-50/60 border-2 border-red-300 hover:border-red-400 animate-pulse-subtle'
                     : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}>
                     <div>
-                        <p className="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider mb-1 text-slate-400 group-hover:text-slate-500 transition-colors">Urgent</p>
+                        <p className="text-2xs font-mono font-bold uppercase tracking-industrial mb-1 text-slate-400 group-hover:text-slate-500 transition-colors">Urgent</p>
                         <h3 className={`text-xl sm:text-3xl font-bold font-mono tabular-nums ${urgentCount > 0 ? 'text-red-600' : 'text-slate-900'
                             }`}>{urgentCount}</h3>
                     </div>
-                    <div className={`relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${urgentCount > 0 ? 'bg-red-100 text-red-500 group-hover:bg-red-200' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'
+                    <div className={`relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive flex items-center justify-center flex-shrink-0 transition-colors ${urgentCount > 0 ? 'bg-red-100 text-red-500 group-hover:bg-red-200' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'
                         }`}>
                         <TriangleAlert className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
                 </button>
 
                 {/* Pending Requests */}
-                <Link href="/dashboard/renter/rentals#pending" className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between hover:shadow-md hover:border-slate-300 transition-all group">
+                <Link href="/dashboard/renter/rentals#pending" className="bg-white rounded-card border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between hover:shadow-md hover:border-slate-300 transition-all group">
                     <div>
-                        <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Pending</p>
+                        <p className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-industrial mb-1 group-hover:text-slate-500 transition-colors">Pending</p>
                         <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">{pendingRequests.length}</h3>
                     </div>
-                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0 group-hover:bg-amber-100 transition-colors">
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0 group-hover:bg-amber-100 transition-colors">
                         <CalendarClock className="h-5 w-5 sm:h-6 sm:w-6" />
                         {pendingRequests.length > 0 && (
                             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
@@ -344,7 +344,7 @@ export function RenterDashboardView() {
                     {/* Active Rentals */}
                     <div id="active-rentals" className="space-y-4 scroll-mt-24">
                         <div className="flex items-center gap-3">
-                            <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                            <div className="h-px flex-1 max-w-[40px] bg-electric-indigo/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Active Rentals</h2>
                             <div data-tour="active-rentals-stat" className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-xs font-mono font-bold border border-slate-200">
                                 <span className="text-slate-700">{totalActive}</span>
@@ -353,7 +353,7 @@ export function RenterDashboardView() {
                             </div>
                         </div>
                         {activeRentals.length === 0 ? (
-                            <div className="bg-white rounded-[2rem] border border-slate-200 p-12 text-center shadow-sm">
+                            <div className="bg-white rounded-card border border-slate-200 p-12 text-center shadow-sm">
                                 <p className="text-slate-400 text-sm font-mono">No active rentals</p>
                             </div>
                         ) : activeRentals.map((rental) => {
@@ -373,7 +373,7 @@ export function RenterDashboardView() {
                                     : `Due in ${daysLeft} Days`;
 
                             return (
-                                <div key={rental.rental_id} data-testid="active-rental-card" className={`rounded-[2rem] p-6 shadow-sm transition-all duration-300 ${styles.card}`}>
+                                <div key={rental.rental_id} data-testid="active-rental-card" className={`rounded-card p-6 shadow-sm transition-all duration-300 ${styles.card}`}>
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
@@ -450,7 +450,7 @@ export function RenterDashboardView() {
                     {/* Pending Requests */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                            <div className="h-px flex-1 max-w-[40px] bg-electric-indigo/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Pending Requests</h2>
                             {pendingRequests.length > 0 && (
                                 <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[10px] font-mono font-bold uppercase tracking-wider rounded-full px-3">
@@ -459,14 +459,14 @@ export function RenterDashboardView() {
                             )}
                         </div>
                         {pendingRequests.length === 0 ? (
-                            <div className="bg-white rounded-[2rem] border border-slate-200 p-12 text-center shadow-sm">
+                            <div className="bg-white rounded-card border border-slate-200 p-12 text-center shadow-sm">
                                 <p className="text-slate-400 text-sm font-mono">No pending requests</p>
                             </div>
                         ) : pendingRequests.map((request) => (
-                            <div key={request.rental_id} data-testid="pending-request-card" className="bg-white rounded-[2rem] border border-amber-200/60 p-6 shadow-sm">
+                            <div key={request.rental_id} data-testid="pending-request-card" className="bg-white rounded-card border border-amber-200/60 p-6 shadow-sm">
                                 <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-4 flex-1">
-                                        <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0">
+                                        <div className="relative h-14 w-14 rounded-interactive overflow-hidden bg-slate-100 flex-shrink-0">
                                             {request.listing_image_url ? (
                                                 <Image
                                                     src={request.listing_image_url}
@@ -514,11 +514,11 @@ export function RenterDashboardView() {
                     {/* Upcoming Bookings */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                            <div className="h-px flex-1 max-w-[40px] bg-electric-indigo/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Upcoming Bookings</h2>
                         </div>
                         {upcomingBookings.length === 0 ? (
-                            <div className="bg-white rounded-[2rem] border border-slate-200 p-12 text-center shadow-sm">
+                            <div className="bg-white rounded-card border border-slate-200 p-12 text-center shadow-sm">
                                 <p className="text-slate-400 text-sm font-mono">No upcoming bookings</p>
                             </div>
                         ) : upcomingBookings.map((booking) => {
@@ -528,10 +528,10 @@ export function RenterDashboardView() {
                             const canReceiveTool = hoursUntilStart <= 24 && hoursUntilStart >= -24;
 
                             return (
-                                <div key={booking.rental_id} className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-safety-orange/30 hover:shadow-md">
+                                <div key={booking.rental_id} className="bg-white rounded-card border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-safety-orange/30 hover:shadow-md">
                                     <div className="flex items-center justify-between gap-4">
                                         <div className="flex items-center gap-4 flex-1">
-                                            <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0">
+                                            <div className="relative h-14 w-14 rounded-interactive overflow-hidden bg-slate-100 flex-shrink-0">
                                                 {booking.listing_image_url ? (
                                                     <Image
                                                         src={booking.listing_image_url}
@@ -630,7 +630,7 @@ export function RenterDashboardView() {
                 {/* Right Column: History & Disputes */}
                 <div className="space-y-6">
                     {/* Rental History */}
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                    <div className="bg-white rounded-card border border-slate-200 p-6 shadow-sm">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-base font-bold font-serif text-slate-900">Rental History</h3>
                             {rentalHistory.length > 0 && (
@@ -676,7 +676,7 @@ export function RenterDashboardView() {
 
                     {/* Disputes */}
                     {activeDisputes.length > 0 ? (
-                        <div className="bg-red-50 rounded-[2rem] border-2 border-red-300 p-6 shadow-sm">
+                        <div className="bg-red-50 rounded-card border-2 border-red-300 p-6 shadow-sm">
                             <h3 className="text-base font-bold font-serif text-red-700 flex items-center gap-2 mb-3">
                                 <TriangleAlert className="h-5 w-5" />
                                 Action Required
@@ -698,7 +698,7 @@ export function RenterDashboardView() {
                             </Link>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 flex items-center justify-between shadow-sm">
+                        <div className="bg-white rounded-card border border-slate-200 p-5 flex items-center justify-between shadow-sm">
                             <span className="font-serif text-slate-900 font-medium text-sm">Disputes</span>
                             <div className="flex items-center gap-2 text-emerald-600 text-[10px] font-mono font-bold uppercase tracking-wider">
                                 <div className="h-2 w-2 rounded-full bg-emerald-500" />

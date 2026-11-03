@@ -279,7 +279,7 @@ export function OwnerDashboardView() {
 
             if (error) {
                 toast.error(`[SYSTEM ERROR] Failed to approve: ${error.message}`, {
-                    className: "font-serif border-l-4 border-l-red-500 rounded-none bg-charcoal text-white",
+                    className: "font-serif border-l-4 border-l-red-500 rounded-none bg-deep-charcoal text-white",
                 });
                 // Revert optimistic update gracefully
                 setRentalRequests(prev => [rental, ...prev]);
@@ -393,7 +393,7 @@ export function OwnerDashboardView() {
 
             toast.success(`[${timeFormatter.format(new Date())}] RENTAL APPROVED`, {
                 description: `${rental.listing.title} marked active for ${rental.renter.full_name}`,
-                className: "font-serif border-l-4 border-l-emerald-500 rounded-none bg-charcoal text-emerald-400",
+                className: "font-serif border-l-4 border-l-emerald-500 rounded-none bg-deep-charcoal text-emerald-400",
             });
         } catch (err) {
             console.error("Approval failed:", err);
@@ -608,11 +608,11 @@ export function OwnerDashboardView() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold font-serif text-slate-900 tracking-tight">My Listings</h2>
+                    <h2 className="text-2xl font-bold font-serif text-midnight-navy tracking-tight">My Listings</h2>
                     <p className="text-sm text-slate-500 mt-1">Manage your tools, rentals, and earnings.</p>
                 </div>
                 <Link href="/add-tool">
-                    <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20 transition-all hover:shadow-safety-orange/40 hover:scale-105">
+                    <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
                         <Plus className="mr-2 h-4 w-4" />
                         List New Tool
                     </Button>
@@ -622,16 +622,16 @@ export function OwnerDashboardView() {
             {/* KPI Telemetry Row — always 3 columns, fixed height at all viewports */}
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 <Link href="/dashboard/owner/bookings" className="block group active:translate-y-[2px] transition-transform">
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
+                    <div className="bg-white rounded-card border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                         <div>
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tool Bookings</p>
+                            <p className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-industrial mb-1 group-hover:text-slate-500 transition-colors">Tool Bookings</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
                                 <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-serif tabular-nums">{kpis.activeRentals}</h3>
                             )}
                         </div>
-                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                             <Users className="h-5 w-5 sm:h-6 sm:w-6" />
                             {!kpiLoading && overdueCount > 0 ? (
                                 <Badge className="absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-transparent border border-white">
@@ -649,23 +649,23 @@ export function OwnerDashboardView() {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link href="/dashboard/owner/transactions" className="block group active:translate-y-[2px] transition-transform">
-                                <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
+                                <div className="bg-white rounded-card border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                                     <div className="min-w-0">
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Net Earnings (30d)</p>
+                            <p className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-industrial mb-1 group-hover:text-slate-500 transition-colors">Net Earnings (30d)</p>
                                         {kpiLoading ? (
                                             <div className="h-7 w-16 bg-slate-100 animate-pulse rounded-lg mt-1" />
                                         ) : (
                                             <h3 className="text-xl sm:text-3xl font-bold text-emerald-600 font-serif tabular-nums truncate">{formatCurrency(kpis.earnings30d)}</h3>
                                         )}
                                     </div>
-                                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 group-hover:bg-emerald-100 transition-colors">
+                                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 group-hover:bg-emerald-100 transition-colors">
                                         <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
                                         {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
                                     </div>
                                 </div>
                             </Link>
                         </TooltipTrigger>
-                        <TooltipContent side="bottom" className="bg-charcoal text-white p-3 rounded-xl max-w-[220px]">
+                        <TooltipContent side="bottom" className="bg-deep-charcoal text-white p-3 rounded-xl max-w-[220px]">
                             <div className="space-y-1.5 text-[11px] font-serif">
                                 <div className="flex justify-between gap-4">
                                     <span className="text-concrete/60">Gross Revenue</span>
@@ -685,16 +685,16 @@ export function OwnerDashboardView() {
                 </TooltipProvider>
 
                 <Link href="/dashboard/inventory" className="block group active:translate-y-[2px] transition-transform">
-                    <div className="bg-white rounded-[2rem] border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
+                    <div className="bg-white rounded-card border border-slate-200 p-3 sm:p-5 h-[88px] sm:h-[100px] shadow-sm flex items-center justify-between group hover:shadow-md hover:border-slate-300 transition-all">
                         <div>
-                            <p className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover:text-slate-500 transition-colors">Tools Listed</p>
+                            <p className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-industrial mb-1 group-hover:text-slate-500 transition-colors">Tools Listed</p>
                             {kpiLoading ? (
                                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
                             ) : (
                                 <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-serif tabular-nums">{kpis.toolsListed}</h3>
                             )}
                         </div>
-                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-safety-orange flex-shrink-0 group-hover:bg-orange-100 transition-colors">
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-orange-50 flex items-center justify-center text-safety-orange flex-shrink-0 group-hover:bg-orange-100 transition-colors">
                             <Wrench className="h-5 w-5 sm:h-6 sm:w-6" />
                             {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
                         </div>
@@ -711,11 +711,11 @@ export function OwnerDashboardView() {
                     {actionItems.length > 0 && (
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
-                                <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                                <div className="h-px flex-1 max-w-[40px] bg-electric-indigo/40" />
                                 <h2 className="text-lg font-bold font-serif text-slate-900">Action Required</h2>
                             </div>
                             {actionItems.map(item => (
-                                <div key={item.id} className="bg-white rounded-[2rem] border-2 border-amber-300 p-6 shadow-sm">
+                                <div key={item.id} className="bg-white rounded-card border-2 border-amber-300 p-6 shadow-sm">
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
@@ -744,21 +744,21 @@ export function OwnerDashboardView() {
                     {/* Rental Requests */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                            <div className="h-px flex-1 max-w-[40px] bg-electric-indigo/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Rental Requests</h2>
                         </div>
 
                         {listsLoading ? (
-                            <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                            <div className="bg-white rounded-card border border-slate-200 p-6 shadow-sm">
                                 <Skeleton className="h-20 w-full rounded-xl" />
                             </div>
                         ) : (
                             <>
                                 {/* Extension Requests - Priority Display */}
                                 {extensionRequests.map((ext) => (
-                                    <div key={ext.extension_id} className="bg-charcoal rounded-[2rem] p-6 shadow-lg border border-white/10">
+                                    <div key={ext.extension_id} className="bg-deep-charcoal rounded-card p-6 shadow-lg border border-white/10">
                                         <div className="flex items-start gap-3 mb-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                                            <div className="h-12 w-12 rounded-interactive bg-amber-500/20 flex items-center justify-center flex-shrink-0">
                                                 <CalendarClock className="h-6 w-6 text-amber-400" />
                                             </div>
                                             <div className="flex-1">
@@ -772,7 +772,7 @@ export function OwnerDashboardView() {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-3 bg-white/5 rounded-2xl p-4 mb-4 border border-white/10">
+                                        <div className="grid grid-cols-2 gap-3 bg-white/5 rounded-interactive p-4 mb-4 border border-white/10">
                                             <div>
                                                 <p className="text-[10px] font-serif text-concrete/50 uppercase tracking-wider mb-1">Current End</p>
                                                 <p className="font-bold text-white font-serif text-sm">{formatDate(ext.current_end_date)}</p>
@@ -817,10 +817,10 @@ export function OwnerDashboardView() {
                                 {/* Regular Rental Requests */}
                                 {rentalRequests.length > 0 ? (
                                     rentalRequests.map((request) => (
-                                        <div key={request.id} data-testid="rental-request-card" className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-safety-orange/30 hover:shadow-md">
+                                        <div key={request.id} data-testid="rental-request-card" className="bg-white rounded-card border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-safety-orange/30 hover:shadow-md">
                                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm overflow-hidden">
+                                                    <div className="h-10 w-10 rounded-interactive bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm overflow-hidden">
                                                         {request.renter.full_name ? request.renter.full_name.charAt(0) : 'R'}
                                                     </div>
                                                     <div>
@@ -851,7 +851,7 @@ export function OwnerDashboardView() {
                                                                                     <Info className="h-3 w-3" />
                                                                                 </span>
                                                                             </TooltipTrigger>
-                                                                            <TooltipContent side="top" className="bg-charcoal text-white p-3 max-w-xs rounded-xl border border-white/10">
+                                                                            <TooltipContent side="top" className="bg-deep-charcoal text-white p-3 max-w-xs rounded-xl border border-white/10">
                                                                                 <div className="space-y-1 text-xs font-serif">
                                                                                     <div className="flex justify-between gap-4">
                                                                                         <span className="text-concrete/60">Rental Fee:</span>
@@ -921,7 +921,7 @@ export function OwnerDashboardView() {
                                         </div>
                                     ))
                                 ) : extensionRequests.length === 0 ? (
-                                    <Empty className="bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+                                    <Empty className="bg-white rounded-card border border-slate-200 shadow-sm">
                                         <EmptyHeader>
                                             <EmptyMedia variant="icon">
                                                 <Files />
@@ -949,12 +949,12 @@ export function OwnerDashboardView() {
                 <div className="space-y-6">
                     {/* Disputes */}
                     {listsLoading ? (
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                        <div className="bg-white rounded-card border border-slate-200 p-6 shadow-sm">
                             <Skeleton className="h-6 w-24 mb-4" />
                             <Skeleton className="h-8 w-full" />
                         </div>
                     ) : activeDisputes.length > 0 ? (
-                        <div className="bg-red-50 rounded-[2rem] border-2 border-red-300 p-6 shadow-sm">
+                        <div className="bg-red-50 rounded-card border-2 border-red-300 p-6 shadow-sm">
                             <h3 className="text-base font-bold font-serif text-red-700 flex items-center gap-2 mb-3">
                                 <TriangleAlert className="h-5 w-5" />
                                 Action Required
@@ -976,7 +976,7 @@ export function OwnerDashboardView() {
                             </Link>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 flex items-center justify-between shadow-sm">
+                        <div className="bg-white rounded-card border border-slate-200 p-5 flex items-center justify-between shadow-sm">
                             <span className="font-serif text-slate-900 font-medium text-sm">Disputes</span>
                             <div className="flex items-center gap-2 text-emerald-600 text-[10px] font-serif font-bold uppercase tracking-wider">
                                 <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
@@ -987,7 +987,7 @@ export function OwnerDashboardView() {
 
                     {/* Payout Status */}
                     {stripeConnected ? (
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                        <div className="bg-white rounded-card border border-slate-200 p-6 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-base font-bold font-serif text-slate-900">Recent Payouts</h3>
                                 <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 text-[10px] font-serif uppercase tracking-wider">
@@ -1033,7 +1033,7 @@ export function OwnerDashboardView() {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                        <div className="bg-white rounded-card border border-slate-200 p-6 shadow-sm">
                             <h3 className="text-base font-bold font-serif text-slate-900 mb-3">Payout Settings</h3>
                             <div className="space-y-4">
                                 <p className="text-sm text-slate-500">
@@ -1045,7 +1045,7 @@ export function OwnerDashboardView() {
                     )}
 
                     {kpiLoading ? (
-                        <div className="bg-safety-orange/5 rounded-[2rem] border border-safety-orange/10 p-6 relative">
+                        <div className="bg-safety-orange/5 rounded-card border border-safety-orange/10 p-6 relative">
                             <Skeleton className="h-6 w-24 bg-safety-orange/10 mb-3" />
                             <div className="space-y-3">
                                 <Skeleton className="h-4 w-full bg-safety-orange/10" />
@@ -1054,7 +1054,7 @@ export function OwnerDashboardView() {
                             </div>
                         </div>
                     ) : showProTip && (
-                        <div className="bg-safety-orange/5 rounded-[2rem] border border-safety-orange/10 p-6 relative">
+                        <div className="bg-safety-orange/5 rounded-card border border-safety-orange/10 p-6 relative">
                             <button
                                 onClick={handleDismissProTip}
                                 className="absolute top-5 right-5 text-safety-orange/40 hover:text-safety-orange transition-colors"

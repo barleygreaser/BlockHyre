@@ -55,12 +55,12 @@ export function ActiveRentalCard({
     const timeUntilDue = formatDistanceToNow(dueDate, { addSuffix: true });
 
     return (
-        <Card className={`${config.bgColor} border shadow-sm hover:shadow-md transition-shadow`}>
+        <Card className={`${config.bgColor} border rounded-card shadow-xs hover:shadow-md transition-shadow`}>
             <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                     {/* Image */}
                     {listingImageUrl ? (
-                        <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
+                        <div className="relative w-24 h-24 rounded-interactive overflow-hidden flex-shrink-0 bg-slate-200">
                             <Image
                                 src={listingImageUrl}
                                 alt={listingTitle}
@@ -70,7 +70,7 @@ export function ActiveRentalCard({
                             />
                         </div>
                     ) : (
-                        <div className="w-24 h-24 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0">
+                        <div className="w-24 h-24 rounded-interactive bg-slate-200 flex items-center justify-center flex-shrink-0">
                             <span className="text-4xl">{config.emoji}</span>
                         </div>
                     )}
@@ -78,15 +78,15 @@ export function ActiveRentalCard({
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-2">
-                            <h3 className="font-bold text-lg text-slate-900 truncate">
+                            <h3 className="font-serif font-bold text-lg text-midnight-navy truncate">
                                 {listingTitle}
                             </h3>
-                            <Badge className={`${config.badgeColor} px-3 py-1 text-xs font-bold shrink-0`}>
+                            <Badge className={`${config.badgeColor} px-3 py-1 text-2xs font-mono uppercase tracking-industrial font-semibold rounded-full shrink-0`}>
                                 {config.label}
                             </Badge>
                         </div>
 
-                        <div className="space-y-2 text-sm text-slate-600">
+                        <div className="space-y-1.5 text-xs font-mono text-slate-600">
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
                                 <span>Due {timeUntilDue}</span>

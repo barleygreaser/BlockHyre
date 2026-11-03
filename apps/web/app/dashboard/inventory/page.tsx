@@ -16,7 +16,7 @@ const SearchInput = (props: any) => (
     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
     <input
       {...props}
-      className="h-10 w-full pl-10 pr-4 rounded-full border border-slate-200 bg-white text-sm font-mono placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-safety-orange/50"
+      className="h-10 w-full pl-10 pr-4 rounded-interactive border border-slate-200/80 bg-white text-sm font-mono placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-indigo/50"
     />
   </div>
 );
@@ -153,12 +153,12 @@ export default function InventoryPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-px w-8 bg-safety-orange" />
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-safety-orange">
+            <div className="h-px w-8 bg-electric-indigo" />
+            <span className="text-2xs font-mono font-bold uppercase tracking-industrial text-electric-indigo">
               Inventory
             </span>
           </div>
-          <h1 className="text-3xl font-bold font-serif text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-bold font-serif text-midnight-navy tracking-tight">
             Inventory
           </h1>
           <p className="text-slate-500 mt-1 text-sm">
@@ -166,7 +166,7 @@ export default function InventoryPage() {
           </p>
         </div>
         <Link href="/add-tool">
-          <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20 transition-all hover:scale-105">
+          <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
             <Plus className="mr-2 h-4 w-4" />
             List New Tool
           </Button>
@@ -174,13 +174,13 @@ export default function InventoryPage() {
       </div>
 
       {/* Filters Row */}
-      <div className="bg-white rounded-[2rem] border border-slate-200 p-4 mb-6 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div className="bg-white rounded-card border border-slate-200/80 p-4 mb-6 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
           {STATUS_TABS.map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-4 py-2 rounded-full text-xs font-bold font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-full text-2xs font-bold font-mono uppercase tracking-industrial transition-all whitespace-nowrap ${
                 statusFilter === status
                   ? "bg-charcoal text-white shadow-sm"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -203,9 +203,9 @@ export default function InventoryPage() {
       </div>
 
       {/* Inventory Table */}
-      <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-card border border-slate-200/80 shadow-xs overflow-hidden">
         {/* Table Header: "Workshop Gray" borders, no bg colors — per Pillar 1 */}
-        <div className="grid grid-cols-12 gap-4 border-b border-slate-100 p-4 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+        <div className="grid grid-cols-12 gap-4 border-b border-slate-100 p-4 text-2xs font-mono font-bold text-slate-400 uppercase tracking-industrial">
           <div className="col-span-12 md:col-span-5">Tool</div>
           <div className="hidden md:block col-span-2">Status</div>
           <div className="hidden md:block col-span-2">Rating</div>
@@ -232,14 +232,14 @@ export default function InventoryPage() {
                   href={`/listings/${item.listing_id}/${item.tool_title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                   className="flex items-center gap-4 nav-bracket"
                 >
-                  <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0 text-slate-400 overflow-hidden border border-slate-100 group-hover:border-safety-orange/30 transition-colors">
+                  <div className="h-12 w-12 rounded-interactive bg-slate-100 flex items-center justify-center flex-shrink-0 text-slate-400 overflow-hidden border border-slate-100 group-hover:border-electric-indigo/30 transition-colors">
                     <ListingThumbnail
                       title={item.tool_title}
                       src={item.image_url}
                     />
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 group-hover:text-safety-orange transition-colors text-sm">
+                    <h3 className="font-serif font-bold text-midnight-navy group-hover:text-electric-indigo transition-colors text-sm">
                       <span className="nav-bracket-left">[</span>
                       {item.tool_title}
                       <span className="nav-bracket-right">]</span>
@@ -277,7 +277,7 @@ export default function InventoryPage() {
 
               {/* Rating */}
               <div className="hidden md:flex col-span-2 items-center gap-1">
-                <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
                 <span className="font-bold text-slate-900 font-mono text-sm">
                   {item.avg_customer_rating > 0
                     ? item.avg_customer_rating.toFixed(1)
