@@ -122,7 +122,7 @@ export function Navbar() {
                         "mx-auto border rounded-full",
                         isMounted && "transition-all duration-300 ease-in-out",
                         isScrolled
-                            ? "max-w-6xl bg-deep-charcoal/80 backdrop-blur-xl border-electric-indigo/20 shadow-2xl shadow-black/20 px-3 lg:px-5 xl:px-6 py-1"
+                            ? "max-w-6xl bg-deep-charcoal/95 backdrop-blur-xl border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-electric-indigo/25 px-3 lg:px-5 xl:px-6 py-1"
                             : "max-w-[1440px] bg-transparent border-transparent shadow-none px-2 md:px-6 py-1"
                     )}
                 >
@@ -130,7 +130,7 @@ export function Navbar() {
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2.5 group" aria-label="BlockHyre Home">
                             <div suppressHydrationWarning className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${isScrolled
-                                ? "bg-electric-indigo text-white"
+                                ? "bg-electric-indigo text-white shadow-sm shadow-electric-indigo/30"
                                 : "bg-midnight-navy/10 text-midnight-navy border border-midnight-navy/20"
                                 }`}>
                                 <span className="font-serif font-bold text-sm">B</span>
@@ -142,25 +142,22 @@ export function Navbar() {
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <div className="hidden lg:flex items-center gap-3 xl:gap-5">
+                        <div className="hidden lg:flex items-center gap-1.5 xl:gap-2">
                             <Link
                                 href="/listings"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-signal-white hover:text-electric-indigo" : "text-midnight-navy/80 hover:text-midnight-navy"
-                                    }`}
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-all duration-200 relative group whitespace-nowrap px-3 py-1.5 rounded-full ${isScrolled ? "text-signal-white hover:text-periwinkle-blue hover:bg-white/5" : "text-midnight-navy/90 hover:text-electric-indigo hover:bg-midnight-navy/5"}`}
                             >
                                 Listings
                             </Link>
                             <Link
                                 href="/how-it-works"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-signal-white hover:text-electric-indigo" : "text-midnight-navy/80 hover:text-midnight-navy"
-                                    }`}
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-all duration-200 relative group whitespace-nowrap px-3 py-1.5 rounded-full ${isScrolled ? "text-signal-white hover:text-periwinkle-blue hover:bg-white/5" : "text-midnight-navy/90 hover:text-electric-indigo hover:bg-midnight-navy/5"}`}
                             >
                                 How it Works
                             </Link>
                             <Link
                                 href="/peace-fund"
-                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-colors duration-200 relative group whitespace-nowrap ${isScrolled ? "text-signal-white hover:text-electric-indigo" : "text-midnight-navy/80 hover:text-midnight-navy"
-                                    }`}
+                                className={`text-xs xl:text-sm font-semibold tracking-wide uppercase transition-all duration-200 relative group whitespace-nowrap px-3 py-1.5 rounded-full ${isScrolled ? "text-signal-white hover:text-periwinkle-blue hover:bg-white/5" : "text-midnight-navy/90 hover:text-electric-indigo hover:bg-midnight-navy/5"}`}
                             >
                                 Peace Fund
                             </Link>
@@ -174,8 +171,7 @@ export function Navbar() {
                                     <div className="h-2 w-2 rounded-full bg-electric-indigo animate-pulse-operational" />
                                     <div className="absolute inset-0 h-2 w-2 rounded-full bg-electric-indigo/40 animate-ping" />
                                 </div>
-                                <span suppressHydrationWarning className={`hidden xl:inline text-[10px] font-bold uppercase tracking-[0.15em] ${isScrolled ? "text-electric-indigo" : "text-electric-indigo"
-                                    }`}>
+                                <span suppressHydrationWarning className={`hidden xl:inline text-2xs font-bold uppercase tracking-widest ${isScrolled ? "text-periwinkle-blue" : "text-electric-indigo font-extrabold"}`}>
                                     Operational
                                 </span>
                             </div>
@@ -224,15 +220,15 @@ export function Navbar() {
                                 ) : user ? (
                                     <div className="flex items-center gap-2 xl:gap-3">
                                         <Link href="/add-tool">
-                                            <Button className="nav-cta-magnetic bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 shadow-lg shadow-electric-indigo/20 transition-all duration-300 hover:shadow-xl hover:shadow-electric-indigo/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md active:shadow-electric-indigo/20">
+                                            <Button className="nav-cta-magnetic bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 shadow-lg shadow-electric-indigo/25 ring-1 ring-electric-indigo/40 transition-all duration-300 hover:shadow-xl hover:shadow-electric-indigo/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md active:shadow-electric-indigo/20">
                                                 + List a Tool
                                             </Button>
                                         </Link>
 
                                         <Link href="/dashboard">
                                             <Button className={`font-bold text-xs uppercase tracking-wider rounded-full px-3 xl:px-5 h-9 transition-all duration-300 ${isScrolled
-                                                ? "bg-white/10 text-white border border-white/20 hover:border-electric-indigo/60 hover:bg-electric-indigo/10 hover:text-electric-indigo hover:shadow-[0_0_12px_rgba(91,110,174,0.15)]"
-                                                : "bg-midnight-navy/5 text-midnight-navy border border-midnight-navy/20 hover:border-electric-indigo/60 hover:bg-electric-indigo/10 hover:text-electric-indigo hover:shadow-[0_0_12px_rgba(91,110,174,0.15)]"
+                                                ? "bg-white/10 text-white border border-white/20 hover:border-electric-indigo/60 hover:bg-electric-indigo/20 hover:text-white hover:shadow-[0_0_12px_rgba(91,110,174,0.25)]"
+                                                : "bg-midnight-navy/5 text-midnight-navy border border-midnight-navy/20 hover:border-electric-indigo/60 hover:bg-electric-indigo/20 hover:text-white hover:shadow-[0_0_12px_rgba(91,110,174,0.25)]"
                                                 }`}>
                                                 Dashboard
                                             </Button>
@@ -268,7 +264,7 @@ export function Navbar() {
                                                 </div>
                                                 {unreadCount > 0 && (
                                                     <Badge
-                                                        className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-electric-indigo hover:bg-electric-indigo text-white border-deep-charcoal border-2 text-[10px]"
+                                                        className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-electric-indigo hover:bg-electric-indigo text-white border-deep-charcoal border-2 text-2xs"
                                                     >
                                                         {unreadCount}
                                                     </Badge>
@@ -281,9 +277,9 @@ export function Navbar() {
                                                         className="fixed inset-0 z-[49]"
                                                         onClick={() => setIsMenuOpen(false)}
                                                     />
-                                                    <div className="absolute right-0 top-[calc(100%+20px)] w-56 bg-deep-charcoal/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 p-1.5 border border-electric-indigo/20 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
+                                                    <div className="absolute right-0 top-[calc(100%+20px)] w-56 bg-deep-charcoal/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/60 p-1.5 border border-white/10 ring-1 ring-electric-indigo/20 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
                                                         <div className="px-3 py-2.5 mb-1.5 border-b border-white/10">
-                                                            <p className="text-[10px] font-mono font-bold text-signal-white/40 uppercase tracking-[0.2em] mb-1">
+                                                            <p className="text-2xs font-mono font-bold text-signal-white/40 uppercase tracking-industrial mb-1">
                                                                 Sys_User
                                                             </p>
                                                             <p className="text-sm font-bold text-white truncate">
@@ -292,31 +288,31 @@ export function Navbar() {
                                                         </div>
                                                         <Link
                                                             href="/profile"
-                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
+                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-signal-white hover:text-white hover:bg-electric-indigo/20 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             Profile
                                                         </Link>
                                                         <Link
                                                             href="/messages"
-                                                            className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
+                                                            className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-signal-white hover:text-white hover:bg-electric-indigo/20 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             <span>Messages</span>
                                                             {unreadCount > 0 && (
-                                                                <Badge className="bg-electric-indigo hover:bg-electric-indigo text-white border-0 text-[10px] w-5 h-5 flex items-center justify-center p-0 rounded-full">{unreadCount}</Badge>
+                                                                <Badge className="bg-electric-indigo hover:bg-electric-indigo text-white border-0 text-2xs w-5 h-5 flex items-center justify-center p-0 rounded-full">{unreadCount}</Badge>
                                                             )}
                                                         </Link>
                                                         <Link
                                                             href="/my-rentals"
-                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
+                                                            className="flex items-center px-3 py-2.5 text-sm font-medium text-signal-white hover:text-white hover:bg-electric-indigo/20 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             My Rentals
                                                         </Link>
                                                         <Link
                                                             href="/favorites"
-                                                            className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-signal-white hover:text-electric-indigo hover:bg-electric-indigo/10 rounded-xl transition-colors"
+                                                            className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-signal-white hover:text-white hover:bg-electric-indigo/20 rounded-xl transition-colors"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
                                                             <Heart className="h-4 w-4" />
@@ -354,7 +350,7 @@ export function Navbar() {
                                             </Button>
                                         </Link>
                                         <Link href="/signup">
-                                            <Button className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-electric-indigo/20 transition-all hover:shadow-electric-indigo/40 hover:scale-105">
+                                            <Button className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-electric-indigo/25 ring-1 ring-electric-indigo/40 transition-all hover:shadow-electric-indigo/40 hover:scale-105">
                                                 Sign Up
                                             </Button>
                                         </Link>
@@ -483,29 +479,29 @@ export function Navbar() {
 
                                         {/* Navigation Links */}
                                         <div className="flex flex-col">
-                                            <Link href="/listings" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/listings" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Listings
                                             </Link>
-                                            <Link href="/messages" className="flex items-center justify-between py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/messages" className="flex items-center justify-between py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 <span>Messages</span>
                                                 {unreadCount > 0 && (
-                                                    <Badge className="bg-electric-indigo hover:bg-electric-indigo text-[10px]">{unreadCount}</Badge>
+                                                    <Badge className="bg-electric-indigo hover:bg-electric-indigo text-2xs">{unreadCount}</Badge>
                                                 )}
                                             </Link>
-                                            <Link href="/my-rentals" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/my-rentals" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 My Rentals
                                             </Link>
-                                            <Link href="/favorites" className="flex items-center gap-2 py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/favorites" className="flex items-center gap-2 py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 <Heart className="h-4 w-4 text-red-400" />
                                                 My Favorites
                                             </Link>
-                                            <Link href="/profile" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/profile" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Profile
                                             </Link>
-                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 How it Works
                                             </Link>
-                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Peace Fund
                                             </Link>
                                         </div>
@@ -542,13 +538,13 @@ export function Navbar() {
                                         </div>
 
                                         <div className="flex flex-col">
-                                            <Link href="/listings" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/listings" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Listings
                                             </Link>
-                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/how-it-works" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 How it Works
                                             </Link>
-                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-signal-white hover:text-electric-indigo border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Link href="/peace-fund" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Peace Fund
                                             </Link>
                                         </div>
