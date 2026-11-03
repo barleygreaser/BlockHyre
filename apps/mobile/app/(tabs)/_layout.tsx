@@ -3,6 +3,7 @@ import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation';
 import { Platform, View } from 'react-native';
 import { Search, Wrench, MessageCircle, User } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import { brandColors } from '@/constants/Colors';
 
 // Use standard Tabs for Web (fallback/server) and NativeTabs for Mobile
 const NativeTabs = Platform.OS === 'ios' || Platform.OS === 'android'
@@ -13,7 +14,7 @@ export default function TabLayout() {
   // --- WEB FALLBACK / Node.js Server SSR ---
   if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
     return (
-      <Tabs screenOptions={{ tabBarActiveTintColor: '#FF6700', headerShown: false }}>
+      <Tabs screenOptions={{ tabBarActiveTintColor: brandColors.electricIndigo, headerShown: false }}>
         <Tabs.Screen
           name="index"
           options={{ title: 'Explore', tabBarIcon: ({ color }) => <Search size={22} color={color} /> }}
@@ -40,7 +41,7 @@ export default function TabLayout() {
   return (
     <NativeTabs
       screenOptions={{
-        tabBarActiveTintColor: '#FF6700',
+        tabBarActiveTintColor: brandColors.electricIndigo,
       }}
       screenListeners={{
         tabPress: () => {

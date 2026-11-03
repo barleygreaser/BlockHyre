@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { useEffect, useMemo } from 'react';
 import {
     StyleSheet,
@@ -185,8 +186,8 @@ export const ConfirmRequestButton: React.FC<ConfirmRequestButtonProps> = ({
     disabled = false,
 }) => {
     const colorFromStatusMap: Record<ButtonStatus, string> = {
-        idle: '#FF6700',
-        loading: '#FF6700',
+        idle: brandColors.electricIndigo,
+        loading: brandColors.electricIndigo,
         success: '#10B981',
         error: '#EF4444',
     };
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 16,
         paddingHorizontal: 20,
-        borderRadius: 14,
+        borderRadius: radii.default,
         minHeight: 54,
     },
     buttonText: {

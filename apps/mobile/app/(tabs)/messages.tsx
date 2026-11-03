@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { useEffect, useState, useCallback } from 'react';
 import {
     View,
@@ -353,7 +354,7 @@ const styles = StyleSheet.create({
         color: '#6B7280',
     },
     timeTextUnread: {
-        color: '#FF6700',
+        color: brandColors.electricIndigo,
         fontWeight: '600',
     },
     listingContext: {
@@ -378,8 +379,8 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     unreadBadge: {
-        backgroundColor: '#FF6700',
-        borderRadius: 12,
+        backgroundColor: brandColors.electricIndigo,
+        borderRadius: radii.full,
         minWidth: 24,
         height: 24,
         justifyContent: 'center',

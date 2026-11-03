@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { useState, useRef, useMemo } from 'react';
 import { Image } from 'expo-image';
 import {
@@ -273,7 +274,7 @@ export default function ExploreScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor="#FF6700"
+            tintColor={brandColors.electricIndigo}
             progressViewOffset={insets.top + HEADER_HEIGHT + 20}
           />
         }
@@ -478,14 +479,14 @@ const styles = StyleSheet.create({
   categoryChip: {
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 100,
+    borderRadius: radii.full,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
   categoryChipActive: {
-    backgroundColor: '#FF6700',
-    borderColor: '#FF6700',
+    backgroundColor: brandColors.electricIndigo,
+    borderColor: brandColors.electricIndigo,
   },
   categoryText: {
     fontSize: 14,
@@ -533,7 +534,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: CARD_WIDTH,
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    borderRadius: radii.card,
     padding: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -546,7 +547,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     aspectRatio: 1,
-    borderRadius: 16,
+    borderRadius: radii.default,
     overflow: 'hidden',
     backgroundColor: '#F3F4F6',
     marginBottom: 12,

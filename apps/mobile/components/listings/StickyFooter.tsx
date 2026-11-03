@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Calendar } from 'lucide-react-native';
@@ -15,7 +16,7 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
     price,
     onRent,
     buttonText = "Request to Rent",
-    buttonColor = "#FF6700"
+    buttonColor = brandColors.electricIndigo
 }) => {
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
@@ -123,13 +124,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#FF6700',
+        backgroundColor: brandColors.electricIndigo,
         paddingVertical: 16,
         paddingHorizontal: 24,
-        borderRadius: 14,
+        borderRadius: radii.default,
         ...Platform.select({
             ios: {
-                shadowColor: '#FF6700',
+                shadowColor: brandColors.electricIndigo,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.3,
                 shadowRadius: 8,

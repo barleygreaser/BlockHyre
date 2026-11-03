@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { useState } from 'react';
 import {
     View,
@@ -410,14 +411,14 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 24,
         right: 20,
-        backgroundColor: '#FF6700', // Safety Orange
+        backgroundColor: brandColors.electricIndigo,
         height: 56,
         paddingHorizontal: 24,
-        borderRadius: 28,
+        borderRadius: radii.full,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#FF6700', // Orange shadow glow
+        shadowColor: brandColors.electricIndigo,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.4,
         shadowRadius: 10,

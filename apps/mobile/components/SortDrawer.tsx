@@ -1,3 +1,4 @@
+import { brandColors, radii } from '@/constants/theme';
 import React, { forwardRef, useImperativeHandle, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ArrowUpDown, Check } from 'lucide-react-native';
@@ -61,7 +62,7 @@ export const SortDrawer = forwardRef<SortDrawerRef, SortDrawerProps>(({ sortOpti
                             >
                                 {opt.label}
                             </Text>
-                            {isSelected && <Check size={20} color="#FF6700" />}
+                            {isSelected && <Check size={20} color={brandColors.electricIndigo} />}
                         </TouchableOpacity>
                     );
                 })}
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 14,
         paddingHorizontal: 16,
-        borderRadius: 12,
+        borderRadius: radii.default,
         borderWidth: 1,
         borderColor: '#E2E8F0',
         backgroundColor: '#FFFFFF',
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     },
     cancelButton: {
         paddingVertical: 16,
-        borderRadius: 12,
+        borderRadius: radii.default,
         borderWidth: 1,
         borderColor: '#E2E8F0',
         alignItems: 'center',

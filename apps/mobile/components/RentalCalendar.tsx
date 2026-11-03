@@ -1,3 +1,4 @@
+import { brandColors } from '@/constants/theme';
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import {
     View,
@@ -393,8 +394,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(59, 130, 246, 0.2)',
     },
     dayCellSelected: {
-        backgroundColor: '#FF6700',
-        shadowColor: '#FF6700',
+        backgroundColor: brandColors.electricIndigo,
+        shadowColor: brandColors.electricIndigo,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -457,7 +458,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     dayTextInRange: {
-        color: '#FF6700',
+        color: brandColors.electricIndigo,
         fontWeight: '600',
     },
 

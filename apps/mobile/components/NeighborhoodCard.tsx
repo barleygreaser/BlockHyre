@@ -1,3 +1,4 @@
+import { brandColors } from '@/constants/theme';
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { MapPin, CheckCircle, Info } from 'lucide-react-native';
@@ -36,8 +37,8 @@ export default function NeighborhoodCard({
                     <Path d="M80 0 L 120 120" stroke="#E2E8F0" strokeWidth="2" fill="none" />
 
                     {/* Radius Circle */}
-                    <Circle cx="100" cy="60" r="35" fill="url(#grad)" stroke="rgba(255, 103, 0, 0.3)" strokeWidth="1" strokeDasharray="4 2" />
-                    <Circle cx="100" cy="60" r="4" fill="#FF6700" />
+                    <Circle cx="100" cy="60" r="35" fill="url(#grad)" stroke="rgba(91, 110, 174, 0.3)" strokeWidth="1" strokeDasharray="4 2" />
+                    <Circle cx="100" cy="60" r="4" fill={brandColors.electricIndigo} />
                 </Svg>
             </View>
 
@@ -53,7 +54,7 @@ export default function NeighborhoodCard({
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.titleRow}>
-                    <MapPin size={20} color="#FF6700" />
+                    <MapPin size={20} color={brandColors.electricIndigo} />
                     <Text style={styles.title}>My Neighborhood</Text>
                 </View>
                 <Text style={styles.description}>Your verified zone for renting and listing tools.</Text>
