@@ -31,7 +31,7 @@ export default function GlobalError({
                     </p>
                 </div>
                 <div className="flex gap-4 mt-6">
-                    <Button onClick={() => reset()} className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold h-12 px-6">
+                    <Button onClick={() => reset()} className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-bold h-12 px-6">
                         Try again
                     </Button>
                     <Button onClick={() => window.location.href = '/'} variant="outline" className="border-slate-300 text-slate-700 h-12 px-6">

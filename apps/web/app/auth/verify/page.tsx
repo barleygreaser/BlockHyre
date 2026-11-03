@@ -69,7 +69,7 @@ function VerifyEmailContent() {
                     
                     <Button
                         asChild
-                        className="w-full max-w-xs bg-safety-orange hover:bg-orange-600 text-white font-medium focus-visible:ring-safety-orange"
+                        className="w-full max-w-xs bg-electric-indigo hover:bg-midnight-navy text-white font-bold rounded-interactive focus-visible:ring-electric-indigo"
                     >
                         <Link href="/dashboard">Go to Dashboard</Link>
                     </Button>
@@ -85,7 +85,7 @@ function VerifyEmailContent() {
                     
                     <Button
                         asChild
-                        className="w-full max-w-xs bg-safety-orange hover:bg-orange-600 text-white font-medium focus-visible:ring-safety-orange"
+                        className="w-full max-w-xs bg-electric-indigo hover:bg-midnight-navy text-white font-bold rounded-interactive focus-visible:ring-electric-indigo"
                     >
                         <Link href="/auth">Return to Sign In</Link>
                     </Button>

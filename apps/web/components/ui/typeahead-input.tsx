@@ -175,7 +175,7 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
                         if (suggestions.length > 0) setIsOpen(true);
                     }}
                     placeholder={placeholder}
-                    className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-safety-orange/50 transition-all"
+                    className="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-electric-indigo/50 transition-all"
                 />
                 {isLoading && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -195,7 +195,7 @@ export function TypeaheadInput({ label, value, type, brandFilter, onChange, onSe
                             className={cn(
                                 "w-full text-left px-4 py-2 text-sm flex items-center justify-between group border-b border-slate-100 last:border-0 transition-colors",
                                 idx === selectedIndex
-                                    ? "bg-safety-orange/10 text-slate-900"
+                                    ? "bg-electric-indigo/10 text-slate-900"
                                     : "hover:bg-slate-50 text-slate-700"
                             )}
                             onClick={() => handleSelect(item)}

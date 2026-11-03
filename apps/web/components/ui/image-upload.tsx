@@ -329,7 +329,7 @@ export function ImageUpload({
                         <Button variant="outline" onClick={() => setIsCropDialogOpen(false)}>
                             Cancel
                         </Button>
-                        <Button onClick={handleCropConfirm} className="bg-safety-orange hover:bg-safety-orange/90 text-white">
+                        <Button onClick={handleCropConfirm} className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium">
                             Upload Photo
                         </Button>
                     </DialogFooter>

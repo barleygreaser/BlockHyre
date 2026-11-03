@@ -145,7 +145,7 @@ export default function SignupPage() {
                                             name="fullName"
                                             type="text"
                                             required
-                                            className="focus-visible:ring-safety-orange"
+                                            className="focus-visible:ring-electric-indigo"
                                             placeholder="John Doe"
                                             value={formData.fullName}
                                             onChange={handleChange}
@@ -161,7 +161,7 @@ export default function SignupPage() {
                                             name="email"
                                             type="email"
                                             required
-                                            className="focus-visible:ring-safety-orange"
+                                            className="focus-visible:ring-electric-indigo"
                                             placeholder="john@example.com"
                                             value={formData.email}
                                             onChange={handleChange}
@@ -176,7 +176,7 @@ export default function SignupPage() {
                                             id="username"
                                             name="username"
                                             type="text"
-                                            className="focus-visible:ring-safety-orange"
+                                            className="focus-visible:ring-electric-indigo"
                                             placeholder="johndoe123"
                                             value={formData.username}
                                             onChange={handleChange}
@@ -192,7 +192,7 @@ export default function SignupPage() {
                                             name="password"
                                             type="password"
                                             required
-                                            className="focus-visible:ring-safety-orange"
+                                            className="focus-visible:ring-electric-indigo"
                                             placeholder="Min. 8 characters"
                                             value={formData.password}
                                             onChange={handleChange}
@@ -208,7 +208,7 @@ export default function SignupPage() {
                                             name="confirmPassword"
                                             type="password"
                                             required
-                                            className="focus-visible:ring-safety-orange"
+                                            className="focus-visible:ring-electric-indigo"
                                             placeholder="Re-enter password"
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
@@ -221,10 +221,10 @@ export default function SignupPage() {
                                             name="tosAccepted"
                                             checked={formData.tosAccepted}
                                             onCheckedChange={(checked: boolean) => setFormData({ ...formData, tosAccepted: checked })}
-                                            className="mt-1 border-slate-300 data-[state=checked]:bg-safety-orange data-[state=checked]:border-safety-orange"
+                                            className="mt-1 border-slate-300 data-[state=checked]:bg-electric-indigo data-[state=checked]:border-electric-indigo"
                                         />
                                         <label htmlFor="tosAccepted" className="text-sm text-slate-600 leading-snug cursor-pointer">
-                                            By creating an account, I agree to BlockHyre's <Link href="/terms" className="text-safety-orange hover:underline">Terms of Service</Link>, <Link href="/liability" className="text-safety-orange hover:underline">Liability Waiver</Link>, and acknowledge the <Link href="/peace-fund" className="text-safety-orange hover:underline">Peace Fund rules</Link>. <span className="text-red-500">*</span>
+                                            By creating an account, I agree to BlockHyre's <Link href="/terms" className="text-electric-indigo hover:underline">Terms of Service</Link>, <Link href="/liability" className="text-electric-indigo hover:underline">Liability Waiver</Link>, and acknowledge the <Link href="/peace-fund" className="text-electric-indigo hover:underline">Peace Fund rules</Link>. <span className="text-red-500">*</span>
                                         </label>
                                     </div>
                                 </div>
@@ -246,7 +246,7 @@ export default function SignupPage() {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full flex justify-center py-2 px-4 text-sm font-medium text-white bg-safety-orange hover:bg-safety-orange/90 focus-visible:ring-safety-orange shadow-md h-12"
+                                        className="w-full flex justify-center py-2 px-4 text-sm font-bold text-white bg-electric-indigo hover:bg-midnight-navy focus-visible:ring-electric-indigo shadow-md h-12 rounded-interactive"
                                     >
                                         {loading ? 'Creating Account...' : 'Create Account'}
                                     </Button>
@@ -268,7 +268,7 @@ export default function SignupPage() {
                                 <div className="text-center mt-4">
                                     <p className="text-sm text-slate-600">
                                         Already have an account?{' '}
-                                        <Link href="/auth" className="font-medium text-safety-orange hover:text-orange-700">
+                                        <Link href="/auth" className="font-medium text-electric-indigo hover:text-midnight-navy">
                                             Sign in
                                         </Link>
                                     </p>

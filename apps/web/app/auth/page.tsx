@@ -78,7 +78,7 @@ export default function AuthPage() {
                                             placeholder="Full Name"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
-                                            className="focus-visible:ring-safety-orange"
+                                            className="focus-visible:ring-electric-indigo"
                                         />
                                     </div>
                                 )}
@@ -90,7 +90,7 @@ export default function AuthPage() {
                                         placeholder="Email address"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="focus-visible:ring-safety-orange"
+                                        className="focus-visible:ring-electric-indigo"
                                     />
                                 </div>
                                 <div>
@@ -100,7 +100,7 @@ export default function AuthPage() {
                                         placeholder="Password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="focus-visible:ring-safety-orange"
+                                        className="focus-visible:ring-electric-indigo"
                                     />
                                 </div>
                             </div>
@@ -114,7 +114,7 @@ export default function AuthPage() {
                                     <Button
                                         asChild
                                         variant="link"
-                                        className="text-safety-orange hover:text-orange-700 font-medium p-0 h-auto text-sm"
+                                        className="text-electric-indigo hover:text-midnight-navy font-medium p-0 h-auto text-sm"
                                     >
                                         <Link href="/auth/forgot-password">Forgot password?</Link>
                                     </Button>
@@ -125,7 +125,7 @@ export default function AuthPage() {
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-safety-orange hover:bg-orange-600 text-white font-medium focus-visible:ring-safety-orange"
+                                    className="w-full bg-electric-indigo hover:bg-midnight-navy text-white font-bold rounded-interactive focus-visible:ring-electric-indigo h-11"
                                 >
                                     {loading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
                                 </Button>
@@ -148,7 +148,7 @@ export default function AuthPage() {
                                 <Button
                                     type="button"
                                     variant="link"
-                                    className="text-safety-orange hover:text-orange-700 font-medium p-0 h-auto"
+                                    className="text-electric-indigo hover:text-midnight-navy font-medium p-0 h-auto"
                                     onClick={() => setIsSignUp(!isSignUp)}
                                 >
                                     {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}

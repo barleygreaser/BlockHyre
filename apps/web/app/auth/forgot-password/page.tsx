@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
                                     placeholder="Email address"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="focus-visible:ring-safety-orange"
+                                    className="focus-visible:ring-electric-indigo"
                                 />
                             </div>
 
@@ -73,14 +73,14 @@ export default function ForgotPasswordPage() {
                                 <Button
                                     type="submit"
                                     disabled={loading || !email}
-                                    className="w-full bg-safety-orange hover:bg-orange-600 text-white font-medium focus-visible:ring-safety-orange"
+                                    className="w-full bg-electric-indigo hover:bg-midnight-navy text-white font-bold rounded-interactive focus-visible:ring-electric-indigo h-11"
                                 >
                                     {loading ? 'Sending link...' : 'Send reset link'}
                                 </Button>
                             </div>
 
                             <div className="text-center mt-4">
-                                <Link href="/auth" passHref className="text-sm font-medium text-slate-600 hover:text-safety-orange transition-colors">
+                                <Link href="/auth" passHref className="text-sm font-medium text-slate-600 hover:text-electric-indigo transition-colors">
                                     Return to sign in
                                 </Link>
                             </div>

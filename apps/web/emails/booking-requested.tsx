@@ -97,7 +97,7 @@ const header = {
 };
 
 const logoText = {
-    color: '#FF6B00',
+    color: '#5B6EAE',
     fontSize: '24px',
     fontFamily: emailFontFamilies.display,
     fontWeight: 'bold',
@@ -157,7 +157,7 @@ const detailLabel = {
 };
 
 const button = {
-    backgroundColor: '#FF6B00',
+    backgroundColor: '#5B6EAE',
     borderRadius: '6px',
     color: '#fff',
     fontSize: '16px',

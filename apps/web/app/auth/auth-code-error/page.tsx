@@ -31,7 +31,7 @@ export default function AuthErrorPage() {
                         <div>
                             <Button
                                 asChild
-                                className="w-full bg-safety-orange hover:bg-orange-600 text-white font-medium focus-visible:ring-safety-orange"
+                                className="w-full bg-electric-indigo hover:bg-midnight-navy text-white font-bold rounded-interactive focus-visible:ring-electric-indigo"
                             >
                                 <Link href="/auth">Return to Sign In</Link>
                             </Button>

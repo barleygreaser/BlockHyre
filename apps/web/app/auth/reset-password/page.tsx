@@ -98,7 +98,7 @@ function ResetPasswordContent() {
             {/* Loading: exchanging code */}
             {pageStatus === 'loading' && (
                 <div className="flex flex-col items-center gap-4 py-6 text-center">
-                    <Loader2 className="h-10 w-10 text-safety-orange animate-spin" />
+                    <Loader2 className="h-10 w-10 text-electric-indigo animate-spin" />
                     <p className="text-slate-600 text-sm">Verifying your reset link...</p>
                 </div>
             )}
@@ -115,11 +115,11 @@ function ResetPasswordContent() {
                     </div>
                     <Button
                         asChild
-                        className="w-full bg-safety-orange hover:bg-orange-600 text-white"
+                        className="w-full bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-bold"
                     >
                         <Link href="/profile">Go back to Profile to request a new link</Link>
                     </Button>
-                    <Link href="/auth" className="text-sm text-slate-500 hover:text-safety-orange transition-colors">
+                    <Link href="/auth" className="text-sm text-slate-500 hover:text-electric-indigo transition-colors">
                         Return to Sign In
                     </Link>
                 </div>
@@ -149,7 +149,7 @@ function ResetPasswordContent() {
                             placeholder="New Password (min 6 chars)"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="focus-visible:ring-safety-orange"
+                            className="focus-visible:ring-electric-indigo"
                             aria-label="New password"
                         />
                         <Input
@@ -159,7 +159,7 @@ function ResetPasswordContent() {
                             placeholder="Confirm New Password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="focus-visible:ring-safety-orange"
+                            className="focus-visible:ring-electric-indigo"
                             aria-label="Confirm new password"
                         />
                     </div>
@@ -174,7 +174,7 @@ function ResetPasswordContent() {
                         type="submit"
                         id="update-password-btn"
                         disabled={submitLoading || !password || !confirmPassword}
-                        className="w-full bg-safety-orange hover:bg-orange-600 text-white font-medium focus-visible:ring-safety-orange"
+                        className="w-full bg-electric-indigo hover:bg-midnight-navy text-white font-bold rounded-interactive focus-visible:ring-electric-indigo"
                     >
                         {submitLoading ? (
                             <span className="flex items-center gap-2">
@@ -207,7 +207,7 @@ export default function ResetPasswordPage() {
 
                     <Suspense fallback={
                         <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
-                            <Loader2 className="h-10 w-10 text-safety-orange animate-spin" />
+                            <Loader2 className="h-10 w-10 text-electric-indigo animate-spin" />
                             <p className="text-slate-600 text-sm">Loading...</p>
                         </CardContent>
                     }>

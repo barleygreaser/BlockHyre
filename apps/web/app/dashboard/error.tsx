@@ -27,7 +27,7 @@ export default function DashboardError({
                 </p>
             </div>
             <div className="flex gap-4 mt-2">
-                <Button onClick={() => reset()} className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold">
+                <Button onClick={() => reset()} className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-bold">
                     Try again
                 </Button>
                 <Button onClick={() => window.location.href = '/dashboard'} variant="outline" className="border-slate-300">

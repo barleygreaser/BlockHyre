@@ -104,7 +104,7 @@ export default function CommunityGuidelinesPage() {
                     <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
                         Help us keep the community safe. Reports are anonymous and investigated by our Trust & Safety team.
                     </p>
-                    <button className="text-safety-orange hover:text-white font-bold transition-colors underline">
+                    <button className="text-electric-indigo hover:text-midnight-navy font-bold transition-colors underline">
                         Report an Issue
                     </button>
                 </div>
