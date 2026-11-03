@@ -15,8 +15,8 @@ export const SystemMessage = memo(({ content }: SystemMessageProps) => {
         <div className={cn(
             "flex justify-center my-4 w-full animate-in fade-in slide-in-from-bottom-4 duration-300"
         )}>
-            <div className="max-w-md w-full bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-sm">
-                <div className="text-xs text-blue-600 font-semibold mb-2 uppercase tracking-wide">
+            <div className="max-w-md w-full bg-electric-indigo/5 border border-electric-indigo/20 rounded-interactive p-4 shadow-xs">
+                <div className="text-2xs font-mono font-bold text-electric-indigo mb-2 uppercase tracking-industrial">
                     📋 System Message
                 </div>
                 <div className="text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none

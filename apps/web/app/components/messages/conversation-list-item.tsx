@@ -20,7 +20,7 @@ export const ConversationListItem = memo(({ chat, isSelected, onSelect }: Conver
             data-testid="conversation-item"
             className={cn(
                 "w-full p-4 transition-colors text-left hover:bg-slate-50",
-                isSelected && "bg-slate-100"
+                isSelected && "bg-electric-indigo/5 border-l-2 border-electric-indigo"
             )}
         >
             <div className="flex gap-3">
@@ -46,11 +46,11 @@ export const ConversationListItem = memo(({ chat, isSelected, onSelect }: Conver
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
-                        <h3 className="font-semibold text-slate-900 truncate">
+                        <h3 className="font-serif font-semibold text-midnight-navy truncate">
                             {chat.other_user_name}
                         </h3>
                         {(chat.unread_count ?? 0) > 0 && (
-                            <Badge className="bg-safety-orange hover:bg-safety-orange text-white ml-2 flex-shrink-0">
+                            <Badge className="bg-electric-indigo text-white font-mono text-2xs uppercase tracking-industrial font-bold rounded-full px-2 ml-2 flex-shrink-0">
                                 {chat.unread_count}
                             </Badge>
                         )}
@@ -62,7 +62,7 @@ export const ConversationListItem = memo(({ chat, isSelected, onSelect }: Conver
                                 {(chat.last_message_content?.length || 0) > 60 ? '...' : ''}
                             </p>
                             {chat.last_message_time && (
-                                <span className="text-xs text-slate-400 flex-shrink-0 whitespace-nowrap ml-auto">
+                                <span className="text-2xs font-mono text-slate-400 flex-shrink-0 whitespace-nowrap ml-auto">
                                     {formatShortRelativeTime(chat.last_message_time)}
                                 </span>
                             )}

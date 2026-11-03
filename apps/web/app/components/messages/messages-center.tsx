@@ -37,7 +37,7 @@ export function MessagesCenter() {
                 <Navbar />
                 <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-safety-orange mx-auto mb-4"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-indigo mx-auto mb-4"></div>
                         <p className="text-slate-600">Loading messages...</p>
                     </div>
                 </div>
@@ -56,15 +56,15 @@ export function MessagesCenter() {
             <div className="container mx-auto px-4 py-6 max-w-7xl">
                 {/* Page Header - Hide on mobile when chat is open */}
                 <div className={`mb-4 md:mb-6 ${chatId ? "hidden md:block" : "block"}`}>
-                    <h1 className="text-xl md:text-3xl font-bold font-serif text-slate-900 flex items-center gap-2">
-                        <MessageSquare className="h-5 w-5 md:h-8 md:w-8 text-safety-orange" />
+                    <h1 className="text-xl md:text-3xl font-bold font-serif text-midnight-navy flex items-center gap-2.5">
+                        <MessageSquare className="h-5 w-5 md:h-7 md:w-7 text-electric-indigo" />
                         Messages
                     </h1>
 
                 </div>
 
                 {/* Two-Pane Layout */}
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-card border border-slate-200/80 shadow-xs overflow-hidden">
                     <div className={cn(
                         "flex",
                         chatId
@@ -79,7 +79,7 @@ export function MessagesCenter() {
                             `}
                         >
                             <div className="p-4 border-b border-slate-200 bg-slate-50">
-                                <h2 className="font-semibold text-slate-900">Conversations</h2>
+                                <h2 className="font-serif font-bold text-midnight-navy text-sm">Conversations</h2>
                             </div>
                             <ConversationList
                                 selectedChatId={chatId}

@@ -134,12 +134,12 @@ export default function HowItWorksPage() {
             <Navbar />
 
             {/* Hero Section: Command Center (Charcoal Background) */}
-            <section className="relative bg-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b-2 border-safety-orange -mt-20">
+            <section className="relative bg-deep-charcoal text-signal-white pt-28 pb-24 md:pt-32 md:pb-32 px-6 border-b-2 border-safety-orange -mt-20">
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-workshop-gray via-charcoal to-charcoal pointer-events-none" />
 
                 <div className="relative max-w-5xl mx-auto flex flex-col items-center">
                     {/* Telemetry style label */}
-                    <div className="flex items-center gap-3 font-mono text-sm uppercase tracking-widest text-concrete border border-workshop-gray px-4 py-2 bg-charcoal-light mb-8">
+                    <div className="flex items-center gap-3 font-mono text-2xs uppercase tracking-industrial text-concrete border border-workshop-gray px-3.5 py-1.5 rounded-full bg-charcoal-light mb-8">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse-operational shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
                         <span>System Operational</span>
                     </div>
@@ -155,7 +155,7 @@ export default function HowItWorksPage() {
 
                     <div className="flex flex-col sm:flex-row justify-center gap-6 items-center w-full">
                         <Link href="/listings" className="w-full sm:w-auto">
-                            <Button size="lg" className="w-full sm:w-auto bg-safety-orange hover:bg-safety-orange-hover text-signal-white font-bold px-10 py-7 text-lg rounded-none magnetic-btn group shadow-[0_4px_20px_rgba(255,107,0,0.3)] border border-safety-orange hover:text-white transition-all flex items-center justify-center">
+                            <Button size="lg" className="w-full sm:w-auto bg-safety-orange hover:bg-safety-orange-hover text-signal-white font-bold px-10 py-7 text-lg rounded-interactive magnetic-btn group shadow-[0_4px_20px_rgba(255,107,0,0.3)] border border-safety-orange hover:text-white transition-all flex items-center justify-center">
                                 <Search className="w-5 h-5 mr-3" />
                                 Browse Tools
                             </Button>
@@ -164,7 +164,7 @@ export default function HowItWorksPage() {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="w-full sm:w-auto bg-charcoal text-signal-white border-workshop-gray hover:bg-workshop-gray hover:text-white px-10 py-7 text-lg rounded-none magnetic-btn font-mono uppercase tracking-wider text-sm transition-colors flex items-center justify-center"
+                                className="w-full sm:w-auto bg-charcoal text-signal-white border-workshop-gray hover:bg-workshop-gray hover:text-white px-10 py-7 text-lg rounded-interactive magnetic-btn font-mono uppercase tracking-industrial text-sm transition-colors flex items-center justify-center"
                             >
                                 List Tool
                             </Button>
@@ -175,15 +175,15 @@ export default function HowItWorksPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto w-full border-t border-workshop-gray pt-8">
                         <div className="flex flex-col items-center">
                             <div className="text-4xl md:text-5xl font-mono text-safety-orange mb-2">5 MI</div>
-                            <div className="font-mono text-xs text-concrete uppercase tracking-widest">Local Radius</div>
+                            <div className="font-mono text-2xs text-concrete uppercase tracking-industrial">Local Radius</div>
                         </div>
                         <div className="flex flex-col items-center md:border-x border-workshop-gray">
                             <div className="text-4xl md:text-5xl font-mono text-signal-white mb-2">$3K</div>
-                            <div className="font-mono text-xs text-concrete uppercase tracking-widest">Max Coverage</div>
+                            <div className="font-mono text-2xs text-concrete uppercase tracking-industrial">Max Coverage</div>
                         </div>
                         <div className="flex flex-col items-center">
                             <div className="text-4xl md:text-5xl font-mono text-signal-white mb-2">100%</div>
-                            <div className="font-mono text-xs text-concrete uppercase tracking-widest">Verification Node</div>
+                            <div className="font-mono text-2xs text-concrete uppercase tracking-industrial">Verification Node</div>
                         </div>
                     </div>
                 </div>
@@ -203,13 +203,13 @@ export default function HowItWorksPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {steps.map((step, index) => (
-                            <div key={index} className="relative group rounded-[40px] bg-white border border-concrete p-8 shadow-sm hover:shadow-xl hover:border-safety-orange transition-all duration-300 overflow-hidden spec-card">
+                            <div key={index} className="relative group rounded-card bg-white border border-concrete p-8 shadow-xs hover:shadow-xl hover:border-safety-orange transition-all duration-300 overflow-hidden spec-card">
                                 {/* Scanner Sweep overlay */}
                                 <div className="absolute top-0 bottom-0 w-[2px] bg-safety-orange opacity-0 group-hover:opacity-100 group-hover:animate-scanner mix-blend-overlay pointer-events-none" />
 
                                 <div className="flex items-start justify-between mb-8">
-                                    <div className="w-16 h-16 rounded-xl bg-charcoal flex items-center justify-center text-safety-orange border border-workshop-gray shadow-md group-hover:scale-105 group-hover:border-safety-orange transition-all duration-300 relative">
-                                        <div className="absolute inset-0 bg-safety-orange/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <div className="w-16 h-16 rounded-interactive bg-charcoal flex items-center justify-center text-safety-orange border border-workshop-gray shadow-xs group-hover:scale-105 group-hover:border-safety-orange transition-all duration-300 relative">
+                                        <div className="absolute inset-0 bg-safety-orange/5 rounded-interactive opacity-0 group-hover:opacity-100 transition-opacity" />
                                         <step.icon className="w-8 h-8 relative z-10" strokeWidth={1.5} />
                                     </div>
                                     <div className="font-mono text-6xl font-bold text-concrete-dark tracking-tighter opacity-30 select-none hidden sm:block">
@@ -229,10 +229,10 @@ export default function HowItWorksPage() {
             </section>
 
             {/* The Peace Fund Section: Contrast Break */}
-            <section className="py-24 px-6 bg-charcoal text-signal-white relative border-y border-workshop-gray">
+            <section className="py-24 px-6 bg-deep-charcoal text-signal-white relative border-y border-workshop-gray">
                 <div className="relative max-w-6xl mx-auto">
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest bg-charcoal-light border border-workshop-gray px-4 py-2 text-concrete mb-6">
+                        <div className="inline-flex items-center gap-2 font-mono text-2xs uppercase tracking-industrial bg-charcoal-light border border-workshop-gray px-3.5 py-1.5 rounded-full text-concrete mb-6">
                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
                             <span>Risk Mitigation Protocol</span>
                         </div>
@@ -248,20 +248,20 @@ export default function HowItWorksPage() {
                         {peaceFundTiers.map((tier, index) => (
                             <div
                                 key={index}
-                                className="bg-charcoal-light border border-workshop-gray p-8 spec-card relative rounded-none flex flex-col group"
+                                className="bg-charcoal-light border border-workshop-gray p-8 spec-card relative rounded-card overflow-hidden flex flex-col group"
                             >
                                 {/* Top accent bar */}
                                 <div className="absolute top-0 left-0 right-0 h-1 bg-workshop-gray group-hover:bg-safety-orange transition-colors" />
 
                                 <div className="flex justify-between items-start mb-8">
                                     <div>
-                                        <div className="font-mono text-xs text-safety-orange uppercase tracking-widest mb-1">{tier.id}</div>
+                                        <div className="font-mono text-2xs text-safety-orange uppercase tracking-industrial mb-1">{tier.id}</div>
                                         <h3 className="font-display text-4xl tracking-tight uppercase text-signal-white">{tier.tier}</h3>
                                         <div className="font-sans text-sm text-concrete">{tier.label}</div>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse-operational shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                                        <span className="font-mono text-xs text-concrete uppercase tracking-widest">Active</span>
+                                        <span className="font-mono text-2xs text-concrete uppercase tracking-industrial">Active</span>
                                     </div>
                                 </div>
 
@@ -270,22 +270,22 @@ export default function HowItWorksPage() {
                                         <span className="font-mono text-4xl md:text-5xl font-bold text-signal-white">{tier.fee}</span>
                                         <span className="font-mono text-sm text-concrete">/DAY</span>
                                     </div>
-                                    <div className="font-mono text-xs text-concrete uppercase mt-2 opacity-70">Surcharge</div>
+                                    <div className="font-mono text-2xs text-concrete uppercase mt-2 opacity-70">Surcharge</div>
                                 </div>
 
                                 <div className="space-y-4 font-mono text-sm mb-8 flex-grow">
                                     <div className="flex justify-between items-center text-concrete border-b border-workshop-gray/50 pb-2">
-                                        <span className="uppercase tracking-wider">Deductible</span>
+                                        <span className="uppercase tracking-industrial text-2xs">Deductible</span>
                                         <span className="text-signal-white font-bold">{tier.deductible}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-emerald-400">
-                                        <span className="uppercase tracking-wider">Max Coverage</span>
+                                        <span className="uppercase tracking-industrial text-2xs">Max Coverage</span>
                                         <span className="font-bold">{tier.coverage}</span>
                                     </div>
                                 </div>
 
-                                <div className="bg-charcoal p-4 border border-workshop-gray mt-auto">
-                                    <div className="font-mono text-xs uppercase text-workshop-gray tracking-widest mb-2 font-bold">Classifications</div>
+                                <div className="bg-charcoal p-4 border border-workshop-gray mt-auto rounded-interactive">
+                                    <div className="font-mono text-2xs uppercase text-workshop-gray tracking-industrial mb-2 font-bold">Classifications</div>
                                     <div className="font-sans text-sm text-concrete leading-snug">{tier.examples}</div>
                                 </div>
                             </div>
@@ -298,7 +298,7 @@ export default function HowItWorksPage() {
             <section className="py-24 px-6 bg-concrete relative">
                 <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
                     <div className="lg:w-1/2">
-                        <div className="font-mono text-sm uppercase tracking-widest text-safety-orange mb-4">System Integrity</div>
+                        <div className="font-mono text-2xs uppercase tracking-industrial text-safety-orange mb-4">System Integrity</div>
                         <h2 className="text-5xl md:text-6xl font-display uppercase tracking-tight text-charcoal mb-8">
                             Trust Architecture
                         </h2>
@@ -308,7 +308,7 @@ export default function HowItWorksPage() {
 
                         <div className="space-y-6">
                             {trustFeatures.map((feature, index) => (
-                                <div key={index} className="bg-white border border-concrete-dark rounded-none p-6 flex gap-6 hover:border-safety-orange transition-colors duration-300 shadow-sm">
+                                <div key={index} className="bg-white border border-concrete-dark rounded-card p-6 flex gap-6 hover:border-safety-orange transition-colors duration-300 shadow-xs">
                                     <div className="flex-shrink-0 mt-1">
                                         <feature.icon className="w-8 h-8 text-charcoal" />
                                     </div>
@@ -323,8 +323,8 @@ export default function HowItWorksPage() {
 
                     <div className="lg:w-1/2">
                         {/* Technical diagram replica */}
-                        <div className="bg-signal-white border-2 border-charcoal p-8 rounded-none shadow-[8px_8px_0_#1A1A1A] h-full flex flex-col justify-center relative overflow-hidden">
-                            <div className="font-mono text-xs font-bold uppercase tracking-widest text-charcoal mb-6 border-b-2 border-charcoal pb-2 flex justify-between">
+                        <div className="bg-signal-white border-2 border-charcoal p-8 rounded-card shadow-[8px_8px_0_#1A1A1A] h-full flex flex-col justify-center relative overflow-hidden">
+                            <div className="font-mono text-2xs font-bold uppercase tracking-industrial text-charcoal mb-6 border-b-2 border-charcoal pb-2 flex justify-between">
                                 <span>Verification Sequence</span>
                                 <span>v2.4.1</span>
                             </div>
@@ -333,27 +333,27 @@ export default function HowItWorksPage() {
                                 <div className="absolute left-[1.4rem] top-6 bottom-6 w-[2px] bg-workshop-gray" />
 
                                 <div className="flex items-start gap-6 relative z-10 group">
-                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold border-2 border-signal-white group-hover:bg-safety-orange transition-colors">1</div>
-                                    <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card">
-                                        <div className="font-mono font-bold text-charcoal uppercase tracking-widest mb-1 flex items-center gap-2">
+                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-safety-orange transition-colors">1</div>
+                                    <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card rounded-interactive">
+                                        <div className="font-mono font-bold text-charcoal text-2xs uppercase tracking-industrial mb-1 flex items-center gap-2">
                                             <Camera className="w-4 h-4" /> Pre-Op Inspect
                                         </div>
                                         <div className="font-sans text-sm text-workshop-gray">Mandatory 4-point visual capture to log initial base state. Required before machine unlock.</div>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-6 relative z-10 group">
-                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold border-2 border-signal-white group-hover:bg-safety-orange transition-colors">2</div>
-                                    <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card">
-                                        <div className="font-mono font-bold text-charcoal uppercase tracking-widest mb-1 flex items-center gap-2">
+                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-safety-orange transition-colors">2</div>
+                                    <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card rounded-interactive">
+                                        <div className="font-mono font-bold text-charcoal text-2xs uppercase tracking-industrial mb-1 flex items-center gap-2">
                                             <CheckCircle2 className="w-4 h-4" /> ID Validation
                                         </div>
                                         <div className="font-sans text-sm text-workshop-gray">Tier 3 assets compel strict identity matrix verification against government schema.</div>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-6 relative z-10 group">
-                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold border-2 border-signal-white group-hover:bg-safety-orange transition-colors">3</div>
-                                    <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card">
-                                        <div className="font-mono font-bold text-charcoal uppercase tracking-widest mb-1 flex items-center gap-2">
+                                    <div className="w-12 h-12 shrink-0 bg-charcoal text-signal-white flex items-center justify-center font-mono font-bold rounded-interactive border-2 border-signal-white group-hover:bg-safety-orange transition-colors">3</div>
+                                    <div className="bg-concrete-dark/20 p-4 border border-workshop-gray w-full spec-card rounded-interactive">
+                                        <div className="font-mono font-bold text-charcoal text-2xs uppercase tracking-industrial mb-1 flex items-center gap-2">
                                             <Clock className="w-4 h-4" /> Return Logic
                                         </div>
                                         <div className="font-sans text-sm text-workshop-gray">Zero-tolerance late framework with 30-min buffer. Automated compounding penalty fees.</div>
@@ -369,7 +369,7 @@ export default function HowItWorksPage() {
             <section className="py-24 px-6 bg-signal-white text-charcoal">
                 <div className="max-w-3xl mx-auto">
                     <div className="mb-16">
-                        <div className="font-mono text-sm uppercase tracking-widest text-safety-orange mb-4">Knowledge Base</div>
+                        <div className="font-mono text-2xs uppercase tracking-industrial text-safety-orange mb-4">Knowledge Base</div>
                         <h2 className="text-5xl font-display uppercase tracking-tight text-charcoal">
                             Directives & FAQ
                         </h2>
@@ -380,7 +380,7 @@ export default function HowItWorksPage() {
                             <AccordionItem
                                 key={index}
                                 value={`item-${index}`}
-                                className="bg-white border border-concrete px-2 rounded-none hover:border-charcoal transition-colors group"
+                                className="bg-white border border-concrete px-2 rounded-card overflow-hidden hover:border-charcoal transition-colors group"
                             >
                                 <AccordionTrigger className="text-left font-serif font-bold text-lg text-charcoal px-4 py-6 hover:no-underline hover:text-safety-orange">
                                     <div className="flex items-center">
@@ -416,7 +416,7 @@ export default function HowItWorksPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center w-full max-w-xl">
                         <Link href="/listings" className="w-full sm:w-auto">
-                            <Button size="lg" className="w-full sm:w-auto bg-charcoal text-signal-white hover:bg-black font-bold px-10 py-8 text-lg rounded-none magnetic-btn shadow-[8px_8px_0_rgba(255,255,255,0.4)] border-2 border-charcoal">
+                            <Button size="lg" className="w-full sm:w-auto bg-charcoal text-signal-white hover:bg-black font-bold px-10 py-8 text-lg rounded-interactive magnetic-btn shadow-[8px_8px_0_rgba(255,255,255,0.4)] border-2 border-charcoal">
                                 ACCESS TOOLS
                             </Button>
                         </Link>
@@ -424,7 +424,7 @@ export default function HowItWorksPage() {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="w-full sm:w-auto border-2 border-charcoal text-charcoal bg-transparent hover:bg-charcoal hover:text-safety-orange font-bold uppercase tracking-widest px-10 py-8 text-lg rounded-none magnetic-btn"
+                                className="w-full sm:w-auto border-2 border-charcoal text-charcoal bg-transparent hover:bg-charcoal hover:text-safety-orange font-bold uppercase tracking-industrial px-10 py-8 text-lg rounded-interactive magnetic-btn"
                             >
                                 Sign Up
                             </Button>

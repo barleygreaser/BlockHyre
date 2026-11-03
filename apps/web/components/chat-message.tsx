@@ -63,8 +63,8 @@ export const ChatMessageItem = memo(({ message, isOwnMessage, showHeader }: Chat
         <div
           data-testid="message-bubble"
           className={cn(
-            'py-2 px-3 rounded-xl text-sm w-fit',
-            isOwnMessage ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
+            'py-2.5 px-3.5 rounded-interactive text-sm w-fit',
+            isOwnMessage ? 'bg-electric-indigo text-white shadow-xs' : 'bg-slate-100 text-midnight-navy border border-slate-200/60'
           )}
         >
           {message.content}
