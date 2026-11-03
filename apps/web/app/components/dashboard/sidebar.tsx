@@ -90,7 +90,7 @@ export function DashboardSidebar() {
           href="/"
           className="font-serif text-2xl font-bold text-white tracking-tight"
         >
-          BlockHyre<span className="text-safety-orange">.</span>
+          BlockHyre<span className="text-electric-indigo">.</span>
         </Link>
         {/* Close button — mobile only */}
         <button
@@ -119,8 +119,8 @@ export function DashboardSidebar() {
               Renter
               {alerts.renter > 0 && (
                 <span className="absolute -top-2 -right-3 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safety-orange opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-safety-orange border border-charcoal"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-indigo opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-electric-indigo border border-charcoal"></span>
                 </span>
               )}
             </span>
@@ -139,8 +139,8 @@ export function DashboardSidebar() {
               Owner
               {alerts.owner > 0 && (
                 <span className="absolute -top-2 -right-3 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safety-orange opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-safety-orange border border-white/30"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-indigo opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-electric-indigo border border-white/30"></span>
                 </span>
               )}
             </span>
@@ -231,7 +231,7 @@ export function DashboardSidebar() {
       <div className="px-4 pb-3">
         <div className="rounded-card border border-white/10 bg-white/[0.03] p-3">
           <div className="flex items-center gap-1.5 mb-1.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-safety-orange/50" />
+            <div className="h-1.5 w-1.5 rounded-full bg-electric-indigo/50" />
             <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider">
               Notice
             </span>
@@ -252,7 +252,7 @@ export function DashboardSidebar() {
           <MessageSquare className="w-4 h-4 flex-shrink-0" />
           <span>Messages</span>
           {unreadCount > 0 && (
-            <span className="ml-auto bg-safety-orange text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-[0_0_10px_rgba(255,102,0,0.4)]">
+            <span className="ml-auto bg-electric-indigo text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-[0_0_10px_rgba(91,110,174,0.4)]">
               {unreadCount}
             </span>
           )}
@@ -307,8 +307,8 @@ export function DashboardSidebar() {
           {/* Total alert bubble on hamburger */}
           {totalAlerts > 0 && (
             <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safety-orange opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-safety-orange"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-indigo opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-electric-indigo"></span>
             </span>
           )}
         </button>
@@ -318,14 +318,14 @@ export function DashboardSidebar() {
           href="/"
           className="font-serif text-xl font-bold text-white tracking-tight absolute left-1/2 -translate-x-1/2"
         >
-          BlockHyre<span className="text-safety-orange">.</span>
+          BlockHyre<span className="text-electric-indigo">.</span>
         </Link>
 
         {/* Active role pill */}
         <div
           className={`text-2xs font-mono font-bold uppercase tracking-industrial px-3 py-1.5 rounded-full ${
             activeRole === "owner"
-              ? "bg-safety-orange text-white"
+              ? "bg-electric-indigo text-white"
               : "bg-white/10 text-slate-300"
           }`}
         >

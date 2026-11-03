@@ -122,7 +122,7 @@ export function ReturnModal({
             <DialogContent className="sm:max-w-[600px] rounded-[2.5rem] border-slate-200">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 font-display text-2xl uppercase tracking-tighter text-slate-900">
-                        <ArrowLeftRight className="h-6 w-6 text-safety-orange" />
+                        <ArrowLeftRight className="h-6 w-6 text-electric-indigo" />
                         RETURN TOOL // {listingTitle}
                     </DialogTitle>
                     <DialogDescription className="font-mono text-[10px] uppercase tracking-widest text-[#333333] font-bold">
@@ -135,10 +135,10 @@ export function ReturnModal({
                     <div className={`flex items-center gap-3 transition-colors ${step >= 1 ? 'text-slate-900' : 'text-slate-400'}`}>
                         <div className="relative flex items-center justify-center">
                             {step === 1 && (
-                                <span className="absolute w-2 h-2 rounded-full bg-safety-orange animate-pulse" />
+                                <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             )}
                             {step > 1 && (
-                                <CheckCircle className="h-4 w-4 text-safety-orange" />
+                                <CheckCircle className="h-4 w-4 text-electric-indigo" />
                             )}
                             {step < 1 && (
                                 <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
@@ -150,7 +150,7 @@ export function ReturnModal({
                     <div className={`flex items-center gap-3 transition-colors ${step >= 2 ? 'text-slate-900' : 'text-slate-400'}`}>
                         <div className="relative flex items-center justify-center">
                             {step === 2 && (
-                                <span className="absolute w-2 h-2 rounded-full bg-safety-orange animate-pulse" />
+                                <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             )}
                             {step < 2 && (
                                 <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
@@ -184,7 +184,7 @@ export function ReturnModal({
                                     }
                                 `}} />
                                 {/* Scanner Sweep Animation Element */}
-                                <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 shadow-[0_0_8px_2px_rgba(255,107,0,0.5)] opacity-0 group-hover:opacity-100 animate-scan-sweep z-0 pointer-events-none" />
+                                <div className="absolute top-0 bottom-0 w-1 bg-electric-indigo/50 shadow-[0_0_8px_2px_rgba(91,110,174,0.5)] opacity-0 group-hover:opacity-100 animate-scan-sweep z-0 pointer-events-none" />
 
                                 <input
                                     type="file"
@@ -196,7 +196,7 @@ export function ReturnModal({
                                     className="hidden"
                                 />
                                 <label htmlFor="return-photo-upload" className="cursor-pointer relative z-10 block">
-                                    <div className="h-14 w-14 rounded-none bg-[#333333] flex items-center justify-center mx-auto mb-4 group-hover:bg-safety-orange transition-colors">
+                                    <div className="h-14 w-14 rounded-none bg-[#333333] flex items-center justify-center mx-auto mb-4 group-hover:bg-electric-indigo transition-colors">
                                         <Camera className="h-6 w-6 text-white" />
                                     </div>
                                     <p className="text-sm font-bold text-slate-900 mb-1 font-serif">
@@ -265,7 +265,7 @@ export function ReturnModal({
                                             data-testid="return-confirm-checkbox"
                                             checked={returnConfirmed}
                                             onChange={(e) => setReturnConfirmed(e.target.checked)}
-                                            className="h-4 w-4 appearance-none checked:bg-safety-orange cursor-pointer"
+                                            className="h-4 w-4 appearance-none checked:bg-electric-indigo cursor-pointer"
                                         />
                                         {returnConfirmed && <CheckCircle className="absolute h-3 w-3 text-white pointer-events-none left-0.5 top-0.5" strokeWidth={3} />}
                                     </div>
@@ -316,7 +316,7 @@ export function ReturnModal({
                             <Button
                                 onClick={handleUpload}
                                 disabled={selectedFiles.length < 2 || uploading}
-                                className="bg-safety-orange hover:bg-[#e66000] text-white font-bold h-10 px-6 rounded-none transition-all duration-200 shadow-[0_4px_0_0_#b34b00] hover:shadow-[0_6px_0_0_#b34b00] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                                className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-10 px-6 rounded-interactive transition-all active:translate-y-0.5"
                             >
                                 {uploading ? (
                                     <>
@@ -337,7 +337,7 @@ export function ReturnModal({
                                 onClick={handleComplete}
                                 data-testid="submit-return-btn"
                                 disabled={!returnConfirmed || completing}
-                                className="bg-safety-orange hover:bg-[#e66000] text-white font-bold h-10 px-6 rounded-none transition-all duration-200 shadow-[0_4px_0_0_#b34b00] hover:shadow-[0_6px_0_0_#b34b00] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                                className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-10 px-6 rounded-interactive transition-all active:translate-y-0.5"
                             >
                                 {completing ? (
                                     <>

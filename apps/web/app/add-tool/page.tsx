@@ -312,17 +312,17 @@ export default function AddToolPage() {
 
                 {/* Progress Steps */}
                 <div className="flex items-center justify-center gap-4 mb-8">
-                    <div className={cn("h-2 w-16 rounded-full transition-colors", step >= 1 ? "bg-safety-orange" : "bg-slate-200")} />
-                    <div className={cn("h-2 w-16 rounded-full transition-colors", step >= 2 ? "bg-safety-orange" : "bg-slate-200")} />
+                    <div className={cn("h-2 w-16 rounded-full transition-colors", step >= 1 ? "bg-electric-indigo" : "bg-slate-200")} />
+                    <div className={cn("h-2 w-16 rounded-full transition-colors", step >= 2 ? "bg-electric-indigo" : "bg-slate-200")} />
                 </div>
 
                 <Card className="border-slate-200 shadow-sm">
                     <CardHeader className="bg-slate-900 text-white rounded-t-lg">
                         <CardTitle className="flex items-center gap-2">
                             {step === 1 ? (
-                                <Hammer className="h-5 w-5 text-safety-orange" />
+                                <Hammer className="h-5 w-5 text-electric-indigo" />
                             ) : (
-                                <Shield className="h-5 w-5 text-safety-orange" />
+                                <Shield className="h-5 w-5 text-electric-indigo" />
                             )}
                             {step === 1 ? "Tool Details" : "Details & Images"}
                         </CardTitle>
@@ -382,7 +382,7 @@ export default function AddToolPage() {
                                                     }
                                                 }}
                                             >
-                                                <SelectTrigger className="bg-white focus:ring-safety-orange/50">
+                                                <SelectTrigger className="bg-white focus:ring-electric-indigo/50">
                                                     <SelectValue placeholder="Select a category..." />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -411,7 +411,7 @@ export default function AddToolPage() {
                                                 placeholder="0.00"
                                                 value={formData.dailyPrice}
                                                 onChange={(e) => handleInputChange("dailyPrice", e.target.value)}
-                                                className="focus-visible:ring-safety-orange/50"
+                                                className="focus-visible:ring-electric-indigo/50"
                                             />
 
                                             {/* Earnings Breakdown - Fixed height to prevent CLS */}
@@ -477,15 +477,15 @@ export default function AddToolPage() {
                                                         className={cn(
                                                             "p-3 border-2 rounded-xl transition-all",
                                                             isActive
-                                                                ? "border-safety-orange bg-orange-50 cursor-pointer"
+                                                                ? "border-electric-indigo bg-indigo-50/50 cursor-pointer"
                                                                 : isDisabled
                                                                     ? "border-slate-200 opacity-40 cursor-not-allowed"
-                                                                    : "border-slate-200 opacity-60 cursor-pointer hover:opacity-100 hover:border-orange-200"
+                                                                    : "border-slate-200 opacity-60 cursor-pointer hover:opacity-100 hover:border-indigo-200"
                                                         )}
                                                     >
                                                         <div className="flex justify-between items-start">
                                                             <span className="text-lg font-bold text-slate-900">Tier {tierLevel}</span>
-                                                            {isActive && <CheckCircle className="text-safety-orange w-4 h-4" />}
+                                                            {isActive && <CheckCircle className="text-electric-indigo w-4 h-4" />}
                                                         </div>
 
                                                         {/* Free Upgrade Badge */}
@@ -567,7 +567,7 @@ export default function AddToolPage() {
                                                         handleInputChange("manualUrl", val);
                                                     }
                                                 }}
-                                                className="pl-9 focus-visible:ring-safety-orange/50"
+                                                className="pl-9 focus-visible:ring-electric-indigo/50"
                                             />
                                         </div>
                                         <p className="text-xs text-slate-500">
@@ -576,7 +576,7 @@ export default function AddToolPage() {
                                                 href="https://www.manualslib.com/manual"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-safety-orange hover:underline font-medium"
+                                                className="text-electric-indigo hover:underline font-medium"
                                             >
                                                 manualslib.com
                                             </a>
@@ -588,7 +588,7 @@ export default function AddToolPage() {
                                     <Button
                                         onClick={() => setStep(2)}
                                         disabled={!formData.title || !formData.categoryId || !formData.dailyPrice || (requiresManual && !formData.manualUrl)}
-                                        className="w-full h-12 text-base bg-safety-orange hover:bg-safety-orange/90"
+                                        className="w-full h-12 text-base bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium"
                                     >
                                         Next: Details & Images
                                     </Button>
@@ -605,7 +605,7 @@ export default function AddToolPage() {
                                         placeholder="Describe the condition, included accessories, etc."
                                         value={formData.description}
                                         onChange={(e) => handleInputChange("description", e.target.value)}
-                                        className="h-32 resize-none focus-visible:ring-safety-orange/50"
+                                        className="h-32 resize-none focus-visible:ring-electric-indigo/50"
                                     />
                                 </div>
 
@@ -650,7 +650,7 @@ export default function AddToolPage() {
                                         placeholder="1"
                                         value={formData.minRentalDays}
                                         onChange={(e) => handleInputChange("minRentalDays", parseInt(e.target.value) || 1)}
-                                        className="focus-visible:ring-safety-orange/50"
+                                        className="focus-visible:ring-electric-indigo/50"
                                     />
                                     <p className="text-xs text-slate-500">Minimum number of days a renter must book this tool for.</p>
                                 </div>
@@ -658,7 +658,7 @@ export default function AddToolPage() {
                                 {/* Pickup & Logistics */}
                                 <div className="space-y-4 pt-4 border-t border-slate-200">
                                     <div className="flex items-center gap-2">
-                                        <MapPin className="h-5 w-5 text-safety-orange" />
+                                        <MapPin className="h-5 w-5 text-electric-indigo" />
                                         <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Pickup & Logistics</h3>
                                     </div>
 
@@ -668,7 +668,7 @@ export default function AddToolPage() {
                                             placeholder="e.g. 123 Neighborhood Way, Apt 4"
                                             value={formData.locationAddress}
                                             onChange={(e) => handleInputChange("locationAddress", e.target.value)}
-                                            className="focus-visible:ring-safety-orange/50"
+                                            className="focus-visible:ring-electric-indigo/50"
                                         />
                                         <p className="text-xs text-slate-500">Only shared with the renter AFTER a booking is confirmed.</p>
                                     </div>
@@ -679,7 +679,7 @@ export default function AddToolPage() {
                                             placeholder="e.g. Weekdays 5pm-8pm, Weekends after 10am"
                                             value={formData.preferredPickupTime}
                                             onChange={(e) => handleInputChange("preferredPickupTime", e.target.value)}
-                                            className="focus-visible:ring-safety-orange/50"
+                                            className="focus-visible:ring-electric-indigo/50"
                                         />
                                         <p className="text-xs text-slate-500">Helps renters plan their request. Flexible is always better!</p>
                                     </div>
@@ -717,7 +717,7 @@ export default function AddToolPage() {
                                                     />
                                                     {index === 0 && (
                                                         <div className="absolute top-1 right-1">
-                                                            <Badge className="bg-safety-orange text-white text-[10px] shadow-sm">
+                                                            <Badge className="bg-electric-indigo text-white text-[10px] shadow-sm">
                                                                 Main
                                                             </Badge>
                                                         </div>
@@ -762,7 +762,7 @@ export default function AddToolPage() {
                                     <Button
                                         onClick={() => setIsAffirmationOpen(true)}
                                         disabled={loading || formData.images.length < 2}
-                                        className="flex-1 h-12 text-base bg-safety-orange hover:bg-safety-orange/90"
+                                        className="flex-1 h-12 text-base bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium"
                                     >
                                         Review & Submit
                                     </Button>
@@ -777,7 +777,7 @@ export default function AddToolPage() {
                     <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-slate-900">
-                                <Shield className="h-5 w-5 text-safety-orange" />
+                                <Shield className="h-5 w-5 text-electric-indigo" />
                                 Final Safety Affirmation
                             </DialogTitle>
                             <DialogDescription>
@@ -790,7 +790,7 @@ export default function AddToolPage() {
                                     id="affirmation"
                                     checked={isAffirmed}
                                     onCheckedChange={(checked) => setIsAffirmed(checked)}
-                                    className="mt-1 data-[state=checked]:bg-safety-orange border-slate-300"
+                                    className="mt-1 data-[state=checked]:bg-electric-indigo border-slate-300"
                                 />
                                 <label htmlFor="affirmation" className="text-sm text-slate-700 leading-relaxed cursor-pointer select-none">
                                     I certify that I am the owner of this tool, it is in good working condition, and I have accurately described its details. I understand that listing unsafe or prohibited items may result in account suspension.
@@ -801,10 +801,10 @@ export default function AddToolPage() {
                                     id="tos-affirmation"
                                     checked={isTosAccepted}
                                     onCheckedChange={(checked) => setIsTosAccepted(checked)}
-                                    className="mt-1 data-[state=checked]:bg-safety-orange border-slate-300"
+                                    className="mt-1 data-[state=checked]:bg-electric-indigo border-slate-300"
                                 />
                                 <label htmlFor="tos-affirmation" className="text-sm text-slate-700 leading-relaxed cursor-pointer select-none">
-                                    I agree to the <Link href="/terms" className="text-safety-orange hover:underline" target="_blank">Terms of Service</Link> and pledge to adhere to the BlockHyre community guidelines.
+                                    I agree to the <Link href="/terms" className="text-electric-indigo hover:underline" target="_blank">Terms of Service</Link> and pledge to adhere to the BlockHyre community guidelines.
                                 </label>
                             </div>
                         </div>
@@ -819,7 +819,7 @@ export default function AddToolPage() {
                             <Button
                                 onClick={handleSubmit}
                                 disabled={!isAffirmed || !isTosAccepted || loading}
-                                className="w-full sm:w-auto bg-safety-orange hover:bg-safety-orange/90"
+                                className="w-full sm:w-auto bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium"
                             >
                                 {loading ? (
                                     <>

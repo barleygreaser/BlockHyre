@@ -64,7 +64,7 @@ export function UpcomingBookingCard({
                             </div>
                             <div className="flex items-center gap-2">
                                 <Clock className="h-3 w-3" />
-                                <span className="font-medium text-safety-orange">
+                                <span className="font-medium text-electric-indigo">
                                     Starts in {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
                                 </span>
                             </div>

@@ -119,10 +119,10 @@ export function ReturnInspectionModal({
             <div className="w-full max-w-6xl bg-signal-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[92vh] border border-workshop-gray/20">
 
                 {/* Industrial Header */}
-                <div className="bg-charcoal p-8 flex justify-between items-center shrink-0 border-b-4 border-safety-orange">
+                <div className="bg-charcoal p-8 flex justify-between items-center shrink-0 border-b-4 border-electric-indigo">
                     <div className="flex gap-4 items-center">
-                        <div className="h-14 w-14 rounded-2xl bg-safety-orange/10 border border-safety-orange/30 flex items-center justify-center">
-                            <Camera className="h-7 w-7 text-safety-orange" />
+                        <div className="h-14 w-14 rounded-2xl bg-electric-indigo/10 border border-electric-indigo/30 flex items-center justify-center">
+                            <Camera className="h-7 w-7 text-electric-indigo" />
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-signal-white font-display uppercase tracking-tighter">RETURN INSPECTION // {listingTitle}</h2>
@@ -154,10 +154,10 @@ export function ReturnInspectionModal({
                             <div className="space-y-4">
                                 <div className="aspect-[4/3] bg-[#1a1a1a] border-2 border-[#333333] relative group p-2">
                                     {/* Corner Brackets */}
-                                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-safety-orange/50 z-10" />
-                                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-safety-orange/50 z-10" />
-                                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-safety-orange/50 z-10" />
-                                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-safety-orange/50 z-10" />
+                                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-electric-indigo/50 z-10" />
+                                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-electric-indigo/50 z-10" />
+                                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-electric-indigo/50 z-10" />
+                                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-electric-indigo/50 z-10" />
                                     
                                     <div className="relative w-full h-full overflow-hidden">
                                         {pickupPhotos.length > 0 ? (
@@ -182,7 +182,7 @@ export function ReturnInspectionModal({
                                         <button
                                             key={i}
                                             onClick={() => setSelectedPickupIndex(i)}
-                                            className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${selectedPickupIndex === i ? 'border-safety-orange scale-95 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                                            className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${selectedPickupIndex === i ? 'border-electric-indigo scale-95 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}
                                         >
                                             <Image src={url} alt={`Pickup thumb ${i}`} fill className="object-cover" />
                                         </button>
@@ -195,19 +195,19 @@ export function ReturnInspectionModal({
                         <div className="space-y-6">
                             <div className="flex items-center justify-between border-b border-workshop-gray/10 pb-4">
                                 <div className="flex items-center gap-2">
-                                    <CheckCircle className="h-4 w-4 text-safety-orange" />
+                                    <CheckCircle className="h-4 w-4 text-electric-indigo" />
                                     <h3 className="font-bold text-charcoal font-serif">Returned Condition</h3>
                                 </div>
-                                <span className="text-[10px] font-mono font-bold text-safety-orange uppercase tracking-widest">{formatDate(returnDate)}</span>
+                                <span className="text-[10px] font-mono font-bold text-electric-indigo uppercase tracking-widest">{formatDate(returnDate)}</span>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="aspect-[4/3] bg-[#1a1a1a] border-2 border-[#333333] relative group p-2">
                                     {/* Corner Brackets */}
-                                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-safety-orange z-10" />
-                                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-safety-orange z-10" />
-                                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-safety-orange z-10" />
-                                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-safety-orange z-10" />
+                                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-electric-indigo z-10" />
+                                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-electric-indigo z-10" />
+                                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-electric-indigo z-10" />
+                                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-electric-indigo z-10" />
 
                                     <div className="relative w-full h-full overflow-hidden">
                                         {returnPhotos.length > 0 ? (
@@ -221,7 +221,7 @@ export function ReturnInspectionModal({
                                             <div className="w-full h-full flex items-center justify-center text-slate-400 font-mono text-[10px]">No photos found</div>
                                         )}
                                     </div>
-                                    <div className="absolute top-4 right-4 bg-safety-orange text-signal-white text-[9px] font-mono px-3 py-1.5 uppercase tracking-widest shadow-md z-20">
+                                    <div className="absolute top-4 right-4 bg-electric-indigo text-white text-[9px] font-mono px-3 py-1.5 uppercase tracking-widest shadow-md z-20">
                                         VERIFICATION PROTOCOL
                                     </div>
                                 </div>
@@ -232,7 +232,7 @@ export function ReturnInspectionModal({
                                         <button
                                             key={i}
                                             onClick={() => setSelectedReturnIndex(i)}
-                                            className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${selectedReturnIndex === i ? 'border-safety-orange scale-95 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                                            className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${selectedReturnIndex === i ? 'border-electric-indigo scale-95 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}
                                         >
                                             <Image src={url} alt={`Return thumb ${i}`} fill className="object-cover" />
                                         </button>
@@ -310,7 +310,7 @@ export function ReturnInspectionModal({
                             onClick={handleConfirm}
                             data-testid="finalize-return-btn"
                             disabled={submitting || isDisputing}
-                            className="flex-1 sm:flex-none bg-safety-orange hover:bg-safety-orange-hover text-white font-bold h-14 rounded-none px-12 transition-all duration-200 shadow-[0_4px_0_0_#AF3D2B] hover:shadow-[0_6px_0_0_#AF3D2B] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
+                            className="flex-1 sm:flex-none bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-14 rounded-interactive px-12 transition-all active:translate-y-0.5"
                         >
                             {submitting ? (
                                 <>

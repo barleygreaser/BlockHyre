@@ -175,7 +175,7 @@ export function EditListingSpecs({ selectedCategoryId, initialSpecs, onSpecsChan
                     Technical Specifications
                 </h3>
                 {loadingSpecs && (
-                    <div className="flex items-center text-xs text-safety-orange animate-pulse">
+                    <div className="flex items-center text-xs text-electric-indigo animate-pulse">
                         <Loader2 className="w-3 h-3 mr-1 animate-spin" />
                         Syncing...
                     </div>
@@ -207,9 +207,9 @@ export function EditListingSpecs({ selectedCategoryId, initialSpecs, onSpecsChan
                     return (
                         <div
                             key={details.id}
-                            className="group flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm transition-all hover:border-slate-300 focus-within:ring-1 focus-within:ring-safety-orange focus-within:border-safety-orange animate-in slide-in-from-left-2 duration-200"
+                            className="group flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm transition-all hover:border-slate-300 focus-within:ring-1 focus-within:ring-electric-indigo focus-within:border-electric-indigo animate-in slide-in-from-left-2 duration-200"
                         >
-                            <div className="p-2 bg-slate-50 rounded-md text-slate-500 group-hover:text-safety-orange group-hover:bg-orange-50 transition-colors">
+                            <div className="p-2 bg-slate-50 rounded-md text-slate-500 group-hover:text-electric-indigo group-hover:bg-indigo-50/50 transition-colors">
                                 <DynamicIcon name={details.icon_name} className="w-5 h-5" />
                             </div>
 
@@ -273,7 +273,7 @@ export function EditListingSpecs({ selectedCategoryId, initialSpecs, onSpecsChan
                         className={cn(
                             "transition-all",
                             newSpecId
-                                ? "bg-safety-orange hover:bg-orange-600 text-white shadow-md hover:shadow-lg"
+                                ? "bg-electric-indigo hover:bg-midnight-navy text-white shadow-md rounded-interactive"
                                 : "bg-slate-100 text-slate-400 pointer-events-none"
                         )}
                     >

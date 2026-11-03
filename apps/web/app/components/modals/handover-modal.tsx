@@ -122,7 +122,7 @@ export function HandoverModal({
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Camera className="h-5 w-5 text-safety-orange" />
+                        <Camera className="h-5 w-5 text-electric-indigo" />
                         Receive Tool - {listingTitle}
                     </DialogTitle>
                     <DialogDescription>
@@ -132,15 +132,15 @@ export function HandoverModal({
 
                 {/* Progress Steps */}
                 <div className="flex items-center gap-2 py-4">
-                    <div className={`flex items-center gap-2 ${step >= 1 ? 'text-safety-orange' : 'text-slate-400'}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-safety-orange text-white' : 'bg-slate-200'}`}>
+                    <div className={`flex items-center gap-2 ${step >= 1 ? 'text-electric-indigo' : 'text-slate-400'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-electric-indigo text-white' : 'bg-slate-200'}`}>
                             {step > 1 ? <CheckCircle className="h-4 w-4" /> : '1'}
                         </div>
                         <span className="text-sm font-medium">Upload Photos</span>
                     </div>
                     <div className="flex-1 h-0.5 bg-slate-200" />
-                    <div className={`flex items-center gap-2 ${step >= 2 ? 'text-safety-orange' : 'text-slate-400'}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-safety-orange text-white' : 'bg-slate-200'}`}>
+                    <div className={`flex items-center gap-2 ${step >= 2 ? 'text-electric-indigo' : 'text-slate-400'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-electric-indigo text-white' : 'bg-slate-200'}`}>
                             2
                         </div>
                         <span className="text-sm font-medium">Confirm</span>
@@ -151,7 +151,7 @@ export function HandoverModal({
                     {/* Step 1: Upload Photos */}
                     {step === 1 && (
                         <>
-                            <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-safety-orange transition-colors">
+                            <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-electric-indigo transition-colors">
                                 <input
                                     type="file"
                                     id="photo-upload"
@@ -220,7 +220,7 @@ export function HandoverModal({
                                         type="checkbox"
                                         checked={conditionConfirmed}
                                         onChange={(e) => setConditionConfirmed(e.target.checked)}
-                                        className="mt-1 h-4 w-4 text-safety-orange focus:ring-safety-orange border-slate-300 rounded"
+                                        className="mt-1 h-4 w-4 text-electric-indigo focus:ring-electric-indigo border-slate-300 rounded"
                                     />
                                     <div className="flex-1">
                                         <p className="font-medium text-slate-900">I confirm the tool condition</p>
@@ -254,7 +254,7 @@ export function HandoverModal({
                         <Button
                             onClick={handleUpload}
                             disabled={selectedFiles.length < 2 || uploading}
-                            className="bg-safety-orange hover:bg-safety-orange/90"
+                            className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium"
                         >
                             {uploading ? (
                                 <>
@@ -274,7 +274,7 @@ export function HandoverModal({
                         <Button
                             onClick={handleComplete}
                             disabled={!conditionConfirmed || completing}
-                            className="bg-safety-orange hover:bg-safety-orange/90 font-bold"
+                            className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-bold"
                         >
                             {completing ? (
                                 <>

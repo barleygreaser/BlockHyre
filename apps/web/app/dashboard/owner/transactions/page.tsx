@@ -230,8 +230,8 @@ export default function TransactionsPage() {
                     Back to Command Center
                 </Link>
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="h-px w-8 bg-safety-orange" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-safety-orange">
+                    <div className="h-px w-8 bg-electric-indigo" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-electric-indigo">
                         Financial Operations
                     </span>
                 </div>
@@ -289,7 +289,7 @@ export default function TransactionsPage() {
                     </EmptyHeader>
                     <EmptyContent>
                         <Link href="/profile">
-                            <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10">
+                            <Button className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-interactive px-6 h-10">
                                 Connect Stripe
                             </Button>
                         </Link>
@@ -300,8 +300,8 @@ export default function TransactionsPage() {
                     {/* Balance Overview — KPI Tiles */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                         {/* Available Balance */}
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 sm:p-6 shadow-sm relative overflow-hidden group hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
-                            <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
+                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 sm:p-6 shadow-sm relative overflow-hidden group hover:border-electric-indigo/40 hover:shadow-xl transition-all duration-300">
+                            <div className="absolute top-0 bottom-0 w-1 bg-electric-indigo/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
                             <div className="relative z-10">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="h-8 w-8 rounded-xl bg-emerald-50 flex items-center justify-center">
@@ -322,8 +322,8 @@ export default function TransactionsPage() {
                         </div>
 
                         {/* Pending Balance */}
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 sm:p-6 shadow-sm relative overflow-hidden group hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
-                            <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
+                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 sm:p-6 shadow-sm relative overflow-hidden group hover:border-electric-indigo/40 hover:shadow-xl transition-all duration-300">
+                            <div className="absolute top-0 bottom-0 w-1 bg-electric-indigo/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
                             <div className="relative z-10">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="h-8 w-8 rounded-xl bg-amber-50 flex items-center justify-center">
@@ -346,12 +346,12 @@ export default function TransactionsPage() {
                         </div>
 
                         {/* Total Earned */}
-                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 sm:p-6 shadow-sm relative overflow-hidden group hover:border-safety-orange/40 hover:shadow-xl transition-all duration-300">
-                            <div className="absolute top-0 bottom-0 w-1 bg-safety-orange/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
+                        <div className="bg-white rounded-[2rem] border border-slate-200 p-5 sm:p-6 shadow-sm relative overflow-hidden group hover:border-electric-indigo/40 hover:shadow-xl transition-all duration-300">
+                            <div className="absolute top-0 bottom-0 w-1 bg-electric-indigo/50 blur-[2px] left-[-10px] group-hover:animate-scanner" />
                             <div className="relative z-10">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <div className="h-8 w-8 rounded-xl bg-orange-50 flex items-center justify-center">
-                                        <TrendingUp className="h-4 w-4 text-safety-orange" />
+                                    <div className="h-8 w-8 rounded-xl bg-indigo-50/60 flex items-center justify-center">
+                                        <TrendingUp className="h-4 w-4 text-electric-indigo" />
                                     </div>
                                     <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
                                         Net Earned
@@ -371,7 +371,7 @@ export default function TransactionsPage() {
                     {/* Stripe Payouts Section */}
                     <div>
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                            <div className="h-px flex-1 max-w-[40px] bg-electric-indigo/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Stripe Payouts</h2>
                         </div>
 
@@ -382,7 +382,7 @@ export default function TransactionsPage() {
                                     key={key}
                                     onClick={() => setActiveFilter(key)}
                                     className={`px-4 py-2 rounded-full text-sm font-bold font-mono uppercase tracking-wider transition-all active:translate-y-[2px] ${activeFilter === key
-                                            ? "bg-safety-orange text-white shadow-lg"
+                                            ? "bg-electric-indigo text-white shadow-lg"
                                             : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300"
                                         }`}
                                 >
@@ -479,7 +479,7 @@ export default function TransactionsPage() {
                     {/* Rental Transaction History */}
                     <div>
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="h-px flex-1 max-w-[40px] bg-safety-orange/40" />
+                            <div className="h-px flex-1 max-w-[40px] bg-electric-indigo/40" />
                             <h2 className="text-lg font-bold font-serif text-slate-900">Rental Transactions</h2>
                             <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
                                 {rentalTransactions.length} total

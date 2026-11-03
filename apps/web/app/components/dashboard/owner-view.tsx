@@ -268,7 +268,7 @@ export function OwnerDashboardView() {
         setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
         toast.message(`[${timeFormatter.format(new Date())}] Action logged. Details processing...`, {
             description: `Approving ${rental.listing.title}`,
-            className: "font-serif border-l-4 border-l-safety-orange rounded-none",
+            className: "font-serif border-l-4 border-l-electric-indigo rounded-none",
         });
 
         try {
@@ -694,7 +694,7 @@ export function OwnerDashboardView() {
                                 <h3 className="text-xl sm:text-3xl font-bold text-slate-900 font-serif tabular-nums">{kpis.toolsListed}</h3>
                             )}
                         </div>
-                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-orange-50 flex items-center justify-center text-safety-orange flex-shrink-0 group-hover:bg-orange-100 transition-colors">
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-indigo-50/60 flex items-center justify-center text-electric-indigo flex-shrink-0 group-hover:bg-indigo-100/60 transition-colors">
                             <Wrench className="h-5 w-5 sm:h-6 sm:w-6" />
                             {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
                         </div>
@@ -719,7 +719,7 @@ export function OwnerDashboardView() {
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
-                                                <Badge className="bg-safety-orange/10 text-safety-orange border border-safety-orange/20 text-[10px] font-serif font-bold uppercase tracking-wider rounded-full px-3">Returned</Badge>
+                                                <Badge className="bg-indigo-50 text-electric-indigo border border-electric-indigo/20 text-[10px] font-serif font-bold uppercase tracking-wider rounded-interactive px-3">Returned</Badge>
                                                 <span className="text-[10px] font-serif text-slate-400 uppercase tracking-wider">Needs Inspection</span>
                                             </div>
                                             <h4 className="font-bold text-slate-900 text-base">{item.listing.title}</h4>
@@ -730,7 +730,7 @@ export function OwnerDashboardView() {
                                                 setSelectedReturnItem(item);
                                                 setIsInspectionOpen(true);
                                             }} 
-                                            className="w-full sm:w-auto bg-safety-orange text-white hover:bg-safety-orange/90 font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10 shadow-lg shadow-safety-orange/20"
+                                            className="w-full sm:w-auto bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-interactive px-6 h-10 shadow-lg shadow-electric-indigo/20"
                                         >
                                             <Eye className="mr-2 h-4 w-4" />
                                             Inspect & Release
@@ -762,7 +762,7 @@ export function OwnerDashboardView() {
                                                 <CalendarClock className="h-6 w-6 text-amber-400" />
                                             </div>
                                             <div className="flex-1">
-                                                <Badge className="bg-safety-orange text-white font-bold text-[10px] uppercase tracking-wider rounded-full px-3 mb-2 border-0">
+                                                <Badge className="bg-electric-indigo text-white font-bold text-[10px] uppercase tracking-wider rounded-interactive px-3 mb-2 border-0">
                                                     ⏰ Extension Request
                                                 </Badge>
                                                 <h4 className="font-bold text-white text-lg">{ext.renter_name}</h4>
@@ -779,7 +779,7 @@ export function OwnerDashboardView() {
                                             </div>
                                             <div>
                                                 <p className="text-[10px] font-serif text-concrete/50 uppercase tracking-wider mb-1">New End</p>
-                                                <p className="font-bold text-safety-orange font-serif text-sm">{formatDate(ext.new_end_date)}</p>
+                                                <p className="font-bold text-electric-indigo font-serif text-sm">{formatDate(ext.new_end_date)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-[10px] font-serif text-concrete/50 uppercase tracking-wider mb-1">Extra Days</p>
@@ -817,7 +817,7 @@ export function OwnerDashboardView() {
                                 {/* Regular Rental Requests */}
                                 {rentalRequests.length > 0 ? (
                                     rentalRequests.map((request) => (
-                                        <div key={request.id} data-testid="rental-request-card" className="bg-white rounded-card border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-safety-orange/30 hover:shadow-md">
+                                        <div key={request.id} data-testid="rental-request-card" className="bg-white rounded-card border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-electric-indigo/30 hover:shadow-md">
                                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                                 <div className="flex items-center gap-4">
                                                     <div className="h-10 w-10 rounded-interactive bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm overflow-hidden">
@@ -909,7 +909,7 @@ export function OwnerDashboardView() {
                                                     </Button>
                                                     <Button
                                                         size="sm"
-                                                        className="flex-1 sm:flex-none bg-safety-orange hover:bg-safety-orange/90 shadow-lg shadow-safety-orange/20 text-white rounded-full font-bold text-xs uppercase tracking-wider"
+                                                        className="flex-1 sm:flex-none bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-bold text-xs uppercase tracking-wider shadow-lg shadow-electric-indigo/20"
                                                         onClick={() => handleApprove(request.id)}
                                                         disabled={processingId === request.id}
                                                     >
@@ -1026,7 +1026,7 @@ export function OwnerDashboardView() {
                                     <p className="text-sm text-slate-400 font-serif">No payouts yet</p>
                                 )}
                                 <Link href="/dashboard/owner/transactions">
-                                    <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-safety-orange/80">
+                                    <Button variant="link" className="text-electric-indigo p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-midnight-navy">
                                         View all transactions &rarr;
                                     </Button>
                                 </Link>
@@ -1045,19 +1045,19 @@ export function OwnerDashboardView() {
                     )}
 
                     {kpiLoading ? (
-                        <div className="bg-safety-orange/5 rounded-card border border-safety-orange/10 p-6 relative">
-                            <Skeleton className="h-6 w-24 bg-safety-orange/10 mb-3" />
+                        <div className="bg-slate-50 rounded-card border border-slate-200/60 p-6 relative">
+                            <Skeleton className="h-6 w-24 bg-slate-200/60 mb-3" />
                             <div className="space-y-3">
-                                <Skeleton className="h-4 w-full bg-safety-orange/10" />
-                                <Skeleton className="h-4 w-3/4 bg-safety-orange/10" />
-                                <Skeleton className="h-4 w-1/2 bg-safety-orange/10" />
+                                <Skeleton className="h-4 w-full bg-slate-200/60" />
+                                <Skeleton className="h-4 w-3/4 bg-slate-200/60" />
+                                <Skeleton className="h-4 w-1/2 bg-slate-200/60" />
                             </div>
                         </div>
                     ) : showProTip && (
-                        <div className="bg-safety-orange/5 rounded-card border border-safety-orange/10 p-6 relative">
+                        <div className="bg-slate-50 rounded-card border border-slate-200/60 p-6 relative">
                             <button
                                 onClick={handleDismissProTip}
-                                className="absolute top-5 right-5 text-safety-orange/40 hover:text-safety-orange transition-colors"
+                                className="absolute top-5 right-5 text-electric-indigo/40 hover:text-electric-indigo transition-colors"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -1066,7 +1066,7 @@ export function OwnerDashboardView() {
                                 Adding a link to the manufacturer&apos;s manual increases your tool&apos;s safety rating and reduces accident disputes by 40%.
                             </p>
                             <Link href="/add-tool">
-                                <Button variant="link" className="text-safety-orange font-bold p-0 mt-3 h-auto text-xs uppercase tracking-wider hover:text-safety-orange/80">
+                                <Button variant="link" className="text-electric-indigo font-bold p-0 mt-3 h-auto text-xs uppercase tracking-wider hover:text-midnight-navy">
                                     Update your listings &rarr;
                                 </Button>
                             </Link>

@@ -130,7 +130,7 @@ export default function OwnerBookingsPage() {
     }, [user]);
 
     const filterConfig = [
-        { key: 'all', label: 'All', countKey: 'all', color: 'bg-safety-orange' },
+        { key: 'all', label: 'All', countKey: 'all', color: 'bg-electric-indigo' },
         { key: 'upcoming', label: 'Upcoming', countKey: 'upcoming', color: 'bg-blue-500' },
         { key: 'active', label: 'Active', countKey: 'active', color: 'bg-emerald-500' },
         { key: 'overdue', label: 'Overdue', countKey: 'overdue', color: 'bg-red-500' },
@@ -289,12 +289,12 @@ export default function OwnerBookingsPage() {
                                         <div className="flex items-center justify-between gap-2 pt-1">
                                             {Math.ceil((new Date().getTime() - new Date(rental.end_date).getTime()) / (1000 * 60 * 60 * 24)) > 2 && (
                                                 <span className="text-xs text-slate-400 font-mono flex-1">
-                                                    Need help? <a href="mailto:support@blockhyre.com" className="text-safety-orange underline">Support</a>
+                                                    Need help? <a href="mailto:support@blockhyre.com" className="text-electric-indigo hover:text-midnight-navy underline">Support</a>
                                                 </span>
                                             )}
                                             <Link
                                                 href={`/messages?listing=${rental.listing_id}&renter=${rental.renter_id}`}
-                                                className={buttonVariants({ className: "bg-safety-orange hover:bg-safety-orange/90 text-white font-bold font-mono uppercase tracking-wider text-xs rounded-full px-5 shadow-lg shadow-safety-orange/20" })}
+                                                className={buttonVariants({ className: "bg-electric-indigo hover:bg-midnight-navy text-white font-bold font-mono uppercase tracking-industrial text-xs rounded-interactive px-5 shadow-lg shadow-electric-indigo/20" })}
                                             >
                                                 <MessageCircle className="mr-1.5 h-3.5 w-3.5" />
                                                 Message

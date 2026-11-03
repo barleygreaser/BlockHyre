@@ -418,7 +418,7 @@ export function RenterDashboardView() {
                                             ) : (
                                                 <Button
                                                     variant="outline"
-                                                    className="w-full border-safety-orange/30 text-safety-orange hover:bg-safety-orange hover:text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all"
+                                                    className="w-full border-electric-indigo/40 text-electric-indigo hover:bg-electric-indigo hover:text-white rounded-interactive font-bold text-xs uppercase tracking-wider transition-all"
                                                     onClick={() => {
                                                         setSelectedRental(rental);
                                                         setExtensionModalOpen(true);
@@ -528,7 +528,7 @@ export function RenterDashboardView() {
                             const canReceiveTool = hoursUntilStart <= 24 && hoursUntilStart >= -24;
 
                             return (
-                                <div key={booking.rental_id} className="bg-white rounded-card border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-safety-orange/30 hover:shadow-md">
+                                <div key={booking.rental_id} className="bg-white rounded-card border border-slate-200 p-6 shadow-sm transition-all duration-300 hover:border-electric-indigo/30 hover:shadow-md">
                                     <div className="flex items-center justify-between gap-4">
                                         <div className="flex items-center gap-4 flex-1">
                                             <div className="relative h-14 w-14 rounded-interactive overflow-hidden bg-slate-100 flex-shrink-0">
@@ -551,7 +551,7 @@ export function RenterDashboardView() {
                                                     {format(new Date(booking.start_date), 'MMM d')} – {format(new Date(booking.end_date), 'MMM d')} • {booking.total_days} days
                                                 </p>
                                                 {canReceiveTool && (
-                                                    <p className="text-[10px] font-mono text-safety-orange font-bold uppercase tracking-wider mt-1">
+                                                    <p className="text-[10px] font-mono text-electric-indigo font-bold uppercase tracking-wider mt-1">
                                                         📦 Ready for pickup!
                                                     </p>
                                                 )}
@@ -566,7 +566,7 @@ export function RenterDashboardView() {
                                                             setSelectedBooking(booking);
                                                             setHandoverModalOpen(true);
                                                         }}
-                                                        className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-5 h-9 shadow-lg shadow-safety-orange/20"
+                                                        className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-interactive px-5 h-9 shadow-lg shadow-electric-indigo/20"
                                                         size="sm"
                                                     >
                                                         <Package className="mr-2 h-4 w-4" />
@@ -576,7 +576,7 @@ export function RenterDashboardView() {
                                                     {hoursUntilStart < -24 && (
                                                         <a
                                                             href={`mailto:contact@blockhyre.com?subject=Handover Issue - Rental ID: ${booking.rental_id}`}
-                                                            className="text-[10px] font-mono text-slate-500 hover:text-safety-orange text-center underline decoration-slate-300 underline-offset-2"
+                                                            className="text-[10px] font-mono text-slate-500 hover:text-electric-indigo text-center underline decoration-slate-300 underline-offset-2"
                                                         >
                                                             Having trouble? Contact support
                                                         </a>
@@ -653,13 +653,13 @@ export function RenterDashboardView() {
                                             <div className="text-[10px] font-mono text-emerald-600 font-bold uppercase tracking-wider mb-1">
                                                 Completed
                                             </div>
-                                            <Link href={`/listings/${rental.listing_id}`} className="text-[10px] font-mono text-slate-400 hover:text-safety-orange underline decoration-slate-300 underline-offset-2 uppercase tracking-wider">
+                                            <Link href={`/listings/${rental.listing_id}`} className="text-[10px] font-mono text-slate-400 hover:text-electric-indigo underline decoration-slate-300 underline-offset-2 uppercase tracking-wider">
                                                 Rent Again
                                             </Link>
                                         </div>
                                     ) : (
                                         <Link href={`/reviews/new?rental=${rental.rental_id}`}>
-                                            <Button variant="link" className="text-safety-orange p-0 h-auto text-[10px] font-mono font-bold uppercase tracking-wider">
+                                            <Button variant="link" className="text-electric-indigo p-0 h-auto text-[10px] font-mono font-bold uppercase tracking-wider">
                                                 Leave Review
                                             </Button>
                                         </Link>
@@ -667,7 +667,7 @@ export function RenterDashboardView() {
                                 </div>
                             ))}
                             <Link href="/dashboard/renter/rentals#all">
-                                <Button variant="link" className="text-safety-orange p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-safety-orange/80">
+                                <Button variant="link" className="text-electric-indigo p-0 h-auto text-xs font-bold uppercase tracking-wider w-full justify-start mt-2 hover:text-midnight-navy">
                                     View all rentals &rarr;
                                 </Button>
                             </Link>

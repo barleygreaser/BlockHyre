@@ -209,7 +209,7 @@ export default function ProfilePage() {
                         <Card className="border-slate-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Shield className="h-5 w-5 text-safety-orange" />
+                                    <Shield className="h-5 w-5 text-electric-indigo" />
                                     Identity Verification
                                 </CardTitle>
                                 <CardDescription>Your verified status determines your protection tier.</CardDescription>
@@ -250,7 +250,7 @@ export default function ProfilePage() {
                                                 <Button
                                                     onClick={handleSaveProfile}
                                                     disabled={saveLoading}
-                                                    className="bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                                    className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium"
                                                 >
                                                     {saveLoading ? "Saving..." : "Save Changes"}
                                                 </Button>
@@ -294,7 +294,7 @@ export default function ProfilePage() {
                         <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden mt-6">
                             <CardHeader className="pb-4">
                                 <CardTitle className="flex items-center gap-2">
-                                    <MapPin className="h-5 w-5 text-safety-orange" />
+                                    <MapPin className="h-5 w-5 text-electric-indigo" />
                                     My Neighborhood
                                 </CardTitle>
                                 <CardDescription>Your verified zone for renting and listing tools.</CardDescription>
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                                             <span className="text-xs text-slate-400">Since Dec 2025</span>
                                         </div>
 
-                                        <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 text-sm text-slate-700">
+                                        <div className="bg-indigo-50/60 border border-indigo-100/80 rounded-interactive p-3 text-sm text-slate-700">
                                             You can view and rent listings from neighbors within the <strong>{profile?.neighborhoods?.name || "local"}</strong> pilot zone.
                                         </div>
                                     </div>
@@ -362,7 +362,7 @@ export default function ProfilePage() {
                         <Card className="border-slate-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <CreditCard className="h-5 w-5 text-safety-orange" />
+                                    <CreditCard className="h-5 w-5 text-electric-indigo" />
                                     Payout Methods
                                 </CardTitle>
                                 <CardDescription>Securely receive earnings from your rentals.</CardDescription>
@@ -439,7 +439,7 @@ export default function ProfilePage() {
                         <Card className="border-slate-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Settings className="h-5 w-5 text-safety-orange" />
+                                    <Settings className="h-5 w-5 text-electric-indigo" />
                                     Account Security
                                 </CardTitle>
                                 <CardDescription>Manage your account credentials and security settings.</CardDescription>

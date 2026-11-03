@@ -71,7 +71,7 @@ export function RatingModal({
             <DialogContent className="sm:max-w-[550px] rounded-[2.5rem] border-slate-200">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 font-display text-2xl uppercase tracking-tighter text-slate-900">
-                        <Star className="h-6 w-6 text-safety-orange fill-safety-orange" />
+                        <Star className="h-6 w-6 text-amber-500 fill-amber-500" />
                         RATE YOUR RENTAL // {listingTitle}
                     </DialogTitle>
                     <DialogDescription className="font-mono text-[10px] uppercase tracking-widest text-[#333333] font-bold">
@@ -113,13 +113,13 @@ export function RatingModal({
                                     onClick={() => setRating(star)}
                                     onMouseEnter={() => setHoveredRating(star)}
                                     onMouseLeave={() => setHoveredRating(0)}
-                                    className="transition-transform hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-safety-orange rounded-full"
+                                    className="transition-transform hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-indigo rounded-full"
                                 >
                                     <Star 
                                         strokeWidth={1.5}
                                         className={`h-10 w-10 transition-colors ${
                                             (hoveredRating || rating) >= star 
-                                                ? "text-safety-orange fill-safety-orange" 
+                                                ? "text-amber-500 fill-amber-500" 
                                                 : "text-slate-300 fill-slate-50"
                                         }`} 
                                     />
@@ -127,7 +127,7 @@ export function RatingModal({
                             ))}
                         </div>
                         <div className="h-4">
-                            <span className="font-mono text-[10px] font-bold text-safety-orange tracking-widest uppercase">
+                            <span className="font-mono text-[10px] font-bold text-amber-600 tracking-industrial uppercase">
                                 {rating === 1 && "1/5 - MAJOR ISSUES"}
                                 {rating === 2 && "2/5 - BELOW EXPECTATIONS"}
                                 {rating === 3 && "3/5 - ACCEPTABLE"}
@@ -147,7 +147,7 @@ export function RatingModal({
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                             placeholder="Condition of the tool? Owner communication? Describe your experience..."
-                            className="w-full h-24 p-4 rounded-none border border-[#333333] focus:outline-none focus:ring-2 focus:ring-safety-orange/20 text-sm font-sans placeholder:text-slate-400 bg-white resize-none"
+                            className="w-full h-24 p-4 rounded-none border border-[#333333] focus:outline-none focus:ring-2 focus:ring-electric-indigo/20 text-sm font-sans placeholder:text-slate-400 bg-white resize-none"
                             maxLength={500}
                         />
                         <div className="flex justify-between items-center px-1">
@@ -159,8 +159,8 @@ export function RatingModal({
                 <DialogFooter className="flex flex-col sm:flex-row sm:justify-between items-center gap-4 pt-6 border-t border-slate-100 mt-4 sm:space-x-0">
                     <div className="flex items-center gap-2 mr-auto">
                         <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safety-orange opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-safety-orange"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </span>
                         <span className="font-mono text-[10px] font-bold text-slate-800 tracking-widest uppercase">
                             COMMUNITY VERIFICATION
@@ -181,7 +181,7 @@ export function RatingModal({
                         <Button
                             onClick={handleSubmit}
                             disabled={rating === 0 || submitting}
-                            className="bg-safety-orange hover:bg-[#e66000] text-white font-bold h-10 px-6 rounded-none transition-all duration-200 shadow-[0_4px_0_0_#b34b00] hover:shadow-[0_6px_0_0_#b34b00] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
+                            className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold h-10 px-6 rounded-interactive transition-all active:translate-y-0.5"
                         >
                             {submitting ? (
                                 <>

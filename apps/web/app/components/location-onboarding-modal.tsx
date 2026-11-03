@@ -115,7 +115,7 @@ export function LocationOnboardingModal() {
                 <div className="p-8 pb-4">
                     <h2 className="text-2xl font-bold font-serif mb-3 leading-tight">
                         {/* CHANGE 1 & 2: Safety Orange text and block display for new line */}
-                        <span className="text-safety-orange block mb-1">
+                        <span className="text-electric-indigo block mb-1">
                             Welcome to BlockHyre!
                         </span>
                         <span className="text-slate-900 text-xl">
@@ -140,7 +140,7 @@ export function LocationOnboardingModal() {
                             <input
                                 type="text"
                                 placeholder="Search pilot neighborhoods (e.g. Woodlands)"
-                                className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-safety-orange/50 focus:border-safety-orange transition-all font-medium"
+                                className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-electric-indigo/50 focus:border-electric-indigo transition-all font-medium"
                                 value={searchTerm}
                                 onChange={(e) => {
                                     setSearchTerm(e.target.value);
@@ -159,7 +159,7 @@ export function LocationOnboardingModal() {
                                     filteredNeighborhoods.map(n => (
                                         <button
                                             key={n.id}
-                                            className="w-full text-left px-4 py-3 hover:bg-orange-50 flex items-center gap-3 transition-colors"
+                                            className="w-full text-left px-4 py-3 hover:bg-indigo-50/50 flex items-center gap-3 transition-colors"
                                             onClick={() => {
                                                 setSearchTerm(`${n.name}, Woodstock, GA`);
                                                 setSelectedNeighborhood(n);
@@ -212,7 +212,7 @@ export function LocationOnboardingModal() {
                         className={cn(
                             "w-full h-12 text-base font-bold shadow-lg transition-all",
                             selectedNeighborhood
-                                ? "bg-safety-orange hover:bg-safety-orange/90 text-white"
+                                ? "bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive"
                                 : "bg-slate-200 text-slate-400 cursor-not-allowed hover:bg-slate-200"
                         )}
                     >

@@ -293,7 +293,7 @@ export default function RenterRentalsPage() {
 
     const filterConfig = useMemo(() => {
         return [
-            { key: "all" as FilterKey, label: "All", color: "bg-safety-orange" },
+            { key: "all" as FilterKey, label: "All", color: "bg-electric-indigo" },
             { key: "active" as FilterKey, label: "Active", color: "bg-emerald-500" },
             { key: "upcoming" as FilterKey, label: "Upcoming", color: "bg-blue-500" },
             { key: "pending" as FilterKey, label: "Pending", color: "bg-amber-500" },
@@ -492,7 +492,7 @@ export default function RenterRentalsPage() {
                                                 <Link href={`/reviews/new?rental=${rental.id}`}>
                                                     <Button
                                                         size="sm"
-                                                        className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-[10px] uppercase tracking-wider rounded-full h-8 px-3 shadow-lg shadow-safety-orange/20"
+                                                        className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-[10px] uppercase tracking-wider rounded-interactive h-8 px-3 shadow-lg shadow-electric-indigo/20"
                                                     >
                                                         <Star className="mr-1.5 h-3.5 w-3.5" />
                                                         Leave Review
@@ -551,7 +551,7 @@ export default function RenterRentalsPage() {
                         <EmptyContent>
                             {rentals.length === 0 ? (
                                 <Link href="/listings">
-                                    <Button className="bg-safety-orange hover:bg-safety-orange/90 text-white font-bold text-xs uppercase tracking-wider rounded-full px-6 h-10">
+                                    <Button className="bg-electric-indigo hover:bg-midnight-navy text-white font-bold text-xs uppercase tracking-wider rounded-interactive px-6 h-10">
                                         <Search className="mr-2 h-4 w-4" />
                                         Browse Tools
                                     </Button>

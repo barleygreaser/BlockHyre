@@ -394,7 +394,7 @@ export function DashboardOnboardingOverlay() {
           />
           {/* Pulsing orange ring — same dimensions, layered on top */}
           <div
-            className={`absolute border-2 border-safety-orange rounded-xl pointer-events-none transition-all duration-500 ease-in-out ${isMounted ? "opacity-100 animate-pulse" : "opacity-0"}`}
+            className={`absolute border-2 border-electric-indigo rounded-xl pointer-events-none transition-all duration-500 ease-in-out ${isMounted ? "opacity-100 animate-pulse" : "opacity-0"}`}
             style={{
               top: rect.top - PADDING,
               left: rect.left - PADDING,
@@ -523,7 +523,7 @@ function PopoverContent({
         {Array.from({ length: total }).map((_, i) => (
           <div
             key={i}
-            className={`flex-1 transition-colors duration-300 ${i <= stepIndex ? "bg-safety-orange" : "bg-slate-100"} ${i < total - 1 ? "border-r border-white" : ""}`}
+            className={`flex-1 transition-colors duration-300 ${i <= stepIndex ? "bg-electric-indigo" : "bg-slate-100"} ${i < total - 1 ? "border-r border-white" : ""}`}
           />
         ))}
       </div>
@@ -532,9 +532,9 @@ function PopoverContent({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             {"icon" in step && step.icon === "menu" ? (
-              <Menu className="w-4 h-4 text-safety-orange" />
+              <Menu className="w-4 h-4 text-electric-indigo" />
             ) : (
-              <MousePointer2 className="w-4 h-4 text-safety-orange" />
+              <MousePointer2 className="w-4 h-4 text-electric-indigo" />
             )}
             <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-bold">
               Step {stepIndex + 1} of {total}
@@ -555,8 +555,8 @@ function PopoverContent({
 
         {/* Visual cue for the mobile-only "switch modes" step */}
         {"icon" in step && step.icon === "menu" && isMobile && (
-          <div className="flex items-center gap-3 mb-4 px-3 py-2.5 bg-safety-orange/10 border border-safety-orange/30 rounded-xl">
-            <div className="flex flex-col items-center animate-bounce text-safety-orange shrink-0">
+          <div className="flex items-center gap-3 mb-4 px-3 py-2.5 bg-electric-indigo/10 border border-electric-indigo/30 rounded-xl">
+            <div className="flex flex-col items-center animate-bounce text-electric-indigo shrink-0">
               <svg
                 width="20"
                 height="20"
@@ -571,7 +571,7 @@ function PopoverContent({
                 <polyline points="5 12 12 5 19 12" />
               </svg>
             </div>
-            <p className="text-xs font-bold text-safety-orange font-mono uppercase tracking-wider">
+            <p className="text-xs font-bold text-electric-indigo font-mono uppercase tracking-wider">
               That button — top left corner
             </p>
           </div>
@@ -590,7 +590,7 @@ function PopoverContent({
             Skip
           </Button>
           <Button
-            className="flex-1 bg-safety-orange hover:bg-safety-orange/90 text-white text-xs font-bold uppercase tracking-wider h-10"
+            className="flex-1 bg-electric-indigo hover:bg-electric-indigo/90 text-white text-xs font-bold uppercase tracking-wider h-10"
             onClick={onNext}
           >
             {stepIndex < total - 1 ? (

@@ -289,8 +289,8 @@ export default function InventoryPage() {
               <div className="hidden md:block col-span-2">
                 {item.current_renter_name ? (
                   <div className="text-xs font-mono">
-                    <div className="text-safety-orange font-bold flex items-center gap-1">
-                      <div className="h-1.5 w-1.5 rounded-full bg-safety-orange" />
+                    <div className="text-electric-indigo font-bold flex items-center gap-1">
+                      <div className="h-1.5 w-1.5 rounded-full bg-electric-indigo" />
                       RENTED
                     </div>
                     <div className="text-slate-400 mt-0.5">
@@ -343,7 +343,7 @@ export default function InventoryPage() {
                 setSearchTerm("");
                 setStatusFilter("all");
               }}
-              className="text-safety-orange text-xs font-mono mt-2"
+              className="text-electric-indigo hover:text-midnight-navy text-xs font-mono mt-2"
             >
               Clear Filters
             </Button>

@@ -65,7 +65,7 @@ export function RentalHistoryItem({
                     <Button
                         size="sm"
                         variant="outline"
-                        className="text-xs bg-safety-orange text-white border-safety-orange hover:bg-orange-600 hover:border-orange-600 shrink-0"
+                        className="text-xs bg-electric-indigo text-white border-electric-indigo hover:bg-midnight-navy shrink-0 rounded-interactive font-medium"
                     >
                         <Star className="h-3 w-3 mr-1" />
                         Review

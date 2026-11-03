@@ -67,7 +67,7 @@ export function RescheduleModal({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5 text-safety-orange" />
+                        <Calendar className="h-5 w-5 text-electric-indigo" />
                         Change Booking Dates
                     </DialogTitle>
                     <DialogDescription>
@@ -111,7 +111,7 @@ export function RescheduleModal({
                     <Button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="bg-safety-orange hover:bg-safety-orange/90"
+                        className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium"
                     >
                         {isSubmitting ? 'Updating...' : 'Update Dates'}
                     </Button>

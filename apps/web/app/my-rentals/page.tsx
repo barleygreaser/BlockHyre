@@ -138,7 +138,7 @@ export default function MyRentalsPage() {
                             {/* Active Rentals Section */}
                             <div>
                                 <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                    <Package className="h-5 w-5 text-safety-orange" />
+                                    <Package className="h-5 w-5 text-electric-indigo" />
                                     Active Rentals
                                 </h2>
 
@@ -206,7 +206,7 @@ export default function MyRentalsPage() {
                             {upcomingBookings.length > 0 && (
                                 <div>
                                     <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                        <Calendar className="h-5 w-5 text-safety-orange" />
+                                        <Calendar className="h-5 w-5 text-electric-indigo" />
                                         Upcoming Bookings
                                     </h2>
                                     <div className="space-y-3">

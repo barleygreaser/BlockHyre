@@ -34,7 +34,7 @@ export default function OwnerDisputesPage() {
     return (
         <div className="max-w-4xl mx-auto py-4">
             <div className="mb-8">
-                <Link href="/dashboard" className="inline-flex items-center text-sm font-bold text-slate-500 hover:text-safety-orange uppercase tracking-wider mb-4 transition-colors">
+                <Link href="/dashboard" className="inline-flex items-center text-sm font-bold text-slate-500 hover:text-electric-indigo uppercase tracking-wider mb-4 transition-colors">
                     <ArrowLeft className="h-4 w-4 mr-1" />
                     Back to Dashboard
                 </Link>

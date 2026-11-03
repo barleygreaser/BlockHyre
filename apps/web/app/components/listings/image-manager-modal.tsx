@@ -82,7 +82,7 @@ function SortableImage({ id, url, index, isPrimary, onDelete }: SortableImagePro
             {/* Primary Badge */}
             {isPrimary && (
                 <div className="absolute top-2 right-2 z-10">
-                    <Badge className="bg-safety-orange text-white shadow-sm pointer-events-none">
+                    <Badge className="bg-electric-indigo text-white shadow-sm pointer-events-none">
                         Main Cover
                     </Badge>
                 </div>
@@ -331,7 +331,7 @@ export function ImageManagerModal({ open, onOpenChange, images, onSave }: ImageM
                         <Button
                             onClick={handleSave}
                             disabled={!canSave}
-                            className="bg-safety-orange hover:bg-orange-600"
+                            className="bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive"
                         >
                             {!canSave && localImages.length < 2
                                 ? `Need ${2 - localImages.length} more image${2 - localImages.length === 1 ? '' : 's'}`

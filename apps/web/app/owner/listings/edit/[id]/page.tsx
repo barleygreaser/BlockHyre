@@ -237,7 +237,7 @@ export default function EditListingPage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <Loader2 className="h-8 w-8 animate-spin text-safety-orange" />
+                <Loader2 className="h-8 w-8 animate-spin text-electric-indigo" />
             </div>
         );
     }
@@ -287,7 +287,7 @@ export default function EditListingPage() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-safety-orange"
+                                className="text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-electric-indigo"
                                 onClick={handleViewListingClick}
                             >
                                 <Eye className="h-4 w-4 mr-2" />
@@ -314,11 +314,11 @@ export default function EditListingPage() {
                                         className={cn(
                                             "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors",
                                             isActive
-                                                ? "bg-white text-safety-orange shadow-sm border border-slate-200"
+                                                ? "bg-white text-electric-indigo shadow-sm border border-slate-200"
                                                 : "text-slate-600 hover:bg-white hover:text-slate-900"
                                         )}
                                     >
-                                        <Icon className={cn("h-4 w-4", isActive ? "text-safety-orange" : "text-slate-400")} />
+                                        <Icon className={cn("h-4 w-4", isActive ? "text-electric-indigo" : "text-slate-400")} />
                                         {section.label}
                                     </button>
                                 );
@@ -343,7 +343,7 @@ export default function EditListingPage() {
                                             <Label className="text-sm font-medium text-slate-700">Tool Name/ Model <span className="text-red-500">*</span></Label>
                                             <Input
                                                 type="text"
-                                                className="focus-visible:ring-safety-orange/50"
+                                                className="focus-visible:ring-electric-indigo/50"
                                                 placeholder="e.g. 10-inch Jobsite Table Saw"
                                                 value={formData.title || ""}
                                                 onChange={(e) => handleInputChange("title", e.target.value)}
@@ -357,7 +357,7 @@ export default function EditListingPage() {
                                                 <Label className="text-sm font-medium text-slate-700">Brand</Label>
                                                 <Input
                                                     type="text"
-                                                    className="focus-visible:ring-safety-orange/50"
+                                                    className="focus-visible:ring-electric-indigo/50"
                                                     placeholder="e.g. Makita"
                                                     value={formData.brand || ""}
                                                     onChange={(e) => handleInputChange("brand", e.target.value)}
@@ -372,7 +372,7 @@ export default function EditListingPage() {
                                                     onValueChange={(val) => handleInputChange("category_id", val)}
                                                     disabled
                                                 >
-                                                    <SelectTrigger className="bg-white focus:ring-safety-orange/50 disabled:bg-slate-100 disabled:text-slate-500 disabled:opacity-100">
+                                                    <SelectTrigger className="bg-white focus:ring-electric-indigo/50 disabled:bg-slate-100 disabled:text-slate-500 disabled:opacity-100">
                                                         <SelectValue placeholder="Select a Category" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -391,7 +391,7 @@ export default function EditListingPage() {
                                                 <span className="text-xs text-slate-400">supports markdown</span>
                                             </div>
                                             <Textarea
-                                                className="h-40 resize-y focus-visible:ring-safety-orange/50"
+                                                className="h-40 resize-y focus-visible:ring-electric-indigo/50"
                                                 placeholder="Describe the condition, what's included, and best use cases..."
                                                 value={formData.description || ""}
                                                 onChange={(e) => handleInputChange("description", e.target.value)}
@@ -416,7 +416,7 @@ export default function EditListingPage() {
                                             </Label>
                                             <Input
                                                 type="url"
-                                                className="focus-visible:ring-safety-orange/50"
+                                                className="focus-visible:ring-electric-indigo/50"
                                                 placeholder="https://www.manualslib.com..."
                                                 value={formData.manual_url || ""}
                                                 onChange={(e) => {
@@ -479,7 +479,7 @@ export default function EditListingPage() {
                                                             />
                                                             {index === 0 && (
                                                                 <div className="absolute top-1 right-1">
-                                                                    <Badge className="bg-safety-orange text-white text-[10px] shadow-sm">
+                                                                    <Badge className="bg-electric-indigo text-white text-[10px] shadow-sm">
                                                                         Main
                                                                     </Badge>
                                                                 </div>
@@ -538,7 +538,7 @@ export default function EditListingPage() {
                                                         <Input
                                                             type="number"
                                                             min="1"
-                                                            className="pl-7 focus-visible:ring-safety-orange/50"
+                                                            className="pl-7 focus-visible:ring-electric-indigo/50"
                                                             placeholder="0.00"
                                                             value={formData.daily_price || ""}
                                                             onChange={(e) => handleInputChange("daily_price", parseFloat(e.target.value))}
@@ -553,7 +553,7 @@ export default function EditListingPage() {
                                                         <Input
                                                             type="number"
                                                             min="0"
-                                                            className="pl-7 focus-visible:ring-safety-orange/50"
+                                                            className="pl-7 focus-visible:ring-electric-indigo/50"
                                                             placeholder="0.00"
                                                             // Assuming deposit is stored in `specifications.deposit` or similar if no column exists? 
                                                             // Wait, typical schema usually has deposit. 
@@ -577,7 +577,7 @@ export default function EditListingPage() {
                                                         type="number"
                                                         min="1"
                                                         step="1"
-                                                        className="focus-visible:ring-safety-orange/50"
+                                                        className="focus-visible:ring-electric-indigo/50"
                                                         value={formData.min_rental_days || 1}
                                                         onChange={(e) => handleInputChange("min_rental_days", parseInt(e.target.value))}
                                                     />
@@ -663,10 +663,10 @@ export default function EditListingPage() {
                                                     <div className={cn(
                                                         "flex-1 flex items-start p-3 rounded-lg border cursor-pointer transition-all",
                                                         formData.booking_type === 'request' || !formData.booking_type
-                                                            ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange"
+                                                            ? "border-electric-indigo bg-indigo-50/50 ring-1 ring-electric-indigo"
                                                             : "border-slate-200 hover:border-slate-300"
                                                     )}>
-                                                        <RadioGroupItem value="request" id="r-request" className="mt-1 mr-3 text-safety-orange border-slate-900" />
+                                                        <RadioGroupItem value="request" id="r-request" className="mt-1 mr-3 text-electric-indigo border-slate-900" />
                                                         <Label htmlFor="r-request" className="cursor-pointer">
                                                             <div className="font-medium text-sm text-slate-900">Request to Book</div>
                                                             <div className="text-xs text-slate-500 mt-1">Review every request before approving. Best for high-value items or for bartering.</div>
@@ -677,13 +677,13 @@ export default function EditListingPage() {
                                                         "flex-1 flex items-start p-3 rounded-lg border transition-all",
                                                         formData.accepts_barter ? "opacity-50 cursor-not-allowed bg-slate-50 border-slate-100"
                                                             : formData.booking_type === 'instant'
-                                                                ? "border-safety-orange bg-orange-50 ring-1 ring-safety-orange cursor-pointer"
+                                                                ? "border-electric-indigo bg-indigo-50/50 ring-1 ring-electric-indigo cursor-pointer"
                                                                 : "border-slate-200 hover:border-slate-300 cursor-pointer"
                                                     )}>
                                                         <RadioGroupItem
                                                             value="instant"
                                                             id="r-instant"
-                                                            className="mt-1 mr-3 text-safety-orange border-slate-900"
+                                                            className="mt-1 mr-3 text-electric-indigo border-slate-900"
                                                             disabled={formData.accepts_barter === true}
                                                         />
                                                         <Label htmlFor="r-instant" className={cn("cursor-pointer", formData.accepts_barter && "cursor-not-allowed")}>
@@ -705,7 +705,7 @@ export default function EditListingPage() {
                                                     placeholder="e.g. 123 Neighborhood Way, Apt 4"
                                                     value={formData.location_address || ""}
                                                     onChange={(e) => handleInputChange("location_address", e.target.value)}
-                                                    className="focus-visible:ring-safety-orange/50"
+                                                    className="focus-visible:ring-electric-indigo/50"
                                                 />
                                                 <p className="text-xs text-slate-500 italic">Only shared with the renter AFTER a booking is confirmed.</p>
                                             </div>
@@ -716,7 +716,7 @@ export default function EditListingPage() {
                                                     placeholder="e.g. Weekdays 5pm-8pm, Weekends after 10am"
                                                     value={formData.preferred_pickup_time || ""}
                                                     onChange={(e) => handleInputChange("preferred_pickup_time", e.target.value)}
-                                                    className="focus-visible:ring-safety-orange/50"
+                                                    className="focus-visible:ring-electric-indigo/50"
                                                 />
                                                 <p className="text-xs text-slate-500 italic">Helps renters plan their request.</p>
                                             </div>
@@ -769,7 +769,7 @@ export default function EditListingPage() {
                                                 <Badge variant="secondary" className="text-[10px] h-5">Private</Badge>
                                             </div>
                                             <Textarea
-                                                className="h-24 text-sm focus-visible:ring-safety-orange/50"
+                                                className="h-24 text-sm focus-visible:ring-electric-indigo/50"
                                                 placeholder="Keep track of maintenance history, lock codes, or reminders..."
                                                 value={formData.owner_notes || ""}
                                                 onChange={(e) => handleInputChange("owner_notes", e.target.value)}
@@ -911,7 +911,7 @@ export default function EditListingPage() {
                             Cancel
                         </Button>
                         <Button
-                            className="bg-safety-orange hover:bg-orange-600 text-white min-w-[120px]"
+                            className="bg-electric-indigo hover:bg-midnight-navy text-white min-w-[120px] rounded-interactive font-medium"
                             onClick={() => handleSave(false)}
                             disabled={saving}
                         >
@@ -962,7 +962,7 @@ export default function EditListingPage() {
                                         window.open(`/listings/${id}/${slug}?view=public`, '_blank');
                                     }
                                 }}
-                                className="w-full bg-safety-orange hover:bg-orange-600 text-white"
+                                className="w-full bg-electric-indigo hover:bg-midnight-navy text-white rounded-interactive font-medium"
                             >
                                 Save & View
                             </Button>
