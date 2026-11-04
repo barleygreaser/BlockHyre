@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2025-03-02 - Optimize List Filtering and Derived Counts in Render loops (Part 2)
+**Learning:** Performing array traversals or string normalization (`toLowerCase()`) inside `.filter()` operations can be expensive in React renders.
+**Action:** When filtering objects by text fields, always calculate normalized search strings exactly once by mapping the array to append `.toLowerCase()` fields (within a `useMemo` depending only on the base dataset). The filtering iteration then does simple O(1) checks.
