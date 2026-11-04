@@ -268,7 +268,7 @@ export function OwnerDashboardView() {
         setRentalRequests(prev => prev.filter(r => r.id !== rentalId));
         toast.message(`[${timeFormatter.format(new Date())}] Action logged. Details processing...`, {
             description: `Approving ${rental.listing.title}`,
-            className: "font-serif border-l-4 border-l-electric-indigo rounded-none",
+            className: "font-serif border-l-4 border-l-electric-indigo rounded-subtle",
         });
 
         try {
@@ -279,7 +279,7 @@ export function OwnerDashboardView() {
 
             if (error) {
                 toast.error(`[SYSTEM ERROR] Failed to approve: ${error.message}`, {
-                    className: "font-serif border-l-4 border-l-red-500 rounded-none bg-deep-charcoal text-white",
+                    className: "font-serif border-l-4 border-l-red-500 rounded-subtle bg-deep-charcoal text-white",
                 });
                 // Revert optimistic update gracefully
                 setRentalRequests(prev => [rental, ...prev]);
@@ -393,7 +393,7 @@ export function OwnerDashboardView() {
 
             toast.success(`[${timeFormatter.format(new Date())}] RENTAL APPROVED`, {
                 description: `${rental.listing.title} marked active for ${rental.renter.full_name}`,
-                className: "font-serif border-l-4 border-l-emerald-500 rounded-none bg-deep-charcoal text-emerald-400",
+                className: "font-serif border-l-4 border-l-emerald-500 rounded-subtle bg-deep-charcoal text-emerald-400",
             });
         } catch (err) {
             console.error("Approval failed:", err);
@@ -612,7 +612,7 @@ export function OwnerDashboardView() {
                     <p className="text-sm text-slate-500 mt-1">Manage your tools, rentals, and earnings.</p>
                 </div>
                 <Link href="/add-tool">
-                    <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
+                    <Button variant="default" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
                         <Plus className="mr-2 h-4 w-4" />
                         List New Tool
                     </Button>

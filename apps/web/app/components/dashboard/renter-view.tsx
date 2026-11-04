@@ -269,7 +269,7 @@ export function RenterDashboardView() {
                     <p className="text-sm text-slate-500 mt-1">Track your active rentals and history.</p>
                 </div>
                 <Link href="/listings" data-tour="find-tools-btn">
-                    <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
+                    <Button variant="default" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
                         <Search className="mr-2 h-4 w-4" />
                         Find Tools
                     </Button>

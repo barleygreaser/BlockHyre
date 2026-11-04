@@ -329,7 +329,7 @@ export default function RenterRentalsPage() {
                         </p>
                     </div>
                     <Link href="/listings">
-                        <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-xs active:translate-y-0.5">
+                        <Button variant="default" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-xs active:translate-y-0.5">
                             <Search className="mr-2 h-4 w-4" />
                             Find Tools
                         </Button>

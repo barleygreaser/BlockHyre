@@ -392,7 +392,7 @@ export function DashboardOnboardingOverlay() {
               boxShadow: "0 0 0 9999px rgba(15,23,42,0.8)",
             }}
           />
-          {/* Pulsing orange ring — same dimensions, layered on top */}
+          {/* Pulsing spotlight ring — same dimensions, layered on top */}
           <div
             className={`absolute border-2 border-electric-indigo rounded-xl pointer-events-none transition-all duration-500 ease-in-out ${isMounted ? "opacity-100 animate-pulse" : "opacity-0"}`}
             style={{
@@ -400,7 +400,7 @@ export function DashboardOnboardingOverlay() {
               left: rect.left - PADDING,
               width: rect.width + PADDING * 2,
               height: rect.height + PADDING * 2,
-              boxShadow: "0 0 20px rgba(255,102,0,0.4)",
+              boxShadow: "0 0 20px rgba(91,110,174,0.4)",
             }}
           />
         </>

@@ -166,7 +166,7 @@ export default function InventoryPage() {
           </p>
         </div>
         <Link href="/add-tool">
-          <Button variant="urgent" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
+          <Button variant="default" className="text-2xs font-mono uppercase tracking-industrial font-bold rounded-interactive px-5 h-10 shadow-sm active:translate-y-0.5">
             <Plus className="mr-2 h-4 w-4" />
             List New Tool
           </Button>
