@@ -4,37 +4,54 @@ This document serves as a critical, living template designed to equip agents wit
 
 ## 1. Project Structure
 
-This section provides a high-level overview of the `apps/web` directory structure. The project is part of a monorepo (`BlockHyre_Monorepo`) managed by Turborepo.
+This section provides a high-level overview of the `apps/web` directory structure. The project is part of a monorepo (`BlockHyre_Monorepo`) managed by Turborepo and pnpm workspaces:
+- `apps/web`: Next.js 16 (App Router), React 19, Tailwind CSS 4, Radix UI.
+- `apps/mobile`: Expo 54, React Native, Expo Router.
+- `packages/tokens`: Universal Design System tokens (@repo/tokens) exporting typed TypeScript constants and compiled Tailwind CSS variables.
+- `packages/database`: Shared database types and Supabase helpers.
 
 ```
-apps/web/
-├── app/                  # Next.js App Router (16.0.7) - Main application logic
-│   ├── (auth)/           # Authentication flows (login, signup)
-│   ├── api/              # API Routes (backend-for-frontend)
-│   ├── components/       # App-specific components
-│   ├── context/          # React Context providers (Auth, etc.)
-│   ├── dashboard/        # Protected dashboard routes
-│   ├── hooks/            # Custom React hooks
-│   ├── lib/              # Utility functions and shared logic
-│   ├── listings/         # Listing feature routes
-│   ├── types/            # TypeScript type definitions
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Homepage
-├── components/           # Reusable UI components
-│   ├── ui/               # Radix UI + shadcn/ui primitives
-│   └── shared/           # Business-logic specific components
-├── hooks/                # Custom React hooks (e.g., `use-toast`)
-├── lib/                  # Core utilities and client configurations
-│   ├── supabase.ts       # Supabase client instantiation
-│   ├── stripe.ts         # Stripe client helper
-│   ├── location.ts       # Mapbox/Location utilities
-│   └── utils.ts          # General helper functions (cn, clsx)
-├── public/               # Static assets (images, fonts, icons)
-├── supabase/             # Supabase specific configurations/migrations for the web app
-├── middleware.ts         # Next.js Middleware for session handling and route protection
-├── next.config.ts        # Next.js configuration
-├── package.json          # Dependencies and scripts
-└── tailwind.config.ts    # Tailwind CSS configuration
+BlockHyre_Monorepo/
+├── packages/
+│   ├── database/             # Shared database schemas and helpers
+│   └── tokens/               # Shared Design System package (@repo/tokens)
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── src/
+│           ├── colors.ts     # Primitive & semantic colors (Electric Indigo, Safety Orange, etc.)
+│           ├── radii.ts      # Strict 5-tier semantic radii scale
+│           ├── typography.ts # Font families, sizing, line-heights, tracking
+│           ├── tokens.css    # CSS variables for Tailwind v4 theme integration
+│           └── index.ts      # Typed cross-platform exports for Web & Mobile
+├── apps/web/
+│   ├── app/                  # Next.js App Router (16.0.7) - Main application logic
+│   │   ├── (auth)/           # Authentication flows (login, signup)
+│   │   ├── api/              # API Routes (backend-for-frontend)
+│   │   ├── components/       # App-specific components (dashboard, modals, search)
+│   │   ├── context/          # React Context providers (Auth, Dashboard, Message, etc.)
+│   │   ├── dashboard/        # Protected dashboard routes & sub-views
+│   │   ├── hooks/            # Custom React hooks
+│   │   ├── lib/              # Utility functions and shared logic
+│   │   ├── listings/         # Listing feature routes
+│   │   ├── types/            # TypeScript type definitions
+│   │   ├── globals.css       # Imports @repo/tokens and defines Tailwind v4 @theme
+│   │   ├── layout.tsx        # Root layout
+│   │   └── page.tsx          # Homepage
+│   ├── components/           # Reusable UI components
+│   │   ├── ui/               # Radix UI + shadcn/ui primitives wired to tokens
+│   │   └── shared/           # Business-logic specific components
+│   ├── hooks/                # Custom React hooks (e.g., `use-toast`)
+│   ├── lib/                  # Core utilities and client configurations
+│   │   ├── supabase.ts       # Supabase client instantiation
+│   │   ├── stripe.ts         # Stripe client helper
+│   │   ├── location.ts       # Mapbox/Location utilities
+│   │   └── utils.ts          # General helper functions (cn, clsx)
+│   ├── public/               # Static assets (images, fonts, icons)
+│   ├── supabase/             # Supabase specific configurations/migrations for the web app
+│   ├── middleware.ts         # Next.js Middleware for session handling and route protection
+│   ├── next.config.ts        # Next.js configuration
+│   └── package.json          # Dependencies and scripts
+└── apps/mobile/              # Expo React Native application
 ```
 
 ## 2. High-Level System Diagram
@@ -48,6 +65,8 @@ graph TD
     WebApp -->|API Routes| Supabase
     WebApp -->|API| Stripe[Stripe Payments]
     WebApp -->|API| Mapbox[Mapbox Services]
+    Tokens[packages/tokens] -->|CSS Theme| WebApp
+    Tokens -->|Typed Theme| MobileApp[Expo Mobile App]
     
     subgraph "Supabase Platform"
         Auth[Authentication]
@@ -67,23 +86,46 @@ graph TD
 **Technologies:**
 - **Framework:** Next.js 16 (App Router)
 - **Library:** React 19
-- **Styling:** Tailwind CSS 4
+- **Styling:** Tailwind CSS 4 with `@theme` token bindings
+- **Design System:** `@repo/tokens` universal design tokens package
 - **UI Components:** Radix UI (Headless), Lucide React (Icons), Vaul (Drawer), Sonner (Toasts)
 - **State Management:** URL state (`nuqs`), React Context, Local State, Supabase Realtime
 - **Maps:** Mapbox GL
 - **Payments:** Stripe
 
-### 3.2. Backend Services
+### 3.2. Design System Architecture (`packages/tokens`)
+**Name:** BlockHyre Tokens (`@repo/tokens`)  
+**Description:** Single source of truth for the "Industrial Boutique" design system shared across Web and Mobile.
+- **Color Architecture:**
+  - **Electric Indigo (`#5B6EAE`):** Primary brand CTA, active tabs, focus rings, brand accent links.
+  - **Midnight Navy (`#1B2A4A`):** High-contrast dark cards, hero headers, primary pricing, CTA hover states.
+  - **Periwinkle Blue (`#7289DA`):** Dark mode primary accent & interactive contrast.
+  - **Safety Orange (`#FF6B00`):** Dedicated semantic urgency, High-Power Tier 3 Safety Gate modal, legal & liability cautions, return countdown timers (strictly separated from general CTAs).
+  - **Peace Fund Emerald (`#10B981`):** Operational status dots, insured coverage indicators, net earnings.
+  - **Charcoal (`#1A1A1A`) & Deep Charcoal (`#1C1C2E`):** Industrial dark surfaces, sidebar navigation, telemetry containers.
+  - **Concrete (`#E8E4DD`) & Signal White (`#FAFAF8`):** Workshop tactile backgrounds and crisp canvas.
+- **Strict 5-Tier Semantic Corner Radii Scale:**
+  - `none (0px)`: Hard machinery edges.
+  - `subtle (6px)`: Inputs, badges, small tags, telemetry brackets.
+  - `default / interactive (10px)`: Buttons, interactive controls, dropdowns, icon containers.
+  - `card (16px)`: Standard content cards, dashboard containers, dialogs.
+  - `boutique (40px / 2.5rem)`: Signature boutique curves for hero and primary tool cards.
+  - `full (9999px)`: Circular status dots, user avatars, pill badges.
+- **Export Targets:**
+  - Compiled CSS variables via `@repo/tokens/tokens.css` ingested by Tailwind v4 `@theme`.
+  - Typed JavaScript/TypeScript constants for React Native `StyleSheet` usage in `apps/mobile`.
+
+### 3.3. Backend Services
 The backend logic is primarily serverless, leveraging Next.js API routes and Supabase's managed backend features.
 
-#### 3.2.1. Next.js API Routes (`app/api`)
+#### 3.3.1. Next.js API Routes (`app/api`)
 **Description:** Handles server-side logic that requires secure environments or third-party webhooks.
 **Key Endpoints:**
 - `/api/stripe/checkout`: Initiates Stripe Checkout sessions.
 - `/api/stripe/webhook`: Handles Stripe webhooks securely.
 - `/api/signup`: Enforces custom validation and rate limiting for account creation.
 
-#### 3.2.2. Supabase Backend
+#### 3.3.2. Supabase Backend
 **Description:** Acts as the primary backend-as-a-service, handling authentication, database interactions, and file storage.
 **Key Features:**
 - **Auth:** Manages user sessions and Row Level Security (RLS).
@@ -150,7 +192,7 @@ The platform features a real-time messaging system for communication between own
 ## 8. Deployment & Infrastructure
 
 **Cloud Provider:** VPS (Web App), Supabase (Backend/DB)  
-**Monorepo Tooling:** Turborepo for build orchestration and caching.
+**Monorepo Tooling:** Turborepo for build orchestration and caching.  
 **CI/CD Pipeline:** GitHub Actions.  
 
 ## 9. Development Environment
@@ -170,21 +212,21 @@ The platform features a real-time messaging system for communication between own
 
 ## 10. Future Considerations / Roadmap
 
-- **Testing Strategy:** Implement comprehensive unit (Jest/Vitest) and E2E (Playwright) testing suites.
-- **Enhanced Component Library:** Further abstracting UI components into a shared package within the monorepo (`packages/ui`).
-- **Real-time Notifications:** Expand the messaging model to include push notifications and robust multi-device sync.
-- **Accessibility:** Ensure full WCAG compliance (Radix UI provides a good baseline).
+- **Testing Strategy:** Comprehensive unit (Jest/Vitest) and E2E (Playwright) testing suites.
+- **Cross-Platform Mobile:** Mobile app parity backed by `@repo/tokens`.
+- **Real-time Notifications:** Expand messaging model to include push notifications and multi-device sync.
+- **Accessibility:** Full WCAG AA contrast compliance with electric indigo and midnight navy palettes.
 
 ## 11. Project Identification
 
 **Project Name:** BlockHyre Web  
 **Repository Path:** `apps/web`  
-**Primary Tech:** Next.js, Supabase, Tailwind CSS  
-**Date of Last Update:** 2026-02-17
+**Primary Tech:** Next.js, Supabase, Tailwind CSS, Turborepo  
+**Date of Last Update:** 2026-11-05
 
 ## 12. Glossary / Acronyms
 
-**RLS:** Row Level Security (PostgreSQL security feature).
-**SSR:** Server-Side Rendering.
-**ISR:** Incremental Static Regeneration.
+**RLS:** Row Level Security (PostgreSQL security feature).  
+**SSR:** Server-Side Rendering.  
+**ISR:** Incremental Static Regeneration.  
 **RPC:** Remote Procedure Call (Supabase functions).

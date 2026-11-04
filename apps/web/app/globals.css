@@ -117,6 +117,7 @@
   --radius-none: 0px;
   --radius-subtle: 6px;
   --radius-default: 10px;
+  --radius-interactive: 10px;
   --radius-card: 16px;
   --radius-boutique: 2.5rem;
   --radius-full: 9999px;
@@ -371,6 +372,7 @@
 
 :root {
   --radius: 10px;
+  --radius-interactive: 10px;
   --background: #FAFAF8;
   --foreground: #1A1A1A;
   --card: #FFFFFF;
