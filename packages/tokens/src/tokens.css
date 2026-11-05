@@ -67,6 +67,10 @@
   --leading-relaxed: 1.625;
   --leading-loose: 2;
 
+  /* Shadows & Telemetry Glows */
+  --shadow-indigo-glow: 0 0 10px rgba(91, 110, 174, 0.40);
+  --shadow-urgent-glow: 0 0 10px rgba(255, 107, 0, 0.40);
+
   /* ShadCN & Tailwind v4 Semantic Aliases */
   --radius: var(--radius-default);
   --background: #FAFAF8;

@@ -7,6 +7,7 @@ import { useDashboard } from "@/app/context/dashboard-context";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useMessageContext } from "@/app/context/message-context";
+import { NotificationBadge, NotificationDot } from "@/components/ui/badge";
 import {
   Home,
   Wrench,
@@ -118,10 +119,7 @@ export function DashboardSidebar() {
             <span className="relative inline-block">
               Renter
               {alerts.renter > 0 && (
-                <span className="absolute -top-2 -right-3 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-indigo opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-electric-indigo border border-charcoal"></span>
-                </span>
+                <NotificationDot ping size="lg" border className="absolute -top-2 -right-3" />
               )}
             </span>
           </button>
@@ -138,10 +136,7 @@ export function DashboardSidebar() {
             <span className="relative inline-block">
               Owner
               {alerts.owner > 0 && (
-                <span className="absolute -top-2 -right-3 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-indigo opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-electric-indigo border border-white/30"></span>
-                </span>
+                <NotificationDot ping size="lg" border className="absolute -top-2 -right-3" />
               )}
             </span>
           </button>
@@ -251,11 +246,7 @@ export function DashboardSidebar() {
         >
           <MessageSquare className="w-4 h-4 flex-shrink-0" />
           <span>Messages</span>
-          {unreadCount > 0 && (
-            <span className="ml-auto bg-electric-indigo text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-[0_0_10px_rgba(91,110,174,0.4)]">
-              {unreadCount}
-            </span>
-          )}
+          <NotificationBadge count={unreadCount} className="ml-auto" />
           <span
             className={`${unreadCount > 0 ? "ml-2" : "ml-auto"} text-[9px] font-mono text-slate-600 uppercase tracking-wider`}
           >
@@ -306,10 +297,7 @@ export function DashboardSidebar() {
           <Menu className="w-5 h-5" />
           {/* Total alert bubble on hamburger */}
           {totalAlerts > 0 && (
-            <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-indigo opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-electric-indigo"></span>
-            </span>
+            <NotificationDot ping size="default" className="absolute top-1 right-1" />
           )}
         </button>
 

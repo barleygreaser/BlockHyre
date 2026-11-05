@@ -130,6 +130,10 @@
   --radius-xl: 20px;
   --radius-2xl: 24px;
   --radius-3xl: 32px;
+
+  /* Telemetry Glow Shadows */
+  --shadow-indigo-glow: 0 0 10px rgba(91, 110, 174, 0.40);
+  --shadow-urgent-glow: 0 0 10px rgba(255, 107, 0, 0.40);
 }
 
 /* ── Global Grain Overlay (Workshop Grit Texture) ── */

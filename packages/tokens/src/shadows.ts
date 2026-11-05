@@ -14,6 +14,8 @@ export const shadows = {
   // Telemetry & Operational glows
   telemetryGlow: "0 0 15px rgba(255, 107, 0, 0.35)",
   operationalGlow: "0 0 12px rgba(16, 185, 129, 0.45)",
+  indigoGlow: "0 0 10px rgba(91, 110, 174, 0.40)",
+  urgentGlow: "0 0 10px rgba(255, 107, 0, 0.40)",
   cardElevation: "0 10px 30px rgba(0, 0, 0, 0.06)",
   cardElevationHover: "0 20px 60px rgba(0, 0, 0, 0.12)",
 } as const;

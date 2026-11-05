@@ -12,7 +12,7 @@ import { ShoppingCart, Menu, X, User, Heart } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
 import { getUserDisplayName, cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { Badge, NotificationBadge, NotificationDot } from "@/components/ui/badge";
 import { useMessageContext } from "@/app/context/message-context";
 
 export function Navbar() {
@@ -262,13 +262,7 @@ export function Navbar() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                {unreadCount > 0 && (
-                                                    <Badge
-                                                        className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-electric-indigo hover:bg-electric-indigo text-white border-deep-charcoal border-2 text-2xs"
-                                                    >
-                                                        {unreadCount}
-                                                    </Badge>
-                                                )}
+                                                <NotificationBadge count={unreadCount} className="absolute -top-1 -right-1 border-deep-charcoal border-2" />
                                             </button>
 
                                             {isMenuOpen && (
@@ -300,7 +294,7 @@ export function Navbar() {
                                                         >
                                                             <span>Messages</span>
                                                             {unreadCount > 0 && (
-                                                                <Badge className="bg-electric-indigo hover:bg-electric-indigo text-white border-0 text-2xs w-5 h-5 flex items-center justify-center p-0 rounded-full">{unreadCount}</Badge>
+                                                                <NotificationBadge count={unreadCount} />
                                                             )}
                                                         </Link>
                                                         <Link
@@ -369,7 +363,7 @@ export function Navbar() {
                             >
                                 <Menu className="h-5 w-5" />
                                 {user && unreadCount > 0 && (
-                                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-electric-indigo" />
+                                    <NotificationDot ping size="sm" className="absolute top-1 right-1" />
                                 )}
                             </button>
                         </div>
@@ -485,7 +479,7 @@ export function Navbar() {
                                             <Link href="/messages" className="flex items-center justify-between py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                                 <span>Messages</span>
                                                 {unreadCount > 0 && (
-                                                    <Badge className="bg-electric-indigo hover:bg-electric-indigo text-2xs">{unreadCount}</Badge>
+                                                    <NotificationBadge count={unreadCount} />
                                                 )}
                                             </Link>
                                             <Link href="/my-rentals" className="py-3.5 text-base font-medium text-signal-white hover:text-periwinkle-blue border-b border-white/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>

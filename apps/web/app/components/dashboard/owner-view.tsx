@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge, NotificationDot } from "@/components/ui/badge";
 import { ReturnInspectionModal } from "@/app/components/return-inspection-modal";
 import { Plus, DollarSign, Wrench, Users, Check, X, Eye, Files, Info, CalendarClock, Clock, TriangleAlert } from "lucide-react";
 import { useAuth } from "@/app/context/auth-context";
@@ -634,12 +634,9 @@ export function OwnerDashboardView() {
                         <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                             <Users className="h-5 w-5 sm:h-6 sm:w-6" />
                             {!kpiLoading && overdueCount > 0 ? (
-                                <Badge className="absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-transparent border border-white">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                                </Badge>
+                                <NotificationDot variant="destructive" ping size="lg" border className="absolute -top-1.5 -right-1.5" />
                             ) : (
-                                <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>
+                                <NotificationDot variant="operational" size="default" border className="absolute -top-1.5 -right-1.5 animate-pulse-operational" />
                             )}
                         </div>
                     </div>
@@ -660,7 +657,7 @@ export function OwnerDashboardView() {
                                     </div>
                                     <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 group-hover:bg-emerald-100 transition-colors">
                                         <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
-                                        {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
+                                        {!kpiLoading && <NotificationDot variant="operational" size="default" border className="absolute -top-1.5 -right-1.5 animate-pulse-operational" />}
                                     </div>
                                 </div>
                             </Link>
@@ -696,7 +693,7 @@ export function OwnerDashboardView() {
                         </div>
                         <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-indigo-50/60 flex items-center justify-center text-electric-indigo flex-shrink-0 group-hover:bg-indigo-100/60 transition-colors">
                             <Wrench className="h-5 w-5 sm:h-6 sm:w-6" />
-                            {!kpiLoading && <Badge className="absolute -top-1.5 -right-1.5 h-3 w-3 p-0 flex items-center justify-center bg-emerald-500 border border-white animate-pulse-operational text-transparent">.</Badge>}
+                            {!kpiLoading && <NotificationDot variant="operational" size="default" border className="absolute -top-1.5 -right-1.5 animate-pulse-operational" />}
                         </div>
                     </div>
                 </Link>

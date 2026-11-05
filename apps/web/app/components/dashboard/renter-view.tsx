@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge, NotificationDot } from "@/components/ui/badge";
 import { Search, Calendar, Check, MessageSquare, TriangleAlert, MoreVertical, CalendarClock, X, Package } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatDistanceToNow, format } from "date-fns";
@@ -288,12 +288,9 @@ export function RenterDashboardView() {
                     <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                         <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
                         {overdueCount > 0 ? (
-                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 border border-white"></span>
-                            </span>
+                            <NotificationDot variant="destructive" ping size="lg" border className="absolute -top-1 -right-1" />
                         ) : (
-                            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-emerald-500 border border-white animate-pulse-operational"></span>
+                            <NotificationDot variant="operational" size="default" border className="absolute -top-1 -right-1 animate-pulse-operational" />
                         )}
                     </div>
                 </Link>
@@ -328,10 +325,7 @@ export function RenterDashboardView() {
                     <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-interactive bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0 group-hover:bg-amber-100 transition-colors">
                         <CalendarClock className="h-5 w-5 sm:h-6 sm:w-6" />
                         {pendingRequests.length > 0 && (
-                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-white"></span>
-                            </span>
+                            <NotificationDot variant="amber" ping size="lg" border className="absolute -top-1 -right-1" />
                         )}
                     </div>
                 </Link>
