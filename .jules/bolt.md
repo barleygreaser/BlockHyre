@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2025-05-18 - [Combine Multiple reduce calls in Checkout]
+**Learning:** Performing multiple sequential array traversals (`.reduce()`) to calculate independent aggregates over the same list (like subtotal, fees, deposits) introduces redundant O(N) operations. When tied directly to the render loop, it can hurt performance as the dataset grows or component state changes (e.g. `isProcessing`).
+**Action:** When calculating multiple aggregate fields, combine them into a single `.reduce()` traversal returning an object, and wrap the result in `useMemo` with the data dependency to ensure the O(N) calculation only occurs when the data changes, not on every render.
