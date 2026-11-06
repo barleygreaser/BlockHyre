@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2024-05-24 - [Avoid Multiple Array Traversals]
+**Learning:** [In React components, deriving multiple independent counts or totals (e.g. subtotals and fees) from the same array using multiple `.reduce` or `.filter(...).length` statements causes redundant O(N) traversals on every render.]
+**Action:** [Combine redundant `.reduce()` or `.filter` calls into a single O(N) array traversal that computes all totals simultaneously within one object, and memoize the result with `useMemo`.]
