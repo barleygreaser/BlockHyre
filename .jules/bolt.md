@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2024-11-07 - [Optimize .reduce() traversals in CheckoutPage]
+**Learning:** Found an opportunity to combine multiple `.reduce()` traversals into a single O(N) array traversal for calculating `subtotal`, `peaceFundTotal`, and `depositTotal` in `apps/web/app/checkout/page.tsx`, similar to the optimization already done in `apps/web/app/cart/page.tsx`. This avoids iterating over the cart items multiple times.
+**Action:** Always combine aggregate calculations over the same array into a single `.reduce()` to improve time complexity.
