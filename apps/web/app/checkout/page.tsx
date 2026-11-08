@@ -5,7 +5,7 @@ import { Footer } from "@/app/components/footer";
 import { useCart } from "@/app/context/cart-context";
 import { Button } from "@/app/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { calculateRentalPrice } from "@/lib/pricing";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -19,18 +19,22 @@ export default function CheckoutPage() {
 
     const hasHighPowerItems = cart.some(item => item.price.riskTier === 3);
 
-    const subtotal = cart.reduce((acc, item) => {
-        const { subtotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
-        return acc + subtotal;
-    }, 0);
+    // ⚡ Bolt Optimization: Combined 3 separate .reduce() traversals into a single O(N) traversal
+    // and memoized the result to prevent recalculations on every render
+    const { subtotal, peaceFundTotal, depositTotal, finalTotal } = useMemo(() => {
+        const totals = cart.reduce((acc, item) => {
+            const { subtotal, peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
+            acc.subtotal += subtotal;
+            acc.peaceFundTotal += peaceFundTotal;
+            acc.depositTotal += item.price.deposit;
+            return acc;
+        }, { subtotal: 0, peaceFundTotal: 0, depositTotal: 0 });
 
-    const peaceFundTotal = cart.reduce((acc, item) => {
-        const { peaceFundTotal } = calculateRentalPrice(item.price.daily, item.days, item.price.riskTier);
-        return acc + peaceFundTotal;
-    }, 0);
-
-    const depositTotal = cart.reduce((acc, item) => acc + item.price.deposit, 0);
-    const finalTotal = subtotal + peaceFundTotal + depositTotal;
+        return {
+            ...totals,
+            finalTotal: totals.subtotal + totals.peaceFundTotal + totals.depositTotal
+        };
+    }, [cart]);
 
     const handlePaymentClick = () => {
         if (hasHighPowerItems) {
@@ -81,9 +85,9 @@ export default function CheckoutPage() {
             } else {
                 throw new Error(data.error || "Failed to create checkout session");
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("Payment Error:", error);
-            toast.error(error.message || "Something went wrong during checkout.");
+            toast.error((error as Error).message || "Something went wrong during checkout.");
         } finally {
             setIsProcessing(false);
         }
