@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2025-03-02 - Optimize Subtotal Calculations using useMemo
+**Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields like subtotals and fees in `apps/web/app/checkout/page.tsx`, which inefficiently repeats operations such as function calls for pricing logic.
+**Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead. Wrap the calculation in `useMemo` so it doesn't recalculate on every render unless the source array changes.
