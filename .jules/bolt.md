@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2024-05-14 - [Checkout Page React Render Optimization]
+**Learning:** In checkout page renders, performing separate array mapping/reduction loops to calculate related aggregate fields (like subtotal, fees, deposits) from the exact same dataset can unnecessarily multiply processing time, especially on rapidly-updating UI components. We found three independent O(N) loops operating on `cart` that could just as easily compute all variables in a single O(N) sweep.
+**Action:** Always combine multi-variable aggregate calculations into a single O(N) `.reduce()` traversal when operating on the same underlying array, and wrap the output in `useMemo` so that localized state changes (like toggling a safety modal or loading spinner) do not trigger expensive recalculations.
