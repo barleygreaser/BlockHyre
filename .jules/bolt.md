@@ -105,3 +105,7 @@
 ## 2024-06-25 - [Optimize Cart Calculation]
 **Learning:** Found multiple distinct O(N) array traversals operating on the same array structure (`cart.reduce(...)`) when calculating derived fields, which inefficiently repeats operations such as function calls for pricing logic.
 **Action:** Always look for and combine separate map/reduce iterations targeting the same dataset into a single pass when deriving data to prevent redundant calculations and unnecessary overhead.
+
+## 2025-03-02 - Optimize Location Onboarding Modal
+**Learning:** Performing `searchTerm.toLowerCase()` inside a `.filter` array iteration triggers `O(N * M)` recalculations on each keystroke in a component like `LocationOnboardingModal`.
+**Action:** Always wrap `filteredNeighborhoods` (or equivalent filtered views) in a `useMemo` and hoist invariant string normalizations outside the `.filter` callback to reduce it to `O(N)`.
